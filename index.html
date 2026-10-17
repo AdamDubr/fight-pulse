@@ -301,7 +301,8 @@ tbody tr{cursor:pointer}
 .card.private .privnote{display:block;color:var(--muted);font-family:var(--font-data);font-size:.75rem}
 
 /* ---------- COACH ---------- */
-.coach{display:grid;gap:1rem;padding-block:1rem;grid-template-columns:minmax(0,1fr) 24rem;grid-template-areas:"ctrl ctrl" "summary summary" "table table" "fdk fdk" "alerts alerts";grid-template-rows:auto;min-height:100%}
+.coach{display:grid;gap:1rem;padding-block:1rem;grid-template-columns:minmax(0,1fr) 24rem;grid-template-areas:"summary summary" "ig ig" "table table" "fdk fdk" "alerts alerts" "ctrl ctrl";grid-template-rows:auto;min-height:100%}
+ #monIGd{grid-area:ig;min-width:0}
 .c-detail{display:none}
 .c-fdk{grid-area:fdk;min-width:0}
 .cab-role{display:none!important}
@@ -487,7 +488,7 @@ td.rowbtns .g2{font-size:.6rem;letter-spacing:.05em;color:var(--muted)}
 @media (max-width:1100px){
   .grid{grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:auto;height:auto}
   .card{min-height:15rem}
-  .coach{grid-template-columns:1fr;grid-template-areas:"ctrl" "summary" "table" "fdk" "alerts";grid-template-rows:auto}
+  .coach{grid-template-columns:1fr;grid-template-areas:"summary" "ig" "table" "fdk" "alerts" "ctrl";grid-template-rows:auto}
 }
 @media (max-width:1000px){
   .arena{height:auto;grid-template-columns:1fr;grid-template-rows:auto;grid-template-areas:"stage" "left" "right" "charts" "strip"}
