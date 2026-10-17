@@ -927,6 +927,68 @@ body.m-on.m-frame::after{content:'Предпросмотр мобильной в
 body.m-on .modal-box canvas{height:auto;width:100%}
 @media (max-width:1500px),(max-height:900px){.f-strk{top:.5rem;width:14.5rem;padding:.5rem .65rem;gap:.3rem}.sk-big b{font-size:2.3rem}.sk-row b{font-size:1.2rem}.sk-note,.sk-lr{display:none}.f-hud .bpm2{font-size:4rem}}
 body.m-tv .top .tabs [data-view=card],body.m-tv .top .tabs [data-view=coach]{display:none!important}
+/* ---- v107: конструктор раундов + лига ---- */
+@media (min-width:761px){main{display:flex;flex-direction:column}main>.view{flex:1 1 0;height:auto}main>#wkBar{flex:none}#wkBar .wk-c b{font-size:3.7rem}#wkBar{padding:.4rem 1.1rem .6rem}}
+.lg-r .nm b .u18{margin-left:.35em}
+.lg-t.big .lg-r{padding:.22rem .4rem!important}.lg-t.big .lg-r img{width:2.3rem!important;height:2.3rem!important}
+#wkBar{position:relative;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:1rem;margin:0 0 .7rem;padding:.6rem 1.1rem .8rem;border:2px solid var(--pc);border-radius:.7rem;background:linear-gradient(90deg,color-mix(in srgb,var(--pc) 16%,#0d0d0d),#0d0d0d 45%,#0d0d0d 55%,color-mix(in srgb,var(--pc) 16%,#0d0d0d));overflow:hidden}
+#wkBar[hidden]{display:none}
+#wkBar .wk-l small,#wkBar .wk-r small{display:block;font-family:var(--font-display);font-weight:700;letter-spacing:.18em;font-size:.8rem;color:var(--muted);text-transform:uppercase}
+#wkBar .wk-l b{font-family:var(--font-display);font-weight:800;font-size:1.6rem;letter-spacing:.02em}
+#wkBar .wk-c{text-align:center}#wkBar .wk-ph{display:inline-block;font-family:var(--font-display);font-weight:800;letter-spacing:.2em;font-size:.95rem;padding:.12rem .7rem;border-radius:.25rem;background:var(--pc);color:#050505}
+#wkBar .wk-c b{display:block;font-family:var(--font-display);font-weight:900;font-size:4.6rem;line-height:.95;color:var(--pc);font-variant-numeric:tabular-nums;text-shadow:0 0 28px color-mix(in srgb,var(--pc) 45%,transparent)}
+#wkBar .wk-r{text-align:right}#wkBar .wk-r b{font-family:var(--font-display);font-weight:900;font-size:2.6rem;line-height:1}#wkBar .wk-r b i{font-style:normal;font-size:.5em;color:var(--muted)}
+.wk-dots{display:flex;gap:4px;justify-content:flex-end;margin-top:4px;flex-wrap:wrap}.wk-dots i{width:16px;height:6px;border-radius:2px;background:#2a2a2a}.wk-dots i.d{background:#e6e6e6}.wk-dots i.n{background:var(--pc);box-shadow:0 0 8px var(--pc)}
+#wkBar .wk-pg{position:absolute;left:0;bottom:0;height:4px;background:var(--pc);transition:width 1s linear}
+#wkBar.hot .wk-c b{animation:wkHot .5s ease-in-out infinite alternate}@keyframes wkHot{to{transform:scale(1.08);opacity:.75}}
+#wkBar.flash{animation:wkFl .9s ease-out}@keyframes wkFl{0%{box-shadow:0 0 0 0 var(--pc),inset 0 0 120px var(--pc)}100%{box-shadow:0 0 0 18px transparent,inset 0 0 0 transparent}}
+.wk-pre{display:flex;flex-wrap:wrap;gap:.4rem;margin:.6rem 0 .8rem}
+.wk-pre button{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:.1rem;background:var(--ink);border:1px solid var(--line-2);border-radius:.45rem;padding:.45rem .7rem;color:var(--fg);font-family:var(--font-display);font-weight:700;font-size:.82rem;cursor:pointer}
+.wk-pre button small{font-family:var(--font-data);font-weight:400;color:var(--muted);font-size:.72rem}.wk-pre button.own{border-color:#e8c35a66}.wk-pre button:disabled{opacity:.4;cursor:default}
+.wk-pre button u{position:absolute;top:-.45rem;right:-.45rem;width:1.1rem;height:1.1rem;border-radius:50%;background:#333;color:#ddd;text-decoration:none;font-size:.75rem;line-height:1.1rem;text-align:center}
+.wk-grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:1rem}
+.wk-f{grid-template-columns:repeat(2,minmax(0,1fr))!important}.wk-f input,.wk-f textarea{width:100%;background:var(--ink);border:1px solid var(--line-2);border-radius:.35rem;color:var(--fg);padding:.45rem .55rem;font:inherit;font-size:.9rem}.wk-f textarea{resize:vertical}
+.wk-snd{display:flex;gap:.45rem;align-items:center;margin-top:.6rem;font-size:.8rem;color:var(--muted)}
+.wk-big{text-align:center;border:1px solid var(--pc);border-radius:.6rem;padding:.7rem;background:radial-gradient(90% 120% at 50% 0%,color-mix(in srgb,var(--pc) 18%,transparent),transparent 70%)}
+.wk-big .wk-ph{display:inline-block;font-family:var(--font-display);font-weight:800;letter-spacing:.18em;font-size:.78rem;padding:.1rem .6rem;border-radius:.25rem;background:var(--pc);color:#050505}
+.wk-big b{display:block;font-family:var(--font-display);font-weight:900;font-size:3.4rem;line-height:1;color:var(--pc);font-variant-numeric:tabular-nums;margin:.2rem 0}.wk-big small{color:var(--muted);font-size:.8rem}
+.wk-tl{position:relative;display:flex;gap:2px;height:1.5rem;margin-top:.6rem}.wk-tl i{position:relative;border-radius:2px;min-width:2px;overflow:hidden}.wk-tl i.w{background:#ff456299}.wk-tl i.r{background:#2fd27a88}.wk-tl i.p{background:#ffc93c99}
+.wk-tl i span{position:absolute;left:3px;top:50%;transform:translateY(-50%);font-size:.62rem;font-weight:700;color:#fff;white-space:nowrap}
+.wk-tl b{position:absolute;top:-4px;bottom:-4px;width:3px;margin-left:-1px;background:#fff;border-radius:2px;box-shadow:0 0 8px #fff;transition:left 1s linear}
+.wk-rec{display:flex;flex-direction:column;gap:.3rem;max-width:48rem}.wk-rec .nm .u18{margin-left:.35em}.wk-rec .wr{display:grid;grid-template-columns:9rem 1fr 3.2rem 6rem;gap:.5rem;align-items:center;font-size:.85rem}
+.wk-rec .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.wk-rec .ch{display:flex;gap:3px;flex-wrap:wrap}.wk-rec .ch i{font-style:normal;font-family:var(--font-data);font-size:.72rem;padding:.05rem .3rem;border-radius:.2rem;background:color-mix(in srgb,var(--c) 22%,transparent);color:var(--c)}
+.wk-rec b{text-align:right;font-family:var(--font-display);font-weight:800}.wk-rec em{font-style:normal;color:var(--muted);font-size:.75rem}
+/* лига */
+#view-league{padding:0 0 1rem}
+.lg-top{display:grid;grid-template-columns:auto 1fr;gap:.4rem 1.2rem;align-items:center;margin:.3rem 0 .8rem}
+.lg-top small{display:block;font-family:var(--font-display);font-weight:700;letter-spacing:.2em;font-size:.75rem;color:var(--muted)}.lg-top>div>b{font-family:var(--font-display);font-weight:900;font-size:1.9rem;letter-spacing:.02em;text-transform:uppercase}
+.lg-mp span{font-size:.85rem;color:var(--muted)}.lg-mp i{display:block;height:.45rem;border-radius:.3rem;background:#1e1e1e;margin-top:.3rem;overflow:hidden}.lg-mp u{display:block;height:100%;background:linear-gradient(90deg,#e8c35a,#ffc93c)}
+.lg-leg{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:.3rem 1rem;font-size:.78rem;color:var(--muted)}.lg-leg i{display:inline-block;width:.6rem;height:.6rem;border-radius:2px;margin-right:.3rem;vertical-align:-1px}.lg-leg b{color:var(--fg)}
+.lg-cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem;align-items:start}
+.lg-t{border:1px solid var(--line);border-radius:.6rem;background:linear-gradient(180deg,var(--panel-2),var(--panel));padding:.5rem .6rem}
+.lg-h{display:flex;justify-content:space-between;align-items:baseline;padding:.15rem .2rem .45rem}.lg-h b{font-family:var(--font-display);font-weight:800;letter-spacing:.14em;font-size:.85rem}.lg-h span{font-size:.75rem;color:var(--muted)}
+.lg-r{display:grid;grid-template-columns:1.8rem 2.1rem minmax(0,1fr) minmax(3rem,28%) 2.8rem 2.1rem;gap:.5rem;align-items:center;padding:.32rem .3rem;border-radius:.4rem;border-top:1px solid #1c1c1c}
+.lg-r.top{background:linear-gradient(90deg,color-mix(in srgb,var(--mc) 14%,transparent),transparent 60%)}.lg-r.me{outline:1px solid #e8c35a;background:#e8c35a14}
+.lg-r .pl{font-family:var(--font-display);font-weight:900;font-size:1.05rem;text-align:center;color:var(--mc)}.lg-r:not(.top) .pl{color:var(--muted)}
+.lg-r img{width:2.1rem;height:2.1rem;border-radius:50%;object-fit:cover;border:2px solid var(--mc);background:#222}
+.lg-r .nm{min-width:0;display:flex;flex-direction:column}.lg-r .nm b{font-weight:700;font-size:.92rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lg-r .nm em{font-style:normal;font-size:.7rem;color:#e8c35a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lg-r .nm em.td{color:#2fd27a}
+.lg-r .bar{display:flex;height:.5rem;border-radius:.25rem;background:#1b1b1b;overflow:hidden}.lg-r .bar i{display:block;height:100%}
+.lg-r .pt{font-family:var(--font-display);font-weight:900;font-size:1.1rem;text-align:right}.lg-r .dl{font-size:.72rem;text-align:right;color:var(--muted)}.lg-r .dl.up{color:#2fd27a}.lg-r .dl.dn{color:#ff4562}
+.lg-t.big .lg-r{grid-template-columns:2.4rem 2.8rem minmax(0,1fr) minmax(4rem,30%) 3.6rem 2.6rem;padding:.42rem .4rem}.lg-t.big .lg-r img{width:2.8rem;height:2.8rem}.lg-t.big .lg-r .nm b{font-size:1.15rem}.lg-t.big .lg-r .pt{font-size:1.5rem}.lg-t.big .lg-r .pl{font-size:1.4rem}.lg-t.big .lg-r .nm em{font-size:.82rem}
+.lg-note{margin-top:.7rem;font-size:.75rem;color:var(--muted);text-align:center}
+.lg-pz{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}.lg-pz>div{display:flex;flex-direction:column;gap:.35rem}.lg-pz label{display:flex;gap:.4rem;align-items:center}.lg-pz label span{width:1.4rem;text-align:center;font-family:var(--font-display);font-weight:800;color:#e8c35a}
+.lg-pz input{flex:1;min-width:0;background:var(--ink);border:1px solid var(--line-2);border-radius:.35rem;color:var(--fg);padding:.4rem .5rem;font:inherit;font-size:.85rem}
+.m-lg-me{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-bottom:10px}.m-lg-me>div{background:#111;border:1px solid #222;border-radius:10px;padding:8px}.m-lg-me small{display:block;font-size:9.5px;letter-spacing:.12em;color:var(--muted);font-weight:700}.m-lg-me b{font-family:var(--font-display);font-weight:900;font-size:24px}.m-lg-me b i{font-style:normal;font-size:12px;color:var(--muted);font-weight:600}
+.m-lg-bd{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 10px;margin-bottom:10px;font-size:11.5px}.m-lg-bd div{display:flex;align-items:center;gap:6px}.m-lg-bd i{width:8px;height:8px;border-radius:2px;flex:none}.m-lg-bd span{flex:1;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.m-lg .lg-t{padding:4px}.m-lg .lg-h{display:none}.m-lg .lg-r{grid-template-columns:22px 28px minmax(0,1fr) 54px 34px 26px;gap:6px}.m-lg .lg-r img{width:28px;height:28px}
+@media (max-width:760px){
+  #wkBar{grid-template-columns:1fr auto;gap:.3rem .6rem;padding:.45rem .6rem .6rem;margin-bottom:.5rem}#wkBar .wk-l{grid-column:1/-1}#wkBar .wk-l b{font-size:1rem}#wkBar .wk-l small{font-size:.62rem}
+  #wkBar .wk-c{text-align:left}#wkBar .wk-c b{font-size:2.6rem}#wkBar .wk-ph{font-size:.65rem}#wkBar .wk-r b{font-size:1.6rem}.wk-dots i{width:10px;height:5px}
+  .wk-grid,.lg-cols,.lg-pz{grid-template-columns:1fr}.wk-rec .wr{grid-template-columns:6.5rem 1fr 2.4rem;font-size:.78rem}.wk-rec em{display:none}
+  .lg-top{grid-template-columns:1fr}.lg-top>div>b{font-size:1.4rem}.lg-r,.lg-t.big .lg-r{grid-template-columns:22px 30px minmax(0,1fr) 54px 36px 28px;gap:6px;padding:5px 3px}.lg-t.big .lg-r img,.lg-r img{width:30px;height:30px}
+  .lg-t.big .lg-r .nm b{font-size:.9rem}.lg-t.big .lg-r .pt{font-size:1.05rem}.lg-t.big .lg-r .pl{font-size:1rem}.lg-t.big .lg-r .nm em{font-size:.66rem}
+  body.m-force-desk:not(.m-tv) .top .tabs [data-view=league]{display:none!important}
+}
 </style>
 
 <div id="app">
@@ -942,6 +1004,7 @@ body.m-tv .top .tabs [data-view=card],body.m-tv .top .tabs [data-view=coach]{dis
       <button role="tab" data-view="arena" aria-selected="true">ARENA</button>
       <button role="tab" data-view="grid" aria-selected="false">ВСЕ УЧАСТНИКИ</button>
       <button role="tab" data-view="fight" aria-selected="false">БОЙ</button>
+      <button role="tab" data-view="league" aria-selected="false">ЛИГА</button>
       <button role="tab" data-view="card" aria-selected="false">КАБИНЕТ</button>
       <button role="tab" data-view="coach" aria-selected="false">ТРЕНЕР</button>
     </nav>
@@ -955,6 +1018,7 @@ body.m-tv .top .tabs [data-view=card],body.m-tv .top .tabs [data-view=coach]{dis
   </header>
 
   <main>
+    <div id="wkBar" hidden></div>
     <!-- ================= ARENA ================= -->
     <section class="view" id="view-arena">
       <div class="arena">
@@ -1059,6 +1123,7 @@ body.m-tv .top .tabs [data-view=card],body.m-tv .top .tabs [data-view=coach]{dis
     <section class="view" id="view-grid" hidden>
       <div class="grid" id="gridCards"></div>
     </section>
+    <section class="view" id="view-league" hidden><div id="lgTV"></div></section>
 
     <!-- ================= FIGHT ================= -->
     <section class="view" id="view-fight" hidden>
@@ -1147,7 +1212,7 @@ body.m-tv .top .tabs [data-view=card],body.m-tv .top .tabs [data-view=coach]{dis
     </section>
 
     <section class="view" id="view-coach" hidden>
-      <nav class="adm-tabs" id="admTabs"><button data-adm="mon" aria-selected="true">МОНИТОР</button><button data-adm="roster">БОЙЦЫ</button><button data-adm="groups">ГРУППЫ</button><button data-adm="sched">РАСПИСАНИЕ</button><button data-adm="fin">ФИНАНСЫ</button></nav>
+      <nav class="adm-tabs" id="admTabs"><button data-adm="mon" aria-selected="true">МОНИТОР</button><button data-adm="roster">БОЙЦЫ</button><button data-adm="groups">ГРУППЫ</button><button data-adm="wk">РАУНДЫ</button><button data-adm="league">ЛИГА</button><button data-adm="sched">РАСПИСАНИЕ</button><button data-adm="fin">ФИНАНСЫ</button></nav>
       <div class="coach">
         <div id="admBody" class="panel" hidden></div>
         <div class="c-ctrl">
@@ -1331,6 +1396,25 @@ class Training extends Emitter{
 }
 const train=new Training(),fight=new Session();fight.cfg={work:300,rest:60,rounds:3};fight.ids=[7,2];
 const inFight=id=>fight.ids.includes(id)&&fight.state!=='idle';
+// Конструктор раундов: таймер для всей группы (подготовка → работа/отдых × N, станции по кругу)
+class Workout extends Emitter{
+  constructor(){super();this.cfg={name:'Бокс · раунды',work:180,rest:60,rounds:6,prep:10,st:[]};this.rec={};this.reset()}
+  reset(){this.state='idle';this.round=0;this.phase='ready';this.elapsed=0;this.total=0;this.doneT=0;this.rec={};this.rest0=null;this.emit('state')}
+  active(){return this.state==='running'||this.state==='paused'}
+  start(){if(this.state==='idle'||this.state==='finished'){this.round=1;this.state='running';this.total=0;this.rec={};this._go(this.cfg.prep?'prep':'work');return}if(this.state==='paused'){this.state='running';this.emit('state')}}
+  pause(){if(this.state==='running'){this.state='paused';this.emit('state')}}
+  skip(){if(this.active())this._adv()}
+  _go(p){const from=this.phase;this.phase=p;this.elapsed=0;if(p==='done')this.doneT=this.total;this.emit('phase',{from,to:p,round:this.round})}
+  _adv(){if(this.phase==='prep')this._go('work');else if(this.phase==='work'){if(this.round>=this.cfg.rounds){this.state='finished';this._go('done')}else this._go(this.cfg.rest?'rest':'work'+(this.round++,''))}else if(this.phase==='rest'){this.round++;this._go('work')}}
+  dur(){return({prep:this.cfg.prep,work:this.cfg.work,rest:this.cfg.rest})[this.phase]||0}
+  tick(dt){if(this.state==='finished'){this.total+=dt;return}if(this.state!=='running')return;this.elapsed+=dt;this.total+=dt;if(this.elapsed>=this.dur())this._adv();else this.emit('tick')}
+  remaining(){return Math.max(0,this.dur()-this.elapsed)}
+  station(r){const s=this.cfg.st;return s.length&&r>0?s[(r-1)%s.length]:''}
+  totalPlan(){const c=this.cfg;return c.prep+c.rounds*c.work+(c.rounds-1)*c.rest}
+  label(){return({prep:'ПРИГОТОВИТЬСЯ',work:'РАБОТА',rest:'ОТДЫХ',ready:'ГОТОВ',done:'ЗАВЕРШЕНО'})[this.phase]+(this.state==='paused'?' · ПАУЗА':'')}
+  color(){return this.state==='paused'?'#a6a6a6':({prep:'#ffc93c',work:ZCOL[5],rest:ZCOL[2],ready:'#a6a6a6',done:'#e6e6e6'})[this.phase]}
+}
+const wk=new Workout();
 
 /* ---------- 2. Sources ---------- */
 // Симулятор: физиологически правдоподобная кривая, реагирует на фазы раунда.
@@ -1347,6 +1431,7 @@ class SimulatorSource extends Emitter{
       let target,k,work,rest;
       // в бою — фазы раундов; на тренировке — свой интервальный режим у каждого (станции, связки, отработка)
       if(inFight(a.id)){work=fight.state==='running'&&fight.phase==='work';rest=!work}
+      else if(wk.active()){work=wk.state==='running'&&wk.phase==='work';rest=!work}
       else{const cyc=150+a.id*9,on=((clock.t+a.id*37)%cyc)<cyc*.66;work=train.state==='running'&&on;rest=train.state!=='idle'&&!work}
       if(work){
         if(m.burst<=0&&Math.random()<.018)m.burst=10+Math.random()*22;
@@ -1573,7 +1658,7 @@ function simStrikes(){
     strikes.onActivity(id,clamp((ex?72:38)+(Math.random()-.5)*20-28*F,4,100));
     out.forEach(e=>LIVE?setTimeout(()=>strikes.onStrike(id,e),(e.t-clock.t)*1000):strikes.onStrike(id,e))})}
 fight.on('phase',e=>{if(e.to==='work'&&e.round===1)strikes.resetIds(fight.ids)});
-function step(){clock.t+=1;train.tick(1);fight.tick(1);if(hub.src===sim){sim.step();simStrikes()}metrics.updateCond();alerts.check()}
+function step(){clock.t+=1;train.tick(1);fight.tick(1);wk.tick(1);if(hub.src===sim){sim.step();simStrikes()}metrics.updateCond();alerts.check()}
 // предзаполнение демо: тренировка идёт ~19 минут; демо-бой Адам—Имран (3×3) уже завершён — экран БОЙ открывается со статистикой и свободным выбором пары
 train.start();
 fight.cfg={work:180,rest:60,rounds:3};
@@ -2175,6 +2260,7 @@ function buildCoach(){TB.innerHTML=ATHLETES.map(a=>`<tr data-id="${a.id}">
 function refreshSensorSelects(){TB.querySelectorAll('tr').forEach(tr=>{const s=$('.sens',tr);if(document.activeElement!==s)s.innerHTML=sensorOptions(+tr.dataset.id)})}
 hub.on('sensors',()=>ui.coachBuilt&&refreshSensorSelects());hub.on('bindings',()=>ui.coachBuilt&&refreshSensorSelects());
 function renderCoach(){
+  if(ADM.tab==='wk'){wkLive();return}if(ADM.tab==='league'){lgCoachLive();return}
   if(ADM.tab==='mon'&&innerWidth<=760){const B=$('#admBody');$('.coach').classList.add('admx');B.hidden=false;admMonMobile(B);return}
   if(!ui.coachBuilt)buildCoach();
   TB.querySelectorAll('tr').forEach(tr=>{const a=byId.get(+tr.dataset.id),m=metrics.get(a.id),st=metrics.status(m),z=m.hr?zoneOf(m.hr,a.hrMax):0,live=st==='live'||st==='stale';
@@ -2296,7 +2382,7 @@ function renderAdm(){const co=$('.coach'),B=$('#admBody');
   const x=ADM.tab!=='mon';
   if(!x){if(innerWidth<=760){co.classList.add('admx');B.hidden=false;admMonMobile(B)}else{co.classList.remove('admx');B.hidden=true;tickUI()}return}
   co.classList.add('admx');B.hidden=false;Body3D.setActive(false);
-  ({roster:admRoster,groups:admGroups,sched:admSched,fin:admFin})[ADM.tab](B)}
+  ({roster:admRoster,groups:admGroups,wk:admWk,league:admLeague,sched:admSched,fin:admFin})[ADM.tab](B)}
 // ---- мобильная сводка монитора: только смотреть, без выбора и назначений ----
 // ---- инфографика загрузки: сегодня против прошлых таких же дней недели (DEMO-история) ----
 const ATT={manual:new Set()};const igR=(id,k)=>{const x=Math.sin(id*12.9898+k*78.233)*43758.5453;return x-Math.floor(x)};
@@ -3346,7 +3432,7 @@ function records(id){const G=progSummary(id),D=G.D,S=cardStats(id),a=byId.get(id
    striker?['Самый быстрый удар',S.spd.toFixed(1),'м/с · оценка']:['Часов на ковре',Math.round(S.h),'ч'],['Серия недель подряд',streakWeeks(D),'нед.']]}
 const badge=(x,big)=>`<div class="m-bd ${x.ok?'ok':''} ${big?'big':''}"><div class="ring" style="--p:${x.p}"><svg viewBox="0 0 24 24">${ICO[x.i]}</svg></div><b>${x.t}</b>${big?`<small>${x.d}</small><span class="num">${x.ok?'получено':(x.dec?x.v.toFixed(1):x.v>=1e4?fmtK(x.v):x.v)+' / '+(x.g>=1e4?fmtK(x.g):x.g)+(x.u||'')}</span>`:''}</div>`;
 // --- экраны ---
-function mTPill(){const tp=document.getElementById('mTPill');if(tp){const fm=fight.state==='running'||fight.state==='paused';tp.style.setProperty('--pc',fm?'#ff3d52':train.color());tp.innerHTML=fm?`<span class="ph">БОЙ · Р${fight.round}</span><span class="num">${fmt(fight.remaining())}</span>`:`<span class="ph">${train.label()}</span><span class="num">${fmt(train.total)}</span>`}}
+function mTPill(){const tp=document.getElementById('mTPill');if(tp){const fm=fight.state==='running'||fight.state==='paused';tp.style.setProperty('--pc',fm?'#ff3d52':train.color());tp.innerHTML=!fm&&wk.active()?`<span class="ph" style="background:${wk.color()}">Р${wk.round}/${wk.cfg.rounds} · ${wk.phase==='rest'?'ОТДЫХ':wk.phase==='prep'?'ГОТОВЬСЯ':'РАБОТА'}</span><span class="num">${fmt(wk.remaining())}</span>`:fm?`<span class="ph">БОЙ · Р${fight.round}</span><span class="num">${fmt(fight.remaining())}</span>`:`<span class="ph">${train.label()}</span><span class="num">${fmt(train.total)}</span>`}}
 setInterval(()=>{if(MOB.on)mTPill()},1000);
 function renderMobile(){if(!MOB.on)return;mTPill();{const st=$('.fc-stage'),wr=$('.fc-wrap');[['#fCard',st],['#fcShareRow',st],['#fcEdit',wr]].forEach(([q,pp])=>{const e=$(q);if(e&&pp&&e.closest('#mobile'))pp.appendChild(e)})}const id=MOB.me,a=byId.get(id),C=CAB[id],P=PROF[id];cardId=id;
   $('#mAva').innerHTML=C.person.photo?`<img src="${C.person.photo}" alt="">`:esc(a.name[0]);
@@ -3417,7 +3503,7 @@ function arenaMobOv(){const st=$('#aStage');if(!st)return;let ov=st.querySelecto
    <div class="c br"><small>НАГРУЗКА</small><b class="num">${Math.round(m.trimp)}</b><em>TRIMP · РАСЧЁТ</em></div>
    <div class="c br" style="bottom:112px"><small>АКТИВНОСТЬ</small><b class="num">${Math.round(s.act)}</b><em>IMU · РАСЧЁТ</em></div>`}
 function mAch(a,C,P,B){const A=achievements(a.id),R=records(a.id);
-  secProgress(a,C);B.insertAdjacentHTML('afterbegin',`<div class="m-h1">Достижения <span>${A.filter(x=>x.ok).length} / ${A.length}</span></div><div class="m-bdl">${A.map(x=>badge(x,1)).join('')}</div>
+  secProgress(a,C);B.insertAdjacentHTML('afterbegin',mLeague(a)+`<div class="m-h1">Достижения <span>${A.filter(x=>x.ok).length} / ${A.length}</span></div><div class="m-bdl">${A.map(x=>badge(x,1)).join('')}</div>
    <div class="m-h1">Личные рекорды</div><div class="m-recs">${R.map(r=>`<div><small>${r[0]}</small><b class="num">${r[1]}</b><span>${r[2]}</span></div>`).join('')}</div>
    <div class="m-h1">Прогресс</div>`)}
 function mMe(a,C,P,B){
@@ -3445,17 +3531,147 @@ mq.matches&&applyMode();
 
 /* ---- shell ---- */
 function setView(v){ui.view=v;document.querySelectorAll('.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.view===v));
-  ['arena','grid','fight','card','coach'].forEach(k=>$('#view-'+k).hidden=k!==v);if(v==='card')renderCab();if(v==='arena'||v==='fight')Body3D.setView(v);else if(!(v==='coach'&&ADM.tab==='mon'))Body3D.setActive(false);
+  ['arena','grid','fight','league','card','coach'].forEach(k=>$('#view-'+k).hidden=k!==v);if(v==='card')renderCab();if(v==='arena'||v==='fight')Body3D.setView(v);else if(!(v==='coach'&&ADM.tab==='mon'))Body3D.setActive(false);
   ui.cycleStart=performance.now();tickUI();if(v==='coach')renderAlerts()}
 document.querySelectorAll('.tabs button').forEach(b=>b.addEventListener('click',()=>setView(b.dataset.view)));
 $('.club-logo').addEventListener('click',()=>setView('arena'));
 $('#fsBtn').addEventListener('click',()=>{const d=document.documentElement;(document.fullscreenElement?document.exitFullscreen():d.requestFullscreen?.())?.catch?.(()=>{})});
 document.addEventListener('click',()=>{try{navigator.wakeLock?.request('screen').catch(()=>{})}catch(e){}},{once:true});
 
+/* ===== Конструктор раундов: интервальный таймер для всего зала (TV + тренер + телефон) ===== */
+const WK_PRESETS=[
+  {name:'Бокс · раунды',work:180,rest:60,rounds:6,prep:10,st:[]},
+  {name:'MMA · спарринги',work:300,rest:60,rounds:4,prep:10,st:[]},
+  {name:'BJJ · позиционка',work:300,rest:60,rounds:6,prep:10,st:['Гард','Маунт','Спина','Сайд-контроль','Черепаха','Свободно']},
+  {name:'Муай-тай · лапы',work:180,rest:60,rounds:5,prep:10,st:['Лапы','Мешок','Клинч','Лапы','Тень']},
+  {name:'Борьба · схватки',work:120,rest:30,rounds:8,prep:10,st:[]},
+  {name:'Круговая · станции',work:45,rest:15,rounds:12,prep:10,st:['Мешки','Берпи','Канаты','Медбол','Скакалка','Планка']},
+  {name:'Табата',work:20,rest:10,rounds:8,prep:10,st:[]}];
+const wkFmt=s=>{s=Math.max(0,Math.round(s));return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')};
+const wkParse=v=>{v=String(v||'').trim();if(!v)return 0;if(v.includes(':')){const[a,b]=v.split(':');return(+a||0)*60+(+b||0)}return +v||0};
+let WK_SAVED=[];try{WK_SAVED=JSON.parse(localStorage.getItem('fp.wk.v1'))||[]}catch(e){}
+const saveWkSaved=()=>{try{localStorage.setItem('fp.wk.v1',JSON.stringify(WK_SAVED))}catch(e){}};
+const BEEP={ctx:null,on:true};
+function beep(f,d,n){if(!BEEP.on||MOB.on)return;try{BEEP.ctx=BEEP.ctx||new(window.AudioContext||window.webkitAudioContext)();const c=BEEP.ctx;if(c.state==='suspended')c.resume();
+  for(let i=0;i<(n||1);i++){const o=c.createOscillator(),g=c.createGain(),t=c.currentTime+i*(d+.12);o.type='square';o.frequency.value=f;
+    g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.22,t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g).connect(c.destination);o.start(t);o.stop(t+d+.03)}}catch(e){}}
+// восстановление в паузе: разница пульса в начале и в конце отдыха (РАСЧЁТ из измеренного пульса)
+wk.on('phase',e=>{
+  if(e.to==='rest'||e.to==='done'){wk.rest0={};ATHLETES.forEach(a=>{const m=metrics.get(a.id);if(m.hr&&metrics.status(m)==='live')wk.rest0[a.id]=m.hr})}
+  if(e.from==='rest'&&e.to==='work'&&wk.cfg.rest>=30&&wk.rest0){for(const id in wk.rest0){const m=metrics.get(+id);if(!m.hr||metrics.status(m)!=='live')continue;
+      (wk.rec[id]||(wk.rec[id]=[])).push({r:e.round-1,d:wk.rest0[id]-m.hr,s:wk.cfg.rest})}wk.rest0=null}
+  if(e.to==='work')beep(880,.55);else if(e.to==='rest')beep(520,.35,2);else if(e.to==='done')beep(660,.3,3);else if(e.to==='prep')beep(700,.15)
+  const bar=$('#wkBar');if(bar){bar.classList.remove('flash');void bar.offsetWidth;bar.classList.add('flash')}
+  if(e.to==='work'&&ui.view!=='fight'&&!MOB.on&&typeof banner==='function'&&(ui.view==='arena'||ui.view==='grid'))banner(e.round===1?'СТАРТ!':'РАУНД '+e.round)});
+wk.on('tick',()=>{const r=Math.ceil(wk.remaining());if(wk.phase==='work'&&r===10)beep(1000,.07,2);else if(r>0&&r<=3&&wk.phase!=='done')beep(1200,.06)});
+function wkDots(){return Array.from({length:wk.cfg.rounds},(_,i)=>{const r=i+1,done=r<wk.round||wk.state==='finished'||(r===wk.round&&wk.phase==='rest');return`<i class="${done?'d':r===wk.round&&wk.phase==='work'?'n':''}"></i>`}).join('')}
+function wkTV(){const bar=$('#wkBar');if(!bar)return;const show=(wk.active()||(wk.state==='finished'&&wk.total-wk.doneT<20))&&(ui.view==='arena'||ui.view==='grid'||ui.view==='league');
+  bar.hidden=!show;if(!show)return;const rem=wk.remaining(),dur=wk.dur()||1,st=wk.station(wk.round),nx=wk.phase==='rest'?wk.station(wk.round+1):'';
+  bar.style.setProperty('--pc',wk.color());bar.classList.toggle('hot',wk.state==='running'&&rem<=5&&rem>0&&wk.phase!=='done');
+  bar.innerHTML=`<div class="wk-l"><small>${esc(wk.cfg.name)}</small><b>${wk.phase==='prep'?'Приготовиться':wk.phase==='done'?'Тренировка по раундам завершена':st?(wk.phase==='rest'?'Далее: '+esc(nx||st):'Станция: '+esc(st)):wk.phase==='rest'?'Отдых · далее раунд '+(wk.round+1):'Работаем!'}</b></div>
+   <div class="wk-c"><span class="wk-ph">${wk.label()}</span><b class="num">${wk.phase==='done'?'✓':fmt(rem)}</b></div>
+   <div class="wk-r"><small>РАУНД</small><b class="num">${wk.round||'—'}<i>/${wk.cfg.rounds}</i></b><div class="wk-dots">${wkDots()}</div></div>
+   <i class="wk-pg" style="width:${wk.phase==='done'?100:Math.min(100,wk.elapsed/dur*100)}%"></i>`}
+function wkTimeline(){const c=wk.cfg,T=wk.totalPlan()||1,seg=[];if(c.prep)seg.push(['p',c.prep,'Подг.']);
+  for(let r=1;r<=c.rounds;r++){seg.push(['w',c.work,'Р'+r]);if(r<c.rounds&&c.rest)seg.push(['r',c.rest,''])}
+  let pos=null;if(wk.active()||wk.state==='finished'){let t=0;if(wk.phase==='prep')t=wk.elapsed;else if(wk.phase==='done')t=T;else{t=c.prep+(wk.round-1)*(c.work+c.rest)+(wk.phase==='rest'?c.work:0)+wk.elapsed}pos=Math.min(100,t/T*100)}
+  return`<div class="wk-tl">${seg.map(s=>`<i class="${s[0]}" style="flex:${s[1]}"><span>${s[2]}</span></i>`).join('')}${pos!=null?`<b style="left:${pos}%"></b>`:''}</div>`}
+function wkRecHTML(){const ids=Object.keys(wk.rec).map(Number).filter(id=>byId.get(id));
+  if(!ids.length)return`<div class="muted small">Появится после первой паузы ≥ 30 с: сколько пульс снизился за отдых у каждого бойца.</div>`;
+  const col=d=>d>=30?'#2fd27a':d>=20?'#3b9cff':'#ffc93c';
+  return`<div class="wk-rec">${ids.map(id=>{const a=byId.get(id),R=wk.rec[id],av=Math.round(R.reduce((q,x)=>q+x.d,0)/R.length),f=R[0].d,l=R[R.length-1].d;
+    return`<div class="wr"><span class="nm">${esc(display(a))}${u18Badge(a)}</span><span class="ch">${R.map(x=>`<i style="--c:${col(x.d)}" title="после раунда ${x.r}">−${Math.max(0,x.d)}</i>`).join('')}</span><b class="num" style="color:${col(av)}">−${Math.max(0,av)}</b><em>${R.length>1?(l<f-5?'медленнее ↓':l>f+5?'быстрее ↑':'стабильно'):''}</em></div>`}).join('')}</div>
+   <div class="muted small" style="margin-top:6px">уд/мин за паузу · РАСЧЁТ из измеренного пульса · помогает видеть динамику, не медицинский показатель</div>`}
+function wkLive(){const L=$('#wkLive');if(!L)return;
+  L.innerHTML=`<div class="wk-big" style="--pc:${wk.color()}"><span class="wk-ph">${wk.state==='idle'?'НЕ ЗАПУЩЕНА':wk.label()}</span><b class="num">${wk.state==='idle'?wkFmt(wk.cfg.work):wk.phase==='done'?'✓':fmt(wk.remaining())}</b>
+   <small>${wk.state==='idle'?'всего '+wkFmt(wk.totalPlan()):'Раунд '+(wk.round||'—')+' / '+wk.cfg.rounds+(wk.station(wk.round)&&wk.phase!=='done'?' · '+esc(wk.station(wk.round)):'')}</small></div>${wkTimeline()}`;
+  $('#wkGo').textContent=wk.state==='running'?'ПАУЗА':wk.state==='paused'?'ПРОДОЛЖИТЬ':'СТАРТ';$('#wkRecB').innerHTML=wkRecHTML()}
+function admWk(B){const c=wk.cfg,lock=wk.active();
+  B.innerHTML=`<div class="ph-title"><span class="label">Конструктор раундов</span><span class="muted small">таймер идёт на всех экранах зала и в телефонах бойцов</span></div>
+   <div class="wk-pre">${WK_PRESETS.map((p,i)=>`<button data-p="${i}" ${lock?'disabled':''}>${esc(p.name)}<small>${p.rounds}×${wkFmt(p.work)}${p.rest?' / '+wkFmt(p.rest):''}</small></button>`).join('')}${WK_SAVED.map((p,i)=>`<button data-s="${i}" class="own" ${lock?'disabled':''}>${esc(p.name)}<small>${p.rounds}×${wkFmt(p.work)} / ${wkFmt(p.rest)} · мой</small><u data-x="${i}" title="Удалить">×</u></button>`).join('')}</div>
+   <div class="wk-grid"><div>
+    <div class="fields wk-f">
+     <div class="field" style="grid-column:1/-1"><label>Название</label><input id="wkN" value="${esc(c.name)}" ${lock?'disabled':''}></div>
+     <div class="field"><label>Работа, м:сс</label><input id="wkW" inputmode="numeric" value="${wkFmt(c.work)}" ${lock?'disabled':''}></div>
+     <div class="field"><label>Отдых, м:сс</label><input id="wkR" inputmode="numeric" value="${wkFmt(c.rest)}" ${lock?'disabled':''}></div>
+     <div class="field"><label>Раундов</label><input id="wkC" type="number" min="1" max="30" value="${c.rounds}" ${lock?'disabled':''}></div>
+     <div class="field"><label>Подготовка, с</label><input id="wkP" type="number" min="0" max="60" value="${c.prep}" ${lock?'disabled':''}></div>
+     <div class="field" style="grid-column:1/-1"><label>Станции / задачи по раундам (по одной в строке, повторяются по кругу)</label><textarea id="wkS" rows="3" ${lock?'disabled':''}>${esc(c.st.join('\n'))}</textarea></div>
+    </div>
+    <div class="btnrow" style="margin-top:.6rem"><button class="btn primary" id="wkGo">СТАРТ</button><button class="btn" id="wkSk" ${lock?'':'disabled'}>ДАЛЕЕ ▸</button><button class="btn warn" id="wkRs">СБРОС</button><button class="btn" id="wkSv" ${lock?'disabled':''}>СОХРАНИТЬ ШАБЛОН</button></div>
+    <label class="wk-snd"><input type="checkbox" id="wkSnd" ${BEEP.on?'checked':''}> Звуковые сигналы на экранах зала (старт, отдых, последние 3 с)</label>
+   </div><div><div id="wkLive"></div><button class="btn" id="wkTV" style="margin-top:.6rem;width:100%">ПОКАЗАТЬ НА ЭКРАНЕ ЗАЛА →</button></div></div>
+   <div class="ph-title" style="margin-top:1rem"><span class="label">Восстановление в паузах</span><span class="muted small">по каждому бойцу, по раундам</span></div><div id="wkRecB"></div>`;
+  const read=()=>{c.name=$('#wkN').value.trim()||'Тренировка';c.work=Math.max(5,Math.min(1800,wkParse($('#wkW').value)));c.rest=Math.max(0,Math.min(600,wkParse($('#wkR').value)));
+    c.rounds=Math.max(1,Math.min(30,+$('#wkC').value||1));c.prep=Math.max(0,Math.min(60,+$('#wkP').value||0));c.st=$('#wkS').value.split('\n').map(s=>s.trim()).filter(Boolean).slice(0,30)};
+  const apply=p=>{Object.assign(c,JSON.parse(JSON.stringify(p)));admWk(B)};
+  B.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>apply(WK_PRESETS[+b.dataset.p]));
+  B.querySelectorAll('[data-s]').forEach(b=>b.onclick=e=>{if(e.target.dataset.x!=null){WK_SAVED.splice(+e.target.dataset.x,1);saveWkSaved();admWk(B);return}apply(WK_SAVED[+b.dataset.s])});
+  B.querySelectorAll('.wk-f input,.wk-f textarea').forEach(i=>i.onchange=()=>{read();wkLive()});
+  $('#wkGo').onclick=()=>{if(!wk.active()&&wk.state!=='paused')read();BEEP.on=$('#wkSnd').checked;
+    if(wk.state==='running')wk.pause();else{if(train.state!=='running')train.start();wk.start()}admWk(B)};
+  $('#wkSk').onclick=()=>{wk.skip();wkLive()};
+  $('#wkRs').onclick=()=>{wk.reset();admWk(B)};
+  $('#wkSv').onclick=()=>{read();WK_SAVED.push(JSON.parse(JSON.stringify(c)));saveWkSaved();admWk(B);toast('Шаблон сохранён')};
+  $('#wkSnd').onchange=e=>{BEEP.on=e.target.checked;if(BEEP.on)beep(880,.12)};
+  $('#wkTV').onclick=()=>{if(document.body.classList.contains('m-force-desk'))document.body.classList.add('m-tv');setView('arena')};
+  wkLive()}
+
+/* ===== Лига месяца: очки за посещения, нагрузку, задания и серии. Взрослые и U18 — отдельные таблицы ===== */
+const LG_RULE=[['att','Посещение',10,'#2fd27a','Посещения'],['load','Тренировка в норме нагрузки',5,'#ffc93c','Нагрузка'],['task','Выполненное задание тренера',15,'#3b9cff','Задания'],['str','Неделя без пропусков (≥3 трен.)',20,'#b48cff','Серии недель']];
+let LG_PZ=null;function lgPrizes(){if(!LG_PZ){try{LG_PZ=JSON.parse(localStorage.getItem('fp.lg.v1'))}catch(e){}
+  LG_PZ=LG_PZ||{adult:['Месяц абонемента бесплатно','Рашгард клуба','Персональная тренировка'],youth:['Месяц абонемента бесплатно','Футболка клуба','Капа с логотипом клуба']}}return LG_PZ}
+const lgMonth=()=>{const d=TODAY.getDate(),dim=new Date(TODAY.getFullYear(),TODAY.getMonth()+1,0).getDate();return{d,dim,left:dim-d,name:MN[TODAY.getMonth()]}};
+function leagueRows(){const M=lgMonth(),held=Math.max(1,Math.round((M.d-1)/7*3.3)),prevH=Math.max(0,held-3);
+  const rows=ATHLETES.filter(a=>!a.coach).map(a=>{const p=.55+.38*a.fit,m=metrics.get(a.id),st=metrics.status(m),C=CAB[a.id];
+    const v=k=>igR(a.id,k+50)<p&&!(a.absent&&k>=held-2);let vis=0,visP=0;for(let k=0;k<held;k++)if(v(k)){vis++;if(k<prevH)visP++}
+    const here=(!a.absent&&st!=='none')||ATT.manual.has(a.id),
+      ld=Math.min(vis,Math.round(vis*(.35+.5*a.fit)*(.8+.4*igR(a.id,7)))),ldT=here&&m.trimp>=settings.normTrimp?1:0,
+      tk=C.tasks.filter(t=>t.status==='done').length+Math.round(igR(a.id,9)*3*a.fit),
+      wks=Math.floor((M.d-1)/7);let sw=0;for(let w=0;w<wks;w++)if(igR(a.id,w+80)<p*.9&&!(a.absent&&w===wks-1))sw++;
+    const P={att:(vis+(here?1:0))*10,load:(ld+ldT)*5,task:tk*15,str:sw*20},tot=P.att+P.load+P.task+P.str,
+      prev=visP*10+Math.round(ld*visP/Math.max(1,vis))*5+Math.max(0,tk-1)*15+Math.max(0,sw-(wks?1:0))*20;
+    return{a,P,tot,prev,here,today:(here?10:0)+ldT*5,div:U18(a)?'youth':'adult'}});
+  ['adult','youth'].forEach(dv=>{const R=rows.filter(r=>r.div===dv);R.slice().sort((x,y)=>y.prev-x.prev||x.a.id-y.a.id).forEach((r,i)=>r.pp=i+1);
+    R.sort((x,y)=>y.tot-x.tot||x.a.id-y.a.id).forEach((r,i)=>r.pl=i+1)});
+  return rows}
+function lgTable(rows,dv,o){o=o||{};const R=rows.filter(r=>r.div===dv).sort((x,y)=>x.pl-y.pl),mx=Math.max(1,...R.map(r=>r.tot)),PZ=lgPrizes()[dv],MC=['#e8c35a','#cfd6dd','#d08a52'];
+  return`<div class="lg-t ${o.big?'big':''}"><div class="lg-h"><b>${dv==='youth'?'МОЛОДЁЖКА · U18':'ВЗРОСЛЫЕ'}</b><span>${R.length} бойцов</span></div>
+   ${R.map(r=>{const d=r.pp-r.pl,me=o.me===r.a.id,C=CAB[r.a.id];
+    return`<div class="lg-r${r.pl<=3?' top':''}${me?' me':''}" style="--mc:${MC[r.pl-1]||'#3a3a3a'}"><span class="pl num">${r.pl}</span>
+     <img src="${(C&&C.person.photo)||avatar(r.a.id)}" alt=""><span class="nm"><b>${esc(display(r.a))}${u18Badge(r.a)}</b>${r.pl<=3&&PZ[r.pl-1]?`<em>🏆 ${esc(PZ[r.pl-1])}</em>`:r.today?`<em class="td">сегодня +${r.today}</em>`:'<em> </em>'}</span>
+     <span class="bar">${LG_RULE.map(k=>`<i style="width:${r.P[k[0]]/mx*100}%;background:${k[3]}"></i>`).join('')}</span>
+     <b class="pt num">${r.tot}</b><span class="dl ${d>0?'up':d<0?'dn':''}">${d>0?'▲'+d:d<0?'▼'+(-d):'—'}</span></div>`}).join('')}</div>`}
+function lgHead(){const M=lgMonth();return`<div class="lg-top"><div><small>ЛИГА КЛУБА</small><b>${M.name} ${TODAY.getFullYear()}</b></div>
+  <div class="lg-mp"><span>до финала ${M.left} ${M.left%10===1&&M.left!==11?'день':(M.left%10>=2&&M.left%10<=4&&(M.left<12||M.left>14))?'дня':'дней'}</span><i><u style="width:${M.d/M.dim*100}%"></u></i></div>
+  <div class="lg-leg">${LG_RULE.map(k=>`<span><i style="background:${k[3]}"></i>${k[1]} <b>+${k[2]}</b></span>`).join('')}</div></div>`}
+function renderLeagueTV(){const H=$('#lgTV');if(!H)return;const rows=leagueRows(),
+  h=`${lgHead()}<div class="lg-cols">${lgTable(rows,'adult',{big:1})}${lgTable(rows,'youth',{big:1})}</div><div class="lg-note">Очки начисляются автоматически: посещение — по подключению датчика, нагрузка — по TRIMP, задания — после отметки тренера · история месяца DEMO</div>`;
+  if(H._h!==h){H.innerHTML=h;H._h=h}}
+function admLeague(B){const rows=leagueRows(),PZ=lgPrizes();
+  B.innerHTML=`${lgHead()}<div class="lg-cols" id="lgCo">${lgTable(rows,'adult')}${lgTable(rows,'youth')}</div>
+   <div class="ph-title" style="margin-top:1rem"><span class="label">Призы месяца</span><span class="muted small">видны бойцам и на экране зала</span></div>
+   <div class="lg-pz">${['adult','youth'].map(dv=>`<div><b>${dv==='youth'?'Молодёжка U18':'Взрослые'}</b>${[0,1,2].map(i=>`<label><span>${i+1}</span><input data-dv="${dv}" data-i="${i}" value="${esc(PZ[dv][i]||'')}"></label>`).join('')}</div>`).join('')}</div>
+   <div class="btnrow" style="margin-top:.7rem"><button class="btn primary" id="lgTVb">ПОКАЗАТЬ НА ЭКРАНЕ ЗАЛА →</button></div>
+   <div class="muted small" style="margin-top:.6rem">U18 соревнуются отдельно от взрослых. В рейтинг не входят тренеры. Призы не зависят от пульса: побеждает регулярность, а не «кто выше разогнал пульс».</div>`;
+  B.querySelectorAll('.lg-pz input').forEach(i=>i.onchange=()=>{PZ[i.dataset.dv][+i.dataset.i]=i.value.trim();try{localStorage.setItem('fp.lg.v1',JSON.stringify(PZ))}catch(e){}admLeague(B)});
+  $('#lgTVb').onclick=()=>{if(document.body.classList.contains('m-force-desk'))document.body.classList.add('m-tv');setView('league')}}
+function lgCoachLive(){const H=$('#lgCo');if(!H)return;const rows=leagueRows(),h=lgTable(rows,'adult')+lgTable(rows,'youth');if(H._h!==h){H.innerHTML=h;H._h=h}}
+function mLeague(a){const rows=leagueRows(),me=rows.find(r=>r.a.id===a.id);if(!me)return'';const R=rows.filter(r=>r.div===me.div).sort((x,y)=>x.pl-y.pl),up=R[me.pl-2],M=lgMonth(),PZ=lgPrizes()[me.div];
+  const show=R.filter(r=>r.pl<=3||r===me);
+  return`<div class="m-h1">Лига · ${M.name} <span>ещё ${M.left} дн.</span></div><div class="m-sec m-lg">
+   <div class="m-lg-me"><div><small>МОЁ МЕСТО${me.div==='youth'?' · U18':''}</small><b class="num">${me.pl}<i> из ${R.length}</i></b></div><div><small>ОЧКИ</small><b class="num">${me.tot}</b></div>
+    <div><small>${up?'ДО '+up.pl+'-ГО МЕСТА':'ЛИДЕР'}</small><b class="num" style="color:${up?'#ffc93c':'#2fd27a'}">${up?up.tot-me.tot+1:'🏆'}</b></div></div>
+   <div class="m-lg-bd">${LG_RULE.map(k=>`<div><i style="background:${k[3]}"></i><span>${k[4]} · +${k[2]}</span><b class="num">${me.P[k[0]]}</b></div>`).join('')}</div>
+   ${lgTable(rows.filter(r=>show.includes(r)),me.div,{me:a.id})}
+   ${PZ[0]?`<div class="muted small" style="margin-top:6px">🏆 Приз за 1 место: ${esc(PZ[0])}</div>`:''}</div>`}
+
 let lastCount=0;
 function tickUI(){if(MOB.on)return;
   const rp=$('#roundPill');rp.style.setProperty('--pc',train.color());
-  $('#rpText').textContent='ТРЕНИРОВКА';$('#rpPhase').textContent=train.label();$('#rpTime').textContent=fmt(train.total);
+  if(wk.active()){rp.style.setProperty('--pc',wk.color());$('#rpText').textContent='Р'+wk.round+'/'+wk.cfg.rounds;$('#rpPhase').textContent=wk.label();$('#rpTime').textContent=fmt(wk.remaining())}
+  else{$('#rpText').textContent='ТРЕНИРОВКА';$('#rpPhase').textContent=train.label();$('#rpTime').textContent=fmt(train.total)}
+  wkTV();if(ui.view==='league')renderLeagueTV();
   $('#clock').textContent=new Date().toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'});
   $('#flRate').textContent=`${hub.count-lastCount} пак/с · отклонено ${hub.rejected}`;lastCount=hub.count;
   if(ui.view==='arena'){renderArena();if(innerWidth<=760)arenaMobOv();const a=ATHLETES[ui.idx],m=metrics.get(a.id),live=m.hr&&metrics.status(m)!=='lost';
