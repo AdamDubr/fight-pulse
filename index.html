@@ -992,6 +992,40 @@ body.m-tv .top .tabs [data-view=card],body.m-tv .top .tabs [data-view=coach]{dis
   .lg-t.big .lg-r .nm b{font-size:.9rem}.lg-t.big .lg-r .pt{font-size:1.05rem}.lg-t.big .lg-r .pl{font-size:1rem}.lg-t.big .lg-r .nm em{font-size:.66rem}
   body.m-force-desk:not(.m-tv) .top .tabs [data-view=league]{display:none!important}
 }
+/* ---- v111: подписки ---- */
+.subs{margin-top:1rem}.subs .ph-title .tag{white-space:nowrap}
+.tiers{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.8rem}
+.tier{border:1px solid var(--line-2);border-radius:.7rem;padding:.9rem 1rem;background:linear-gradient(180deg,#141414,#0d0d0d);display:flex;flex-direction:column;gap:.5rem}
+.tier.tpro{border-color:#e8c35a55;background:radial-gradient(120% 80% at 100% 0%,#e8c35a1c,transparent 60%),linear-gradient(180deg,#151515,#0d0d0d)}
+.tier.on{box-shadow:0 0 0 2px var(--tc,#2fd27a) inset}.tier.tpro.on{--tc:#e8c35a}
+.t-h{display:flex;align-items:center;justify-content:space-between}.t-h b{font-family:var(--font-display);font-weight:900;letter-spacing:.16em;font-size:1.05rem}.tier.tpro .t-h b{color:#e8c35a}
+.t-cur{font-family:var(--font-display);font-weight:800;font-size:.62rem;letter-spacing:.14em;padding:.15rem .45rem;border-radius:.25rem;background:var(--tc,#2fd27a);color:#000}
+.t-p{font-family:var(--font-display);font-weight:900;font-size:1.9rem}.t-p small{font-size:.8rem;color:var(--muted);font-weight:600}
+.tier ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.3rem;font-size:.85rem;flex:1}.tier li{padding-left:1.2rem;position:relative}.tier li::before{content:'✓';position:absolute;left:0;color:#2fd27a;font-weight:800}
+.tier .btnrow{display:flex;gap:.4rem;flex-wrap:wrap}.tier .btnrow .btn{flex:1}.tier>.btn{flex:none;margin-top:auto}.t-off{font-style:normal;color:#2fd27a;font-weight:800;margin-left:.3rem}.tier-st{font-size:.8rem;color:var(--muted)}
+.svcs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.8rem}
+.svc{border:1px solid var(--line-2);border-radius:.7rem;padding:.85rem .9rem;background:#101010;display:flex;flex-direction:column;gap:.55rem}.svc.act{border-color:#2fd27a66}
+.sv-h{display:flex;align-items:center;gap:.45rem;flex-wrap:wrap}.sv-h span{font-size:1.2rem}.sv-h b{font-family:var(--font-display);font-weight:800;font-size:.98rem}
+.sv-on{font-style:normal;margin-left:auto;font-family:var(--font-display);font-weight:800;font-size:.62rem;letter-spacing:.1em;padding:.15rem .45rem;border-radius:.25rem;background:#2fd27a;color:#000}
+.svc p{margin:0;font-size:.8rem;color:var(--muted);line-height:1.35}
+.sv-pr b{font-family:var(--font-display);font-weight:900;font-size:1.6rem}.sv-pr span{color:var(--muted);font-size:.8rem;margin-left:.25rem}
+.sv-packs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.35rem}
+.sv-packs button{display:flex;flex-direction:column;align-items:flex-start;gap:.05rem;background:var(--ink);border:1px solid var(--line-2);border-radius:.45rem;padding:.4rem .5rem;color:var(--fg);cursor:pointer;text-align:left}
+.sv-packs button b{font-size:.72rem;font-weight:700}.sv-packs button span{font-family:var(--font-display);font-weight:900;font-size:1.05rem}.sv-packs button small{font-size:.62rem;color:var(--muted)}
+.sv-packs button.on,.sv-coach.on{border-color:#e8c35a;background:#e8c35a14}
+.sv-tr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.35rem}
+.sv-coach{display:flex;gap:.45rem;align-items:center;background:var(--ink);border:1px solid var(--line-2);border-radius:.45rem;padding:.35rem .45rem;color:var(--fg);cursor:pointer;text-align:left;min-width:0}
+.sv-coach img{width:2rem;height:2rem;border-radius:50%;object-fit:cover;flex:none;background:#222}.sv-coach span{min-width:0;display:flex;flex-direction:column}.sv-coach b{font-size:.82rem}.sv-coach small{font-size:.62rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sv-next{font-size:.78rem;color:var(--muted)}.sv-next b{color:var(--fg)}.svc>.btn,.svc .btnrow .btn{width:100%;margin-top:auto}
+.sv-u18{font-size:.8rem;color:#ffc93c;margin-bottom:.6rem}
+.sv-sum{display:flex;align-items:baseline;gap:.6rem;flex-wrap:wrap;margin-top:.9rem;padding:.7rem .9rem;border:1px dashed var(--line-2);border-radius:.6rem}.sv-sum span{font-weight:700}.sv-sum b{font-family:var(--font-display);font-weight:900;font-size:1.4rem;color:#e8c35a}.sv-sum small{color:var(--muted);font-size:.75rem}
+.m-sch{display:flex;flex-direction:column;gap:6px}.m-sch div{display:grid;grid-template-columns:110px 52px 1fr;gap:8px;align-items:center;font-size:14px;padding:6px 2px;border-bottom:1px solid #1d1d1d}.m-sch b{text-transform:capitalize}.m-sch span{font-weight:800}.m-sch em{font-style:normal;color:var(--muted)}
+.m-lock{text-align:center;padding:28px 10px}.m-lock-i{font-size:42px}.m-lock h2{font-family:var(--font-display);font-weight:900;font-size:22px;margin:8px 0}.m-lock p{color:var(--muted);font-size:14px;margin:0 0 14px}
+.m-lock ul{list-style:none;padding:0;margin:0 0 16px;text-align:left;display:flex;flex-direction:column;gap:6px;font-size:14px}.m-lock li{padding-left:22px;position:relative}.m-lock li::before{content:'✓';position:absolute;left:4px;color:#e8c35a;font-weight:900}
+.m-lock .btnrow{display:flex;gap:8px}.m-lock .btn{flex:1}.m-lock-tv{margin-top:14px;background:none;border:0;color:#8fb4ff;font-size:14px;font-weight:700}
+.m-upsell{font-size:14px;line-height:1.3;display:flex;align-items:center;gap:10px;width:100%;margin:10px 0;padding:12px;border-radius:12px;border:1px solid #e8c35a66;background:#e8c35a12;color:var(--fg);text-align:left}.m-upsell b{color:#e8c35a}.m-upsell span{margin-left:auto;font-weight:900}
+@media (max-width:1100px){.svcs{grid-template-columns:1fr}}
+@media (max-width:760px){.tiers{grid-template-columns:1fr}.tier .btnrow{flex-direction:column}}
 </style>
 
 <div id="fpGate" style="position:fixed;inset:0;z-index:99999;background:#050505;display:none;align-items:center;justify-content:center;font-family:Montserrat,system-ui,sans-serif;color:#eee;padding:24px">
@@ -1214,7 +1248,7 @@ body.m-tv .top .tabs [data-view=card],body.m-tv .top .tabs [data-view=coach]{dis
           <div class="cab-head">
             <div class="cab-who" id="cabWho"></div>
             <nav class="cab-tabs" id="cabTabs" role="tablist">
-              <button data-sec="card">Карточка</button><button data-sec="profile">Профиль и фото</button><button data-sec="sub">Абонемент</button>
+              <button data-sec="card">Карточка</button><button data-sec="profile">Профиль и фото</button><button data-sec="sub">Абонемент и подписки</button>
               <button data-sec="health">Здоровье</button><button data-sec="nut">Питание</button><button data-sec="tasks">Задания тренера</button><button data-sec="progress">Прогресс</button>
             </nav>
             <div class="cab-role" role="radiogroup" aria-label="Смотреть как"><span>Смотреть как</span><button data-role="athlete">Спортсмен</button><button data-role="coach">Тренер</button></div>
@@ -3194,8 +3228,8 @@ function secSub(a,C){const s=C.sub,left=dLeft(s.end),tot=Math.max(1,Math.round((
     <div class="muted small">Оплата в продукте — через кассу клуба или онлайн-эквайринг; здесь только демонстрация.</div></div>
    <div class="panel"><div class="ph-title"><span class="label">История оплат</span></div>
     <table class="ptab"><thead><tr><th>Дата</th><th>Тариф</th><th>Сумма</th></tr></thead><tbody>${s.pays.map(p=>`<tr><td>${fmtD(p.d)}</td><td>${esc(p.what)}</td><td class="num">${p.sum.toLocaleString('ru-RU')} ₺</td></tr>`).join('')}</tbody></table>
-    <div class="ph-title" style="margin-top:1rem"><span class="label">Подписка Pro спортсмена</span></div>
-    <div class="muted">${PROF[a.id].pro?'<i class="pro">PRO</i> активна: регалии на карточке, показ карточки перед боем, полная история прогресса.':'Не подключена. Pro открывает регалии на карточке, показ карточки перед боем и полную историю прогресса.'}</div></div></div>`;
+    </div></div>`;
+  CB().insertAdjacentHTML('beforeend',subsHTML(a,C));bindSubs(a,C,CB().querySelector('#subsBox'));
   $('#sRenew').onclick=()=>{const base=left<0?TODAY:new Date(s.end),days=s.plan.includes('3 мес')?90:s.plan.includes('Годовой')?365:30;
     s.pays.unshift({d:isoD(TODAY),sum:s.price,what:s.plan});if(left<0)s.start=isoD(TODAY);s.end=isoD(new Date(base.getTime()+days*DAY));s.used=0;saveCab();renderCab();toast('Абонемент продлён (демо)')};
   $('#sFreeze').onclick=()=>{s.frozen=!s.frozen;saveCab();renderCab()}}
@@ -3464,6 +3498,7 @@ function renderMobile(){if(!MOB.on)return;mTPill();{const st=$('.fc-stage'),wr=$
   $('#mNav').querySelectorAll('button').forEach(b=>b.setAttribute('aria-current',b.dataset.t===MOB.tab?'page':'false'));
   const od=C.tasks.filter(t=>t.status!=='done').length;$('#mTB').hidden=!od;$('#mTB').textContent=od;
   const B=$('#mBody');B.className='mt-'+MOB.tab;if(MOB.tab!=='live')Body3D.setActive(false);
+  if(!P.pro&&(MOB.tab==='live'||MOB.tab==='ach'||(MOB.tab==='tasks'&&!(subsOf(a).plan||subsOf(a).nut)))){mLocked(a,C,P,B,{live:'Тренировка',ach:'Рост и прогресс',tasks:'Задания и питание'}[MOB.tab]);return}
   ({home:mHome,live:mLive,ach:mAch,tasks:()=>{B.innerHTML='';secTasks(a,C);const nb=document.createElement('div');nb.className='m-sec m-nutt';nb.innerHTML='<div class="m-h">Питание от тренера <button id="mNutShare">поделиться ↗</button></div><div id="mNutT"></div>';B.appendChild(nb);const pr=cab.role;cab.role='athlete';ADM.el=nb.querySelector('#mNutT');try{secNut(a,C,P)}finally{ADM.el=null;cab.role=pr}nb.insertAdjacentHTML('beforeend',shopList(C));nb.insertAdjacentHTML('beforeend',`<div class="muted small" style="margin-top:8px">${esc(a.name)} · назначил ${esc(C.nut.by||COACH)} · ${fmtD(C.nut.upd)} · FIGHT PULSE</div>`);const nutBuild=async()=>{const bt=$('#mNutShare');if(bt)bt.style.visibility='hidden';try{return await html2canvas(nb,{backgroundColor:'#0a0a0a',scale:2,logging:false})}finally{if(bt)bt.style.visibility=''}};$('#mNutShare').onclick=()=>shareShot('nut:'+a.id,'pitanie-'+a.name+'.jpg','Питание от тренера',nutBuild);reprep('nut:'+a.id,nutBuild,800)},me:mMe})[MOB.tab](a,C,P,B)}
 function shopList(C){const n=C.nut,days=n.week?Object.values(n.week):[n.meals||[]],map=new Map();
   days.forEach(ML=>(ML||[]).forEach(ml=>(ml.items||[]).forEach(it=>{const m=String(it).trim().match(/^(.*?)\s([\d.,]+)\s?(г|кг|шт|л|мл)\.?$/i);
@@ -3478,7 +3513,7 @@ function mHome(a,C,P,B){const m=metrics.get(a.id),S=cardStats(a.id),A=achievemen
   B.innerHTML=`<div class="m-hello"><small>${new Date().toLocaleDateString('ru-RU',{weekday:'long',day:'numeric',month:'long'})}</small><h1>Привет, ${esc(a.nick)}</h1></div>
    ${alerts.map(x=>`<button class="m-alert ${x[0]}" data-go="${x[2]}">${x[1]} <span>→</span></button>`).join('')}
    <div id="mCardSlot" class="m-cardslot"></div><button class="btn primary m-share" id="mShare">ПОДЕЛИТЬСЯ КАРТОЧКОЙ ↗</button>
-   ${live?`<button class="m-live" data-tab="live" style="--zc:${ZCOL[z]}"><span class="dot"></span><div><small>${m.mode==='fight'?'ИДЁТ БОЙ':'ИДЁТ ТРЕНИРОВКА'}</small><b class="num">${m.hr}<em>уд/мин</em></b></div><div class="r"><b class="num">${Math.round(m.kcal)}</b><small>ккал</small></div><div class="r"><b class="num">${m.reserve}%</b><small>запас сил</small></div></button>`:''}
+   ${!P.pro?`<button class="m-upsell">🔒 <div><b>FREE</b> · личная телеметрия, прогресс и лига — в PRO</div><span>${eur(FP_PRICE.m)}</span></button>`+mSchedHTML():live?`<button class="m-live" data-tab="live" style="--zc:${ZCOL[z]}"><span class="dot"></span><div><small>${m.mode==='fight'?'ИДЁТ БОЙ':'ИДЁТ ТРЕНИРОВКА'}</small><b class="num">${m.hr}<em>уд/мин</em></b></div><div class="r"><b class="num">${Math.round(m.kcal)}</b><small>ккал</small></div><div class="r"><b class="num">${m.reserve}%</b><small>запас сил</small></div></button>`:''}
    <div class="m-sec"><div class="m-h">Достижения <span>${got} из ${A.length}</span><button data-tab="ach">все →</button></div>
     <div class="m-bds">${A.map(x=>badge(x)).join('')}</div>
     ${next?`<div class="m-next"><div class="ring" style="--p:${next.p}"><svg viewBox="0 0 24 24">${ICO[next.i]}</svg></div><div><small>БЛИЖЕ ВСЕГО</small><b>${next.t}</b><span>${next.d} · ${Math.round(next.p*100)}%</span></div></div>`:''}</div>
@@ -3487,6 +3522,7 @@ function mHome(a,C,P,B){const m=metrics.get(a.id),S=cardStats(a.id),A=achievemen
    <div class="m-sec"><div class="m-h">Рост за 12 недель <button data-tab="ach">подробно →</button></div><canvas class="m-chart" id="mC1"></canvas><div class="muted small">Восстановление пульса HRR60 · расчёт</div></div>
    <div class="m-sec m-subrow"><button class="m-tile" data-go="sub"><small>АБОНЕМЕНТ</small><b>${left<0?'истёк':dd(left)}</b><span>${esc(C.sub.plan)}</span></button><button class="m-tile" data-go="health"><small>ДОПУСК</small><b>${cl<0?'истёк':'до '+fmtD(C.med.certUntil).slice(0,5)}</b><span>${C.med.inj.some(t=>dLeft(t.until)>=0)?'есть ограничения':'без ограничений'}</span></button></div>`;
   lineChart($('#mC1'),progData(a.id).map(x=>x.hrr),{c:'#3b9cff'});
+  if(!P.pro){const SS=subsOf(a);B.querySelectorAll('.m-sec').forEach(x=>{const t=x.querySelector('.m-h');if(t&&/Достижения|Рост за|Задания/.test(t.textContent)&&!(/Задания/.test(t.textContent)&&(SS.plan||SS.nut)))x.remove()})}
   mWire(B);{const sl=$('#mCardSlot');if(sl){sl.appendChild($('#fCard'));renderCard()}}$('#mShare').onclick=()=>shareCard();reprep('card:'+a.id,cardBuild(a.id),700)}
 function mWire(B){B.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>{MOB.tab=b.dataset.tab;MOB.sub=null;renderMobile()}));
   B.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>{MOB.tab='me';MOB.sub=b.dataset.go;renderMobile()}))}
@@ -3541,10 +3577,10 @@ function mMe(a,C,P,B){
    <div class="m-list">
     <button data-s="card"><b>Карточка бойца</b><span>рекорд, пояса, медали, статистика</span></button>
     <button data-s="profile"><b>Личные данные и фото</b><span>${C.person.photo?'фото загружено':'фото не загружено'} · согласия</span></button>
-    <button data-s="sub"><b>Абонемент</b><span>${esc(C.sub.plan)} · ${left<0?'истёк':'ещё '+dd(left)}</span></button>
+    <button data-s="sub"><b>Абонемент и подписки</b><span>${esc(C.sub.plan)} · ${left<0?'истёк':'ещё '+dd(left)} · тариф ${P.pro?'PRO':'FREE'}</span></button>
     <button data-s="health"><b>Здоровье</b><span>биометрия · допуск ${cl<0?'истёк':'до '+fmtD(C.med.certUntil)}</span></button>
     <button data-s="nut"><b>Питание</b><span>${esc(C.nut.mode)}${C.nut.cut?` · взвешивание ${fmtD(C.nut.cut.by)}`:''}</span></button>
-    ${P.pro?'':'<button data-s="card" class="m-pro"><b>Подключить Pro</b><span>регалии на карточке, показ перед боем, вся история</span></button>'}</div>
+    ${P.pro?'':`<button data-s="sub" class="m-pro"><b>Подключить PRO · ${eur(FP_PRICE.m)}/мес</b><span>телеметрия, прогресс, лига, задания, регалии</span></button>`}</div>
    <div class="m-h1">Демо</div>
    <div class="m-list"><label class="m-who"><b>Войти как</b><select id="mWho">${ATHLETES.map(x=>`<option value="${x.id}" ${x.id===a.id?'selected':''}>${esc(x.name)} · ${esc(x.disc)}</option>`).join('')}</select></label></div>`;
   B.querySelectorAll('[data-s]').forEach(b=>b.addEventListener('click',()=>{MOB.sub=b.dataset.s;renderMobile();$('#mMain').scrollTop=0}));
@@ -3691,6 +3727,76 @@ function mLeague(a){const rows=leagueRows(),me=rows.find(r=>r.a.id===a.id);if(!m
    ${lgTable(rows.filter(r=>show.includes(r)),me.div,{me:a.id})}
    ${PZ[0]?`<div class="muted small" style="margin-top:6px">🏆 Приз за 1 место: ${esc(PZ[0])}</div>`:''}</div>`}
 
+/* ===== Подписки: тариф приложения FREE / PRO + услуги клуба и тренера (цены — средние по Европе, €) ===== */
+const FP_PRICE={m:9.99,y:89};
+const SVC={pt:{name:'Индивидуальная тренировка',ico:'🥊',desc:'60 минут один на один с тренером: техника, разбор боёв, подготовка к турниру',packs:[[1,55],[5,250],[10,450]]},
+  plan:{name:'План тренировок',ico:'📋',price:79,desc:'программа на 4 недели под цель и график, задания приходят в приложение, корректировка каждую неделю'},
+  nut:{name:'План питания',ico:'🥗',price:45,desc:'рацион и КБЖУ под цель и вес, список покупок на неделю, корректировка раз в 2 недели'}};
+const TRAINERS=[{id:1,name:'Адам',role:'Тренер',spec:'MMA · BJJ · ударная техника',exp:'15 лет в единоборствах'},{id:5,name:'Андрей',role:'Тренер',spec:'Бокс · ОФП · снижение веса',exp:'8 лет тренерской практики'}];
+const eur=v=>'€'+(Number.isInteger(v)?v:v.toFixed(2)).toString().replace('.',',');
+const trn=id=>TRAINERS.find(t=>t.id===id)||TRAINERS[0];
+const trPhoto=id=>(CAB[id]&&CAB[id].person.photo)||avatar(id);
+const FREE_F=['Расписание клуба','Экраны зала: ARENA, все участники, бой, лига','Карточка бойца (базовая)'];
+const PRO_F=['Пульс и зоны в реальном времени · ИЗМЕРЕНО','Нагрузка TRIMP, запас сил, восстановление · РАСЧЁТ','История тренировок и прогресс по неделям','Рейтинг FP, лига, достижения, рекорды','Задания тренера и питание в приложении','Регалии на карточке, показ перед боем, «Поделиться»'];
+function subsOf(a){const C=CAB[a.id];if(!C.subs){const P=PROF[a.id],r=igR(a.id,33),per=a.id%3?'m':'y';
+    C.subs={fp:P.pro?{tier:'pro',per,end:dAdd(per==='m'?1+(a.id*7)%29:30+(a.id*37)%320),auto:true}:{tier:'free'},pt:null,plan:null,nut:null};
+    if(a.id===1){C.subs.fp={tier:'pro',per:'y',end:dAdd(214),auto:true};C.subs.nut={coach:5,end:dAdd(12),auto:true};C.subs.pt={coach:5,left:3,pack:5,next:dAdd(2)}}
+    else if(P.pro&&r<.45)C.subs.plan={coach:r<.22?1:5,end:dAdd(4+a.id%22),auto:true};
+    if(a.id!==1&&P.pro&&igR(a.id,34)<.3)C.subs.nut={coach:igR(a.id,35)<.5?1:5,end:dAdd(3+a.id%18),auto:true}}
+  if(!!PROF[a.id].pro!==(C.subs.fp.tier==='pro'))C.subs.fp=PROF[a.id].pro?{tier:'pro',per:'m',end:dAdd(30),auto:true}:{tier:'free'};
+  return C.subs}
+const isPro=id=>!!PROF[id].pro;
+function subsHTML(a,C){const S=subsOf(a),pro=S.fp.tier==='pro',ro=cab.role==='coach'&&!MOB.on,u18=U18(a);
+  const lft=e=>{const d=dLeft(e);return d<0?'истекла':plural(d,'день','дня','дней').replace(/^/,d+' ')};
+  const coachSel=(k,cur)=>`<div class="sv-tr">${TRAINERS.map(t=>`<button class="sv-coach${cur===t.id?' on':''}" data-k="${k}" data-c="${t.id}" ${ro?'disabled':''}><img src="${trPhoto(t.id)}" alt=""><span><b>${esc(t.name)}</b><small>${esc(t.spec)}</small></span></button>`).join('')}</div>`;
+  const tier=(id,name,price,feat,on)=>`<div class="tier${on?' on':''}${id==='pro'?' tpro':''}"><div class="t-h"><b>${name}</b>${on?'<span class="t-cur">ВАШ ТАРИФ</span>':''}</div>
+    <div class="t-p">${price}</div><ul>${feat.map(f=>`<li>${f}</li>`).join('')}</ul>${id==='free'&&!on?`<button class="btn" data-fp="free" ${ro?'disabled':''}>ПЕРЕЙТИ НА FREE</button>`:''}
+    ${id==='pro'&&!on?`<div class="btnrow"><button class="btn primary" data-fp="m" ${ro?'disabled':''}>${eur(FP_PRICE.m)} / МЕС</button><button class="btn" data-fp="y" ${ro?'disabled':''}>${eur(FP_PRICE.y)} / ГОД <i class="t-off">−26%</i></button></div>`:''}
+    ${id==='pro'&&on?`<div class="tier-st">${S.fp.per==='y'?'Годовая':'Месячная'} · до ${fmtD(S.fp.end)} · ${S.fp.auto?'автопродление':'<b style="color:#ffc93c">без продления</b>'}</div><button class="btn" data-fpauto="1" ${ro?'disabled':''}>${S.fp.auto?'ОТМЕНИТЬ АВТОПРОДЛЕНИЕ':'ВКЛЮЧИТЬ АВТОПРОДЛЕНИЕ'}</button>`:''}</div>`;
+  const svcCard=k=>{const D=SVC[k],s=S[k];
+    if(k==='pt'){const pk=s?s.pack:5;return`<div class="svc${s?' act':''}"><div class="sv-h"><span>${D.ico}</span><b>${D.name}</b>${s?`<em class="sv-on">ОСТАЛОСЬ ${s.left} ИЗ ${s.pack}</em>`:''}</div><p>${D.desc}</p>
+      <div class="sv-packs">${D.packs.map(p=>`<button data-pack="${p[0]}" class="${p[0]===pk?'on':''}" ${ro?'disabled':''}><b>${p[0]===1?'Разовая':p[0]+' тренировок'}</b><span>${eur(p[1])}</span>${p[0]>1?`<small>${eur(Math.round(p[1]/p[0]))} за занятие</small>`:'<small>60 мин</small>'}</button>`).join('')}</div>
+      ${coachSel('pt',s?s.coach:1)}${s&&s.next?`<div class="sv-next">Ближайшая: <b>${fmtD(s.next)} · 18:00</b> · тренер ${esc(trn(s.coach).name)}</div>`:''}
+      <button class="btn primary" data-buy="pt" ${ro?'disabled':''}>${s&&s.left>0?'ДОКУПИТЬ ПАКЕТ':'КУПИТЬ И ЗАПИСАТЬСЯ'}</button></div>`}
+    return`<div class="svc${s?' act':''}"><div class="sv-h"><span>${D.ico}</span><b>${D.name}</b>${s?`<em class="sv-on">АКТИВНО · ${lft(s.end)}</em>`:''}</div><p>${D.desc}</p>
+      <div class="sv-pr"><b>${eur(D.price)}</b><span>/ месяц</span></div>${coachSel(k,s?s.coach:(k==='nut'?5:1))}
+      ${s?`<div class="sv-next">Тренер <b>${esc(trn(s.coach).name)}</b> · до ${fmtD(s.end)} · ${s.auto?'автопродление':'без продления'}</div><div class="btnrow"><button class="btn" data-auto="${k}" ${ro?'disabled':''}>${s.auto?'ОТМЕНИТЬ ПРОДЛЕНИЕ':'ВКЛЮЧИТЬ ПРОДЛЕНИЕ'}</button></div>`
+        :`<button class="btn primary" data-buy="${k}" ${ro?'disabled':''}>ПОДКЛЮЧИТЬ</button>`}</div>`};
+  const mon=(pro?(S.fp.per==='y'?FP_PRICE.y/12:FP_PRICE.m):0)+(S.plan&&S.plan.auto?SVC.plan.price:0)+(S.nut&&S.nut.auto?SVC.nut.price:0);
+  return`<div class="subs" id="subsBox">
+   <div class="ph-title"><span class="label">Тариф FIGHT PULSE</span><span class="tag">DEMO · цены средние по Европе</span></div>
+   <div class="tiers">${tier('free','FREE','€0',FREE_F,!pro)}${tier('pro','PRO',`${eur(FP_PRICE.m)}<small> / мес</small>`,PRO_F,pro)}</div>
+   <div class="ph-title" style="margin-top:1.1rem"><span class="label">Услуги клуба и тренеров</span><span class="muted small">оплачиваются отдельно от абонемента и тарифа</span></div>
+   ${u18?`<div class="sv-u18">${u18Badge(a)} Покупку услуг для несовершеннолетнего подтверждает законный представитель. Весогонка в планах для U18 не назначается.</div>`:''}
+   <div class="svcs">${['pt','plan','nut'].map(svcCard).join('')}</div>
+   <div class="sv-sum"><span>Ежемесячно по подпискам</span><b class="num">${eur(Math.round(mon*100)/100)}</b><small>без абонемента клуба и разовых тренировок</small></div></div>`}
+function bindSubs(a,C,host){const S=subsOf(a),P=PROF[a.id],h=host||document;
+  const pick={pt:{pack:S.pt?S.pt.pack:5,coach:S.pt?S.pt.coach:1},plan:{coach:S.plan?S.plan.coach:1},nut:{coach:S.nut?S.nut.coach:5}};
+  const re=()=>{saveCab();saveProf();renderCab()};
+  h.querySelectorAll('[data-fp]').forEach(b=>b.onclick=()=>{const v=b.dataset.fp;if(v==='free'){S.fp={tier:'free'};P.pro=false;toast('Тариф FREE: телеметрия и прогресс скрыты')}
+    else{S.fp={tier:'pro',per:v,end:dAdd(v==='y'?365:30),auto:true};P.pro=true;toast(`PRO подключён (демо) · ${eur(FP_PRICE[v])}`)}re()});
+  h.querySelectorAll('[data-fpauto]').forEach(b=>b.onclick=()=>{S.fp.auto=!S.fp.auto;re()});
+  h.querySelectorAll('.sv-coach').forEach(b=>b.onclick=()=>{const k=b.dataset.k,c=+b.dataset.c;pick[k].coach=c;if(S[k]&&k!=='pt'){S[k].coach=c;re();toast('Тренер изменён: '+trn(c).name);return}
+    b.parentElement.querySelectorAll('.sv-coach').forEach(x=>x.classList.toggle('on',x===b))});
+  h.querySelectorAll('[data-pack]').forEach(b=>b.onclick=()=>{pick.pt.pack=+b.dataset.pack;b.parentElement.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b))});
+  h.querySelectorAll('[data-buy]').forEach(b=>b.onclick=()=>{const k=b.dataset.buy;
+    if(k==='pt'){const p=SVC.pt.packs.find(x=>x[0]===pick.pt.pack);S.pt={coach:pick.pt.coach,pack:p[0],left:(S.pt?S.pt.left:0)+p[0],next:dAdd(2)};S.pt.pack=Math.max(p[0],S.pt.left);toast(`Оплачено ${eur(p[1])} (демо) · запись к тренеру ${trn(pick.pt.coach).name}`)}
+    else{S[k]={coach:pick[k].coach,end:dAdd(30),auto:true};
+      if(k==='plan')C.tasks.push({id:Date.now(),from:trn(pick[k].coach).name,text:'План тренировок на 4 недели: неделя 1 — 3 тренировки + 1 ОФП',due:dAdd(7),created:isoD(TODAY),status:'new',reply:''});
+      toast(`${SVC[k].name}: подключено (демо) · ${eur(SVC[k].price)}/мес · тренер ${trn(pick[k].coach).name}`)}re()});
+  h.querySelectorAll('[data-auto]').forEach(b=>b.onclick=()=>{const s=S[b.dataset.auto];s.auto=!s.auto;re()})}
+/* мобильная версия: FREE видит расписание и экраны зала, остальное — под замком */
+function mSchedHTML(){if(typeof schedInit==='function')schedInit();const out=[];
+  for(let d=0;d<7&&out.length<6;d++){const dt=new Date(TODAY.getTime()+d*DAY),dw=dt.getDay();
+    SCHED.classes.filter(c=>c.dow.includes(dw)).sort((x,y)=>x.time.localeCompare(y.time)).forEach(c=>{if(out.length<6)out.push({dt,c})})}
+  return`<div class="m-h1">Расписание клуба</div><div class="m-sec m-sch">${out.map(o=>`<div><b>${o.dt.toDateString()===TODAY.toDateString()?'Сегодня':o.dt.toLocaleDateString('ru-RU',{weekday:'short',day:'numeric',month:'short'})}</b><span class="num">${o.c.time}</span><em>${esc(o.c.disc)}</em></div>`).join('')}</div>`}
+function mLocked(a,C,P,B,what){B.innerHTML=`<div class="m-lock"><div class="m-lock-i">🔒</div><h2>${what} — в тарифе PRO</h2><p>На тарифе FREE доступны расписание и экраны зала. PRO открывает вашу личную телеметрию и прогресс.</p>
+  <ul>${PRO_F.map(f=>`<li>${f}</li>`).join('')}</ul>
+  <div class="btnrow"><button class="btn primary" data-fp="m">PRO · ${eur(FP_PRICE.m)} / мес</button><button class="btn" data-fp="y">${eur(FP_PRICE.y)} / год</button></div>
+  <button class="m-lock-tv" id="mLockTV">Смотреть экраны зала →</button></div>`;
+  bindSubs(a,C,B);$('#mLockTV').onclick=()=>$('#mNav [data-t=tv]').click()}
+
+document.addEventListener('click',e=>{if(e.target.closest('.m-upsell')){MOB.tab='me';MOB.sub='sub';renderMobile();const mm=$('#mMain');if(mm)mm.scrollTop=0}});
 let lastCount=0;
 function tickUI(){if(MOB.on)return;
   const rp=$('#roundPill');rp.style.setProperty('--pc',train.color());
