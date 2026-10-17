@@ -1035,6 +1035,7 @@ body.m-tv .top .tabs [data-view=card],body.m-tv .top .tabs [data-view=coach]{dis
   <input id="fpGateI" type="password" autocomplete="off" placeholder="Код доступа" style="width:100%;box-sizing:border-box;padding:14px;border-radius:10px;border:1px solid #333;background:#111;color:#fff;font-size:17px;text-align:center;letter-spacing:.15em">
   <button style="margin-top:12px;width:100%;padding:14px;border:0;border-radius:10px;background:#e8c35a;color:#000;font-weight:800;letter-spacing:.12em;font-size:14px">ВОЙТИ</button>
   <div id="fpGateE" style="color:#ff4562;font-size:13px;min-height:18px;margin-top:10px"></div>
+  <div style="color:#8a8a8a;font-size:12px;margin-top:22px">Нет кода? Напишите: Адам · <a href="https://t.me/adamdubr" target="_blank" rel="noopener" style="color:#e8c35a;text-decoration:none">Telegram @adamdubr</a></div>
  </form></div>
 <script>
 /* Доступ по коду — только на публичном хостинге (github.io). OK — SHA-256 разрешённых кодов: можно выдать отдельный код каждому клиенту. */
@@ -3019,7 +3020,7 @@ function cabDemo(a){const id=a.id,r=x=>((Math.sin(id*12.9898+x*78.233)*43758.545
     {id:904,from:COACH,reply:'',text:'Взвешивание каждое утро натощак, запись в дневник веса',due:dAdd(28),created:dAdd(-12),status:'work'},
     {id:905,from:COACH,reply:'',text:'Верх тела: 4 силовые в неделю без осевой нагрузки на ноги',due:dAdd(14),created:dAdd(-6),status:'work'},
     {id:906,from:COACH,reply:'',text:'МРТ-контроль колена и консультация врача',due:dAdd(30),created:dAdd(-2),status:'new'});
-  return{person:{fio:a.name+' '+['Алиев','Хасанов','Гаджиев','Ибрагимов','Смирнов','Юсупов','Магомедов','Абдуллаев','Петров','Соколов','Козлов','Волков','Морозов','Новиков','Орлов','Киселёв','Макаров','Захаров','Белов','Романов','Хасани'][id-1]||'—',dob:`${2026-a.age}-${String(1+id%12).padStart(2,'0')}-${String(1+id%27).padStart(2,'0')}`,phone:'+90 5•• ••• •• '+(10+id*7),email:a.name.toLowerCase().replace(/[^a-zа-я]/g,'')+'@mail.demo',
+  return{person:{fio:id===1?a.name:a.name+' '+['Алиев','Хасанов','Гаджиев','Ибрагимов','Смирнов','Юсупов','Магомедов','Абдуллаев','Петров','Соколов','Козлов','Волков','Морозов','Новиков','Орлов','Киселёв','Макаров','Захаров','Белов','Романов','Хасани'][id-1]||'—',dob:`${2026-a.age}-${String(1+id%12).padStart(2,'0')}-${String(1+id%27).padStart(2,'0')}`,phone:'+90 5•• ••• •• '+(10+id*7),email:a.name.toLowerCase().replace(/[^a-zа-я]/g,'')+'@mail.demo',
       city:'Анталия',emName:a.age<18?'Мама (законный представитель)':'Брат',emPhone:'+90 5•• ••• •• '+(40+id),photo:null},
     sub:{plan:pl[0],start:dAdd(endOff-pl[1]),end:dAdd(endOff),limit:pl[2],used:pl[2]?Math.min(pl[2],8+id%5):12+id*2,frozen:false,price:pl[3],
       pays:[{d:dAdd(endOff-pl[1]),sum:pl[3],what:pl[0]},{d:dAdd(endOff-pl[1]*2),sum:pl[3],what:pl[0]}]},

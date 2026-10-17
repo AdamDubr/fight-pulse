@@ -5,4 +5,4 @@
 
 Открыть: https://adamdubr.github.io/fight-pulse/
 
-Контакт: Telegram @adamdubr
+Контакт: Адам · Telegram @adamdubr
