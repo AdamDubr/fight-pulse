@@ -622,7 +622,7 @@ table{font-size:.8rem}
  .top>*{order:2}
  .top .brand{order:0;flex:0 1 auto;min-width:0}
  #roundPill{order:1;margin-left:auto;font-size:.74rem;letter-spacing:.04em;padding:.22rem .55rem;gap:.45rem;white-space:nowrap}
- #roundPill #rpText{display:none} #view-arena #aLeft,#view-arena #aRight,#aStage .st-round,#aStage .st-note{display:none!important} #view-arena .arena{display:flex!important;flex-direction:column;gap:.6rem;height:auto!important} #aStage{order:0;height:470px!important;min-height:470px;flex:none!important;width:100%} #view-arena .a-charts,#view-arena .a-strip{order:1}
+ #roundPill #rpText{display:none} body:not(.m-on){margin:0!important} #app{padding-left:8px!important;padding-right:8px!important} #view-arena #aLeft,#view-arena #aRight,#aStage .st-round,#aStage .st-note{display:none!important} #view-arena .arena{display:flex!important;flex-direction:column;gap:.6rem;height:auto!important} #aStage{order:0;height:470px!important;min-height:470px;flex:none!important;width:100%} #view-arena .a-charts,#view-arena .a-strip{order:1}
  #aStage .mh-ov{display:block!important}#aStage .mh-ov .c small{font-size:11.5px;letter-spacing:.1em}#aStage .mh-ov .c b{font-size:19px}#aStage .mh-ov .c b.xl{font-size:36px}#aStage .mh-ov .c em{font-size:12px}#aStage .mh-ov .mz{font-size:11.5px;padding:2px 5px}#aStage .mh-ov .c{max-width:36%}#aStage .mh-ov .tl,#aStage .mh-ov .bl{left:8px}#aStage .mh-ov .tr,#aStage .mh-ov .br{right:8px}#aStage .mh-ov .bl,#aStage .mh-ov .br{bottom:44px}#aStage .mh-ov .sens{font-size:14px}#aStage .mh-ov .sens .u18{font-size:10px} body:not(.m-on) *{scrollbar-width:none} body:not(.m-on) *::-webkit-scrollbar{display:none;width:0;height:0} .adm-tabs{position:sticky;top:0;z-index:30;background:var(--bg,#0a0a0a);padding:.6rem 0 .5rem;margin-top:.2rem;box-shadow:0 8px 14px -10px #000} .top .tabs{order:3;flex:1 1 100%;width:100%;flex-wrap:nowrap;justify-content:space-between} .top .tabs button{flex:1 1 auto;padding:.38rem .2rem;font-size:.66rem;letter-spacing:.04em;white-space:nowrap;text-align:center} #demoBadge,#clock,#fsBtn{display:none!important} #mobBtn{order:1;font-size:0;padding:.28rem .5rem;margin-left:.3rem}#mobBtn::before{content:'‹ НАЗАД';font-size:.68rem;font-weight:700;letter-spacing:.06em} .top .brand .by{display:none!important} .top .brand::after{content:'DEMO';margin-left:.45rem;font-size:.62rem;font-weight:700;letter-spacing:.08em;color:#e8c35a;border:1px dashed #e8c35a99;border-radius:.3rem;padding:.12rem .35rem;align-self:center} .top .brand{display:flex;align-items:center}
  #roundPill .ph{font-size:.6rem;padding:.1rem .4rem}
  #roundPill .num{font-size:.85rem}
@@ -702,7 +702,7 @@ body.m-on #mobile{display:flex;flex-direction:column;position:fixed;inset:0;back
 body.m-on.m-frame{background:#0d0d0d}
 body.m-on.m-frame #mobile{inset:auto;left:50%;top:50%;width:390px;height:844px;transform:translate(-50%,-50%);border-radius:46px;border:10px solid #1f1f1f;box-shadow:0 0 0 2px #3a3a3a,0 2rem 4rem rgba(0,0,0,.7);overflow:hidden}
 body.m-on.m-frame::after{content:'Предпросмотр мобильной версии · обновите страницу, чтобы выйти';position:fixed;left:0;right:0;bottom:12px;text-align:center;color:#555;font-size:17px}
-.m-top{display:flex;align-items:center;gap:.6rem;padding:calc(env(safe-area-inset-top,0px) + 12px) 16px 10px;border-bottom:1px solid var(--line)}
+.m-top{display:flex;align-items:center;gap:.6rem;padding:calc(env(safe-area-inset-top,0px) + 12px) 8px 10px;border-bottom:1px solid var(--line)}
 .m-logo{height:26px}
 #mobile .mh-ov .c small{font-size:11.5px;letter-spacing:.1em}#mobile .mh-ov .c b{font-size:19px}#mobile .mh-ov .c b.xl{font-size:36px}#mobile .mh-ov .c em{font-size:12px}
 #mobile .mh-ov .mz{font-size:11.5px;padding:2px 5px;letter-spacing:.06em}#mobile .mh-ov .c{max-width:36%}#mobile .mh-ov .tl,#mobile .mh-ov .bl{left:8px}#mobile .mh-ov .tr,#mobile .mh-ov .br{right:8px}
@@ -794,7 +794,7 @@ body.m-on.m-frame::after{content:'Предпросмотр мобильной в
 #mobile .mh-ov .sens:not([style*="top:20px"]){display:none}#mobile .mh-ov .sens[style*="top:20px"]{top:6px!important}.mh-ov .mh-name{display:flex;justify-content:center;align-items:baseline;gap:.3em;white-space:nowrap;letter-spacing:.06em}.mh-ov .mh-nm{color:#fff;font-size:15px;font-weight:900;font-style:italic;letter-spacing:.04em;text-transform:uppercase;margin-right:.25em}.mh-ov .mh-name .u18{font-size:9px}#mobile .mh-ov .tl,#mobile .mh-ov .tr{top:34px!important}.mh-ov .c{margin-top:0!important}#mobile .mh-ov .c,#aStage .mh-ov .c{max-width:42%!important}#mobile .mh-ov .c em,#aStage .mh-ov .c em{white-space:nowrap}#aStage .mh-ov .sens.mh-name{top:6px}#mobile .mh-ov .bl,#mobile .mh-ov .br{bottom:6px!important}#mobile .mh-ov .c[style*="bottom:138px"]{bottom:128px!important}#aStage .mh-ov .bl,#aStage .mh-ov .br{bottom:6px!important}#aStage .mh-ov .c[style*="bottom:112px"]{bottom:128px!important}#aStage .mh-ov .tl,#aStage .mh-ov .tr{top:34px!important}.m-top .demo{font-size:15px;padding:2px 5px}
 .m-ava{margin-left:auto;width:36px;height:36px;border-radius:50%;overflow:hidden;background:#262626;border:1px solid #444;font-weight:800;color:var(--muted);padding:0}.m-ava img{width:100%;height:100%;object-fit:cover}
 .m-main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
-#mBody{padding:14px 16px 24px;display:flex;flex-direction:column;gap:14px}
+#mBody{padding:12px 8px 24px;display:flex;flex-direction:column;gap:14px}
 .m-nav{display:grid;grid-template-columns:repeat(7,1fr);border-top:1px solid var(--line);background:#0a0a0a;padding:6px 4px calc(env(safe-area-inset-bottom,0px) + 6px)}
 .m-nav button{position:relative;background:none;border:0;color:#6d6d6d;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:9.8px;font-weight:600;padding:4px 0;min-width:0;letter-spacing:-.02em}
 .m-me>div>small{display:block;margin-top:.15rem}.m-me .rt-badge{display:inline-block!important;white-space:nowrap!important;font-size:.85em}.m-me .rt-badge b{display:inline!important;font-size:1.2em}
@@ -2982,13 +2982,17 @@ async function shareImg(cv,name,title,blob){name=name.replace(/\.png$/i,'.jpg');
   $('#shmX').onclick=()=>{m.hidden=true};m.onclick=e=>{if(e.target===m)m.hidden=true};
   const sb=$('#shmS');if(sb)sb.onclick=()=>{navigator.share({files:[file],title}).catch(e=>{if(e&&e.name!=='AbortError')toast('Удерживайте картинку, чтобы сохранить')})}}
 // карточка готовится заранее — тогда нажатие сразу открывает системное «Поделиться» (жест не теряется)
-const CSH={id:null,blob:null,cv:null,busy:false};
-async function prepCard(id){if(CSH.busy||(CSH.id===id&&CSH.blob))return;CSH.busy=true;try{const pc=cardId;cardId=id;const cv=await cardCanvas();cardId=pc;CSH.cv=cv;CSH.blob=await toJpeg(cv);CSH.id=id}catch(e){}finally{CSH.busy=false}}
-function shareCard(){const a2=byId.get(cardId),name=('fight-pulse-'+a2.name+'.jpg').replace(/\s+/g,'-'),title='FIGHT PULSE — карточка бойца';
-  if(CSH.id===cardId&&CSH.blob){const f=window.File?new File([CSH.blob],name,{type:'image/jpeg'}):null;
-    if(f&&navigator.canShare&&navigator.canShare({files:[f]})){navigator.share({files:[f],title}).catch(e=>{if(e&&e.name!=='AbortError')shareImg(CSH.cv,name,title,CSH.blob)});return}
-    shareImg(CSH.cv,name,title,CSH.blob);return}
-  toast('Готовлю изображение карточки…');CSH.id=null;prepCard(cardId).then(()=>{if(CSH.blob)shareImg(CSH.cv,name,title,CSH.blob);else toast('Не удалось подготовить картинку')})}
+const SHC={};
+async function prepShot(key,build){if(SHC[key]&&(SHC[key].busy||SHC[key].blob))return;SHC[key]={busy:true};try{const cv=await build();SHC[key]={cv,blob:await toJpeg(cv)}}catch(e){delete SHC[key]}}
+function reprep(key,build,ms){delete SHC[key];clearTimeout(reprep['t'+key]);reprep['t'+key]=setTimeout(()=>prepShot(key,build),ms||700)}
+function shareShot(key,name,title,build){name=name.replace(/\.png$/i,'.jpg').replace(/\s+/g,'-');const c=SHC[key];
+  if(c&&c.blob){const f=window.File?new File([c.blob],name,{type:'image/jpeg'}):null;
+    if(f&&navigator.canShare&&navigator.canShare({files:[f]})){navigator.share({files:[f],title}).catch(e=>{if(e&&e.name!=='AbortError')shareImg(c.cv,name,title,c.blob)});return}
+    shareImg(c.cv,name,title,c.blob);return}
+  toast('Готовлю изображение…');prepShot(key,build).then(()=>{const c2=SHC[key];if(c2&&c2.blob)shareImg(c2.cv,name,title,c2.blob);else toast('Не удалось подготовить картинку')})}
+const cardBuild=id=>async()=>{const pc=cardId;cardId=id;try{return await cardCanvas()}finally{cardId=pc}};
+function prepCard(id){return prepShot('card:'+id,cardBuild(id))}
+function shareCard(){const id=cardId,a2=byId.get(id);shareShot('card:'+id,'fight-pulse-'+a2.name+'.jpg','FIGHT PULSE — карточка бойца',cardBuild(id))}
 $('#fcShare').addEventListener('click',()=>shareCard());
 function toast(t){let el=$('#toast');if(!el){el=document.createElement('div');el.id='toast';document.body.appendChild(el)}el.textContent=t;el.classList.add('on');clearTimeout(toast.tm);toast.tm=setTimeout(()=>el.classList.remove('on'),2600)}
 // --- прогресс: 12 недель (DEMO-история + сегодняшняя тренировка из системы) ---
@@ -3256,11 +3260,11 @@ function secProgress(a,C){const G=progSummary(a.id),D=G.D,striker=!/BJJ|Борь
    <div class="muted small">«Стандартная нагрузка» — одинаковая разминка в начале тренировки; если пульс на ней снижается, выносливость растёт. Это расчётные оценки, не медицинские показатели.</div></div>`;
   lineChart($('#pc1'),D.map(x=>x.hrStd),{c:'#2fd27a'});lineChart($('#pc2'),D.map(x=>x.hrr),{c:'#3b9cff'});lineChart($('#pc3'),D.map(x=>x.trimp),{c:'#ffc93c'});
   lineChart($('#pc4'),D.map(x=>striker?x.spd:x.kcal),{c:'#ff8a3d',dec:striker});
-  $('#pShare').onclick=async()=>{const btn=$('#pShare');try{toast('Готовлю изображение…');const pan=btn.closest('.panel');btn.style.visibility='hidden';
-    const c2=await html2canvas(pan,{backgroundColor:'#0a0a0a',scale:2,logging:false});btn.style.visibility='';const pc=cardId;cardId=a.id;const c1=await cardCanvas();cardId=pc;
-    const pad=40,W=Math.max(c1.width,c2.width)+pad*2,cv=document.createElement('canvas');cv.width=W;cv.height=c1.height+c2.height+pad*3;const x=cv.getContext('2d');
-    x.fillStyle='#0a0a0a';x.fillRect(0,0,W,cv.height);x.drawImage(c1,(W-c1.width)/2,pad);x.drawImage(c2,(W-c2.width)/2,pad*2+c1.height);
-    shareImg(cv,('fight-pulse-progress-'+a.name+'.png').replace(/\s+/g,'-'),'FIGHT PULSE — прогресс')}catch(e){btn.style.visibility='';toast('Не удалось: '+e.message)}}}
+  const progBuild=async()=>{const btn=$('#pShare'),pan=btn.closest('.panel');btn.style.visibility='hidden';let c2;try{c2=await html2canvas(pan,{backgroundColor:'#0a0a0a',scale:2,logging:false})}finally{btn.style.visibility=''}
+    const c1=await cardBuild(a.id)();const pad=40,W=Math.max(c1.width,c2.width)+pad*2,cv=document.createElement('canvas');cv.width=W;cv.height=c1.height+c2.height+pad*3;const x=cv.getContext('2d');
+    x.fillStyle='#0a0a0a';x.fillRect(0,0,W,cv.height);x.drawImage(c1,(W-c1.width)/2,pad);x.drawImage(c2,(W-c2.width)/2,pad*2+c1.height);return cv};
+  $('#pShare').onclick=()=>shareShot('prog:'+a.id,'fight-pulse-progress-'+a.name+'.jpg','FIGHT PULSE — прогресс',progBuild);
+  if(MOB.on)reprep('prog:'+a.id,progBuild,900)}
 function wrapImg(src){return new Promise(r=>{if(!src)return r(null);const i=new Image();i.onload=()=>r(i);i.onerror=()=>r(null);i.src=src})}
 async function openShare(a,C,G,striker){const cv=$('#shCanvas'),x=cv.getContext('2d'),W=1080,H=1350;
   const [mas,word,ph]=await Promise.all([wrapImg($('.st-mascot').src),wrapImg($('.club-logo').src),wrapImg(C.person.photo)]);
@@ -3348,7 +3352,7 @@ function renderMobile(){if(!MOB.on)return;mTPill();{const st=$('.fc-stage'),wr=$
   $('#mNav').querySelectorAll('button').forEach(b=>b.setAttribute('aria-current',b.dataset.t===MOB.tab?'page':'false'));
   const od=C.tasks.filter(t=>t.status!=='done').length;$('#mTB').hidden=!od;$('#mTB').textContent=od;
   const B=$('#mBody');B.className='mt-'+MOB.tab;if(MOB.tab!=='live')Body3D.setActive(false);
-  ({home:mHome,live:mLive,ach:mAch,tasks:()=>{B.innerHTML='';secTasks(a,C);const nb=document.createElement('div');nb.className='m-sec m-nutt';nb.innerHTML='<div class="m-h">Питание от тренера <button id="mNutShare">поделиться ↗</button></div><div id="mNutT"></div>';B.appendChild(nb);const pr=cab.role;cab.role='athlete';ADM.el=nb.querySelector('#mNutT');try{secNut(a,C,P)}finally{ADM.el=null;cab.role=pr}nb.insertAdjacentHTML('beforeend',shopList(C));nb.insertAdjacentHTML('beforeend',`<div class="muted small" style="margin-top:8px">${esc(a.name)} · назначил ${esc(C.nut.by||COACH)} · ${fmtD(C.nut.upd)} · FIGHT PULSE</div>`);$('#mNutShare').onclick=async()=>{const bt=$('#mNutShare');try{toast('Готовлю изображение…');bt.style.visibility='hidden';const cv=await html2canvas(nb,{backgroundColor:'#0a0a0a',scale:2,logging:false});bt.style.visibility='';shareImg(cv,('pitanie-'+a.name+'.png').replace(/\s+/g,'-'),'Питание от тренера')}catch(e){bt.style.visibility='';toast('Не удалось: '+e.message)}}},me:mMe})[MOB.tab](a,C,P,B)}
+  ({home:mHome,live:mLive,ach:mAch,tasks:()=>{B.innerHTML='';secTasks(a,C);const nb=document.createElement('div');nb.className='m-sec m-nutt';nb.innerHTML='<div class="m-h">Питание от тренера <button id="mNutShare">поделиться ↗</button></div><div id="mNutT"></div>';B.appendChild(nb);const pr=cab.role;cab.role='athlete';ADM.el=nb.querySelector('#mNutT');try{secNut(a,C,P)}finally{ADM.el=null;cab.role=pr}nb.insertAdjacentHTML('beforeend',shopList(C));nb.insertAdjacentHTML('beforeend',`<div class="muted small" style="margin-top:8px">${esc(a.name)} · назначил ${esc(C.nut.by||COACH)} · ${fmtD(C.nut.upd)} · FIGHT PULSE</div>`);const nutBuild=async()=>{const bt=$('#mNutShare');if(bt)bt.style.visibility='hidden';try{return await html2canvas(nb,{backgroundColor:'#0a0a0a',scale:2,logging:false})}finally{if(bt)bt.style.visibility=''}};$('#mNutShare').onclick=()=>shareShot('nut:'+a.id,'pitanie-'+a.name+'.jpg','Питание от тренера',nutBuild);reprep('nut:'+a.id,nutBuild,800)},me:mMe})[MOB.tab](a,C,P,B)}
 function shopList(C){const n=C.nut,days=n.week?Object.values(n.week):[n.meals||[]],map=new Map();
   days.forEach(ML=>(ML||[]).forEach(ml=>(ml.items||[]).forEach(it=>{const m=String(it).trim().match(/^(.*?)\s([\d.,]+)\s?(г|кг|шт|л|мл)\.?$/i);
     if(!m){const k=String(it).trim();if(!map.has(k))map.set(k,{n:k,q:0,u:''});return}
@@ -3371,7 +3375,7 @@ function mHome(a,C,P,B){const m=metrics.get(a.id),S=cardStats(a.id),A=achievemen
    <div class="m-sec"><div class="m-h">Рост за 12 недель <button data-tab="ach">подробно →</button></div><canvas class="m-chart" id="mC1"></canvas><div class="muted small">Восстановление пульса HRR60 · расчёт</div></div>
    <div class="m-sec m-subrow"><button class="m-tile" data-go="sub"><small>АБОНЕМЕНТ</small><b>${left<0?'истёк':dd(left)}</b><span>${esc(C.sub.plan)}</span></button><button class="m-tile" data-go="health"><small>ДОПУСК</small><b>${cl<0?'истёк':'до '+fmtD(C.med.certUntil).slice(0,5)}</b><span>${C.med.inj.some(t=>dLeft(t.until)>=0)?'есть ограничения':'без ограничений'}</span></button></div>`;
   lineChart($('#mC1'),progData(a.id).map(x=>x.hrr),{c:'#3b9cff'});
-  mWire(B);{const sl=$('#mCardSlot');if(sl){sl.appendChild($('#fCard'));renderCard()}}$('#mShare').onclick=()=>shareCard();setTimeout(()=>{if(MOB.on&&MOB.tab==='home')prepCard(a.id)},700)}
+  mWire(B);{const sl=$('#mCardSlot');if(sl){sl.appendChild($('#fCard'));renderCard()}}$('#mShare').onclick=()=>shareCard();reprep('card:'+a.id,cardBuild(a.id),700)}
 function mWire(B){B.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>{MOB.tab=b.dataset.tab;MOB.sub=null;renderMobile()}));
   B.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>{MOB.tab='me';MOB.sub=b.dataset.go;renderMobile()}))}
 function mLive(a,C,P,B){const m=metrics.get(a.id),st=metrics.status(m),live=m.hr&&st!=='lost',z=live?zoneOf(m.hr,a.hrMax):0,cd=COND[m.lvl],fm=m.mode==='fight',s=strikes.get(a.id),tot=m.zs.reduce((x,y)=>x+y,0)||1;
@@ -3417,7 +3421,7 @@ function mAch(a,C,P,B){const A=achievements(a.id),R=records(a.id);
    <div class="m-h1">Прогресс</div>`)}
 function mMe(a,C,P,B){
   if(MOB.sub){const back=`<button class="m-back" id="mBack">‹ Профиль</button>`;
-    if(MOB.sub==='card'){B.innerHTML=back;B.appendChild($('#fCard'));renderCard();B.appendChild($('#fcShareRow'));B.appendChild($('#fcEdit'));renderEdit()}
+    if(MOB.sub==='card'){B.innerHTML=back;B.appendChild($('#fCard'));renderCard();B.appendChild($('#fcShareRow'));B.appendChild($('#fcEdit'));renderEdit();reprep('card:'+a.id,cardBuild(a.id),700)}
     else{B.innerHTML='';({profile:secProfile,sub:secSub,health:secHealth,nut:secNut})[MOB.sub](a,C,P);B.insertAdjacentHTML('afterbegin',back)}
     $('#mBack').onclick=()=>{MOB.sub=null;renderMobile()};return}
   const left=dLeft(C.sub.end),cl=dLeft(C.med.certUntil);
