@@ -795,8 +795,9 @@ body.m-on.m-frame::after{content:'Предпросмотр мобильной в
 .m-ava{margin-left:auto;width:36px;height:36px;border-radius:50%;overflow:hidden;background:#262626;border:1px solid #444;font-weight:800;color:var(--muted);padding:0}.m-ava img{width:100%;height:100%;object-fit:cover}
 .m-main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
 #mBody{padding:14px 16px 24px;display:flex;flex-direction:column;gap:14px}
-.m-nav{display:grid;grid-template-columns:repeat(6,1fr);border-top:1px solid var(--line);background:#0a0a0a;padding:6px 4px calc(env(safe-area-inset-bottom,0px) + 6px)}
-.m-nav button{position:relative;background:none;border:0;color:#6d6d6d;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;font-weight:600;padding:4px 0}
+.m-nav{display:grid;grid-template-columns:repeat(7,1fr);border-top:1px solid var(--line);background:#0a0a0a;padding:6px 4px calc(env(safe-area-inset-bottom,0px) + 6px)}
+.m-nav button{position:relative;background:none;border:0;color:#6d6d6d;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:9.8px;font-weight:600;padding:4px 0;min-width:0;letter-spacing:-.02em}
+.m-me>div>small{display:block;margin-top:.15rem}.m-me .rt-badge{display:inline-block!important;white-space:nowrap!important;font-size:.85em}.m-me .rt-badge b{display:inline!important;font-size:1.2em}
 .m-nav [data-t=club]{color:#8a7430}.m-nav [data-t=club] svg{filter:drop-shadow(0 0 6px #e8c35a44)}
 .m-nav svg{width:24px;height:24px;fill:currentColor}.m-nav button[aria-current="page"]{color:#fff}
 .m-badge{position:absolute;top:0;right:calc(50% - 20px);font-style:normal;font-size:15px;font-weight:800;background:#ff3d52;color:#fff;border-radius:9px;min-width:17px;height:17px;display:grid;place-items:center;padding:0 4px}
@@ -1210,6 +1211,7 @@ body.m-on .modal-box canvas{height:auto;width:100%}
     <button data-t="ach"><svg viewBox="0 0 24 24"><path d="M7 3h10v3h4v3a5 5 0 0 1-5 5 5 5 0 0 1-3 2.6V19h4v2H7v-2h4v-2.4A5 5 0 0 1 8 14a5 5 0 0 1-5-5V6h4zm0 5H5v1a3 3 0 0 0 2 2.8zm10 0v3.8A3 3 0 0 0 19 9V8z"/></svg>Рост</button>
     <button data-t="tasks"><svg viewBox="0 0 24 24"><path d="M5 3h14v18H5zm3 4v2h8V7zm0 4v2h8v-2zm0 4v2h5v-2z"/></svg>Задания<i class="m-badge" id="mTB" hidden></i></button>
     <button data-t="me"><svg viewBox="0 0 24 24"><path d="M12 12a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9zm-8 9c0-4.4 3.6-7 8-7s8 2.6 8 7z"/></svg>Профиль</button>
+    <button data-t="tv" title="Экраны зала: ARENA, все участники, бой"><svg viewBox="0 0 24 24"><path d="M3 5h18a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1h-7v2h3v2H7v-2h3v-2H3a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1zm1 2v9h16V7z"/></svg>TV</button>
     <button data-t="club" title="Экраны клуба — доступ тренера"><svg viewBox="0 0 24 24"><path d="M12 2a5 5 0 0 1 5 5v3h1.5A1.5 1.5 0 0 1 20 11.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 20.5v-9A1.5 1.5 0 0 1 5.5 10H7V7a5 5 0 0 1 5-5zm0 2a3 3 0 0 0-3 3v3h6V7a3 3 0 0 0-3-3zm0 9.3a1.9 1.9 0 0 0-1 3.52V19h2v-2.18a1.9 1.9 0 0 0-1-3.52z"/></svg>Клуб</button>
   </nav>
 </div>
@@ -3307,7 +3309,8 @@ mq.addEventListener('change',()=>applyMode());
 $('#mobBtn').addEventListener('click',()=>{document.body.classList.remove('m-force-desk');MOB.frame=!mq.matches;applyMode.force=true;applyMode()});
 $('.m-logo').src=$('.club-logo').src;
 $('#mNav').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
-  if(b.dataset.t==='club'){MOB.frame=false;document.body.classList.add('m-force-desk');MOB.on=false;document.body.classList.remove('m-on','m-frame');setView('coach');toast('Вход тренера (демо) — в продукте по PIN-коду');return}
+  if(b.dataset.t==='tv'){MOB.frame=false;document.body.classList.add('m-force-desk');MOB.on=false;document.body.classList.remove('m-on','m-frame');setView('arena');return}
+      if(b.dataset.t==='club'){MOB.frame=false;document.body.classList.add('m-force-desk');MOB.on=false;document.body.classList.remove('m-on','m-frame');setView('coach');toast('Вход тренера (демо) — в продукте по PIN-коду');return}
   MOB.tab=b.dataset.t;MOB.sub=null;renderMobile();$('#mMain').scrollTop=0}));
 $('#mAva').addEventListener('click',()=>{MOB.tab='me';MOB.sub=null;renderMobile()});
 // --- достижения: считаются из истории и профиля ---
@@ -3427,11 +3430,10 @@ function mMe(a,C,P,B){
     <button data-s="nut"><b>Питание</b><span>${esc(C.nut.mode)}${C.nut.cut?` · взвешивание ${fmtD(C.nut.cut.by)}`:''}</span></button>
     ${P.pro?'':'<button data-s="card" class="m-pro"><b>Подключить Pro</b><span>регалии на карточке, показ перед боем, вся история</span></button>'}</div>
    <div class="m-h1">Демо</div>
-   <div class="m-list"><label class="m-who"><b>Войти как</b><select id="mWho">${ATHLETES.map(x=>`<option value="${x.id}" ${x.id===a.id?'selected':''}>${esc(x.name)} · ${esc(x.disc)}</option>`).join('')}</select></label>
-    <button id="mClub"><b>Экраны клуба</b><span>ARENA · все участники · бой · тренер</span></button></div>`;
+   <div class="m-list"><label class="m-who"><b>Войти как</b><select id="mWho">${ATHLETES.map(x=>`<option value="${x.id}" ${x.id===a.id?'selected':''}>${esc(x.name)} · ${esc(x.disc)}</option>`).join('')}</select></label></div>`;
   B.querySelectorAll('[data-s]').forEach(b=>b.addEventListener('click',()=>{MOB.sub=b.dataset.s;renderMobile();$('#mMain').scrollTop=0}));
   $('#mWho').onchange=e=>{MOB.me=+e.target.value;try{localStorage.setItem('fp.me',MOB.me)}catch(x){}renderMobile()};
-  $('#mClub').onclick=()=>{MOB.frame=false;document.body.classList.add('m-force-desk');MOB.on=false;document.body.classList.remove('m-on','m-frame');setView('arena')}}
+  }
 // живые экраны обновляются раз в секунду
 setInterval(()=>{if(MOB.on&&MOB.tab==='live'&&$('#shareModal').hidden)renderMobile()},1000);
 mq.matches&&applyMode();
