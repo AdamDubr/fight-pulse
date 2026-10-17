@@ -791,7 +791,7 @@ body.m-on.m-frame::after{content:'Предпросмотр мобильной в
  .cab-tabs{gap:.2rem!important}.cab-tabs button{font-size:.72rem!important;padding:.32rem .5rem!important}
 }
 .m-nutt{margin-top:14px}.m-nutt>.m-h{margin-bottom:8px}.m-tpill{margin-left:auto;display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line-2);border-radius:9px;padding:4px 9px;font-weight:800;font-size:16px;white-space:nowrap}.m-tpill .ph{font-size:12px;font-weight:800;letter-spacing:.06em;color:#000;background:var(--pc,#2fd27a);border-radius:4px;padding:2px 6px}.m-tpill:empty{display:none}.m-tpill+.m-ava{margin-left:8px}
-#mobile .mh-ov .sens:not([style*="top:20px"]){display:none}#mobile .mh-ov .sens[style*="top:20px"]{top:6px!important}.m-top .demo{font-size:15px;padding:2px 5px}
+#mobile .mh-ov .sens:not([style*="top:20px"]){display:none}#mobile .mh-ov .sens[style*="top:20px"]{top:6px!important}.mh-ov .mh-name{display:flex;justify-content:center;align-items:baseline;gap:.3em;white-space:nowrap;letter-spacing:.06em}.mh-ov .mh-nm{color:#fff;font-size:15px;font-weight:900;font-style:italic;letter-spacing:.04em;text-transform:uppercase;margin-right:.25em}.mh-ov .mh-name .u18{font-size:9px}#mobile .mh-ov .tl,#mobile .mh-ov .tr{top:34px!important}.mh-ov .c{margin-top:0!important}#mobile .mh-ov .c,#aStage .mh-ov .c{max-width:42%!important}#mobile .mh-ov .c em,#aStage .mh-ov .c em{white-space:nowrap}#aStage .mh-ov .sens.mh-name{top:6px}#mobile .mh-ov .bl,#mobile .mh-ov .br{bottom:6px!important}#mobile .mh-ov .c[style*="bottom:138px"]{bottom:128px!important}#aStage .mh-ov .bl,#aStage .mh-ov .br{bottom:6px!important}#aStage .mh-ov .c[style*="bottom:112px"]{bottom:128px!important}#aStage .mh-ov .tl,#aStage .mh-ov .tr{top:34px!important}.m-top .demo{font-size:15px;padding:2px 5px}
 .m-ava{margin-left:auto;width:36px;height:36px;border-radius:50%;overflow:hidden;background:#262626;border:1px solid #444;font-weight:800;color:var(--muted);padding:0}.m-ava img{width:100%;height:100%;object-fit:cover}
 .m-main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
 #mBody{padding:14px 16px 24px;display:flex;flex-direction:column;gap:14px}
@@ -2240,7 +2240,7 @@ function fdLive(){if(ui.view!=='coach'||ADM.tab!=='mon'||innerWidth<=760||MOB.on
    <div class="c br"><small>НАГРУЗКА</small><b class="num">${Math.round(m.trimp)}</b><em>TRIMP · РАСЧЁТ</em></div>
    <div class="c br" style="bottom:138px"><small>АКТИВНОСТЬ</small><b class="num">${Math.round(s2.act)}</b><em>IMU · РАСЧЁТ</em></div>
    <div class="sens" style="color:${lv?'#2fd27a':'#ff4562'}">● ${esc(m.sensorId||'—')} · ${esc(m.model||a.sensor)}${m.battery!=null?' · '+Math.round(m.battery)+'%':''}</div>
-   <div class="sens" style="top:20px;color:${rt2.tc};font-size:12px">★ <b style="font-size:16px;font-weight:900">${rt2.R}</b> · #${rt2.rank} ${rt2.cat}</div>`}
+   <div class="sens mh-name" style="top:20px;color:${rt2.tc};font-size:12px"><span class="mh-nm">${esc(display(a))}</span>${u18Badge(a)} ★ <b style="font-size:16px;font-weight:900">${rt2.R}</b> · #${rt2.rank} ${rt2.cat}</div>`}
 function renderDetail(){const a=byId.get(ui.detail)||ATHLETES[0];ui.detail=a.id;const m=metrics.get(a.id),cd=COND[m.lvl];
   const rows=SIG.map(g=>{const v=m.sev[g.k],val=m.val[g.k],c=v>=.5?ZCOL[5]:v>=.2?ZCOL[4]:ZCOL[2];
     return `<div class="sigrow" style="--sc:${c}"><span class="dot" style="--zc:${c}"></span><span class="nm2">${g.n}<small>${g.s} · вес ${Math.round(g.w*100)}%</small></span>
@@ -3400,11 +3400,11 @@ function mLive(a,C,P,B){const m=metrics.get(a.id),st=metrics.status(m),live=m.hr
        <div class="c br"><small>НАГРУЗКА</small><b class="num">${Math.round(m.trimp)}</b><em>TRIMP · РАСЧЁТ</em></div>
        <div class="c br" style="bottom:138px"><small>АКТИВНОСТЬ</small><b class="num">${Math.round(s.act)}</b><em>IMU · РАСЧЁТ</em></div>
        <div class="sens" style="color:${live?'#2fd27a':'#ff4562'}">● ${esc(m.sensorId||'—')} · ${esc(m.model||a.sensor)}${m.battery!=null?' · '+Math.round(m.battery)+'%':''}</div>
-       <div class="sens" style="top:20px;color:${rt2.tc};font-size:12px">★ <b style="font-size:16px;font-weight:900">${rt2.R}</b> · #${rt2.rank} ${rt2.cat}</div>`}
+       <div class="sens mh-name" style="top:20px;color:${rt2.tc};font-size:12px"><span class="mh-nm">${esc(display(a))}</span>${u18Badge(a)} ★ <b style="font-size:16px;font-weight:900">${rt2.R}</b> · #${rt2.rank} ${rt2.cat}</div>`}
     else hs.parentElement.hidden=true}}
 function arenaMobOv(){const st=$('#aStage');if(!st)return;let ov=st.querySelector('.mh-ov');if(!ov){ov=document.createElement('div');ov.className='mh-ov';st.appendChild(ov)}
   const a=ATHLETES[ui.idx],m=metrics.get(a.id),live=m.hr&&metrics.status(m)!=='lost',z=live?zoneOf(m.hr,a.hrMax):0,cd=COND[m.lvl],s=strikes.get(a.id),rt=ratingOf(a.id);
-  ov.innerHTML=`<div class="sens" style="color:#fff">${esc(display(a))} ${u18Badge(a)}<span style="color:${rt.tc}">★ ${rt.R} · #${rt.rank} ${rt.cat}</span></div>
+  ov.innerHTML=`<div class="sens mh-name" style="color:${rt.tc};font-size:12px"><span class="mh-nm">${esc(display(a))}</span>${u18Badge(a)} ★ <b style="font-size:16px;font-weight:900">${rt.R}</b> · #${rt.rank} ${rt.cat}</div>
    <div class="c tl"><small>ПУЛЬС</small><b class="num xl" style="color:${live?ZCOL[z]:'#555'}">${live?m.hr:'--'}</b><em>уд/мин · ${live?Math.round(m.hr/a.hrMax*100)+'% HRmax':'нет данных'}</em><span class="mz" style="background:${ZCOL[z]}">${ZONES[z].key} · ${ZONES[z].label.toUpperCase()}</span></div>
    <div class="c tr"><small>ЗАПАС СИЛ</small><b class="num xl" style="color:${cd.c}">${m.reserve}<i style="font-size:16px;font-style:normal">%</i></b><em>${cd.l} · РАСЧЁТ</em></div>
    <div class="c bl"><small>В ЗОНЕ ${ZONES[z].key}</small><b class="num" style="color:${ZCOL[z]}">${fmt(Math.round(m.zs[z]))}</b><em>РАСЧЁТ</em></div>
