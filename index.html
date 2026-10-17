@@ -622,7 +622,7 @@ table{font-size:.8rem}
  .top>*{order:2}
  .top .brand{order:0;flex:0 1 auto;min-width:0}
  #roundPill{order:1;margin-left:auto;font-size:.74rem;letter-spacing:.04em;padding:.22rem .55rem;gap:.45rem;white-space:nowrap}
- #roundPill #rpText{display:none}
+ #roundPill #rpText{display:none} #demoBadge,#clock,#fsBtn{display:none!important} #mobBtn{order:1;font-size:0;padding:.28rem .5rem;margin-left:.3rem}#mobBtn::before{content:'‹ НАЗАД';font-size:.68rem;font-weight:700;letter-spacing:.06em} .top .brand .by{display:none!important} .top .brand::after{content:'DEMO';margin-left:.45rem;font-size:.62rem;font-weight:700;letter-spacing:.08em;color:#e8c35a;border:1px dashed #e8c35a99;border-radius:.3rem;padding:.12rem .35rem;align-self:center} .top .brand{display:flex;align-items:center}
  #roundPill .ph{font-size:.6rem;padding:.1rem .4rem}
  #roundPill .num{font-size:.85rem}
  .top .brand .club-logo{height:2rem}
@@ -702,7 +702,8 @@ body.m-on.m-frame{background:#0d0d0d}
 body.m-on.m-frame #mobile{inset:auto;left:50%;top:50%;width:390px;height:844px;transform:translate(-50%,-50%);border-radius:46px;border:10px solid #1f1f1f;box-shadow:0 0 0 2px #3a3a3a,0 2rem 4rem rgba(0,0,0,.7);overflow:hidden}
 body.m-on.m-frame::after{content:'Предпросмотр мобильной версии · обновите страницу, чтобы выйти';position:fixed;left:0;right:0;bottom:12px;text-align:center;color:#555;font-size:17px}
 .m-top{display:flex;align-items:center;gap:.6rem;padding:calc(env(safe-area-inset-top,0px) + 12px) 16px 10px;border-bottom:1px solid var(--line)}
-.m-logo{height:26px}.m-top .demo{font-size:15px;padding:2px 5px}
+.m-logo{height:26px}.m-tpill{margin-left:auto;display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line-2);border-radius:9px;padding:4px 9px;font-weight:800;font-size:16px;white-space:nowrap}.m-tpill .ph{font-size:12px;font-weight:800;letter-spacing:.06em;color:#000;background:var(--pc,#2fd27a);border-radius:4px;padding:2px 6px}.m-tpill:empty{display:none}.m-tpill+.m-ava{margin-left:8px}
+#mobile .mh-ov .sens:not([style*="top:20px"]){display:none}#mobile .mh-ov .sens[style*="top:20px"]{top:6px!important}.m-top .demo{font-size:15px;padding:2px 5px}
 .m-ava{margin-left:auto;width:36px;height:36px;border-radius:50%;overflow:hidden;background:#262626;border:1px solid #444;font-weight:800;color:var(--muted);padding:0}.m-ava img{width:100%;height:100%;object-fit:cover}
 .m-main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
 #mBody{padding:14px 16px 24px;display:flex;flex-direction:column;gap:14px}
@@ -1113,7 +1114,7 @@ body.m-on .modal-box canvas{height:auto;width:100%}
 
 
 <div id="mobile" aria-label="Мобильное приложение спортсмена">
-  <header class="m-top"><img class="m-logo" alt="Mowgli Fight Club"><span class="demo">DEMO</span><button class="m-ava" id="mAva" aria-label="Профиль"></button></header>
+  <header class="m-top"><img class="m-logo" alt="Mowgli Fight Club"><span class="demo">DEMO</span><span class="m-tpill" id="mTPill"></span><button class="m-ava" id="mAva" aria-label="Профиль"></button></header>
   <main class="m-main" id="mMain"><div id="mBody"></div></main>
   <nav class="m-nav" id="mNav">
     <button data-t="home"><svg viewBox="0 0 24 24"><path d="M3 11 12 4l9 7v9h-6v-6H9v6H3z"/></svg>Главная</button>
@@ -2145,9 +2146,9 @@ function fdLive(){if(ui.view!=='coach'||ADM.tab!=='mon'||innerWidth<=760||MOB.on
    <div class="c tl"><small>ПУЛЬС</small><b class="num xl" style="color:${lv?ZCOL[z]:'#555'}">${lv?m.hr:'--'}</b><em>уд/мин · ${lv?Math.round(m.hr/a.hrMax*100)+'% HRmax':'нет данных'}</em><span class="mz" style="background:${ZCOL[z]}">${ZONES[z].key} · ${ZONES[z].label.toUpperCase()}</span></div>
    <div class="c tr"><small>ЗАПАС СИЛ</small><b class="num xl" style="color:${cd.c}">${m.reserve}<i style="font-size:16px;font-style:normal">%</i></b><em>${cd.l} · РАСЧЁТ</em></div>
    <div class="c bl"><small>В ЗОНЕ ${ZONES[z].key}</small><b class="num" style="color:${ZCOL[z]}">${fmt(Math.round(m.zs[z]))}</b><em>РАСЧЁТ</em></div>
-   <div class="c bl" style="bottom:118px"><small>ККАЛ/МИН</small><b class="num">${lv?keytel(m.hr,a).toFixed(1):'--'}</b><em>РАСЧЁТ</em></div>
+   <div class="c bl" style="bottom:138px"><small>ККАЛ/МИН</small><b class="num">${lv?keytel(m.hr,a).toFixed(1):'--'}</b><em>РАСЧЁТ</em></div>
    <div class="c br"><small>НАГРУЗКА</small><b class="num">${Math.round(m.trimp)}</b><em>TRIMP · РАСЧЁТ</em></div>
-   <div class="c br" style="bottom:118px"><small>АКТИВНОСТЬ</small><b class="num">${Math.round(s2.act)}</b><em>IMU · РАСЧЁТ</em></div>
+   <div class="c br" style="bottom:138px"><small>АКТИВНОСТЬ</small><b class="num">${Math.round(s2.act)}</b><em>IMU · РАСЧЁТ</em></div>
    <div class="sens" style="color:${lv?'#2fd27a':'#ff4562'}">● ${esc(m.sensorId||'—')} · ${esc(m.model||a.sensor)}${m.battery!=null?' · '+Math.round(m.battery)+'%':''}</div>
    <div class="sens" style="top:20px;color:${rt2.tc};font-size:12px">★ <b style="font-size:16px;font-weight:900">${rt2.R}</b> · #${rt2.rank} ${rt2.cat}</div>`}
 function renderDetail(){const a=byId.get(ui.detail)||ATHLETES[0];ui.detail=a.id;const m=metrics.get(a.id),cd=COND[m.lvl];
@@ -3197,7 +3198,9 @@ function records(id){const G=progSummary(id),D=G.D,S=cardStats(id),a=byId.get(id
    striker?['Самый быстрый удар',S.spd.toFixed(1),'м/с · оценка']:['Часов на ковре',Math.round(S.h),'ч'],['Серия недель подряд',streakWeeks(D),'нед.']]}
 const badge=(x,big)=>`<div class="m-bd ${x.ok?'ok':''} ${big?'big':''}"><div class="ring" style="--p:${x.p}"><svg viewBox="0 0 24 24">${ICO[x.i]}</svg></div><b>${x.t}</b>${big?`<small>${x.d}</small><span class="num">${x.ok?'получено':(x.dec?x.v.toFixed(1):x.v>=1e4?fmtK(x.v):x.v)+' / '+(x.g>=1e4?fmtK(x.g):x.g)+(x.u||'')}</span>`:''}</div>`;
 // --- экраны ---
-function renderMobile(){if(!MOB.on)return;const id=MOB.me,a=byId.get(id),C=CAB[id],P=PROF[id];cardId=id;
+function mTPill(){const tp=document.getElementById('mTPill');if(tp){const fm=fight.state==='running'||fight.state==='paused';tp.style.setProperty('--pc',fm?'#ff3d52':train.color());tp.innerHTML=fm?`<span class="ph">БОЙ · Р${fight.round}</span><span class="num">${fmt(fight.remaining())}</span>`:`<span class="ph">${train.label()}</span><span class="num">${fmt(train.total)}</span>`}}
+setInterval(()=>{if(MOB.on)mTPill()},1000);
+function renderMobile(){if(!MOB.on)return;mTPill();const id=MOB.me,a=byId.get(id),C=CAB[id],P=PROF[id];cardId=id;
   $('#mAva').innerHTML=C.person.photo?`<img src="${C.person.photo}" alt="">`:esc(a.name[0]);
   $('#mNav').querySelectorAll('button').forEach(b=>b.setAttribute('aria-current',b.dataset.t===MOB.tab?'page':'false'));
   const od=C.tasks.filter(t=>t.status!=='done').length;$('#mTB').hidden=!od;$('#mTB').textContent=od;
@@ -3227,7 +3230,7 @@ function mWire(B){B.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener
   B.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>{MOB.tab='me';MOB.sub=b.dataset.go;renderMobile()}))}
 function mLive(a,C,P,B){const m=metrics.get(a.id),st=metrics.status(m),live=m.hr&&st!=='lost',z=live?zoneOf(m.hr,a.hrMax):0,cd=COND[m.lvl],fm=m.mode==='fight',s=strikes.get(a.id),tot=m.zs.reduce((x,y)=>x+y,0)||1;
   B.innerHTML=`<div class="m-lv" style="--zc:${ZCOL[z]};--rc:${cd.c}">
-    <div class="m-lv-st">${fm?`БОЙ · РАУНД ${fight.round} · ${fight.phaseLabel()} · ${fmt(fight.remaining())}`:`ТРЕНИРОВКА · ${fmt(train.total)}`}</div>
+    
     <div class="m-sec m-holo"><div id="mHoloSlot"></div><small>Цвет — интенсивность сейчас · кольцо и поза — запас сил (расчёт)</small></div>
     <div class="m-lv-g"><div><small>АКТИВНОЕ ВРЕМЯ</small><b class="num">${fmt(Math.round(m.active))}</b><span>в движении</span></div>
      <div><small>СОЖЖЕНО</small><b class="num">${Math.round(m.kcal)}</b><span>ккал · расчёт</span></div>
@@ -3247,9 +3250,9 @@ function mLive(a,C,P,B){const m=metrics.get(a.id),st=metrics.status(m),live=m.hr
        <div class="c tl"><small>ПУЛЬС</small><b class="num xl" style="color:${live?ZCOL[z]:'#555'}">${live?m.hr:'--'}</b><em>уд/мин · ${live?Math.round(m.hr/a.hrMax*100)+'% HRmax':'нет данных'}</em><span class="mz" style="background:${ZCOL[z]}">${ZONES[z].key} · ${ZONES[z].label.toUpperCase()}</span></div>
        <div class="c tr"><small>ЗАПАС СИЛ</small><b class="num xl" style="color:${cd.c}">${m.reserve}<i style="font-size:16px;font-style:normal">%</i></b><em>${cd.l} · РАСЧЁТ</em></div>
        <div class="c bl"><small>В ЗОНЕ ${ZONES[z].key}</small><b class="num" style="color:${ZCOL[z]}">${fmt(Math.round(m.zs[z]))}</b><em>РАСЧЁТ</em></div>
-       <div class="c bl" style="bottom:118px"><small>ККАЛ/МИН</small><b class="num">${live?keytel(m.hr,a).toFixed(1):'--'}</b><em>РАСЧЁТ</em></div>
+       <div class="c bl" style="bottom:138px"><small>ККАЛ/МИН</small><b class="num">${live?keytel(m.hr,a).toFixed(1):'--'}</b><em>РАСЧЁТ</em></div>
        <div class="c br"><small>НАГРУЗКА</small><b class="num">${Math.round(m.trimp)}</b><em>TRIMP · РАСЧЁТ</em></div>
-       <div class="c br" style="bottom:118px"><small>АКТИВНОСТЬ</small><b class="num">${Math.round(s.act)}</b><em>IMU · РАСЧЁТ</em></div>
+       <div class="c br" style="bottom:138px"><small>АКТИВНОСТЬ</small><b class="num">${Math.round(s.act)}</b><em>IMU · РАСЧЁТ</em></div>
        <div class="sens" style="color:${live?'#2fd27a':'#ff4562'}">● ${esc(m.sensorId||'—')} · ${esc(m.model||a.sensor)}${m.battery!=null?' · '+Math.round(m.battery)+'%':''}</div>
        <div class="sens" style="top:20px;color:${rt2.tc};font-size:12px">★ <b style="font-size:16px;font-weight:900">${rt2.R}</b> · #${rt2.rank} ${rt2.cat}</div>`}
     else hs.parentElement.hidden=true}}
