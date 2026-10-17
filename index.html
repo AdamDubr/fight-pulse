@@ -726,6 +726,14 @@ body.m-on.m-frame::after{content:'Предпросмотр мобильной в
 .ig-row>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ig-bar{position:relative;height:9px;background:#1b1b1b;border-radius:5px}
 .ig-bar i{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:5px;transition:width 1.2s cubic-bezier(.2,.8,.2,1),background .8s}.ig-bar s{position:absolute;top:-3px;bottom:-3px;width:2px;left:0;background:#fffa;border-radius:1px;transition:left 1.2s cubic-bezier(.2,.8,.2,1)}
 .ig-row em{font-style:normal;text-align:right;font-weight:800;transition:color .6s}
+.ig-days b{font-size:.62rem;text-align:center;color:#ddd}.ig-abs{display:flex;flex-direction:column;gap:.4rem}
+.ig-ab{display:flex;justify-content:space-between;align-items:center;gap:.6rem;padding:.5rem .65rem;border:1px solid #ff456244;background:#ff45620d;border-radius:.6rem;animation:igIn .5s both}
+.ig-ab b{font-size:.85rem}.ig-ab small{display:block;color:var(--muted);font-size:.66rem;margin-top:.1rem}.ig-ab .btn{font-size:.62rem;padding:.35rem .6rem;white-space:nowrap}
+@keyframes igIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.ig-grp>div{display:grid;grid-template-columns:7.5rem 1fr 2.6rem;gap:.5rem;align-items:center;font-size:.72rem;padding:.2rem 0}.ig-grp em{font-style:normal;text-align:right;font-weight:800}
+.ig-dots{display:flex;gap:4px;align-items:center}.ig-dot{display:inline-block;width:11px;height:11px;border-radius:50%;background:#262626;border:1px solid #333;transition:background .5s,box-shadow .5s,transform .5s;transform:scale(.6)}
+.ig-dot.on{background:#2fd27a;border-color:#2fd27a;box-shadow:0 0 6px #2fd27a88;transform:scale(1)}.ig-dot.td{width:13px;height:13px;margin-left:4px;outline:1px dashed #666;outline-offset:2px}.ig-dot.no{background:#ff4562;border-color:#ff4562;transform:scale(1)}
+.ig-zh .ig-dot{transform:scale(.85);vertical-align:middle;margin:0 2px 0 6px}.ig-at{grid-template-columns:5.6rem 1fr 2.8rem}
 @media(min-width:761px){.ig-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));column-gap:1.4rem}.ig-top{grid-template-columns:150px 1fr}.ig-ring{width:150px;height:150px}}
 .m-bd .ring svg,.m-next .ring svg,.m-bdl .ring svg{transform:none!important}
 #shImgM{position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.88);display:flex;align-items:center;justify-content:center;padding:16px;overflow:auto}
@@ -1236,7 +1244,7 @@ const ATHLETES=[
   {id:19,fit:0.35,nick:'Вова',    name:'Владимир', disc:'Бокс',      age:38,kg:90,sex:'m',hrMax:182,hrRest:63,sensor:'Polar H10',    sim:{id:'SIM-H10-19',int:.72,rec:.008,bat:36,flaky:true}},
   {id:20,fit:0.75,nick:'Кир',     name:'Кирилл',   disc:'Функционал',age:14,kg:56,sex:'m',hrMax:206,hrRest:47,sensor:'Coospo H808S', sim:{id:'SIM-HRM-20',int:.82,rec:.015,bat:90}},
   {id:21,fit:0.85,nick:'MOWGLI',  name:'Миржалал', disc:'MMA',       age:36,kg:78,sex:'m',hrMax:184,hrRest:48,sensor:'Polar H10',    sim:{id:'SIM-H10-21',int:.80,rec:.016,bat:93},coach:true},
-].map(a=>({...a,public:true}));
+].map(a=>({...a,public:true,absent:[5,13,19].includes(a.id)}));
 const byId=new Map(ATHLETES.map(a=>[a.id,a]));
 const settings={nameMode:'nick',interval:12,trimpTarget:150,target:[4,5],normTrimp:130,norm90:8};
 const display=a=>settings.nameMode==='nick'?a.nick:a.name;
@@ -1287,7 +1295,7 @@ class SimulatorSource extends Emitter{
   start(){this.on_=true;this.emit('status',{state:'connected',text:`${this.m.length} демо-датчиков подключено`})}
   stop(){this.on_=false}
   step(){if(!this.on_)return;
-    for(const m of this.m){const a=m.a,R=a.hrMax-a.hrRest;
+    for(const m of this.m){const a=m.a,R=a.hrMax-a.hrRest;if(a.absent)continue;
       if(m.drop>0){m.drop--;continue}
       if(a.sim.flaky&&Math.random()<.004){m.drop=8+(Math.random()*12|0);continue}
       let target,k,work,rest;
@@ -2011,7 +2019,7 @@ chips.forEach(c=>c.addEventListener('click',()=>{select(+c.dataset.i,true)}));
 const ok3d=Body3D.init($('#stage3d'),$('#fight3d'));
 if(!ok3d)$('#stage3d').innerHTML='<div class="st-fallback">3D недоступен: не загрузилась библиотека Three.js или WebGL отключён.<br>Все показатели продолжают обновляться.</div>';
 
-function publicList(){return ATHLETES.map((a,i)=>i).filter(i=>ATHLETES[i].public)}
+function publicList(){return ATHLETES.map((a,i)=>i).filter(i=>ATHLETES[i].public&&!ATHLETES[i].absent)}
 // движение на ARENA по дисциплине и состоянию: активный — быстро, средний — чуть медленнее, усталый — только разминка шеи и приседания
 const IDLE_BY_DISC={'Функционал':'squat','Муай-тай':'mkick'};
 const TLV={good:1,mid:.78,bad:.62};
@@ -2245,31 +2253,36 @@ function renderAdm(){const co=$('.coach'),B=$('#admBody');
   ({roster:admRoster,groups:admGroups,sched:admSched,fin:admFin})[ADM.tab](B)}
 // ---- мобильная сводка монитора: только смотреть, без выбора и назначений ----
 // ---- инфографика загрузки: сегодня против прошлых таких же дней недели (DEMO-история) ----
-const igR=(id,k)=>{const x=Math.sin(id*12.9898+k*78.233)*43758.5453;return x-Math.floor(x)};
-function monIG(host){if(!host)return;const wd=new Date().toLocaleDateString('ru-RU',{weekday:'long'}),wdP={'понедельник':'понедельники','вторник':'вторники','среда':'среды','четверг':'четверги','пятница':'пятницы','суббота':'субботы','воскресенье':'воскресенья'}[wd]||'такие же дни';
-  const rows=ATHLETES.map(a=>{const m=metrics.get(a.id),st=metrics.status(m),ok=m.hr&&st!=='lost'&&st!=='none',f=[0,1,2,3].map(k=>.74+.5*igR(a.id,k)),past=f.reduce((q,v)=>q+v,0)/4*m.trimp;return{a,m,ok,z:ok?zoneOf(m.hr,a.hrMax):0,t:m.trimp,past,f}});
-  const live=rows.filter(r=>r.ok),pct=live.length?Math.round(live.reduce((q,r)=>q+r.m.hr/r.a.hrMax,0)/live.length*100):0,
-    avgT=rows.reduce((q,r)=>q+r.t,0)/rows.length,days=[3,2,1,0].map(k=>rows.reduce((q,r)=>q+r.t*r.f[k],0)/rows.length),avgP=days.reduce((q,v)=>q+v,0)/4,
-    d=avgP?Math.round((avgT/avgP-1)*100):0,zc=[1,2,3,4,5].map(z=>live.filter(r=>r.z===z).length),pz=pct>=90?5:pct>=80?4:pct>=70?3:pct>=60?2:1;
-  if(!host.querySelector('.ig')){host.innerHTML=`<div class="ig"><div class="ig-h"><span class="label">Загрузка зала · сегодня и прошлые ${wdP}</span><span class="tag">DEMO-история · РАСЧЁТ</span></div>
+const ATT={manual:new Set()};const igR=(id,k)=>{const x=Math.sin(id*12.9898+k*78.233)*43758.5453;return x-Math.floor(x)};
+function monIG(host){if(!host)return;if(typeof groupsInit==='function')groupsInit();const wd=new Date().toLocaleDateString('ru-RU',{weekday:'long'}),wdP={'понедельник':'понедельники','вторник':'вторники','среда':'среды','четверг':'четверги','пятница':'пятницы','суббота':'субботы','воскресенье':'воскресенья'}[wd]||'такие же дни';
+  const rows=ATHLETES.map(a=>{const m=metrics.get(a.id),st=metrics.status(m),sens=st==='live'||st==='stale',man=ATT.manual.has(a.id),here=sens||man||(!a.absent&&st!=='none'),
+      p=.62+.33*a.fit,hist=[7,6,5,4,3,2,1].map(k=>a.absent&&k<=2?false:igR(a.id,k+10)<p),C=CAB[a.id],sub=dLeft(C.sub.end)<0,inj=C.med.inj.some(t=>dLeft(t.until)>=0);
+      let miss=0;for(let k=hist.length-1;k>=0&&!hist[k];k--)miss++;
+      const all=[...hist,here],rate=Math.round(all.filter(Boolean).length/all.length*100);
+      return{a,here,sens,man,hist,miss:here?0:miss+1,rate,why:sub?'абонемент истёк':inj?'травма / ограничения':'причина не указана'}});
+  const n=rows.length,here=rows.filter(r=>r.here).length,pct=Math.round(here/n*100),
+    past=[4,3,2,1].map(k=>rows.filter(r=>r.hist[7-k]).length),avgP=past.reduce((q,v)=>q+v,0)/4,d=avgP?Math.round((here/avgP-1)*100):0,
+    G=(typeof GROUPS!=='undefined'&&GROUPS?GROUPS:[]).map(g=>({n:g.name,t:g.ids.length,h:g.ids.filter(id=>rows.find(r=>r.a.id===id)?.here).length})).filter(g=>g.t);
+  if(!host.querySelector('.ig')){host.innerHTML=`<div class="ig"><div class="ig-h"><span class="label">Посещаемость · сегодня, ${wd}</span><span class="tag">датчик на связи = пришёл · DEMO-история</span></div>
      <div class="ig-top"><div class="ig-ring"><svg viewBox="0 0 120 120"><circle class="bg" cx="60" cy="60" r="50"/><circle class="ig-arc" cx="60" cy="60" r="50" stroke-dasharray="314.16" stroke-dashoffset="314.16"/></svg>
-       <div class="ig-rv"><b class="num" data-k="pct">0</b><small>% HRmax<br>в среднем</small></div></div>
-      <div class="ig-cmp"><div class="ig-kv"><div><small>НАГРУЗКА ГРУППЫ</small><b class="num" data-k="tr">0</b><em>TRIMP · в среднем</em></div><div><small>К ПРОШЛЫМ</small><b class="num" data-k="d">0%</b><em>${wdP}, то же время</em></div></div>
-       <div class="ig-days">${[4,3,2,1].map(k=>`<div><i data-dk="${k}"></i><span>${fmtD(dAdd(-7*k)).slice(0,5)}</span></div>`).join('')}<div><i data-dk="0" class="t"></i><span>сегодня</span></div></div></div></div>
-     <div class="ig-zh"><span class="label">Бойцы по зонам · сейчас</span></div><div class="ig-zbar">${[1,2,3,4,5].map(z=>`<i data-z="${z}" style="background:${ZCOL[z]}"></i>`).join('')}</div>
-     <div class="ig-zl">${[1,2,3,4,5].map(z=>`<span><i style="background:${ZCOL[z]}"></i>Z${z} <b data-zn="${z}">0</b></span>`).join('')}</div>
-     <div class="ig-zh"><span class="label">Нагрузка бойца · сегодня <i class="ig-lg"></i> и средняя за прошлые ${wdP} <i class="ig-lg g"></i></span></div>
-     <div class="ig-list">${rows.map(r=>`<div class="ig-row" data-id="${r.a.id}"><span>${esc(r.a.name)}</span><div class="ig-bar"><i></i><s></s></div><em class="num">—</em></div>`).join('')}</div></div>`;
-    host._t0=performance.now()}
-  const st=host.querySelector('.ig'),go=performance.now()-host._t0>60,set=(k,v)=>{const e=st.querySelector(`[data-k="${k}"]`);if(e)e.textContent=v};
-  requestAnimationFrame(()=>{const arc=st.querySelector('.ig-arc');arc.style.stroke=ZCOL[pz];arc.style.strokeDashoffset=314.16*(1-Math.min(1,pct/100));
-    set('pct',pct);set('tr',Math.round(avgT));const de=st.querySelector('[data-k="d"]');de.textContent=(d>0?'+':'')+d+'%';de.style.color=d>=10?ZCOL[4]:d<=-10?ZCOL[3]:'#2fd27a';
-    const all=[...days,avgT],mx=Math.max(...all),mn=Math.min(...all),rg=Math.max(1,mx-mn);st.querySelectorAll('[data-dk]').forEach(e=>{const k=+e.dataset.dk,v=k?days[4-k]:avgT;e.style.height=(22+(v-mn)/rg*74)+'%';e.title=Math.round(v)+' TRIMP';if(!k)e.style.setProperty('--c',ZCOL[pz])});
-    const tot=Math.max(1,live.length);st.querySelectorAll('[data-z]').forEach(e=>{e.style.width=(zc[+e.dataset.z-1]/tot*100)+'%'});st.querySelectorAll('[data-zn]').forEach(e=>{e.textContent=zc[+e.dataset.zn-1]});
-    const mT=Math.max(...rows.map(r=>Math.max(r.t,r.past)),1);
-    rows.slice().sort((x,y)=>y.t-x.t).forEach((r,ix)=>{const e=st.querySelector(`.ig-row[data-id="${r.a.id}"]`);if(!e)return;e.style.order=ix;const dv=r.past?Math.round((r.t/r.past-1)*100):0;
-      const bi=e.querySelector('i');bi.style.width=(r.t/mT*100)+'%';bi.style.background=ZCOL[r.z||1];e.querySelector('s').style.left=(r.past/mT*100)+'%';
-      const em=e.querySelector('em');em.textContent=r.ok?(dv>0?'+':'')+dv+'%':'нет';em.style.color=!r.ok?'#555':dv>=15?ZCOL[4]:dv<=-15?ZCOL[3]:'#9a9a9a'})})}
+       <div class="ig-rv"><b class="num" data-k="here">0</b><small>из ${n} бойцов<br>пришли</small></div></div>
+      <div class="ig-cmp"><div class="ig-kv"><div><small>НЕ ПРИШЛИ</small><b class="num" data-k="abs" style="color:#ff4562">0</b><em>из записанных</em></div><div><small>К ПРОШЛЫМ</small><b class="num" data-k="d">0%</b><em>${wdP} · в среднем <span data-k="avg">0</span></em></div></div>
+       <div class="ig-days">${[4,3,2,1].map(k=>`<div><b class="num" data-dv="${k}">0</b><i data-dk="${k}"></i><span>${fmtD(dAdd(-7*k)).slice(0,5)}</span></div>`).join('')}<div><b class="num" data-dv="0">0</b><i data-dk="0" class="t"></i><span>сегодня</span></div></div></div></div>
+     <div class="ig-zh"><span class="label">Не пришли сегодня</span></div><div class="ig-abs" data-k="absl"></div>
+     ${G.length?`<div class="ig-zh"><span class="label">По группам</span></div><div class="ig-grp">${G.map((g,ix)=>`<div><span>${esc(g.n)}</span><div class="ig-bar"><i data-g="${ix}"></i></div><em class="num" data-gn="${ix}">0/${g.t}</em></div>`).join('')}</div>`:''}
+     <div class="ig-zh"><span class="label">Посещаемость бойцов · последние 8 ${wdP} <i class="ig-dot on"></i> был <i class="ig-dot"></i> пропуск</span></div>
+     <div class="ig-list">${rows.map(r=>`<div class="ig-row ig-at" data-id="${r.a.id}"><span>${esc(r.a.name)}</span><div class="ig-dots">${r.hist.map(()=>'<i class="ig-dot"></i>').join('')}<i class="ig-dot td"></i></div><em class="num">—</em></div>`).join('')}</div></div>`;
+    host.querySelector('.ig').addEventListener('click',e=>{const b=e.target.closest('[data-chk]');if(!b)return;const id=+b.dataset.chk;ATT.manual.add(id);toast(`${byId.get(id).name} отмечен вручную: пришёл без датчика`);monIG(host)})}
+  const st=host.querySelector('.ig'),set=(k,v)=>{const e=st.querySelector(`[data-k="${k}"]`);if(e)e.textContent=v};
+  requestAnimationFrame(()=>{const arc=st.querySelector('.ig-arc'),c=pct>=85?'#2fd27a':pct>=70?'#ffc93c':'#ff4562';arc.style.stroke=c;arc.style.strokeDashoffset=314.16*(1-pct/100);
+    set('here',here);set('abs',n-here);set('avg',String(Math.round(avgP*10)/10).replace('.',','));const de=st.querySelector('[data-k="d"]');de.textContent=(d>0?'+':'')+d+'%';de.style.color=d>=0?'#2fd27a':'#ff4562';
+    const all=[...past,here],mx=Math.max(...all),mn=Math.min(...all)-2,rg=Math.max(1,mx-mn);
+    st.querySelectorAll('[data-dk]').forEach(e=>{const k=+e.dataset.dk,v=k?past[4-k]:here;e.style.height=(18+(v-mn)/rg*70)+'%';if(!k)e.style.setProperty('--c',c);st.querySelector(`[data-dv="${k}"]`).textContent=v});
+    const ab=rows.filter(r=>!r.here),al=st.querySelector('[data-k="absl"]'),ak=ab.map(r=>r.a.id+':'+r.miss).join(',');if(al.dataset.key!==ak){al.dataset.key=ak;al.innerHTML=ab.map(r=>`<div class="ig-ab"><div><b>${esc(r.a.name)}</b> ${u18Badge(r.a)}<small>${r.why} · пропуск ${r.miss} ${r.miss%10>=2&&r.miss%10<=4&&(r.miss<10||r.miss>20)?'раза':'раз'} подряд</small></div><button class="btn" data-chk="${r.a.id}">ПРИШЁЛ</button></div>`).join('')||'<div class="muted small">Сегодня пришли все записанные</div>'}
+    G.forEach((g,ix)=>{const e=st.querySelector(`[data-g="${ix}"]`);if(e){e.style.width=(g.h/g.t*100)+'%';e.style.background=g.h===g.t?'#2fd27a':'#ffc93c'}const t=st.querySelector(`[data-gn="${ix}"]`);if(t)t.textContent=g.h+'/'+g.t});
+    rows.slice().sort((x,y)=>x.rate-y.rate).forEach((r,ix)=>{const e=st.querySelector(`.ig-row[data-id="${r.a.id}"]`);if(!e)return;e.style.order=ix;
+      const ds=e.querySelectorAll('.ig-dot');r.hist.forEach((v,k)=>{ds[k].classList.toggle('on',v);ds[k].style.transitionDelay=(k*60)+'ms'});ds[ds.length-1].classList.toggle('on',r.here);ds[ds.length-1].classList.toggle('no',!r.here);
+      const em=e.querySelector('em');em.textContent=r.rate+'%';em.style.color=r.rate>=80?'#2fd27a':r.rate>=60?'#ffc93c':'#ff4562'})})}
 function admMonMobile(B){
   const rows=ATHLETES.map(a=>{const m=metrics.get(a.id);return{a,m,st:metrics.status(m),z:m.hr?zoneOf(m.hr,a.hrMax):0}});
   const live=rows.filter(r=>r.m.hr&&r.st!=='lost'&&r.st!=='none');
