@@ -715,7 +715,8 @@ body.m-on.m-frame::after{content:'Предпросмотр мобильной в
 .ig-h{display:flex;justify-content:space-between;align-items:center;gap:.5rem;margin-bottom:.6rem;flex-wrap:wrap}
 .ig-top{display:grid;grid-template-columns:128px 1fr;gap:.9rem;align-items:center}
 .ig-ring{position:relative;width:128px;height:128px}.ig-ring svg{width:100%;height:100%;transform:rotate(-90deg)}
-.ig-ring circle{fill:none;stroke-width:11}.ig-ring .bg{stroke:#222}.ig-arc{stroke:#2fd27a;stroke-linecap:round;transition:stroke-dashoffset 1.3s cubic-bezier(.2,.8,.2,1),stroke .8s;filter:drop-shadow(0 0 6px currentColor)}
+.ig-ring circle{fill:none;stroke-width:11}.ig-ring .bg{stroke:#222}.ig-arc{stroke:#2fd27a;stroke-linecap:round;transition:stroke-dashoffset 1.3s cubic-bezier(.2,.8,.2,1),stroke .8s}
+.ig-ring svg{overflow:visible;filter:drop-shadow(0 0 7px color-mix(in srgb,var(--igc,#2fd27a) 55%,transparent))}
 .ig-rv{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}.ig-rv b{font-size:2rem;line-height:1}.ig-rv small{font-size:.58rem;color:var(--muted);letter-spacing:.06em;margin-top:.2rem}
 .ig-kv{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}.ig-kv small{display:block;font-size:.56rem;letter-spacing:.12em;color:var(--muted);font-weight:800}.ig-kv b{font-size:1.45rem;display:block;transition:color .6s}.ig-kv em{font-style:normal;font-size:.6rem;color:var(--muted)}
 .ig-days{display:flex;align-items:flex-end;gap:6px;height:64px;margin-top:.55rem}.ig-days>div{flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:stretch;gap:3px}
@@ -2430,7 +2431,7 @@ function monIG(host){if(!host)return;if(typeof groupsInit==='function')groupsIni
      <div class="ig-list">${rows.map(r=>`<div class="ig-row ig-at" data-id="${r.a.id}"><span>${esc(r.a.name)}</span><div class="ig-dots">${r.hist.map(()=>'<i class="ig-dot"></i>').join('')}<i class="ig-dot td"></i></div><em class="num">—</em></div>`).join('')}</div></div>`;
     host.querySelector('.ig').addEventListener('click',e=>{const b=e.target.closest('[data-chk]');if(!b)return;const id=+b.dataset.chk;ATT.manual.add(id);toast(`${byId.get(id).name} отмечен вручную: пришёл без датчика`);monIG(host)})}
   const st=host.querySelector('.ig'),set=(k,v)=>{const e=st.querySelector(`[data-k="${k}"]`);if(e)e.textContent=v};
-  requestAnimationFrame(()=>{const arc=st.querySelector('.ig-arc'),c=pct>=85?'#2fd27a':pct>=70?'#ffc93c':'#ff4562';arc.style.stroke=c;arc.style.strokeDashoffset=314.16*(1-pct/100);
+  requestAnimationFrame(()=>{const arc=st.querySelector('.ig-arc'),c=pct>=85?'#2fd27a':pct>=70?'#ffc93c':'#ff4562';arc.style.stroke=c;arc.closest('.ig-ring').style.setProperty('--igc',c);arc.style.strokeDashoffset=314.16*(1-pct/100);
     set('here',here);set('abs',n-here);set('avg',String(Math.round(avgP*10)/10).replace('.',','));const de=st.querySelector('[data-k="d"]');de.textContent=(d>0?'+':'')+d+'%';de.style.color=d>=0?'#2fd27a':'#ff4562';
     const all=[...past,here],mx=Math.max(...all),mn=Math.min(...all)-2,rg=Math.max(1,mx-mn);
     st.querySelectorAll('[data-dk]').forEach(e=>{const k=+e.dataset.dk,v=k?past[4-k]:here;e.style.height=(18+(v-mn)/rg*70)+'%';if(!k)e.style.setProperty('--c',c);st.querySelector(`[data-dv="${k}"]`).textContent=v});
