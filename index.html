@@ -926,6 +926,7 @@ body.m-on.m-frame::after{content:'Предпросмотр мобильной в
 .modal-box canvas{height:min(70vh,54rem)}
 body.m-on .modal-box canvas{height:auto;width:100%}
 @media (max-width:1500px),(max-height:900px){.f-strk{top:.5rem;width:14.5rem;padding:.5rem .65rem;gap:.3rem}.sk-big b{font-size:2.3rem}.sk-row b{font-size:1.2rem}.sk-note,.sk-lr{display:none}.f-hud .bpm2{font-size:4rem}}
+body.m-tv .top .tabs [data-view=card],body.m-tv .top .tabs [data-view=coach]{display:none!important}
 </style>
 
 <div id="app">
@@ -3310,11 +3311,11 @@ function applyMode(){const on=MOB.frame||mq.matches;if(on===MOB.on&&!applyMode.f
   document.body.classList.toggle('m-on',on);document.body.classList.toggle('m-frame',MOB.frame);
   if(on){Body3D.setActive(false);cardId=MOB.me;cab.role='athlete';renderMobile()}else{setView(ui.view)}}
 mq.addEventListener('change',()=>applyMode());
-$('#mobBtn').addEventListener('click',()=>{document.body.classList.remove('m-force-desk');MOB.frame=!mq.matches;applyMode.force=true;applyMode()});
+$('#mobBtn').addEventListener('click',()=>{document.body.classList.remove('m-force-desk','m-tv');MOB.frame=!mq.matches;applyMode.force=true;applyMode()});
 $('.m-logo').src=$('.club-logo').src;
 $('#mNav').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
-  if(b.dataset.t==='tv'){MOB.frame=false;document.body.classList.add('m-force-desk');MOB.on=false;document.body.classList.remove('m-on','m-frame');setView('arena');return}
-      if(b.dataset.t==='club'){MOB.frame=false;document.body.classList.add('m-force-desk');MOB.on=false;document.body.classList.remove('m-on','m-frame');setView('coach');toast('Вход тренера (демо) — в продукте по PIN-коду');return}
+  if(b.dataset.t==='tv'){MOB.frame=false;document.body.classList.add('m-force-desk','m-tv');MOB.on=false;document.body.classList.remove('m-on','m-frame');setView('arena');return}
+      if(b.dataset.t==='club'){MOB.frame=false;document.body.classList.remove('m-tv');document.body.classList.add('m-force-desk');MOB.on=false;document.body.classList.remove('m-on','m-frame');setView('coach');toast('Вход тренера (демо) — в продукте по PIN-коду');return}
   MOB.tab=b.dataset.t;MOB.sub=null;renderMobile();$('#mMain').scrollTop=0}));
 $('#mAva').addEventListener('click',()=>{MOB.tab='me';MOB.sub=null;renderMobile()});
 // --- достижения: считаются из истории и профиля ---
