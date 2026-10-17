@@ -743,7 +743,7 @@ body.m-on.m-frame::after{content:'Предпросмотр мобильной в
 .m-shop{margin-top:14px;background:var(--panel-2,#141414);border:1px solid var(--line-2,#2a2a2a);border-radius:14px;padding:12px 14px}
 .m-shop-r{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid #ffffff10;font-size:15px}.m-shop-r:last-child{border-bottom:0}.m-shop-r b{white-space:nowrap}
 .m-nutt .m-h button{font-size:inherit}
-.fc-nl{display:flex;align-items:center;flex-wrap:nowrap;gap:.15rem .5rem;margin-top:.15rem}.fc-nl .fc-name{margin:0;padding-right:.16em;flex:none}.fc-r1{color:var(--tc);font-weight:900;font-size:1.45rem;text-shadow:0 0 14px var(--tc);white-space:nowrap}.fc-tch{font-style:normal;font-size:.58rem;font-weight:800;color:var(--tc);border:1px solid var(--tc);border-radius:.25rem;padding:.14rem .42rem;letter-spacing:.12em;white-space:nowrap}
+.fc-nl{display:flex;align-items:center;flex-wrap:nowrap;gap:.15rem .5rem;margin-top:.15rem}.fc-nl .fc-name{margin:0;padding-right:.16em;flex:none}.fc-rg{display:flex;flex-direction:column;align-items:center;gap:.2rem;flex:none}.fc-r1{color:var(--tc);font-weight:900;font-size:1.45rem;text-shadow:0 0 14px var(--tc);white-space:nowrap}.fc-tch{font-style:normal;font-size:.58rem;font-weight:800;color:var(--tc);border:1px solid var(--tc);border-radius:.25rem;padding:.14rem .42rem;letter-spacing:.12em;white-space:nowrap}
 .fc-nl~.fc-rate{justify-content:flex-start}.fc-tier{margin:.3rem 0 .1rem;font-size:.66rem;letter-spacing:.06em;color:var(--muted);font-weight:700}
 .fc-tier em{font-style:normal;font-weight:800;color:var(--tc);border:1px solid var(--tc);border-radius:.25rem;padding:.12rem .4rem;letter-spacing:.12em}
 #aStage .mh-ov{display:none}
@@ -2792,7 +2792,7 @@ function renderCard(){
   $('#fCard').innerHTML=`<div class="fc-frame"></div><img class="fc-bg" src="${$('.st-mascot').src}" alt="" aria-hidden="true">
    <header class="fc-top"><img src="${$('.club-logo').src}" alt="Mowgli Fight Club"><span class="demo">DEMO</span>${pro?'<i class="pro big">PRO</i>':''}</header>
    <div class="fc-id"><span class="fc-num">${String(a.id).padStart(2,'0')}</span><span class="fc-disc">${esc(a.disc)} · ${esc(P.cls)}</span></div>
-   <img class="fc-photo" src="${(CAB[cardId]&&CAB[cardId].person.photo)||avatar(cardId)}" alt="Фото ${esc(a.name)}"><div class="fc-nl" style="--tc:${rt.tc}"><h2 class="fc-name">${esc(a.name)}</h2><span class="fc-r1 num">★ ${rt.R}</span><em class="fc-tch">${rt.tn}</em></div>
+   <img class="fc-photo" src="${(CAB[cardId]&&CAB[cardId].person.photo)||avatar(cardId)}" alt="Фото ${esc(a.name)}"><div class="fc-nl" style="--tc:${rt.tc}"><h2 class="fc-name">${esc(a.name)}</h2><span class="fc-rg"><span class="fc-r1 num">★ ${rt.R}</span><em class="fc-tch">${rt.tn}</em></span></div>
    <div class="fc-tier">${rt.next?`до уровня ${rt.next[1]} — ещё ${rt.next[0]-rt.R} FP`:'высший уровень клуба'}</div>${a.nick!==a.name?`<div class="fc-nick">«${esc(a.nick)}»</div>`:''}
    <div class="fc-rate" style="--tc:${rt.tc}"><span>FP RATING</span><i>#${rt.rank} из ${rt.of} в своём весе${U18(a)?' · U18':''}</i></div>
    ${pro?`<div class="fc-rec"><div><b class="num">${P.rec.w}</b><small>ПОБЕД</small></div><span>–</span><div><b class="num">${P.rec.l}</b><small>ПОРАЖ.</small></div><span>–</span><div><b class="num">${P.rec.d}</b><small>НИЧЬИ</small></div></div>
