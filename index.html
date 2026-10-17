@@ -1,3 +1,4 @@
+<meta name="robots" content="noindex,nofollow">
 <title>MOWGLI FIGHT CLUB · FIGHT PULSE</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -991,6 +992,28 @@ body.m-tv .top .tabs [data-view=card],body.m-tv .top .tabs [data-view=coach]{dis
 }
 </style>
 
+<div id="fpGate" style="position:fixed;inset:0;z-index:99999;background:#050505;display:none;align-items:center;justify-content:center;font-family:Montserrat,system-ui,sans-serif;color:#eee;padding:24px">
+ <form id="fpGateF" style="width:100%;max-width:340px;text-align:center">
+  <div style="font-weight:900;letter-spacing:.18em;font-size:22px">FIGHT PULSE</div>
+  <div style="color:#8a8a8a;font-size:13px;margin:8px 0 22px">Закрытая демо-версия. Введите код доступа.</div>
+  <input id="fpGateI" type="password" autocomplete="off" placeholder="Код доступа" style="width:100%;box-sizing:border-box;padding:14px;border-radius:10px;border:1px solid #333;background:#111;color:#fff;font-size:17px;text-align:center;letter-spacing:.15em">
+  <button style="margin-top:12px;width:100%;padding:14px;border:0;border-radius:10px;background:#e8c35a;color:#000;font-weight:800;letter-spacing:.12em;font-size:14px">ВОЙТИ</button>
+  <div id="fpGateE" style="color:#ff4562;font-size:13px;min-height:18px;margin-top:10px"></div>
+ </form></div>
+<script>
+/* Доступ по коду — только на публичном хостинге (github.io). OK — SHA-256 разрешённых кодов: можно выдать отдельный код каждому клиенту. */
+(function(){if(!/github\.io$/.test(location.hostname))return;
+ const OK=['c4bceeef06e9d4939de1033649f2ede2def2d250e1d4bf4e43260373cddc1426'],g=document.getElementById('fpGate');
+ const sha=async s=>Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s.trim().toUpperCase())))).map(b=>b.toString(16).padStart(2,'0')).join('');
+ let saved=null;try{saved=localStorage.getItem('fp.gate')}catch(e){}
+ if(saved&&OK.includes(saved)){g.remove();return}
+ g.style.display='flex';
+ const tryCode=async c=>{const h=await sha(c);if(OK.includes(h)){try{localStorage.setItem('fp.gate',h)}catch(e){}g.remove();return true}return false};
+ const k=new URLSearchParams(location.search).get('k');
+ if(k)tryCode(k).then(ok=>{if(ok)history.replaceState(null,'',location.pathname)});
+ document.getElementById('fpGateF').onsubmit=async e=>{e.preventDefault();if(!await tryCode(document.getElementById('fpGateI').value))document.getElementById('fpGateE').textContent='Неверный код'};
+})();
+</script>
 <div id="app">
   <img class="app-bg" alt="" aria-hidden="true">
   <img class="app-word" alt="" aria-hidden="true">
