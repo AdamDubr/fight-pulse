@@ -622,7 +622,7 @@ table{font-size:.8rem}
  .top>*{order:2}
  .top .brand{order:0;flex:0 1 auto;min-width:0}
  #roundPill{order:1;margin-left:auto;font-size:.74rem;letter-spacing:.04em;padding:.22rem .55rem;gap:.45rem;white-space:nowrap}
- #roundPill #rpText{display:none} #demoBadge,#clock,#fsBtn{display:none!important} #mobBtn{order:1;font-size:0;padding:.28rem .5rem;margin-left:.3rem}#mobBtn::before{content:'‹ НАЗАД';font-size:.68rem;font-weight:700;letter-spacing:.06em} .top .brand .by{display:none!important} .top .brand::after{content:'DEMO';margin-left:.45rem;font-size:.62rem;font-weight:700;letter-spacing:.08em;color:#e8c35a;border:1px dashed #e8c35a99;border-radius:.3rem;padding:.12rem .35rem;align-self:center} .top .brand{display:flex;align-items:center}
+ #roundPill #rpText{display:none} body:not(.m-on) *{scrollbar-width:none} body:not(.m-on) *::-webkit-scrollbar{display:none;width:0;height:0} .adm-tabs{position:sticky;top:0;z-index:30;background:var(--bg,#0a0a0a);padding:.6rem 0 .5rem;margin-top:.2rem;box-shadow:0 8px 14px -10px #000} .top .tabs{order:3;flex:1 1 100%;width:100%;flex-wrap:nowrap;justify-content:space-between} .top .tabs button{flex:1 1 auto;padding:.38rem .2rem;font-size:.66rem;letter-spacing:.04em;white-space:nowrap;text-align:center} #demoBadge,#clock,#fsBtn{display:none!important} #mobBtn{order:1;font-size:0;padding:.28rem .5rem;margin-left:.3rem}#mobBtn::before{content:'‹ НАЗАД';font-size:.68rem;font-weight:700;letter-spacing:.06em} .top .brand .by{display:none!important} .top .brand::after{content:'DEMO';margin-left:.45rem;font-size:.62rem;font-weight:700;letter-spacing:.08em;color:#e8c35a;border:1px dashed #e8c35a99;border-radius:.3rem;padding:.12rem .35rem;align-self:center} .top .brand{display:flex;align-items:center}
  #roundPill .ph{font-size:.6rem;padding:.1rem .4rem}
  #roundPill .num{font-size:.85rem}
  .top .brand .club-logo{height:2rem}
@@ -706,7 +706,8 @@ body.m-on.m-frame::after{content:'Предпросмотр мобильной в
 #mobile .mh-ov .c small{font-size:11.5px;letter-spacing:.1em}#mobile .mh-ov .c b{font-size:19px}#mobile .mh-ov .c b.xl{font-size:36px}#mobile .mh-ov .c em{font-size:12px}
 #mobile .mh-ov .mz{font-size:11.5px;padding:2px 5px;letter-spacing:.06em}#mobile .mh-ov .c{max-width:36%}#mobile .mh-ov .tl,#mobile .mh-ov .bl{left:8px}#mobile .mh-ov .tr,#mobile .mh-ov .br{right:8px}
 #mobile .mh-ov .bl,#mobile .mh-ov .br{bottom:44px}#mobile .mh-ov .c[style*="bottom:138px"]{bottom:112px!important}
-.m-bds{gap:12px}.m-bds .m-bd{width:auto;min-width:80px;max-width:116px}.m-bds .m-bd b{font-size:13px;line-height:1.15;overflow-wrap:normal;word-break:keep-all;min-height:2.3em}
+.m-bds{gap:6px}.m-bds .m-bd{width:100px;min-width:100px}.m-bds .m-bd b{font-size:12.5px;line-height:1.15;overflow-wrap:normal;word-break:keep-all;min-height:2.3em;letter-spacing:-.01em}
+.m-cardslot #fCard{margin:0 auto;max-width:100%}
 .m-nutt{margin-top:14px}.m-nutt>.m-h{margin-bottom:8px}.m-tpill{margin-left:auto;display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line-2);border-radius:9px;padding:4px 9px;font-weight:800;font-size:16px;white-space:nowrap}.m-tpill .ph{font-size:12px;font-weight:800;letter-spacing:.06em;color:#000;background:var(--pc,#2fd27a);border-radius:4px;padding:2px 6px}.m-tpill:empty{display:none}.m-tpill+.m-ava{margin-left:8px}
 #mobile .mh-ov .sens:not([style*="top:20px"]){display:none}#mobile .mh-ov .sens[style*="top:20px"]{top:6px!important}.m-top .demo{font-size:15px;padding:2px 5px}
 .m-ava{margin-left:auto;width:36px;height:36px;border-radius:50%;overflow:hidden;background:#262626;border:1px solid #444;font-weight:800;color:var(--muted);padding:0}.m-ava img{width:100%;height:100%;object-fit:cover}
@@ -3138,7 +3139,7 @@ async function openShare(a,C,G,striker){const cv=$('#shCanvas'),x=cv.getContext(
   if(PROF[a.id].pro){x.fillStyle='#d9d9d9';x.font='800 44px Montserrat';x.fillText(recStr(PROF[a.id])+'  ',tx,440);x.fillStyle='#737373';x.font='600 24px Montserrat';x.fillText('ПОБЕДЫ · ПОРАЖЕНИЯ · НИЧЬИ',tx,480)}
   {const rt=ratingOf(a.id);x.fillStyle=rt.tc;x.font='900 54px Montserrat';const rs=`★ ${rt.R} FP`;x.fillText(rs,tx,552);
    const rw=x.measureText(rs).width;x.fillStyle='#a6a6a6';x.font='700 27px Montserrat';x.fillText(`#${rt.rank} · ${rt.cat} ВЕС · ${rt.tn}`,tx+rw+26,552)}
-  const items=[['ТРЕНИРОВОК',String(G.sess),''],['ВОССТАНОВЛЕНИЕ',(G.hrr>0?'+':'')+G.hrr+'%','HRR60'],['ПУЛЬС НА НАГРУЗКЕ',(G.hrStd>0?'+':'')+G.hrStd,'уд/мин'],
+  const items=[['ТРЕНИРОВОК',String(G.sess),''],['ВОССТАНОВЛЕНИЕ',(G.hrr>0?'+':'')+G.hrr+'%','HRR60'],[G.hrStd<=0?'ПУЛЬС НА НАГРУЗКЕ НИЖЕ':'ПУЛЬС НА НАГРУЗКЕ ВЫШЕ',String(Math.abs(G.hrStd)),'уд/мин'],
     striker?['СКОРОСТЬ УДАРА',(G.spd>0?'+':'')+G.spd,'м/с']:['СОЖЖЕНО',fmtK(G.kcal),'ккал']];
   items.forEach((it,i)=>{const cx=70+(i%2)*480,cy=620+Math.floor(i/2)*230;x.fillStyle='rgba(255,255,255,.04)';x.beginPath();x.roundRect(cx,cy,450,200,20);x.fill();
     x.fillStyle='#737373';x.font='700 24px Montserrat';x.fillText(it[0],cx+30,cy+50);x.fillStyle='#fff';x.font='900 84px Montserrat';x.fillText(it[1],cx+30,cy+145);
@@ -3205,7 +3206,7 @@ const badge=(x,big)=>`<div class="m-bd ${x.ok?'ok':''} ${big?'big':''}"><div cla
 // --- экраны ---
 function mTPill(){const tp=document.getElementById('mTPill');if(tp){const fm=fight.state==='running'||fight.state==='paused';tp.style.setProperty('--pc',fm?'#ff3d52':train.color());tp.innerHTML=fm?`<span class="ph">БОЙ · Р${fight.round}</span><span class="num">${fmt(fight.remaining())}</span>`:`<span class="ph">${train.label()}</span><span class="num">${fmt(train.total)}</span>`}}
 setInterval(()=>{if(MOB.on)mTPill()},1000);
-function renderMobile(){if(!MOB.on)return;mTPill();const id=MOB.me,a=byId.get(id),C=CAB[id],P=PROF[id];cardId=id;
+function renderMobile(){if(!MOB.on)return;mTPill();{const st=$('.fc-stage'),wr=$('.fc-wrap');[['#fCard',st],['#fcShareRow',st],['#fcEdit',wr]].forEach(([q,pp])=>{const e=$(q);if(e&&pp&&e.closest('#mobile'))pp.appendChild(e)})}const id=MOB.me,a=byId.get(id),C=CAB[id],P=PROF[id];cardId=id;
   $('#mAva').innerHTML=C.person.photo?`<img src="${C.person.photo}" alt="">`:esc(a.name[0]);
   $('#mNav').querySelectorAll('button').forEach(b=>b.setAttribute('aria-current',b.dataset.t===MOB.tab?'page':'false'));
   const od=C.tasks.filter(t=>t.status!=='done').length;$('#mTB').hidden=!od;$('#mTB').textContent=od;
@@ -3216,11 +3217,7 @@ function mHome(a,C,P,B){const m=metrics.get(a.id),S=cardStats(a.id),A=achievemen
   const alerts=[left<0?['bad',`Абонемент истёк ${dd(-left)} назад`,'sub']:left<=7?['warn',`Абонемент: осталось ${dd(left)}`,'sub']:null,cl<0?['bad','Медицинский допуск истёк','health']:cl<=14?['warn',`Допуск истекает через ${dd(cl)}`,'health']:null].filter(Boolean);
   B.innerHTML=`<div class="m-hello"><small>${new Date().toLocaleDateString('ru-RU',{weekday:'long',day:'numeric',month:'long'})}</small><h1>Привет, ${esc(a.nick)}</h1></div>
    ${alerts.map(x=>`<button class="m-alert ${x[0]}" data-go="${x[2]}">${x[1]} <span>→</span></button>`).join('')}
-   <section class="m-hero"><img class="m-hero-bg" src="${$('.st-mascot').src}" alt="">
-    <div class="m-hero-top">${C.person.photo?`<img class="m-ph" src="${C.person.photo}" alt="">`:''}<div><div class="m-disc">${esc(a.disc)} · ${esc(P.cls)}</div><div class="m-name">${esc(a.name)}</div><div style="margin:.1rem 0">${rtBadge(a.id)}</div>
-     ${P.pro?`<div class="m-rec num">${recStr(P)} <small>${P.rec.ko} KO · ${P.rec.sub} SUB</small></div>`:'<div class="m-rec"><small>Рекорд и регалии — в Pro</small></div>'}</div>${P.pro?'<i class="pro big">PRO</i>':''}</div>
-    <div class="m-stats"><div><b class="num">${S.n}</b><small>ТРЕНИРОВОК</small></div><div><b class="num">${Math.round(S.h)}</b><small>ЧАСОВ</small></div><div><b class="num">${fmtK(S.kcal)}</b><small>ККАЛ</small></div></div>
-    <button class="btn primary m-share" id="mShare">ПОДЕЛИТЬСЯ ПРОГРЕССОМ ↗</button></section>
+   <div id="mCardSlot" class="m-cardslot"></div><button class="btn primary m-share" id="mShare">ПОДЕЛИТЬСЯ КАРТОЧКОЙ ↗</button>
    ${live?`<button class="m-live" data-tab="live" style="--zc:${ZCOL[z]}"><span class="dot"></span><div><small>${m.mode==='fight'?'ИДЁТ БОЙ':'ИДЁТ ТРЕНИРОВКА'}</small><b class="num">${m.hr}<em>уд/мин</em></b></div><div class="r"><b class="num">${Math.round(m.kcal)}</b><small>ккал</small></div><div class="r"><b class="num">${m.reserve}%</b><small>запас сил</small></div></button>`:''}
    <div class="m-sec"><div class="m-h">Достижения <span>${got} из ${A.length}</span><button data-tab="ach">все →</button></div>
     <div class="m-bds">${A.map(x=>badge(x)).join('')}</div>
@@ -3230,7 +3227,7 @@ function mHome(a,C,P,B){const m=metrics.get(a.id),S=cardStats(a.id),A=achievemen
    <div class="m-sec"><div class="m-h">Рост за 12 недель <button data-tab="ach">подробно →</button></div><canvas class="m-chart" id="mC1"></canvas><div class="muted small">Восстановление пульса HRR60 · расчёт</div></div>
    <div class="m-sec m-subrow"><button class="m-tile" data-go="sub"><small>АБОНЕМЕНТ</small><b>${left<0?'истёк':dd(left)}</b><span>${esc(C.sub.plan)}</span></button><button class="m-tile" data-go="health"><small>ДОПУСК</small><b>${cl<0?'истёк':'до '+fmtD(C.med.certUntil).slice(0,5)}</b><span>${C.med.inj.some(t=>dLeft(t.until)>=0)?'есть ограничения':'без ограничений'}</span></button></div>`;
   lineChart($('#mC1'),progData(a.id).map(x=>x.hrr),{c:'#3b9cff'});
-  mWire(B);$('#mShare').onclick=()=>openShare(a,C,progSummary(a.id),!/BJJ|Борьба|Функционал/.test(a.disc))}
+  mWire(B);{const sl=$('#mCardSlot');if(sl){sl.appendChild($('#fCard'));renderCard()}}$('#mShare').onclick=()=>$('#fcShare').click()}
 function mWire(B){B.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>{MOB.tab=b.dataset.tab;MOB.sub=null;renderMobile()}));
   B.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>{MOB.tab='me';MOB.sub=b.dataset.go;renderMobile()}))}
 function mLive(a,C,P,B){const m=metrics.get(a.id),st=metrics.status(m),live=m.hr&&st!=='lost',z=live?zoneOf(m.hr,a.hrMax):0,cd=COND[m.lvl],fm=m.mode==='fight',s=strikes.get(a.id),tot=m.zs.reduce((x,y)=>x+y,0)||1;
