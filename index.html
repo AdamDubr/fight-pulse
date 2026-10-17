@@ -1459,7 +1459,7 @@ class MetricsEngine extends Emitter{
   avg(m){return m.n?Math.round(m.sum/m.n):null}
 }
 const COND={good:{l:'ГОТОВ',c:'#2fd27a'},mid:{l:'НАГРУЗКА',c:'#ffc93c'},bad:{l:'НУЖЕН ОТДЫХ',c:'#ff4562'}};
-const CONN={live:'НА СВЯЗИ',stale:'ЗАДЕРЖКА',lost:'НЕТ СИГНАЛА',none:'НЕ ПОДКЛЮЧЁН'};
+const CONN={live:'НА СВЯЗИ',stale:'ЗАДЕРЖКА',lost:'НЕТ СИГНАЛА',none:'НЕ ПРИШЁЛ · НЕТ ДАТЧИКА'};
 const SIGTXT={rec:v=>`−${Math.round(v.d*100)}%`,rest:v=>`${v.d>=0?'+':''}${Math.round(v.d)} уд/мин`,drift:v=>`${v.d>=0?'+':''}${(v.d*100).toFixed(1)}%`,
   t90:v=>`${v.c.toFixed(1)} из ${v.b} мин`,load:v=>`${Math.round(v.c)} / ${v.b}`,hrv:v=>`−${Math.round(v.d*100)}%`};
 
