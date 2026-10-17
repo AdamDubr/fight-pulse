@@ -622,7 +622,8 @@ table{font-size:.8rem}
  .top>*{order:2}
  .top .brand{order:0;flex:0 1 auto;min-width:0}
  #roundPill{order:1;margin-left:auto;font-size:.74rem;letter-spacing:.04em;padding:.22rem .55rem;gap:.45rem;white-space:nowrap}
- #roundPill #rpText{display:none} body:not(.m-on) *{scrollbar-width:none} body:not(.m-on) *::-webkit-scrollbar{display:none;width:0;height:0} .adm-tabs{position:sticky;top:0;z-index:30;background:var(--bg,#0a0a0a);padding:.6rem 0 .5rem;margin-top:.2rem;box-shadow:0 8px 14px -10px #000} .top .tabs{order:3;flex:1 1 100%;width:100%;flex-wrap:nowrap;justify-content:space-between} .top .tabs button{flex:1 1 auto;padding:.38rem .2rem;font-size:.66rem;letter-spacing:.04em;white-space:nowrap;text-align:center} #demoBadge,#clock,#fsBtn{display:none!important} #mobBtn{order:1;font-size:0;padding:.28rem .5rem;margin-left:.3rem}#mobBtn::before{content:'‹ НАЗАД';font-size:.68rem;font-weight:700;letter-spacing:.06em} .top .brand .by{display:none!important} .top .brand::after{content:'DEMO';margin-left:.45rem;font-size:.62rem;font-weight:700;letter-spacing:.08em;color:#e8c35a;border:1px dashed #e8c35a99;border-radius:.3rem;padding:.12rem .35rem;align-self:center} .top .brand{display:flex;align-items:center}
+ #roundPill #rpText{display:none} #view-arena #aLeft,#view-arena #aRight,#aStage .st-round,#aStage .st-note{display:none!important} #view-arena .arena{display:flex!important;flex-direction:column;gap:.6rem;height:auto!important} #aStage{order:0;height:470px!important;min-height:470px;flex:none!important;width:100%} #view-arena .a-charts,#view-arena .a-strip{order:1}
+ #aStage .mh-ov{display:block!important}#aStage .mh-ov .c small{font-size:11.5px;letter-spacing:.1em}#aStage .mh-ov .c b{font-size:19px}#aStage .mh-ov .c b.xl{font-size:36px}#aStage .mh-ov .c em{font-size:12px}#aStage .mh-ov .mz{font-size:11.5px;padding:2px 5px}#aStage .mh-ov .c{max-width:36%}#aStage .mh-ov .tl,#aStage .mh-ov .bl{left:8px}#aStage .mh-ov .tr,#aStage .mh-ov .br{right:8px}#aStage .mh-ov .bl,#aStage .mh-ov .br{bottom:44px}#aStage .mh-ov .sens{font-size:14px}#aStage .mh-ov .sens .u18{font-size:10px} body:not(.m-on) *{scrollbar-width:none} body:not(.m-on) *::-webkit-scrollbar{display:none;width:0;height:0} .adm-tabs{position:sticky;top:0;z-index:30;background:var(--bg,#0a0a0a);padding:.6rem 0 .5rem;margin-top:.2rem;box-shadow:0 8px 14px -10px #000} .top .tabs{order:3;flex:1 1 100%;width:100%;flex-wrap:nowrap;justify-content:space-between} .top .tabs button{flex:1 1 auto;padding:.38rem .2rem;font-size:.66rem;letter-spacing:.04em;white-space:nowrap;text-align:center} #demoBadge,#clock,#fsBtn{display:none!important} #mobBtn{order:1;font-size:0;padding:.28rem .5rem;margin-left:.3rem}#mobBtn::before{content:'‹ НАЗАД';font-size:.68rem;font-weight:700;letter-spacing:.06em} .top .brand .by{display:none!important} .top .brand::after{content:'DEMO';margin-left:.45rem;font-size:.62rem;font-weight:700;letter-spacing:.08em;color:#e8c35a;border:1px dashed #e8c35a99;border-radius:.3rem;padding:.12rem .35rem;align-self:center} .top .brand{display:flex;align-items:center}
  #roundPill .ph{font-size:.6rem;padding:.1rem .4rem}
  #roundPill .num{font-size:.85rem}
  .top .brand .club-logo{height:2rem}
@@ -708,6 +709,18 @@ body.m-on.m-frame::after{content:'Предпросмотр мобильной в
 #mobile .mh-ov .bl,#mobile .mh-ov .br{bottom:44px}#mobile .mh-ov .c[style*="bottom:138px"]{bottom:112px!important}
 .m-bds{gap:6px}.m-bds .m-bd{width:100px;min-width:100px}.m-bds .m-bd b{font-size:12.5px;line-height:1.15;overflow-wrap:normal;word-break:keep-all;min-height:2.3em;letter-spacing:-.01em}
 .m-cardslot #fCard{margin:0 auto;max-width:100%}
+.m-bd .ring svg,.m-next .ring svg,.m-bdl .ring svg{transform:none!important}
+#shImgM{position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.88);display:flex;align-items:center;justify-content:center;padding:16px;overflow:auto}
+#shImgM[hidden]{display:none}.shm-box{width:100%;max-width:520px;text-align:center}
+.shm-box img{display:block;margin:0 auto;max-width:100%;max-height:68vh;border-radius:14px;box-shadow:0 10px 40px #000;-webkit-touch-callout:default;user-select:auto}
+.shm-box p{color:#bdbdbd;font-size:14px;margin:12px 0}.shm-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}.shm-row .btn{text-decoration:none}
+.m-shop{margin-top:14px;background:var(--panel-2,#141414);border:1px solid var(--line-2,#2a2a2a);border-radius:14px;padding:12px 14px}
+.m-shop-r{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid #ffffff10;font-size:15px}.m-shop-r:last-child{border-bottom:0}.m-shop-r b{white-space:nowrap}
+.m-nutt .m-h button{font-size:inherit}
+.fc-name .fc-r1{display:inline-block;-webkit-text-fill-color:initial;color:var(--tc);background:none;font-style:normal;font-size:.5em;vertical-align:.32em;margin-left:.35em;text-shadow:0 0 14px var(--tc);letter-spacing:0}
+.fc-tier{display:flex;gap:.45rem;align-items:center;margin:.3rem 0 .1rem;font-size:.62rem;letter-spacing:.08em;color:var(--muted);font-weight:700}
+.fc-tier em{font-style:normal;font-weight:800;color:var(--tc);border:1px solid var(--tc);border-radius:.25rem;padding:.12rem .4rem;letter-spacing:.12em}
+#aStage .mh-ov{display:none}
 .m-nutt{margin-top:14px}.m-nutt>.m-h{margin-bottom:8px}.m-tpill{margin-left:auto;display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line-2);border-radius:9px;padding:4px 9px;font-weight:800;font-size:16px;white-space:nowrap}.m-tpill .ph{font-size:12px;font-weight:800;letter-spacing:.06em;color:#000;background:var(--pc,#2fd27a);border-radius:4px;padding:2px 6px}.m-tpill:empty{display:none}.m-tpill+.m-ava{margin-left:8px}
 #mobile .mh-ov .sens:not([style*="top:20px"]){display:none}#mobile .mh-ov .sens[style*="top:20px"]{top:6px!important}.m-top .demo{font-size:15px;padding:2px 5px}
 .m-ava{margin-left:auto;width:36px;height:36px;border-radius:50%;overflow:hidden;background:#262626;border:1px solid #444;font-weight:800;color:var(--muted);padding:0}.m-ava img{width:100%;height:100%;object-fit:cover}
@@ -2675,8 +2688,9 @@ function renderCard(){
   $('#fCard').innerHTML=`<div class="fc-frame"></div><img class="fc-bg" src="${$('.st-mascot').src}" alt="" aria-hidden="true">
    <header class="fc-top"><img src="${$('.club-logo').src}" alt="Mowgli Fight Club"><span class="demo">DEMO</span>${pro?'<i class="pro big">PRO</i>':''}</header>
    <div class="fc-id"><span class="fc-num">${String(a.id).padStart(2,'0')}</span><span class="fc-disc">${esc(a.disc)} · ${esc(P.cls)}</span></div>
-   <img class="fc-photo" src="${(CAB[cardId]&&CAB[cardId].person.photo)||avatar(cardId)}" alt="Фото ${esc(a.name)}"><h2 class="fc-name">${esc(a.name)}</h2>${a.nick!==a.name?`<div class="fc-nick">«${esc(a.nick)}»</div>`:''}
-   <div class="fc-rate" style="--tc:${rt.tc}"><b class="num">${rt.R}</b><span>FP RATING</span><i>#${rt.rank} ИЗ ${rt.of} · ${rt.cat} ВЕС</i><em>${rt.tn}</em>${rt.next?`<small>до уровня ${rt.next[1]} — ещё ${rt.next[0]-rt.R} FP</small>`:'<small>высший уровень клуба</small>'}</div>
+   <img class="fc-photo" src="${(CAB[cardId]&&CAB[cardId].person.photo)||avatar(cardId)}" alt="Фото ${esc(a.name)}"><h2 class="fc-name" style="--tc:${rt.tc}">${esc(a.name)}<span class="fc-r1 num">★ ${rt.R}</span></h2>
+   <div class="fc-tier" style="--tc:${rt.tc}"><em>${rt.tn}</em><span>${rt.next?`до уровня ${rt.next[1]} — ещё ${rt.next[0]-rt.R} FP`:'высший уровень клуба'}</span></div>${a.nick!==a.name?`<div class="fc-nick">«${esc(a.nick)}»</div>`:''}
+   <div class="fc-rate" style="--tc:${rt.tc}"><span>FP RATING</span><i>#${rt.rank} из ${rt.of} в своём весе${U18(a)?' · U18':''}</i></div>
    ${pro?`<div class="fc-rec"><div><b class="num">${P.rec.w}</b><small>ПОБЕД</small></div><span>–</span><div><b class="num">${P.rec.l}</b><small>ПОРАЖ.</small></div><span>–</span><div><b class="num">${P.rec.d}</b><small>НИЧЬИ</small></div></div>
      <div class="fc-recd">${P.rec.ko} KO/TKO · ${P.rec.sub} сабмишн · ${Math.max(0,P.rec.w-P.rec.ko-P.rec.sub)} решением</div>
      ${P.rank!=='—'?`<div class="fc-belt"><i style="--bc:${BELTS[P.rank]||'#3a3a3a'}"></i>${esc(P.rank)} пояс BJJ</div>`:''}
@@ -2848,16 +2862,19 @@ ATHLETES.forEach(a=>{if(!U18(a))return;const n=CAB[a.id].nut;if(n&&n.mode==='В�
 for(const k in PHOTO_DEMO)if(CAB[k]&&!CAB[k].person.photo)CAB[k].person.photo=PHOTO_DEMO[k];
 const saveCab=()=>{try{localStorage.setItem('fp.cab.v1',JSON.stringify(CAB))}catch(e){toast('Не удалось сохранить: хранилище браузера заполнено')}};
 const cab={sec:'card',role:'athlete'};
-$('#fcShare').addEventListener('click',async()=>{const el=$('#fCard');
-  try{toast('Готовлю изображение карточки…');
-    const fr=el.querySelector('.fc-frame'),ob=el.style.background;el.style.background='#101010';if(fr)fr.style.display='none';
-    const cv=await html2canvas(el,{backgroundColor:'#0a0a0a',scale:2,useCORS:true,logging:false});
-    el.style.background=ob;if(fr)fr.style.display='';
-    const blob=await new Promise(r=>cv.toBlob(r,'image/png'));
-    const a2=byId.get(cardId),file=new File([blob],('fight-pulse-'+a2.name+'.png').replace(/\s+/g,'-'),{type:'image/png'});
-    if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:'FIGHT PULSE — карточка бойца'})}
-    else{const u=URL.createObjectURL(blob),l=document.createElement('a');l.href=u;l.download=file.name;l.click();setTimeout(()=>URL.revokeObjectURL(u),4000);toast('Карточка сохранена как PNG')}
-  }catch(e){if(e&&e.name!=='AbortError')toast('Не удалось: '+e.message)}});
+async function cardCanvas(){const el=$('#fCard');let tmp=null,mark=null;
+  if(!el.offsetParent){mark=document.createComment('fc');el.before(mark);tmp=document.createElement('div');tmp.style.cssText='position:fixed;left:-10000px;top:0;width:400px';document.body.appendChild(tmp);tmp.appendChild(el);renderCard()}
+  const fr=el.querySelector('.fc-frame'),ob=el.style.background;el.style.background='#101010';if(fr)fr.style.display='none';
+  try{return await html2canvas(el,{backgroundColor:'#0a0a0a',scale:2,useCORS:true,logging:false})}
+  finally{el.style.background=ob;if(fr)fr.style.display='';if(tmp){mark.replaceWith(el);tmp.remove()}}}
+function shareImg(cv,name,title){const url=cv.toDataURL('image/png');let m=$('#shImgM');if(!m){m=document.createElement('div');m.id='shImgM';document.body.appendChild(m)}
+  const can=!!(navigator.canShare&&window.File);
+  m.innerHTML=`<div class="shm-box"><img src="${url}" alt="${esc(title)}"><p>Удерживайте картинку → «Сохранить в Фото» или «Поделиться»</p><div class="shm-row">${can?'<button class="btn primary" id="shmS">ПОДЕЛИТЬСЯ ↗</button>':''}<a class="btn${can?'':' primary'}" id="shmD" href="${url}" download="${name}">СКАЧАТЬ</a><button class="btn" id="shmX">ЗАКРЫТЬ</button></div></div>`;m.hidden=false;
+  $('#shmX').onclick=()=>{m.hidden=true};m.onclick=e=>{if(e.target===m)m.hidden=true};
+  const sb=$('#shmS');if(sb)sb.onclick=async()=>{try{const blob=await new Promise(r=>cv.toBlob(r,'image/png'));const f=new File([blob],name,{type:'image/png'});
+    if(navigator.canShare({files:[f]}))await navigator.share({files:[f],title});else toast('Удерживайте картинку, чтобы сохранить или отправить')}catch(e){if(e&&e.name!=='AbortError')toast('Удерживайте картинку, чтобы сохранить или отправить')}}}
+$('#fcShare').addEventListener('click',async()=>{try{toast('Готовлю изображение карточки…');const cv=await cardCanvas();const a2=byId.get(cardId);
+  shareImg(cv,('fight-pulse-'+a2.name+'.png').replace(/\s+/g,'-'),'FIGHT PULSE — карточка бойца')}catch(e){toast('Не удалось: '+e.message)}});
 function toast(t){let el=$('#toast');if(!el){el=document.createElement('div');el.id='toast';document.body.appendChild(el)}el.textContent=t;el.classList.add('on');clearTimeout(toast.tm);toast.tm=setTimeout(()=>el.classList.remove('on'),2600)}
 // --- прогресс: 12 недель (DEMO-история + сегодняшняя тренировка из системы) ---
 function progData(id){const a=byId.get(id),r=x=>((Math.sin(id*7.31+x*3.17)*9973.1)%1+1)%1,f=a.fit;
@@ -3112,7 +3129,7 @@ function secProgress(a,C){const G=progSummary(a.id),D=G.D,striker=!/BJJ|Борь
   const card=(k,v,d,good,note)=>`<div class="pk ${good?'up':''}"><small>${k}</small><b class="num">${v}</b><span>${d}</span><em>${note}</em></div>`;
   CB().innerHTML=`<div class="panel"><div class="ph-title"><span class="label">Личный рост · 12 недель</span><span class="tag">DEMO-история</span><button class="btn primary" id="pShare" style="margin-left:auto">ПОДЕЛИТЬСЯ ↗</button></div>
    <div class="pks">${card('ТРЕНИРОВОК',G.sess,'за 12 недель',1,'учёт системы')}
-    ${card('ПУЛЬС НА СТАНДАРТНОЙ НАГРУЗКЕ',(G.hrStd>0?'+':'')+G.hrStd,'уд/мин',G.hrStd<0,'ниже — лучше выносливость · расчёт')}
+    ${card(G.hrStd<=0?'ПУЛЬС НА НАГРУЗКЕ СНИЗИЛСЯ':'ПУЛЬС НА НАГРУЗКЕ ВЫРОС',Math.abs(G.hrStd),'уд/мин',G.hrStd<0,'ниже — лучше выносливость · расчёт')}
     ${card('ВОССТАНОВЛЕНИЕ HRR60',(G.hrr>0?'+':'')+G.hrr+'%','к первой неделе',G.hrr>0,'быстрее падает пульс · расчёт')}
     ${card('НЕДЕЛЬНАЯ НАГРУЗКА',(G.trimp>0?'+':'')+G.trimp+'%','TRIMP',G.trimp>0,'объём работы · расчёт')}
     ${striker?card('СКОРОСТЬ УДАРА',(G.spd>0?'+':'')+G.spd,'м/с',G.spd>0,'оценка IMU · эксперимент'):card('СОЖЖЕНО',fmtK(G.kcal),'ккал',1,'расчёт Keytel')}</div>
@@ -3124,7 +3141,11 @@ function secProgress(a,C){const G=progSummary(a.id),D=G.D,striker=!/BJJ|Борь
    <div class="muted small">«Стандартная нагрузка» — одинаковая разминка в начале тренировки; если пульс на ней снижается, выносливость растёт. Это расчётные оценки, не медицинские показатели.</div></div>`;
   lineChart($('#pc1'),D.map(x=>x.hrStd),{c:'#2fd27a'});lineChart($('#pc2'),D.map(x=>x.hrr),{c:'#3b9cff'});lineChart($('#pc3'),D.map(x=>x.trimp),{c:'#ffc93c'});
   lineChart($('#pc4'),D.map(x=>striker?x.spd:x.kcal),{c:'#ff8a3d',dec:striker});
-  $('#pShare').onclick=()=>openShare(a,C,G,striker)}
+  $('#pShare').onclick=async()=>{const btn=$('#pShare');try{toast('Готовлю изображение…');const pan=btn.closest('.panel');btn.style.visibility='hidden';
+    const c2=await html2canvas(pan,{backgroundColor:'#0a0a0a',scale:2,logging:false});btn.style.visibility='';const pc=cardId;cardId=a.id;const c1=await cardCanvas();cardId=pc;
+    const pad=40,W=Math.max(c1.width,c2.width)+pad*2,cv=document.createElement('canvas');cv.width=W;cv.height=c1.height+c2.height+pad*3;const x=cv.getContext('2d');
+    x.fillStyle='#0a0a0a';x.fillRect(0,0,W,cv.height);x.drawImage(c1,(W-c1.width)/2,pad);x.drawImage(c2,(W-c2.width)/2,pad*2+c1.height);
+    shareImg(cv,('fight-pulse-progress-'+a.name+'.png').replace(/\s+/g,'-'),'FIGHT PULSE — прогресс')}catch(e){btn.style.visibility='';toast('Не удалось: '+e.message)}}}
 function wrapImg(src){return new Promise(r=>{if(!src)return r(null);const i=new Image();i.onload=()=>r(i);i.onerror=()=>r(null);i.src=src})}
 async function openShare(a,C,G,striker){const cv=$('#shCanvas'),x=cv.getContext('2d'),W=1080,H=1350;
   const [mas,word,ph]=await Promise.all([wrapImg($('.st-mascot').src),wrapImg($('.club-logo').src),wrapImg(C.person.photo)]);
@@ -3192,7 +3213,7 @@ function achievements(id){const a=byId.get(id),S=cardStats(id),G=progSummary(id)
    {k:'sess',t:'Первая сотня',d:'100 тренировок',v:S.n,g:100,i:'sess'},
    {k:'streak',t:'Железная серия',d:'8 недель подряд по 3+ тренировки',v:st,g:8,i:'chain'},
    {k:'hrr',t:'Мотор',d:'Восстановление пульса +25% за 12 недель',v:Math.max(0,G.hrr),g:25,i:'heart',u:'%'},
-   {k:'end',t:'Выносливость',d:'Пульс на стандартной нагрузке −10 уд/мин',v:Math.max(0,-G.hrStd),g:10,i:'lungs'},
+   {k:'end',t:'Выносливость',d:'Пульс на стандартной нагрузке ниже на 10 уд/мин',v:Math.max(0,-G.hrStd),g:10,i:'lungs'},
    {k:'kcal',t:'Печка',d:'100 000 ккал за всё время',v:Math.round(S.kcal),g:1e5,i:'fire'},
    striker?{k:'spd',t:'Скорость',d:'Удар 10 м/с (оценка датчика)',v:S.spd,g:10,i:'bolt',dec:1}:{k:'grind',t:'Грайндер',d:'200 часов на ковре',v:Math.round(S.h),g:200,i:'bolt'},
    {k:'disc',t:'Дисциплина',d:'10 выполненных заданий тренера',v:done,g:10,i:'check'},
@@ -3211,7 +3232,14 @@ function renderMobile(){if(!MOB.on)return;mTPill();{const st=$('.fc-stage'),wr=$
   $('#mNav').querySelectorAll('button').forEach(b=>b.setAttribute('aria-current',b.dataset.t===MOB.tab?'page':'false'));
   const od=C.tasks.filter(t=>t.status!=='done').length;$('#mTB').hidden=!od;$('#mTB').textContent=od;
   const B=$('#mBody');B.className='mt-'+MOB.tab;if(MOB.tab!=='live')Body3D.setActive(false);
-  ({home:mHome,live:mLive,ach:mAch,tasks:()=>{B.innerHTML='';secTasks(a,C);const nb=document.createElement('div');nb.className='m-sec m-nutt';nb.innerHTML='<div class="m-h">Питание от тренера</div><div id="mNutT"></div>';B.appendChild(nb);const pr=cab.role;cab.role='athlete';ADM.el=nb.querySelector('#mNutT');try{secNut(a,C,P)}finally{ADM.el=null;cab.role=pr}},me:mMe})[MOB.tab](a,C,P,B)}
+  ({home:mHome,live:mLive,ach:mAch,tasks:()=>{B.innerHTML='';secTasks(a,C);const nb=document.createElement('div');nb.className='m-sec m-nutt';nb.innerHTML='<div class="m-h">Питание от тренера <button id="mNutShare">поделиться ↗</button></div><div id="mNutT"></div>';B.appendChild(nb);const pr=cab.role;cab.role='athlete';ADM.el=nb.querySelector('#mNutT');try{secNut(a,C,P)}finally{ADM.el=null;cab.role=pr}nb.insertAdjacentHTML('beforeend',shopList(C));nb.insertAdjacentHTML('beforeend',`<div class="muted small" style="margin-top:8px">${esc(a.name)} · назначил ${esc(C.nut.by||COACH)} · ${fmtD(C.nut.upd)} · FIGHT PULSE</div>`);$('#mNutShare').onclick=async()=>{const bt=$('#mNutShare');try{toast('Готовлю изображение…');bt.style.visibility='hidden';const cv=await html2canvas(nb,{backgroundColor:'#0a0a0a',scale:2,logging:false});bt.style.visibility='';shareImg(cv,('pitanie-'+a.name+'.png').replace(/\s+/g,'-'),'Питание от тренера')}catch(e){bt.style.visibility='';toast('Не удалось: '+e.message)}}},me:mMe})[MOB.tab](a,C,P,B)}
+function shopList(C){const n=C.nut,days=n.week?Object.values(n.week):[n.meals||[]],map=new Map();
+  days.forEach(ML=>(ML||[]).forEach(ml=>(ml.items||[]).forEach(it=>{const m=String(it).trim().match(/^(.*?)\s([\d.,]+)\s?(г|кг|шт|л|мл)\.?$/i);
+    if(!m){const k=String(it).trim();if(!map.has(k))map.set(k,{n:k,q:0,u:''});return}
+    const nm=m[1].trim(),q=parseFloat(m[2].replace(',','.')),u=m[3].toLowerCase(),k=nm+'|'+u,o=map.get(k)||{n:nm,q:0,u};o.q+=q;map.set(k,o)})));
+  const fq=o=>{if(!o.u)return'по вкусу';let q=o.q,u=o.u;if(u==='г'&&q>=1000){q/=1000;u='кг'}if(u==='мл'&&q>=1000){q/=1000;u='л'}return String(Math.round(q*10)/10).replace('.',',')+' '+u};
+  const L=[...map.values()].sort((x,y)=>x.n.localeCompare(y.n,'ru'));
+  return`<div class="m-shop"><div class="m-h">Что купить · ${n.week?'на неделю':'на день'}</div>${L.map(o=>`<div class="m-shop-r"><span>${fico(o.n)} ${esc(o.n)}</span><b class="num">${fq(o)}</b></div>`).join('')||'<div class="muted small">Меню пока пустое</div>'}</div>`}
 function mHome(a,C,P,B){const m=metrics.get(a.id),S=cardStats(a.id),A=achievements(a.id),got=A.filter(x=>x.ok).length,next=A.filter(x=>!x.ok).sort((x,y)=>y.p-x.p)[0],
   left=dLeft(C.sub.end),cl=dLeft(C.med.certUntil),live=m.hr&&metrics.status(m)!=='lost',z=live?zoneOf(m.hr,a.hrMax):0,T=C.tasks.filter(t=>t.status!=='done').sort((x,y)=>x.due.localeCompare(y.due)).slice(0,2);
   const alerts=[left<0?['bad',`Абонемент истёк ${dd(-left)} назад`,'sub']:left<=7?['warn',`Абонемент: осталось ${dd(left)}`,'sub']:null,cl<0?['bad','Медицинский допуск истёк','health']:cl<=14?['warn',`Допуск истекает через ${dd(cl)}`,'health']:null].filter(Boolean);
@@ -3258,6 +3286,15 @@ function mLive(a,C,P,B){const m=metrics.get(a.id),st=metrics.status(m),live=m.hr
        <div class="sens" style="color:${live?'#2fd27a':'#ff4562'}">● ${esc(m.sensorId||'—')} · ${esc(m.model||a.sensor)}${m.battery!=null?' · '+Math.round(m.battery)+'%':''}</div>
        <div class="sens" style="top:20px;color:${rt2.tc};font-size:12px">★ <b style="font-size:16px;font-weight:900">${rt2.R}</b> · #${rt2.rank} ${rt2.cat}</div>`}
     else hs.parentElement.hidden=true}}
+function arenaMobOv(){const st=$('#aStage');if(!st)return;let ov=st.querySelector('.mh-ov');if(!ov){ov=document.createElement('div');ov.className='mh-ov';st.appendChild(ov)}
+  const a=ATHLETES[ui.idx],m=metrics.get(a.id),live=m.hr&&metrics.status(m)!=='lost',z=live?zoneOf(m.hr,a.hrMax):0,cd=COND[m.lvl],s=strikes.get(a.id),rt=ratingOf(a.id);
+  ov.innerHTML=`<div class="sens" style="color:#fff">${esc(display(a))} ${u18Badge(a)}<span style="color:${rt.tc}">★ ${rt.R} · #${rt.rank} ${rt.cat}</span></div>
+   <div class="c tl"><small>ПУЛЬС</small><b class="num xl" style="color:${live?ZCOL[z]:'#555'}">${live?m.hr:'--'}</b><em>уд/мин · ${live?Math.round(m.hr/a.hrMax*100)+'% HRmax':'нет данных'}</em><span class="mz" style="background:${ZCOL[z]}">${ZONES[z].key} · ${ZONES[z].label.toUpperCase()}</span></div>
+   <div class="c tr"><small>ЗАПАС СИЛ</small><b class="num xl" style="color:${cd.c}">${m.reserve}<i style="font-size:16px;font-style:normal">%</i></b><em>${cd.l} · РАСЧЁТ</em></div>
+   <div class="c bl"><small>В ЗОНЕ ${ZONES[z].key}</small><b class="num" style="color:${ZCOL[z]}">${fmt(Math.round(m.zs[z]))}</b><em>РАСЧЁТ</em></div>
+   <div class="c bl" style="bottom:112px"><small>ККАЛ/МИН</small><b class="num">${live?keytel(m.hr,a).toFixed(1):'--'}</b><em>РАСЧЁТ</em></div>
+   <div class="c br"><small>НАГРУЗКА</small><b class="num">${Math.round(m.trimp)}</b><em>TRIMP · РАСЧЁТ</em></div>
+   <div class="c br" style="bottom:112px"><small>АКТИВНОСТЬ</small><b class="num">${Math.round(s.act)}</b><em>IMU · РАСЧЁТ</em></div>`}
 function mAch(a,C,P,B){const A=achievements(a.id),R=records(a.id);
   secProgress(a,C);B.insertAdjacentHTML('afterbegin',`<div class="m-h1">Достижения <span>${A.filter(x=>x.ok).length} / ${A.length}</span></div><div class="m-bdl">${A.map(x=>badge(x,1)).join('')}</div>
    <div class="m-h1">Личные рекорды</div><div class="m-recs">${R.map(r=>`<div><small>${r[0]}</small><b class="num">${r[1]}</b><span>${r[2]}</span></div>`).join('')}</div>
@@ -3301,7 +3338,7 @@ function tickUI(){if(MOB.on)return;
   $('#rpText').textContent='ТРЕНИРОВКА';$('#rpPhase').textContent=train.label();$('#rpTime').textContent=fmt(train.total);
   $('#clock').textContent=new Date().toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'});
   $('#flRate').textContent=`${hub.count-lastCount} пак/с · отклонено ${hub.rejected}`;lastCount=hub.count;
-  if(ui.view==='arena'){renderArena();const a=ATHLETES[ui.idx],m=metrics.get(a.id),live=m.hr&&metrics.status(m)!=='lost';
+  if(ui.view==='arena'){renderArena();if(innerWidth<=760)arenaMobOv();const a=ATHLETES[ui.idx],m=metrics.get(a.id),live=m.hr&&metrics.status(m)!=='lost';
     $('#aKcal').textContent=m.kcal>=1?Math.round(m.kcal):'0';$('#aKcalR').textContent=live?`сейчас ≈ ${keytel(m.hr,a).toFixed(1)} ккал/мин`:'';$('#aKcK').textContent=m.mode==='fight'?'Сожжено · тренировка + бой':'Сожжено · тренировка'}else if(ui.view==='grid')renderGrid();else if(ui.view==='fight')renderFight();else if(ui.view==='card'){if(cab.sec==='card')renderCardStats()}else renderCoach();
   if(ui.view!=='fight'){const fp=$('#fightPill');fp.hidden=fight.state==='idle'||fight.state==='finished';$('#fpText').textContent=`${display(byId.get(fight.ids[0]))} — ${display(byId.get(fight.ids[1]))} · Р${fight.round}`;$('#fpTime').textContent=fmt(fight.remaining())}
 }
