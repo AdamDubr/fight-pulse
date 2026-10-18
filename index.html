@@ -355,9 +355,15 @@ tbody tr{cursor:pointer}
 .c-detail{display:none}
 .c-fdk{grid-area:fdk;min-width:0}
 .cab-role{display:none!important}
-.adm-tabs{display:flex;gap:.4rem;padding:1rem 0 0}
-.adm-tabs button{background:none;border:1px solid var(--line-2);border-radius:.35rem;padding:.45rem .9rem;color:var(--muted);font-family:var(--font-display);font-weight:800;font-size:.78rem;letter-spacing:.12em;cursor:pointer}
-.adm-tabs button[aria-selected=true]{color:#000;background:var(--fg);border-color:var(--fg)}
+.adm-tabs{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(5.4rem,9.5rem);justify-content:start;gap:.5rem;padding:1rem 0 .15rem;overflow-x:auto;scrollbar-width:none}
+.adm-tabs::-webkit-scrollbar{display:none}
+.adm-tabs button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.4rem;min-height:4.7rem;padding:.65rem .4rem;border:1px solid var(--line-2);border-radius:.85rem;background:linear-gradient(180deg,#171717,#0c0c0c);color:var(--muted);font-family:var(--font-display);font-weight:800;font-size:.64rem;letter-spacing:.1em;cursor:pointer;transition:border-color .2s,background .2s,color .2s,transform .2s;white-space:nowrap}
+.adm-tabs .as{display:none}
+@media (max-width:560px){.adm-tabs{grid-auto-columns:minmax(0,1fr)!important;gap:.25rem!important}.adm-tabs button{min-height:3.9rem!important;padding:.5rem .1rem!important;font-size:7.8px!important;letter-spacing:.02em!important;border-radius:.7rem}.adm-tabs button svg{width:1.35rem!important;height:1.35rem!important}.adm-tabs .al{display:none}.adm-tabs .as{display:inline}}
+.adm-tabs button svg{width:1.65rem;height:1.65rem;color:var(--c)}
+.adm-tabs button:hover{border-color:var(--c);transform:translateY(-1px)}
+.adm-tabs button:focus-visible{outline:2px solid var(--c);outline-offset:2px}
+.adm-tabs button[aria-selected=true]{color:#fff;border-color:var(--c);background:linear-gradient(180deg,color-mix(in srgb,var(--c) 30%,#111),color-mix(in srgb,var(--c) 10%,#0a0a0a));box-shadow:0 8px 22px -12px var(--c)}
 .coach.admx>*:not(#admBody){display:none}
 #admBody{grid-column:1/-1;min-width:0}
 #admQ{width:100%;max-width:26rem;background:var(--ink);border:1px solid var(--line-2);border-radius:.4rem;padding:.55rem .7rem;color:var(--fg);font-size:.9rem;margin:.4rem 0 .7rem}
@@ -668,8 +674,8 @@ table{font-size:.8rem}
  .top{gap:.45rem .6rem}
  .tabs{flex-wrap:wrap}
  .tabs button{padding:.3rem .55rem;font-size:.72rem}
- .adm-tabs{flex-wrap:wrap;gap:.3rem}
- .adm-tabs button{padding:.35rem .6rem;font-size:.68rem}
+ .adm-tabs{grid-auto-columns:minmax(4.6rem,1fr);gap:.4rem}
+ .adm-tabs button{min-height:4.2rem;font-size:.58rem;padding:.55rem .3rem}
  .top>*{order:2}
  .top .brand{order:0;flex:0 1 auto;min-width:0}
  #roundPill{order:1;margin-left:auto;font-size:.74rem;letter-spacing:.04em;padding:.22rem .55rem;gap:.45rem;white-space:nowrap}
@@ -1330,7 +1336,7 @@ body.m-tv .top .tabs [data-view=card],body.m-tv .top .tabs [data-view=coach]{dis
     </section>
 
     <section class="view" id="view-coach" hidden>
-      <nav class="adm-tabs" id="admTabs"><button data-adm="mon" aria-selected="true">МОНИТОР</button><button data-adm="roster">БОЙЦЫ</button><button data-adm="groups">ГРУППЫ</button><button data-adm="wk">РАУНДЫ</button><button data-adm="league">ЛИГА</button><button data-adm="sched">РАСПИСАНИЕ</button><button data-adm="fin">ФИНАНСЫ</button></nav>
+      <nav class="adm-tabs" id="admTabs" aria-label="Разделы тренера"><button data-adm="mon" style="--c:#ff5a5f" aria-selected="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 13h4l2.5-6 4 12 3-9 2 3H22"/></svg><span>МОНИТОР</span></button><button data-adm="roster" style="--c:#5aa9ff"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.6 2.7-6 6-6s6 2.4 6 6"/><circle cx="17" cy="9" r="2.6"/><path d="M15.5 14.2c3 .2 5.5 2.4 5.5 5.8"/></svg><span>БОЙЦЫ</span></button><button data-adm="groups" style="--c:#b48cff"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="2"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="2"/></svg><span>ГРУППЫ</span></button><button data-adm="wk" style="--c:#4ade80"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13.5" r="7.5"/><path d="M12 9.5v4l2.6 2.2M9.5 2.5h5M12 2.5V6"/></svg><span>РАУНДЫ</span></button><button data-adm="league" style="--c:#e8c35a"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4h10v4a5 5 0 0 1-10 0z"/><path d="M7 6H4v1.5A3.5 3.5 0 0 0 7.5 11M17 6h3v1.5A3.5 3.5 0 0 1 16.5 11M12 13v4M8 21h8l-1-4H9z"/></svg><span>ЛИГА</span></button><button data-adm="sched" style="--c:#2dd4bf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2.5"/><path d="M3 10h18M8 3v4M16 3v4M7.5 14h3M13.5 14h3M7.5 17.5h3"/></svg><span class="al">РАСПИСАНИЕ</span><span class="as">ГРАФИК</span></button><button data-adm="fin" style="--c:#f5a524"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M15 8.6c-.6-.9-1.7-1.4-3-1.4-1.9 0-3.2 1-3.2 2.4 0 3.3 6.6 1.7 6.6 4.9 0 1.4-1.4 2.4-3.4 2.4-1.4 0-2.6-.6-3.2-1.6M12 5v2.2M12 16.9V19"/></svg><span>ФИНАНСЫ</span></button></nav>
       <div class="coach">
         <div id="admBody" class="panel" hidden></div>
         <div class="c-ctrl">
