@@ -49,6 +49,31 @@ main{min-height:0;overflow-y:auto;overflow-x:hidden}
 .brand svg{width:2rem;height:1.2rem}
 .club-logo{height:2.3rem;width:auto;display:block;cursor:pointer}
 .brand .by{display:flex;align-items:center;gap:.4rem;padding-left:.8rem;border-left:1px solid var(--line-2);font-weight:900;font-size:1rem;letter-spacing:.16em;color:var(--fg)}
+.role-sw{display:flex;align-items:center;gap:.3rem;border:1px solid var(--line-2);border-radius:999px;padding:.2rem .5rem .2rem .6rem;flex:none;cursor:pointer}
+.role-sw span{font-size:.56rem;letter-spacing:.14em;color:var(--dim);font-weight:800}
+.role-sw select{appearance:none;-webkit-appearance:none;border:0;background:transparent;color:#e8c35a;font-family:inherit;font-weight:800;font-size:.62rem;letter-spacing:.1em;padding:.25rem .1rem;cursor:pointer}
+.role-sw select option{background:#111;color:#eee}
+.role-sw:focus-within{outline:2px solid #e8c35a;outline-offset:2px}
+.cab-role{display:none!important}
+body[data-role=fighter] .tabs [data-view=coach]{display:none!important}
+body:not([data-role=admin]) #admTabs [data-adm=fin]{display:none!important}
+body[data-role=coach] #cabTabs [data-sec=sub]{display:none!important}
+body[data-role=fighter] #fcList,body[data-role=fighter] #fcSel{display:none!important}
+body[data-role=fighter] .cab{grid-template-columns:minmax(0,1fr)}
+body[data-role=fighter] #view-fight .panel:has(#fStart){display:none!important}
+@media (max-width:760px){.role-sw{display:none!important}}
+.wld{padding-block:1.2rem;display:flex;flex-direction:column;gap:1.2rem;overflow:auto;height:100%}
+.wld-h h2{margin:.3rem 0 .4rem;font-size:2rem;font-weight:900;letter-spacing:.02em}
+.wld-h p{max-width:70ch;margin:0}
+.wld-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}
+.wld-c{display:flex;flex-direction:column;gap:.5rem;padding:1.1rem}
+.wld-c b{font-size:1.05rem;letter-spacing:.04em}
+.wld-c p{margin:0;color:var(--dim)}
+.wld-c em{font-style:normal;font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:#e8c35a;border:1px dashed #e8c35a66;border-radius:6px;padding:.25rem .5rem;align-self:flex-start}
+.wld-flow{margin:.2rem 0 0;padding-left:1.2rem;display:grid;gap:.25rem;font-size:.9rem}
+.wld-top{display:grid;gap:.3rem;margin-top:.3rem;font-size:.9rem}
+.wld-top div{display:flex;justify-content:space-between;gap:.5rem;border-bottom:1px solid var(--line-2);padding-bottom:.25rem}
+@media (max-width:1100px){.wld-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .brand .by .pit-line{height:1.45rem;width:auto;color:var(--fg);flex:none;display:block}
 .brand small{font-weight:500;color:var(--muted);letter-spacing:.14em;font-size:.7rem;margin-left:.2rem}
 .tabs{display:flex;gap:.25rem;background:var(--panel);border:1px solid var(--line);border-radius:.5rem;padding:.2rem}
@@ -1074,14 +1099,16 @@ body.m-tv .top .tabs [data-view=card],body.m-tv .top .tabs [data-view=coach]{dis
       <button role="tab" data-view="league" aria-selected="false">ЛИГА</button>
       <button role="tab" data-view="card" aria-selected="false">КАБИНЕТ</button>
       <button role="tab" data-view="coach" aria-selected="false">ТРЕНЕР</button>
+      <button role="tab" data-view="world" aria-selected="false">MY PIT</button>
     </nav>
     <div class="spacer"></div>
     <button class="fightpill" id="fightPill" hidden>БОЙ <b id="fpText">Р1</b><span class="num" id="fpTime">05:00</span></button>
     <div class="roundpill" id="roundPill"><span id="rpText">ТРЕНИРОВКА</span><span class="ph" id="rpPhase">ИДЁТ</span><span class="num" id="rpTime">00:00</span></div>
+    <label class="role-sw" id="roleSw"><span>ВХОД</span><select id="roleSel" aria-label="Вход как (демо)"><option value="admin">АДМИН</option><option value="coach">ТРЕНЕР</option><option value="fighter">БОЕЦ</option></select></label>
     <span class="demo" id="demoBadge" title="Данные генерирует симулятор телеметрии">DEMO · СИМУЛЯТОР</span>
     <span class="clock num" id="clock">00:00</span>
-    <button class="iconbtn" id="mobBtn" title="Мобильная версия спортсмена">▯ ТЕЛЕФОН</button>
-    <button class="iconbtn" id="fsBtn" title="Полноэкранный режим">⛶ ЭКРАН</button>
+    <button class="iconbtn" id="mobBtn" title="Мобильная версия спортсмена" aria-label="Мобильная версия спортсмена">▯</button>
+    <button class="iconbtn" id="fsBtn" title="Полноэкранный режим" aria-label="Полноэкранный режим">⛶</button>
   </header>
 
   <main>
@@ -1328,6 +1355,21 @@ body.m-tv .top .tabs [data-view=card],body.m-tv .top .tabs [data-view=coach]{dis
         <div class="c-alerts panel">
           <div class="ph-title"><span class="label">События</span><span class="muted small" id="alCount">0</span></div>
           <div class="alist" id="alList"></div>
+        </div>
+      </div>
+    </section>
+    <!-- ================= MY PIT WORLD (DEMO, в разработке) ================= -->
+    <section class="view" id="view-world" hidden>
+      <div class="wld">
+        <div class="wld-h"><div><span class="label">MY PIT WORLD · DEMO</span><h2>Мировая сеть бойцов</h2><p class="muted">Регистрация бойцов бесплатная. В мировой рейтинг идут только подтверждённые клубом данные (Verified). Раздел в разработке — ниже то, что в нём будет.</p></div></div>
+        <div class="wld-grid">
+          <div class="panel wld-c"><b>Карта клубов</b><p>Страна → город → клуб → «Вступить». Администратор клуба принимает заявку.</p><em>в разработке</em></div>
+          <div class="panel wld-c"><b>Мировой рейтинг PIT</b><p>Мир, страна, вес, вид единоборств. Verified отдельно от неподтверждённых.</p><div id="wldTop"></div></div>
+          <div class="panel wld-c"><b>Вызов на бой</b><p>Только Verified ↔ Verified, близкий вес и уровень, U18 не участвуют.</p>
+            <ol class="wld-flow"><li>Боец отправляет вызов</li><li>Администратор клуба соперника принимает вызов</li><li>Администратор согласует с бойцом и тренером</li><li>Боец, тренер и администратор дают онлайн-согласие</li><li>Детали подтверждены: дата, место, вес, правила, судьи, трансляция</li></ol><em>в разработке</em></div>
+          <div class="panel wld-c"><b>Бои и трансляции</b><p>Клубные вечера и товарищеские матчи: взносы, трансляция в My PIT, судейство, рост рейтинга клуба.</p><em>в разработке</em></div>
+          <div class="panel wld-c"><b>Мастер-классы</b><p>Каталог по городам и видам, запись и оплата через клуб.</p><em>в разработке</em></div>
+          <div class="panel wld-c"><b>Новости и статьи</b><p>Новости клубов и турниров, техника, восстановление, питание, подготовка к турниру.</p><em>в разработке</em></div>
         </div>
       </div>
     </section>
@@ -2514,7 +2556,7 @@ function admRoster(B){
    <input id="admQ" placeholder="Поиск: имя, фамилия, псевдоним, дисциплина…" value="${esc(ADM.q)}">
    <div class="rost">${L.map(a=>{const C=CAB[a.id],P=PROF[a.id],left=dLeft(C.sub.end),cl=dLeft(C.med.certUntil);
     return`<button class="rost-c" data-id="${a.id}"><img src="${C.person.photo||avatar(a.id)}" alt="">
-     <div><b>${esc(a.name)}</b> ${rtBadge(a.id)}${P.pro?' <i class="pro">PRO</i>':''}<small>${esc(a.disc)} · ${a.kg} кг · абонемент ${left<0?'<b style="color:#ff4562">истёк</b>':'до '+fmtD(C.sub.end)}${cl<0?' · <b style="color:#ff4562">допуск истёк</b>':''}</small></div></button>`}).join('')||'<div class="muted">Никого не найдено</div>'}</div>`;
+     <div><b>${esc(a.name)}</b> ${rtBadge(a.id)}${P.pro?' <i class="pro">PRO</i>':''}<small>${esc(a.disc)} · ${a.kg} кг${ROLE.v==='admin'?' · абонемент '+(left<0?'<b style="color:#ff4562">истёк</b>':'до '+fmtD(C.sub.end)):''}${cl<0?' · <b style="color:#ff4562">допуск истёк</b>':''}</small></div></button>`}).join('')||'<div class="muted">Никого не найдено</div>'}</div>`;
   $('#admQ').addEventListener('input',e=>{ADM.q=e.target.value;admRoster(B);const i=$('#admQ');i.focus();i.setSelectionRange(i.value.length,i.value.length)});
   B.querySelectorAll('.rost-c').forEach(b2=>b2.addEventListener('click',()=>{ADM.sel=+b2.dataset.id;admRoster(B)}))}
 // ---- карточка бойца в админке: информация + назначения + конструктор питания ----
@@ -3216,6 +3258,8 @@ function mLocked(a,C,P,B,what){B.innerHTML=`<div class="m-lock"><div class="m-lo
   bindSubs(a,C,B);$('#mLockTV').onclick=()=>$('#mNav [data-t=tv]').click()}
 
 const cab={sec:'card',role:'athlete'};
+/* ---- Роли (DEMO-вход): администратор клуба — всё, включая CRM и финансы; тренер — всё, кроме финансов и CRM; боец — свой кабинет, экраны своего клуба и My PIT World ---- */
+const ROLE={v:'admin'};try{const r=localStorage.getItem('fp.role');if(['admin','coach','fighter'].includes(r))ROLE.v=r}catch(e){}
 async function cardCanvas(){const el=$('#fCard');let tmp=null,mark=null;
   if(!el.offsetParent){mark=document.createComment('fc');el.before(mark);tmp=document.createElement('div');tmp.style.cssText='position:fixed;left:-10000px;top:0;width:400px';document.body.appendChild(tmp);tmp.appendChild(el);renderCard()}
   const fr=el.querySelector('.fc-frame'),ob=el.style.background;el.style.background='#101010';if(fr)fr.style.display='none';
@@ -3548,7 +3592,7 @@ $('#shClose').onclick=()=>{$('#shareModal').hidden=true};$('#shareModal').addEve
 
 /* =====================================================================
    МОБИЛЬНАЯ ВЕРСИЯ (приложение спортсмена): тот же продукт, акцент на кабинете и личных достижениях.
-   Включается на экранах ≤ 760 px или кнопкой «ТЕЛЕФОН» (предпросмотр в рамке). Экраны клуба — из раздела «Профиль».
+   Включается на экранах ≤ 760 px или кнопкой «▯» (телефон) (предпросмотр в рамке). Экраны клуба — из раздела «Профиль».
    ===================================================================== */
 document.body.appendChild($('#shareModal'));
 const MOB={on:false,frame:false,tab:'home',sub:null,me:1};
@@ -3557,7 +3601,7 @@ try{const s=+localStorage.getItem('fp.me');if(byId.get(s))MOB.me=s}catch(e){}
 const mq=matchMedia('(max-width: 760px)');
 function applyMode(){const on=MOB.frame||mq.matches;if(on===MOB.on&&!applyMode.force)return;applyMode.force=false;MOB.on=on;
   document.body.classList.toggle('m-on',on);document.body.classList.toggle('m-frame',MOB.frame);
-  if(on){Body3D.setActive(false);cardId=MOB.me;cab.role='athlete';renderMobile()}else{setView(ui.view)}}
+  if(on){Body3D.setActive(false);cardId=MOB.me;cab.role='athlete';renderMobile()}else{cab.role=ROLE.v==='fighter'?'athlete':'coach';if(ROLE.v==='fighter')cardId=MOB.me;setView(ui.view)}}
 mq.addEventListener('change',()=>applyMode());
 $('#mobBtn').addEventListener('click',()=>{document.body.classList.remove('m-force-desk','m-tv');MOB.frame=!mq.matches;applyMode.force=true;applyMode()});
 $('.m-logo').src=$('.club-logo').src;
@@ -3695,10 +3739,23 @@ mq.matches&&applyMode();
 
 /* ---- shell ---- */
 function setView(v){ui.view=v;document.querySelectorAll('.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.view===v));
-  ['arena','grid','fight','league','card','coach'].forEach(k=>$('#view-'+k).hidden=k!==v);if(v==='card')renderCab();if(v==='arena'||v==='fight')Body3D.setView(v);else if(!(v==='coach'&&ADM.tab==='mon'))Body3D.setActive(false);
+  ['arena','grid','fight','league','card','coach','world'].forEach(k=>$('#view-'+k).hidden=k!==v);if(v==='world')renderWorld();if(v==='card')renderCab();if(v==='arena'||v==='fight')Body3D.setView(v);else if(!(v==='coach'&&ADM.tab==='mon'))Body3D.setActive(false);
   ui.cycleStart=performance.now();tickUI();if(v==='coach')renderAlerts()}
 document.querySelectorAll('.tabs button').forEach(b=>b.addEventListener('click',()=>setView(b.dataset.view)));
 $('.club-logo').addEventListener('click',()=>setView('arena'));
+function renderWorld(){const L=ATHLETES.map(a=>({a,r:ratingOf(a.id)})).sort((x,y)=>y.r.R-x.r.R).slice(0,5);
+  $('#wldTop').innerHTML='<div class="wld-top">'+L.map((x,i)=>`<div><span>${i+1}. ${esc(display(x.a))} <small class="muted">${esc(x.a.disc)}</small></span><b style="color:${x.r.tc}">${PITM} ${x.r.R}</b></div>`).join('')+'</div><small class="muted">DEMO: пока один клуб — Mowgli Fight Club</small>'}
+function applyRole(r){if(r)ROLE.v=r;try{localStorage.setItem('fp.role',ROLE.v)}catch(e){}
+  const v=ROLE.v;document.body.dataset.role=v;
+  $('#roleSel').value=v;
+  if(!MOB.on)cab.role=v==='fighter'?'athlete':'coach';
+  $('.tabs [data-view=card]').textContent=v==='fighter'?'МОЙ КАБИНЕТ':'КАБИНЕТ';
+  if(v==='fighter'){cardId=MOB.me;if(ui.view==='coach')ui.view='card'}
+  if(v!=='admin'&&ADM.tab==='fin')ADM.tab='mon';
+  if(v==='coach'&&cab.sec==='sub')cab.sec='card';
+  if(!MOB.on)setView(ui.view);if(ui.view==='coach')renderAdm()}
+$('#roleSel').addEventListener('change',e=>applyRole(e.target.value));
+setTimeout(()=>applyRole(),0);
 $('#fsBtn').addEventListener('click',()=>{const d=document.documentElement;(document.fullscreenElement?document.exitFullscreen():d.requestFullscreen?.())?.catch?.(()=>{})});
 document.addEventListener('click',()=>{try{navigator.wakeLock?.request('screen').catch(()=>{})}catch(e){}},{once:true});
 
