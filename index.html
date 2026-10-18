@@ -62,8 +62,10 @@ main{min-height:0;overflow-y:auto;overflow-x:hidden}
 .rc b{font-size:1.05rem;font-weight:900;letter-spacing:.08em;color:#e8c35a}
 .rc i{font-style:normal;font-weight:700;font-size:.85rem}
 .rc span{color:var(--dim);font-size:.8rem;line-height:1.4}
-.rc-wrap.m{grid-template-columns:1fr;gap:8px;margin-bottom:14px}
-.rc-wrap.m .rc{padding:12px 14px;border-radius:12px}
+.m-rolemini{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:28px 0 12px;padding-top:14px;border-top:1px solid var(--line-2);opacity:.75}
+.m-rolemini span{font-size:12px;color:var(--dim);letter-spacing:.06em;margin-right:4px}
+.m-rolemini button{appearance:none;background:none;border:1px solid var(--line-2);color:var(--dim);font-family:inherit;font-size:11px;font-weight:700;letter-spacing:.08em;padding:6px 10px;border-radius:999px;cursor:pointer;min-height:32px}
+.m-rolemini button[aria-pressed=true]{color:#e8c35a;border-color:#e8c35a66}
 @media (max-width:760px){.rc-wrap{grid-template-columns:1fr}}
 .role-sw{display:flex;align-items:center;gap:.3rem;border:1px solid var(--line-2);border-radius:999px;padding:.2rem .5rem .2rem .6rem;flex:none;cursor:pointer}
 .role-sw span{font-size:.56rem;letter-spacing:.14em;color:var(--dim);font-weight:800}
@@ -3741,7 +3743,7 @@ function mMe(a,C,P,B){
     else{B.innerHTML='';({profile:secProfile,sub:secSub,health:secHealth,nut:secNut})[MOB.sub](a,C,P);B.insertAdjacentHTML('afterbegin',back)}
     $('#mBack').onclick=()=>{MOB.sub=null;renderMobile()};return}
   const left=dLeft(C.sub.end),cl=dLeft(C.med.certUntil);
-  B.innerHTML=`<div class="m-h1" style="margin-top:0">Войти как · демо</div>${roleCards('m')}<div class="m-me">${C.person.photo?`<img src="${C.person.photo}" alt="">`:`<span class="ph0">${esc(a.name[0])}</span>`}<div><b>${esc(C.person.fio)}</b><small>${rtBadge(a.id)}</small><small>${esc(a.disc)} · ${P.pro?'<i class="pro">PRO</i>':'базовый доступ'}</small></div></div>
+  B.innerHTML=`<div class="m-me">${C.person.photo?`<img src="${C.person.photo}" alt="">`:`<span class="ph0">${esc(a.name[0])}</span>`}<div><b>${esc(C.person.fio)}</b><small>${rtBadge(a.id)}</small><small>${esc(a.disc)} · ${P.pro?'<i class="pro">PRO</i>':'базовый доступ'}</small></div></div>
    <div class="m-list">
     <button data-s="card"><b>Карточка бойца</b><span>рекорд, пояса, медали, статистика</span></button>
     <button data-s="profile"><b>Личные данные и фото</b><span>${C.person.photo?'фото загружено':'фото не загружено'} · согласия</span></button>
@@ -3749,7 +3751,7 @@ function mMe(a,C,P,B){
     <button data-s="health"><b>Здоровье</b><span>биометрия · допуск ${cl<0?'истёк':'до '+fmtD(C.med.certUntil)}</span></button>
     <button data-s="nut"><b>Питание</b><span>${esc(C.nut.mode)}${C.nut.cut?` · взвешивание ${fmtD(C.nut.cut.by)}`:''}</span></button>
     ${P.pro?'':`<button data-s="sub" class="m-pro"><b>Подключить PRO · ${usd(FP_PRICE.m)}/мес</b><span>телеметрия, прогресс, лига, задания, регалии</span></button>`}</div>
-   `;
+   <div class="m-rolemini"><span>Демо · войти как</span>${ROLES.map(x=>`<button type="button" data-role-pick="${x.r}" aria-pressed="${String(x.r==='fighter')}">${x.r==='admin'?'АДМИН':x.t}</button>`).join('')}</div>`;
   B.querySelectorAll('[data-s]').forEach(b=>b.addEventListener('click',()=>{MOB.sub=b.dataset.s;renderMobile();$('#mMain').scrollTop=0}));
   bindRoleCards(B);
   }
