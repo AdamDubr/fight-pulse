@@ -78,6 +78,11 @@ body[data-role=fighter] #fcList,body[data-role=fighter] #fcSel{display:none!impo
 body[data-role=fighter] .cab{grid-template-columns:minmax(0,1fr)}
 body[data-role=fighter] #view-fight .panel:has(#fStart){display:none!important}
 @media (max-width:760px){.role-sw{display:none!important}}
+.m-wl{color:var(--dim);margin:0 0 .8rem;font-size:15px;line-height:1.45}
+.m-wld p,.m-wld .wld-flow,.m-wld .wld-top{font-size:15px;line-height:1.45}.m-wld small{font-size:13px}.m-wld .wld-c b{font-size:17px}
+.m-wld{display:flex;flex-direction:column;gap:.7rem;padding-bottom:1rem}
+.m-wc{background:#111;border:1px solid var(--line-2);border-radius:14px}
+.m-ver{display:inline-block;color:#4ade80;border:1px solid #4ade8066;border-radius:6px;padding:0 .35rem;font-weight:800;font-size:.8em;margin-right:.3rem}
 .wld{padding-block:1.2rem;display:flex;flex-direction:column;gap:1.2rem;overflow:auto;height:100%}
 .wld-h h2{margin:.3rem 0 .4rem;font-size:2rem;font-weight:900;letter-spacing:.02em}
 .wld-h p{max-width:70ch;margin:0}
@@ -1404,6 +1409,7 @@ body.m-tv .top .tabs [data-view=card],body.m-tv .top .tabs [data-view=coach]{dis
     <button data-t="tasks"><svg viewBox="0 0 24 24"><path d="M5 3h14v18H5zm3 4v2h8V7zm0 4v2h8v-2zm0 4v2h5v-2z"/></svg>Задания<i class="m-badge" id="mTB" hidden></i></button>
     <button data-t="me"><svg viewBox="0 0 24 24"><path d="M12 12a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9zm-8 9c0-4.4 3.6-7 8-7s8 2.6 8 7z"/></svg>Профиль</button>
     <button data-t="tv" title="Экраны зала: ARENA, все участники, бой"><svg viewBox="0 0 24 24"><path d="M3 5h18a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1h-7v2h3v2H7v-2h3v-2H3a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1zm1 2v9h16V7z"/></svg>TV</button>
+    <button data-t="world" title="My PIT World — сообщество бойцов"><svg viewBox="0 0 100 124"><path d="M8 44L50 12 92 44V62L50 30 8 62Z"/><path d="M8 74L50 42 92 74V92L50 60 8 92Z" opacity=".65"/><path d="M8 104L50 72 92 104V122L50 90 8 122Z" opacity=".38"/></svg>My PIT</button>
   </nav>
 </div>
 <script src="three.min.js"></script>
@@ -3661,7 +3667,7 @@ function renderMobile(){if(!MOB.on)return;mTPill();{const st=$('.fc-stage'),wr=$
   const od=C.tasks.filter(t=>t.status!=='done').length;$('#mTB').hidden=!od;$('#mTB').textContent=od;
   const B=$('#mBody');B.className='mt-'+MOB.tab;if(MOB.tab!=='live')Body3D.setActive(false);
   if(!P.pro&&(MOB.tab==='live'||MOB.tab==='ach'||(MOB.tab==='tasks'&&!(subsOf(a).plan||subsOf(a).nut)))){mLocked(a,C,P,B,{live:'Тренировка',ach:'Рост и прогресс',tasks:'Задания и питание'}[MOB.tab]);return}
-  ({home:mHome,live:mLive,ach:mAch,tasks:()=>{B.innerHTML='';secTasks(a,C);const nb=document.createElement('div');nb.className='m-sec m-nutt';nb.innerHTML='<div class="m-h">Питание от тренера <button id="mNutShare">поделиться ↗</button></div><div id="mNutT"></div>';B.appendChild(nb);const pr=cab.role;cab.role='athlete';ADM.el=nb.querySelector('#mNutT');try{secNut(a,C,P)}finally{ADM.el=null;cab.role=pr}nb.insertAdjacentHTML('beforeend',shopList(C));nb.insertAdjacentHTML('beforeend',`<div class="muted small" style="margin-top:8px">${esc(a.name)} · назначил ${esc(C.nut.by||COACH)} · ${fmtD(C.nut.upd)} · PIT RATING · pitrating.com</div>`);const nutBuild=async()=>{const bt=$('#mNutShare');if(bt)bt.style.visibility='hidden';try{return await html2canvas(nb,{backgroundColor:'#0a0a0a',scale:2,logging:false})}finally{if(bt)bt.style.visibility=''}};$('#mNutShare').onclick=()=>shareShot('nut:'+a.id,'pitanie-'+a.name+'.jpg','Питание от тренера',nutBuild);reprep('nut:'+a.id,nutBuild,800)},me:mMe})[MOB.tab](a,C,P,B)}
+  ({world:mWorld,home:mHome,live:mLive,ach:mAch,tasks:()=>{B.innerHTML='';secTasks(a,C);const nb=document.createElement('div');nb.className='m-sec m-nutt';nb.innerHTML='<div class="m-h">Питание от тренера <button id="mNutShare">поделиться ↗</button></div><div id="mNutT"></div>';B.appendChild(nb);const pr=cab.role;cab.role='athlete';ADM.el=nb.querySelector('#mNutT');try{secNut(a,C,P)}finally{ADM.el=null;cab.role=pr}nb.insertAdjacentHTML('beforeend',shopList(C));nb.insertAdjacentHTML('beforeend',`<div class="muted small" style="margin-top:8px">${esc(a.name)} · назначил ${esc(C.nut.by||COACH)} · ${fmtD(C.nut.upd)} · PIT RATING · pitrating.com</div>`);const nutBuild=async()=>{const bt=$('#mNutShare');if(bt)bt.style.visibility='hidden';try{return await html2canvas(nb,{backgroundColor:'#0a0a0a',scale:2,logging:false})}finally{if(bt)bt.style.visibility=''}};$('#mNutShare').onclick=()=>shareShot('nut:'+a.id,'pitanie-'+a.name+'.jpg','Питание от тренера',nutBuild);reprep('nut:'+a.id,nutBuild,800)},me:mMe})[MOB.tab](a,C,P,B)}
 function shopList(C){const n=C.nut,days=n.week?Object.values(n.week):[n.meals||[]],map=new Map();
   days.forEach(ML=>(ML||[]).forEach(ml=>(ml.items||[]).forEach(it=>{const m=String(it).trim().match(/^(.*?)\s([\d.,]+)\s?(г|кг|шт|л|мл)\.?$/i);
     if(!m){const k=String(it).trim();if(!map.has(k))map.set(k,{n:k,q:0,u:''});return}
@@ -3757,8 +3763,22 @@ function setView(v){ui.view=v;document.querySelectorAll('.tabs button').forEach(
   ui.cycleStart=performance.now();tickUI();if(v==='coach')renderAlerts()}
 document.querySelectorAll('.tabs button').forEach(b=>b.addEventListener('click',()=>setView(b.dataset.view)));
 $('.club-logo').addEventListener('click',()=>setView('arena'));
-function renderWorld(){const L=ATHLETES.map(a=>({a,r:ratingOf(a.id)})).sort((x,y)=>y.r.R-x.r.R).slice(0,5);
-  $('#wldTop').innerHTML='<div class="wld-top">'+L.map((x,i)=>`<div><span>${i+1}. ${esc(display(x.a))} <small class="muted">${esc(x.a.disc)}</small></span><b style="color:${x.r.tc}">${PITM} ${x.r.R}</b></div>`).join('')+'</div><small class="muted">DEMO: пока один клуб — Mowgli Fight Club</small>'}
+function wldTopHTML(){const L=ATHLETES.map(a=>({a,r:ratingOf(a.id)})).sort((x,y)=>y.r.R-x.r.R).slice(0,5);
+  return '<div class="wld-top">'+L.map((x,i)=>`<div><span>${i+1}. ${esc(display(x.a))} <small class="muted">${esc(x.a.disc)}</small></span><b style="color:${x.r.tc}">${PITM} ${x.r.R}</b></div>`).join('')+'</div><small class="muted">DEMO: пока один клуб — Mowgli Fight Club</small>'}
+function renderWorld(){$('#wldTop').innerHTML=wldTopHTML()}
+function mWorld(a,C,P,B){const rt=ratingOf(a.id);
+  B.innerHTML=`<div class="m-h1" style="margin-top:0">My PIT World</div>
+   <p class="m-wl">Сообщество бойцов. Регистрация бесплатная. В мировой рейтинг идут только данные, подтверждённые клубом (Verified). Раздел в разработке.</p>
+   <div class="m-wld">
+    <div class="wld-c m-wc"><b>Мой статус</b><p><span style="color:${rt.tc}">${PITM} PIT ${rt.R}</span> · #${rt.rank} ${esc(rt.cat)}</p><p><span class="m-ver">✓ Verified</span> Mowgli Fight Club</p></div>
+    <div class="wld-c m-wc"><b>Мировой рейтинг PIT</b>${wldTopHTML()}</div>
+    <div class="wld-c m-wc"><b>Вызов на бой</b><p>Только Verified ↔ Verified, близкий вес и уровень, U18 не участвуют.</p>
+     <ol class="wld-flow"><li>Ты отправляешь вызов</li><li>Администратор клуба соперника принимает вызов</li><li>Администратор согласует с бойцом и тренером</li><li>Боец, тренер и администратор дают онлайн-согласие</li><li>Детали подтверждены: дата, место, вес, правила, судьи, трансляция</li></ol><em>в разработке</em></div>
+    <div class="wld-c m-wc"><b>Карта клубов</b><p>Страна → город → клуб → «Вступить». Администратор клуба принимает заявку.</p><em>в разработке</em></div>
+    <div class="wld-c m-wc"><b>Бои и трансляции</b><p>Клубные вечера и товарищеские матчи, трансляции в My PIT.</p><em>в разработке</em></div>
+    <div class="wld-c m-wc"><b>Мастер-классы</b><p>Каталог по городам и видам, запись через клуб.</p><em>в разработке</em></div>
+    <div class="wld-c m-wc"><b>Новости и статьи</b><p>Новости клубов и турниров, техника, восстановление, питание.</p><em>в разработке</em></div>
+   </div>`}
 const ROLES=[{r:'fighter',t:'БОЕЦ',i:'Адам · MMA',d:'Личный кабинет, экраны своего клуба и My PIT World.'},
   {r:'coach',t:'ТРЕНЕР',i:'Тренер клуба',d:'Монитор, бойцы, группы, раунды, задания, питание, расписание, экраны зала. Без финансов и CRM.'},
   {r:'admin',t:'АДМИНИСТРАТОР',i:'Администратор клуба',d:'Полный доступ: CRM, абонементы, оплаты, финансы и всё остальное.'}];
