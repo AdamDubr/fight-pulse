@@ -85,6 +85,53 @@ body[data-role=fighter] #view-fight .panel:has(#fStart){display:none!important}
 .m-wld{display:flex;flex-direction:column;gap:.7rem;padding-bottom:1rem}
 .m-wc{background:#111;border:1px solid var(--line-2);border-radius:14px}
 .m-ver{display:inline-block;color:#4ade80;border:1px solid #4ade8066;border-radius:6px;padding:0 .35rem;font-weight:800;font-size:.8em;margin-right:.3rem}
+.w-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem;align-items:start}
+.w-grid.w-m{grid-template-columns:1fr;gap:.8rem;padding-bottom:1rem;font-size:15px}
+.w-hero{grid-column:1/-1;position:relative;overflow:hidden;border-radius:1rem;padding:1.4rem 1.6rem;border:1px solid #e8c35a66;background:radial-gradient(120% 140% at 100% 0,#e8c35a33,transparent 55%),linear-gradient(135deg,#1c160a,#0b0b0b 60%)}
+.w-tag{font-size:.66rem;font-weight:800;letter-spacing:.18em;color:#e8c35a}
+.w-cd{position:absolute;top:1.2rem;right:1.4rem;font-weight:900;font-size:.8rem;letter-spacing:.08em;color:#000;background:#e8c35a;border-radius:999px;padding:.35rem .8rem}
+.w-hero h3{margin:.5rem 0 .2rem;font-size:2.1rem;font-weight:900;letter-spacing:.02em}
+.w-subt{margin:0;color:var(--muted)}
+.w-bouts{display:flex;flex-wrap:wrap;gap:.8rem 2.2rem;margin:1rem 0 .8rem}
+.w-bouts>div{display:grid;grid-template-columns:auto auto auto;gap:.2rem .7rem;align-items:baseline}
+.w-bouts b{font-size:1.35rem;font-weight:900;text-transform:uppercase}
+.w-bouts em{font-style:normal;color:#e8c35a;font-weight:900;font-size:.8rem}
+.w-bouts small{grid-column:1/-1;color:var(--muted)}
+.w-hf{display:flex;align-items:center;gap:.6rem}.w-hf small{color:var(--dim)}
+.w-card{background:#111;border:1px solid var(--line-2);border-radius:1rem;padding:1rem 1.1rem;display:flex;flex-direction:column;gap:.7rem;min-width:0}
+.w-ch{grid-row:span 2}
+.w-h{display:flex;justify-content:space-between;align-items:center;gap:.5rem}.w-h b{font-size:1.02rem;letter-spacing:.03em}
+.w-demo{font-size:.58rem;letter-spacing:.14em;color:#e8c35a;border:1px dashed #e8c35a66;border-radius:5px;padding:.15rem .4rem}
+.w-chi{border:1px solid var(--line-2);border-radius:.8rem;padding:.7rem .8rem;display:grid;gap:.35rem;background:#0c0c0c}
+.w-chi.ok{border-color:#4ade80aa;background:linear-gradient(180deg,#0f1f15,#0c0c0c)}
+.w-cht{display:flex;flex-wrap:wrap;align-items:baseline;gap:.2rem .5rem}.w-cht b{font-weight:800}
+.w-dir{font-size:.62rem;letter-spacing:.12em;color:var(--dim);font-weight:800;text-transform:uppercase}
+.w-chm{font-size:.85rem;color:var(--muted);display:flex;align-items:center;gap:.4rem;flex-wrap:wrap}
+.w-acc{margin-left:auto;background:#4ade80;color:#04140a;font-weight:900;font-size:.62rem;letter-spacing:.12em;border-radius:5px;padding:.15rem .45rem}
+.w-sts{display:flex;gap:.35rem;flex-wrap:wrap}
+.w-st{font-style:normal;font-size:.7rem;font-weight:700;border-radius:999px;padding:.15rem .55rem;border:1px solid var(--line-2);color:var(--dim)}
+.w-st.on{border-color:#4ade8088;color:#4ade80}
+.w-det{font-size:.82rem}
+.w-note{font-size:.78rem;color:var(--dim)}
+.w-ev{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:.8rem;align-items:center;border-bottom:1px solid var(--line-2);padding-bottom:.6rem}
+.w-ev:last-child{border-bottom:0;padding-bottom:0}
+.w-ev>div:nth-child(2){display:flex;flex-direction:column;gap:.1rem;min-width:0}
+.w-date{width:3rem;text-align:center;border-radius:.6rem;background:#1a170e;border:1px solid #e8c35a55;padding:.3rem 0;display:flex;flex-direction:column}
+.w-date b{font-size:1.2rem;font-weight:900;line-height:1}.w-date span{font-size:.58rem;letter-spacing:.12em;color:#e8c35a;font-weight:800}
+.w-mine{font-size:.78rem;color:#4ade80;font-weight:700}
+.w-fav{appearance:none;background:none;border:1px solid var(--line-2);color:#e8c35a;border-radius:.5rem;width:2.2rem;height:2.2rem;font-size:1.05rem;cursor:pointer;flex:none}
+.w-fav[aria-pressed=true]{background:#e8c35a22;border-color:#e8c35a88}
+.w-co{display:grid;grid-template-columns:2.4rem minmax(0,1fr) auto;gap:.6rem;align-items:center}
+.w-co img{width:2.4rem;height:2.4rem;border-radius:50%;object-fit:cover}
+.w-co>div{display:flex;flex-direction:column;min-width:0}.w-co .muted{font-size:.75rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.w-sub{appearance:none;border:1px solid #e8c35a88;background:none;color:#e8c35a;font-family:inherit;font-weight:800;font-size:.68rem;letter-spacing:.06em;border-radius:999px;padding:.4rem .7rem;cursor:pointer;white-space:nowrap}
+.w-sub.on{background:#e8c35a;color:#000}
+.w-feed{display:grid;gap:.5rem;border-top:1px solid var(--line-2);padding-top:.6rem}
+.w-post p{margin:.15rem 0 0;font-size:.88rem}.w-post b{font-size:.82rem}
+.w-me{font-weight:700}
+.w-favl{display:flex;flex-wrap:wrap;gap:.4rem}.w-favl span{font-size:.78rem;border:1px solid #e8c35a55;color:#e8c35a;border-radius:999px;padding:.25rem .6rem}
+.w-m .w-hero{padding:1.1rem}.w-m .w-hero h3{font-size:1.6rem}.w-m .w-bouts b{font-size:1.05rem}.w-m .w-cd{position:static;display:inline-block;margin-top:.4rem}
+@media (max-width:1300px){.w-grid:not(.w-m){grid-template-columns:repeat(2,minmax(0,1fr))}}
 .wld{padding-block:1.2rem;display:flex;flex-direction:column;gap:1.2rem;overflow:auto;height:100%}
 .wld-h h2{margin:.3rem 0 .4rem;font-size:2rem;font-weight:900;letter-spacing:.02em}
 .wld-h p{max-width:70ch;margin:0}
@@ -1391,16 +1438,8 @@ body.m-tv .top .tabs [data-view=card],body.m-tv .top .tabs [data-view=coach]{dis
     <!-- ================= MY PIT WORLD (DEMO, в разработке) ================= -->
     <section class="view" id="view-world" hidden>
       <div class="wld">
-        <div class="wld-h"><div><span class="label">MY PIT WORLD · DEMO</span><h2>Мировая сеть бойцов</h2><p class="muted">Регистрация бойцов бесплатная. В мировой рейтинг идут только подтверждённые клубом данные (Verified). Раздел в разработке — ниже то, что в нём будет.</p></div></div>
-        <div class="wld-grid">
-          <div class="panel wld-c"><b>Карта клубов</b><p>Страна → город → клуб → «Вступить». Администратор клуба принимает заявку.</p><em>в разработке</em></div>
-          <div class="panel wld-c"><b>Мировой рейтинг PIT</b><p>Мир, страна, вес, вид единоборств. Verified отдельно от неподтверждённых.</p><div id="wldTop"></div></div>
-          <div class="panel wld-c"><b>Вызов на бой</b><p>Только Verified ↔ Verified, близкий вес и уровень, U18 не участвуют.</p>
-            <ol class="wld-flow"><li>Боец отправляет вызов</li><li>Администратор клуба соперника принимает вызов</li><li>Администратор согласует с бойцом и тренером</li><li>Боец, тренер и администратор дают онлайн-согласие</li><li>Детали подтверждены: дата, место, вес, правила, судьи, трансляция</li></ol><em>в разработке</em></div>
-          <div class="panel wld-c"><b>Бои и трансляции</b><p>Клубные вечера и товарищеские матчи: взносы, трансляция в My PIT, судейство, рост рейтинга клуба.</p><em>в разработке</em></div>
-          <div class="panel wld-c"><b>Мастер-классы</b><p>Каталог по городам и видам, запись и оплата через клуб.</p><em>в разработке</em></div>
-          <div class="panel wld-c"><b>Новости и статьи</b><p>Новости клубов и турниров, техника, восстановление, питание, подготовка к турниру.</p><em>в разработке</em></div>
-        </div>
+        <div class="wld-h"><div><span class="label">MY PIT WORLD · DEMO</span><h2>Мировая сеть бойцов</h2><p class="muted">Сообщество бойцов: анонсы, вызовы на бой, соревнования, тренеры с блогами, избранное. Регистрация бесплатная, в мировой рейтинг идут только данные, подтверждённые клубом (Verified). Наполнение — DEMO, кроме анонса UFC 333 (открытые источники).</p></div></div>
+        <div id="wldBody"></div>
       </div>
     </section>
   </main>
@@ -3773,20 +3812,46 @@ document.querySelectorAll('.tabs button').forEach(b=>b.addEventListener('click',
 $('.club-logo').addEventListener('click',()=>setView('arena'));
 function wldTopHTML(){const L=ATHLETES.map(a=>({a,r:ratingOf(a.id)})).sort((x,y)=>y.r.R-x.r.R).slice(0,5);
   return '<div class="wld-top">'+L.map((x,i)=>`<div><span>${i+1}. ${esc(display(x.a))} <small class="muted">${esc(x.a.disc)}</small></span><b style="color:${x.r.tc}">${PITM} ${x.r.R}</b></div>`).join('')+'</div><small class="muted">DEMO: пока один клуб — Mowgli Fight Club</small>'}
-function renderWorld(){$('#wldTop').innerHTML=wldTopHTML()}
-function mWorld(a,C,P,B){const rt=ratingOf(a.id);
-  B.innerHTML=`<div class="m-h1" style="margin-top:0">My PIT World</div>
-   <p class="m-wl">Сообщество бойцов. Регистрация бесплатная. В мировой рейтинг идут только данные, подтверждённые клубом (Verified). Раздел в разработке.</p>
-   <div class="m-wld">
-    <div class="wld-c m-wc"><b>Мой статус</b><p><span style="color:${rt.tc}">${PITM} PIT ${rt.R}</span> · #${rt.rank} ${esc(rt.cat)}</p><p><span class="m-ver">✓ Verified</span> Mowgli Fight Club</p></div>
-    <div class="wld-c m-wc"><b>Мировой рейтинг PIT</b>${wldTopHTML()}</div>
-    <div class="wld-c m-wc"><b>Вызов на бой</b><p>Только Verified ↔ Verified, близкий вес и уровень, U18 не участвуют.</p>
-     <ol class="wld-flow"><li>Ты отправляешь вызов</li><li>Администратор клуба соперника принимает вызов</li><li>Администратор согласует с бойцом и тренером</li><li>Боец, тренер и администратор дают онлайн-согласие</li><li>Детали подтверждены: дата, место, вес, правила, судьи, трансляция</li></ol><em>в разработке</em></div>
-    <div class="wld-c m-wc"><b>Карта клубов</b><p>Страна → город → клуб → «Вступить». Администратор клуба принимает заявку.</p><em>в разработке</em></div>
-    <div class="wld-c m-wc"><b>Бои и трансляции</b><p>Клубные вечера и товарищеские матчи, трансляции в My PIT.</p><em>в разработке</em></div>
-    <div class="wld-c m-wc"><b>Мастер-классы</b><p>Каталог по городам и видам, запись через клуб.</p><em>в разработке</em></div>
-    <div class="wld-c m-wc"><b>Новости и статьи</b><p>Новости клубов и турниров, техника, восстановление, питание.</p><em>в разработке</em></div>
-   </div>`}
+function renderWorld(){$('#wldBody').innerHTML=worldHTML(false);bindWorld($('#wldBody'))}
+const WLD={sub:new Set([21]),fav:new Set(['f:4','c:mowgli','e:ufc333'])};
+const WCH=[ // DEMO: вымышленные бойцы и клубы
+  {dir:'in',who:'Тимур Д.',club:'Iron Wolves · Стамбул',disc:'MMA',kg:'77',pit:861,st:['a','c','f'],ok:true,det:'15.11 · Mowgli Fight Night #1 · 3 × 5 мин · трансляция в My PIT'},
+  {dir:'out',who:'Рустам К.',club:'Kemer Fight Lab · Кемер',disc:'MMA',kg:'77',pit:884,st:['a'],ok:false,det:'администратор клуба соперника принял вызов · ждём тренера и бойца'},
+  {dir:'in',who:'Сергей В.',club:'North Gym · Алания',disc:'Грэпплинг',kg:'77',pit:842,st:[],ok:false,det:'ожидает решения администратора Mowgli'}];
+const WBLOG=[{c:21,t:'Неделя 6 подготовки: как я снижаю объём перед боем',d:'вчера'},{c:5,t:'3 ошибки в весогонке за неделю до турнира',d:'2 дня назад'},{c:1,t:'Восстановление пульса между раундами: что оно говорит о форме',d:'4 дня назад'}];
+function worldHTML(m){const a=byId.get(cardId)||ATHLETES[0],rt=ratingOf(a.id);
+  const t0=new Date();t0.setHours(0,0,0,0);const dl=Math.round((new Date(2026,9,24)-t0)/864e5);
+  const cnt=dl>1?`через ${dl} ${plural(dl,'день','дня','дней')}`:dl===1?'завтра':dl===0?'сегодня':'состоялся';
+  const fav=(k,l)=>`<button type="button" class="w-fav" data-fav="${k}" aria-pressed="${WLD.fav.has(k)}" aria-label="${l}">${WLD.fav.has(k)?'★':'☆'}</button>`;
+  const stp=(c,k,l)=>`<i class="w-st ${c.st.includes(k)?'on':''}">${c.st.includes(k)?'✓':'…'} ${l}</i>`;
+  const coaches=[{id:21,n:'Миржалал «MOWGLI»',s:'главный тренер · MMA'},...TRAINERS.map(t=>({id:t.id,n:t.name,s:t.spec}))];
+  return `<div class="w-grid ${m?'w-m':''}">
+  <article class="w-hero"><div class="w-tag">АНОНС · ГРОМКИЙ БОЙ</div><div class="w-cd">${cnt}</div>
+    <h3>UFC 333 · Абу-Даби</h3><p class="w-subt">24 октября 2026 · Etihad Arena</p>
+    <div class="w-bouts"><div><b>Волкановски</b><em>VS</em><b>Евлоев</b><small>титул в полулёгком весе · главный бой</small></div><div><b>Ян</b><em>VS</em><b>Двалишвили</b><small>титул в легчайшем · трилогия</small></div></div>
+    <div class="w-hf">${fav('e:ufc333','В избранное: UFC 333')}<small>по открытым источникам (The National, 16.08.2026)</small></div></article>
+  <section class="w-card w-ch"><div class="w-h"><b>Мои вызовы на бой</b><span class="w-demo">DEMO</span></div>
+    ${WCH.map(c=>`<div class="w-chi ${c.ok?'ok':''}"><div class="w-cht"><span class="w-dir">${c.dir==='in'?'← входящий':'→ исходящий'}</span><b>${c.who}</b><span class="muted">${c.club}</span></div>
+      <div class="w-chm">${c.disc} · ${c.kg} кг · ${PITM} ${c.pit}${c.ok?'<span class="w-acc">ПРИНЯТ</span>':''}</div>
+      <div class="w-sts">${stp(c,'a','админ')}${stp(c,'c','тренер')}${stp(c,'f','боец')}</div><div class="w-det">${c.det}</div></div>`).join('')}
+    <div class="w-note">Вызов принимает администратор клуба → согласует с тренером и бойцом → все дают онлайн-согласие → детали подтверждены.</div></section>
+  <section class="w-card"><div class="w-h"><b>Ближайшие соревнования в сети PIT</b><span class="w-demo">DEMO</span></div>
+    <div class="w-ev"><div class="w-date"><b>15</b><span>НОЯ</span></div><div><b>Mowgli Fight Night #1</b><span class="muted">Анталья · 8 пар · трансляция в My PIT</span><span class="w-mine">твой бой: vs Тимур Д. · ${PITM} 861</span></div>${fav('e:mfn1','В избранное')}</div>
+    <div class="w-ev"><div class="w-date"><b>29</b><span>НОЯ</span></div><div><b>Кубок клубов Анталии · BJJ</b><span class="muted">6 клубов · gi / no-gi · взнос клубу $30</span></div>${fav('e:bjj','В избранное')}</div>
+    <div class="w-ev"><div class="w-date"><b>06</b><span>ДЕК</span></div><div><b>Мастер-класс: борьба у сетки</b><span class="muted">Mowgli Fight Club · запись через клуб</span></div>${fav('e:mc','В избранное')}</div></section>
+  <section class="w-card"><div class="w-h"><b>Тренеры и блоги</b><span class="w-demo">DEMO</span></div>
+    ${coaches.map(c=>`<div class="w-co"><img src="${trPhoto(c.id)}" alt=""><div><b>${esc(c.n)}</b><span class="muted">${esc(c.s)}</span></div><button type="button" class="w-sub ${WLD.sub.has(c.id)?'on':''}" data-sub="${c.id}">${WLD.sub.has(c.id)?'✓ Подписан':'Подписаться'}</button></div>`).join('')}
+    <div class="w-feed">${WBLOG.filter(x=>WLD.sub.has(x.c)).map(x=>`<div class="w-post"><b>${esc(coaches.find(c=>c.id===x.c).n)}</b> · <span class="muted">${x.d}</span><p>${esc(x.t)}</p></div>`).join('')||'<p class="muted">Подпишитесь на тренера — его посты появятся здесь.</p>'}</div></section>
+  <section class="w-card"><div class="w-h"><b>Мировой рейтинг PIT</b></div>
+    <div class="w-me"><span style="color:${rt.tc}">${PITM} PIT ${rt.R}</span> · #${rt.rank} ${esc(rt.cat)} <span class="m-ver">✓ Verified</span></div>${wldTopHTML()}</section>
+  <section class="w-card"><div class="w-h"><b>Избранное</b><span class="w-demo">${WLD.fav.size}</span></div>
+    <div class="w-favl">${[...WLD.fav].map(k=>({'f:4':'Идрис · Муай-тай · PIT 917','c:mowgli':'Mowgli Fight Club · Анталья','e:ufc333':'UFC 333 · 24.10 · Абу-Даби','e:mfn1':'Mowgli Fight Night #1 · 15.11','e:bjj':'Кубок клубов Анталии · 29.11','e:mc':'Мастер-класс · 06.12'})[k]).filter(Boolean).map(t=>`<span>★ ${t}</span>`).join('')}</div>
+    <div class="w-note">Карта клубов, мастер-классы с записью, новости и статьи — в разработке.</div></section>
+  </div>`}
+function bindWorld(R){R.querySelectorAll('[data-sub]').forEach(b=>b.addEventListener('click',()=>{const id=+b.dataset.sub;WLD.sub.has(id)?WLD.sub.delete(id):WLD.sub.add(id);reWorld()}));
+  R.querySelectorAll('[data-fav]').forEach(b=>b.addEventListener('click',()=>{const k=b.dataset.fav;WLD.fav.has(k)?WLD.fav.delete(k):WLD.fav.add(k);reWorld()}))}
+function reWorld(){if(MOB.on)renderMobile();else renderWorld()}
+function mWorld(a,C,P,B){B.innerHTML=`<div class="m-h1" style="margin-top:0">My PIT World</div><p class="m-wl">Сообщество бойцов. Наполнение — DEMO, кроме анонса UFC 333.</p>${worldHTML(true)}`;bindWorld(B)}
 const ROLES=[{r:'fighter',t:'БОЕЦ',i:'Адам · MMA',d:'Личный кабинет, экраны своего клуба и My PIT World.'},
   {r:'coach',t:'ТРЕНЕР',i:'Тренер клуба',d:'Монитор, бойцы, группы, раунды, задания, питание, расписание, экраны зала. Без финансов и CRM.'},
   {r:'admin',t:'АДМИНИСТРАТОР',i:'Администратор клуба',d:'Полный доступ: CRM, абонементы, оплаты, финансы и всё остальное.'}];
