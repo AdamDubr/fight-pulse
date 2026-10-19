@@ -1307,6 +1307,21 @@ body.m-tv .top .tabs [data-view=card],body.m-tv .top .tabs [data-view=coach]{dis
 
 .adm-tabs button .al{background:none;border:0;padding:0;grid-template-columns:none;font-size:inherit;border-radius:0}
 @media (max-width:1800px){.top .clock{display:none}.dm-x{display:none}}
+.thm-btn{appearance:none;flex:none;display:inline-grid;place-items:center;width:1.9rem;height:1.9rem;border-radius:50%;border:1px solid var(--line-2);background:var(--panel);color:var(--fg);font-size:.95rem;line-height:1;cursor:pointer;padding:0}
+.thm-btn:hover{border-color:#e8c35a}.thm-btn:focus-visible{outline:2px solid #e8c35a;outline-offset:2px}
+.m-top .thm-btn{width:30px;height:30px;font-size:15px}
+.m-top .m-tpill{margin-left:auto}
+.m-rolemini{display:grid!important;grid-template-columns:auto repeat(3,minmax(0,1fr));align-items:center;gap:6px;flex-wrap:nowrap}
+.m-rolemini span{white-space:nowrap;font-size:11px!important;margin-right:2px!important}
+.m-rolemini button{padding:6px 4px!important;text-align:center;white-space:nowrap}
+.m-top{gap:6px!important}
+.m-top .m-logo{height:22px;flex:none}
+.m-top .demo{font-size:12px!important;padding:2px 4px!important;flex:none}
+.m-top .m-tpill{font-size:14px;padding:3px 7px;gap:5px;flex:none}
+.m-top .m-tpill .ph{font-size:11px;padding:2px 5px}
+.m-top .m-ava{flex:none;width:34px;height:34px}
+.m-top .m-tpill+.m-ava{margin-left:4px}
+html.light .tag.meas{color:var(--fg);border-color:#8a8377}
 /* ===== СВЕТЛАЯ ТЕМА (по умолчанию). 3D-сцены, голограммы, постеры и фото остаются тёмными «экранами». ===== */
 html.light{color-scheme:light;
   --ink:#f4f1e9; --panel:#ffffff; --panel-2:#faf7f0; --line:#ebe5d6; --line-2:#ddd5c3;
@@ -1590,6 +1605,11 @@ html.light .fc-r1,html.light .fc-rate b{text-shadow:none}
 html.light .fc-stats .today b{color:#c2570c}
 html.light .fc-photo{border-color:#d9d1bf}
 html.light .fc-belt i{box-shadow:inset 0 0 0 1px rgba(0,0,0,.15)}
+
+/* светлая тема: голограмма тренировки на тёмной сцене */
+html.light .a-stage{--fg:#ffffff;--muted:#a6a6a6;--dim:#8a8a8a;--line:#202020;--line-2:#363636;color:#fff;background:radial-gradient(75% 80% at 50% 50%,#1e1e1e,#080808 78%);box-shadow:0 20px 50px -30px #0008}
+html.light .a-stage .st-word{filter:blur(3px)!important}
+html.light .a-stage [style*="color:"],html.light body.m-on .m-holo3d .mh-ov [style*="color:"]{filter:brightness(1.6) saturate(1.2)}
 </style>
 
 <div id="roleGate" hidden><div class="rg-box"><div class="rg-logo" id="rgLogo"></div><div class="rg-t">Демо PIT RATING · кем входите?</div><div id="rgCards"></div><div class="rg-n">Роль можно сменить: на компьютере — «ВХОД» в шапке, на телефоне — вкладка «Профиль».</div></div></div>
@@ -1639,8 +1659,8 @@ html.light .fc-belt i{box-shadow:inset 0 0 0 1px rgba(0,0,0,.15)}
     <div class="roundpill" id="roundPill"><span id="rpText">ТРЕНИРОВКА</span><span class="ph" id="rpPhase">ИДЁТ</span><span class="num" id="rpTime">00:00</span></div>
     <label class="role-sw" id="roleSw"><span>ВХОД</span><select id="roleSel" aria-label="Вход как (демо)"><option value="admin">АДМИН</option><option value="coach">ТРЕНЕР</option><option value="fighter">БОЕЦ</option></select></label>
     <span class="demo" id="demoBadge" title="Данные генерирует симулятор телеметрии">DEMO<span class="dm-x"> · СИМУЛЯТОР</span></span>
+    <button class="thm-btn" id="themeBtn" data-gtheme title="Светлая / тёмная тема" aria-label="Сменить тему">☾</button>
     <span class="clock num" id="clock">00:00</span>
-    <button class="iconbtn" id="themeBtn" title="Светлая / тёмная тема" aria-label="Сменить тему">☾</button>
     <button class="iconbtn" id="mobBtn" title="Мобильная версия спортсмена" aria-label="Мобильная версия спортсмена">▯</button>
     <button class="iconbtn" id="fsBtn" title="Полноэкранный режим" aria-label="Полноэкранный режим">⛶</button>
   </header>
@@ -1903,7 +1923,7 @@ html.light .fc-belt i{box-shadow:inset 0 0 0 1px rgba(0,0,0,.15)}
 
 
 <div id="mobile" aria-label="Мобильное приложение спортсмена">
-  <header class="m-top"><img class="m-logo" alt="Mowgli Fight Club"><span class="demo">DEMO</span><span class="m-tpill" id="mTPill"></span><button class="m-ava" id="mAva" aria-label="Профиль"></button></header>
+  <header class="m-top"><img class="m-logo" alt="Mowgli Fight Club"><span class="demo">DEMO</span><button class="thm-btn" data-gtheme aria-label="Сменить тему">☾</button><span class="m-tpill" id="mTPill"></span><button class="m-ava" id="mAva" aria-label="Профиль"></button></header>
   <main class="m-main" id="mMain"><div id="mBody"></div></main>
   <nav class="m-nav" id="mNav">
     <button data-t="home"><svg viewBox="0 0 24 24"><path d="M3 11 12 4l9 7v9h-6v-6H9v6H3z"/></svg>Главная</button>
@@ -1965,8 +1985,8 @@ const ZONES=[
 const ZCOL_D=['#56667a','#74a98f','#2fd27a','#3b9cff','#ffc93c','#ff4562'],ZCOL_L=['#7d8a99','#4f8a6d','#16a34a','#1d6fe0','#c28400','#e11d48'];
 const ZCOL=[...ZCOL_D];
 const THEME={light:document.documentElement.classList.contains('light')};
-/* Бой, Arena (голограмма тренировки) и на телефоне «Тренировка»/TV — всегда тёмные */
-const DARKV=new Set(['arena','fight']),DARKM=new Set(['live','tv']);
+/* «Бой» — всегда тёмный; голограммы в светлой теме стоят на тёмной сцене */
+const DARKV=new Set(['fight']),DARKM=new Set([]);
 function effTheme(){let v='',mob=false;try{mob=MOB.on;v=mob?MOB.tab:ui.view}catch(e){try{v=ui.view}catch(_){v='arena'}}
   const l=THEME.light&&!(mob?DARKM.has(v):DARKV.has(v)),r=document.documentElement;
   if(r.classList.contains('light')!==l){r.classList.toggle('light',l);applyPal();return true}return false}
@@ -4263,7 +4283,7 @@ function mMe(a,C,P,B){
     <button data-s="health"><b>Здоровье</b><span>биометрия · допуск ${cl<0?'истёк':'до '+fmtD(C.med.certUntil)}</span></button>
     <button data-s="nut"><b>Питание</b><span>${esc(C.nut.mode)}${C.nut.cut?` · взвешивание ${fmtD(C.nut.cut.by)}`:''}</span></button>
     ${P.pro?'':`<button data-s="sub" class="m-pro"><b>Подключить PRO · ${usd(FP_PRICE.m)}/мес</b><span>телеметрия, прогресс, лига, задания, регалии</span></button>`}</div>
-   <div class="m-rolemini"><span>Демо · войти как</span>${ROLES.map(x=>`<button type="button" data-role-pick="${x.r}" aria-pressed="${String(x.r==='fighter')}">${x.r==='admin'?'АДМИН':x.t}</button>`).join('')}<div class="m-rolemini m-thm"><span>Тема</span><button type="button" data-gtheme>${THEME.light?'☾ Тёмная тема':'☀ Светлая тема'}</button></div>`;
+   <div class="m-rolemini"><span>Демо · войти как</span>${ROLES.map(x=>`<button type="button" data-role-pick="${x.r}" aria-pressed="${String(x.r==='fighter')}">${x.r==='admin'?'АДМИН':x.t}</button>`).join('')}`;
   B.querySelectorAll('[data-s]').forEach(b=>b.addEventListener('click',()=>{MOB.sub=b.dataset.s;renderMobile();$('#mMain').scrollTop=0}));
   bindRoleCards(B);
   }
@@ -4281,12 +4301,10 @@ function wldTopHTML(){const L=ATHLETES.map(a=>({a,r:ratingOf(a.id)})).sort((x,y)
   return '<div class="wld-top">'+L.map((x,i)=>`<div><span>${i+1}. ${esc(display(x.a))} <small class="muted">${esc(x.a.disc)}</small></span><b style="color:${x.r.tc}">${PITM} ${x.r.R}</b></div>`).join('')+'</div><small class="muted">DEMO: пока один клуб — Mowgli Fight Club</small>'}
 function renderWorld(){$('#wldBody').innerHTML=worldHTML(false);bindWorld($('#wldBody'))}
 const WLD={sub:new Set([21]),fav:new Set(['f:4','c:mowgli','e:ufc333']),get light(){return THEME.light}};
-function syncThemeUI(){const l=THEME.light,tb=document.getElementById('themeBtn');if(tb){tb.textContent=l?'☾':'☀';tb.title=l?'Тёмная тема':'Светлая тема'}
-  document.querySelectorAll('[data-gtheme]').forEach(b=>b.textContent=l?'☾ Тёмная тема':'☀ Светлая тема')}
+function syncThemeUI(){const l=THEME.light;document.querySelectorAll('[data-gtheme]').forEach(b=>{b.textContent=l?'☾':'☀';b.title=l?'Включить тёмную тему':'Включить светлую тему';b.setAttribute('aria-label',b.title)})}
 function setTheme(l){THEME.light=l;effTheme();try{localStorage.setItem('fp.theme',l?'light':'dark');localStorage.removeItem('fp.wl.theme')}catch(e){}
   syncThemeUI();window.dispatchEvent(new Event('fp-theme'));
   if(MOB.on)renderMobile();else{if(ui.view==='world')renderWorld();try{tickUI()}catch(e){}}}
-document.getElementById('themeBtn').addEventListener('click',()=>setTheme(!THEME.light));
 document.addEventListener('click',e=>{const b=e.target.closest('[data-gtheme]');if(b)setTheme(!THEME.light)});
 syncThemeUI();
 const WCH=[ // DEMO: вымышленные бойцы и клубы
@@ -4313,7 +4331,7 @@ function worldHTML(m){const a=byId.get(cardId)||ATHLETES[0],rt=ratingOf(a.id);
   const stp=(c,k,l)=>`<i class="w-st ${c.st.includes(k)?'on':''}">${c.st.includes(k)?'✓':'…'} ${l}</i>`;
   const coaches=[{id:21,n:'Миржалал «MOWGLI»',s:'главный тренер · MMA'},...TRAINERS.map(t=>({id:t.id,n:t.name,s:t.spec}))];
   return `<div class="wl ${m?'wl-m':''} ${WLD.light?'light':''}">
-  <section class="wl-hero"><button type="button" class="wl-theme" data-wtheme aria-label="Сменить тему My PIT World">${WLD.light?'☾ Тёмная':'☀ Светлая'}</button><div class="wl-map">${mapSVG(false)}</div>
+  <section class="wl-hero"><div class="wl-map">${mapSVG(false)}</div>
     <div class="wl-ht"><span class="wl-eb">MY PIT WORLD</span><h2>Мировое сообщество бойцов</h2>
       <p>Рейтинг PIT, вызовы на бой, соревнования, кэмпы и тренировки чемпионов — в одной сети. Регистрация бесплатная, в рейтинг идут только данные, подтверждённые клубом.</p>
       <div class="wl-cta"><button type="button" class="wl-b1" data-go="map">Найти клуб на карте</button><button type="button" class="wl-b2" data-go="me">Мои вызовы</button></div>
@@ -4362,7 +4380,7 @@ function worldHTML(m){const a=byId.get(cardId)||ATHLETES[0],rt=ratingOf(a.id);
     ${coaches.map(c=>`<div class="w-co"><img src="${trPhoto(c.id)}" alt=""><div><b>${esc(c.n)}</b><span class="muted">${esc(c.s)}</span></div><button type="button" class="w-sub ${WLD.sub.has(c.id)?'on':''}" data-sub="${c.id}">${WLD.sub.has(c.id)?'✓ Подписан':'Подписаться'}</button></div>`).join('')}
     <div class="w-feed">${WBLOG.filter(x=>WLD.sub.has(x.c)).map(x=>`<div class="w-post"><b>${esc(coaches.find(c=>c.id===x.c).n)}</b> · <span class="muted">${x.d}</span><p>${esc(x.t)}</p></div>`).join('')||'<p class="muted">Подпишитесь на тренера — его посты появятся здесь.</p>'}</div></div></section>
   </div>`}
-function bindWorld(R){R.querySelectorAll('[data-wtheme]').forEach(b=>b.addEventListener('click',()=>setTheme(!THEME.light)));R.querySelectorAll('[data-sub]').forEach(b=>b.addEventListener('click',()=>{const id=+b.dataset.sub;WLD.sub.has(id)?WLD.sub.delete(id):WLD.sub.add(id);reWorld()}));
+function bindWorld(R){R.querySelectorAll('[data-sub]').forEach(b=>b.addEventListener('click',()=>{const id=+b.dataset.sub;WLD.sub.has(id)?WLD.sub.delete(id):WLD.sub.add(id);reWorld()}));
   R.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>{const t=R.querySelector(`[data-sec="${b.dataset.go}"]`);if(t){t.scrollIntoView({behavior:'smooth',block:'start'});if(b.dataset.go==='me'){const d=t.querySelector('details');if(d)d.open=true}}}));
   R.querySelectorAll('[data-join]').forEach(b=>b.addEventListener('click',()=>toast(b.dataset.join==='PHUCAMP'?'Заявка на PHUCAMP отправлена в клуб (демо)':'Подписка на анонс оформлена (демо)')))}
 
