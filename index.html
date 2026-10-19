@@ -133,6 +133,44 @@ body[data-role=fighter] #view-fight .panel:has(#fStart){display:none!important}
 .w-m .w-hero{padding:1.1rem}.w-m .w-hero h3{font-size:1.6rem}.w-m .w-bouts b{font-size:1.05rem}.w-m .w-cd{position:static;display:inline-block;margin-top:.4rem}
 @media (max-width:1300px){.w-grid:not(.w-m){grid-template-columns:repeat(2,minmax(0,1fr))}}
 .wl{display:flex;flex-direction:column;gap:2rem;padding-bottom:2rem}
+.wl-theme{position:absolute;top:1rem;right:1rem;z-index:5;appearance:none;cursor:pointer;font-family:inherit;font-weight:800;font-size:.72rem;letter-spacing:.06em;border-radius:999px;padding:.45rem .85rem;background:#0008;color:#fff;border:1px solid #ffffff44;min-height:2.2rem}
+.wl-theme:focus-visible{outline:2px solid #e8c35a;outline-offset:2px}
+/* ---- светлая тема My PIT World ---- */
+.wl.light{background:#f4f1e9;color:#15171b;border-radius:1.2rem;padding:1rem}
+.wl-m.light{padding:.8rem;margin:0 -.2rem}
+.wl.light .muted{color:#66625a!important}
+.wl.light .wl-theme{background:#fff;color:#15171b;border-color:#d9d1bf}
+.wl.light .wl-hero{background:radial-gradient(70% 90% at 75% 40%,#fff3cf,#f4f1e9 70%);border-color:#dcc78f}
+.wl.light .wl-map>svg>path:first-of-type,.wl.light .wl-bigmap>svg>path:first-of-type{stroke:#8a6a1c;stroke-opacity:.32}
+.wl.light .wl-arc{stroke:#a67c1f;stroke-opacity:.9}
+.wl.light .wl-eb{color:#8a6a1c}.wl.light .wl-ht p{color:#4a463e}
+.wl.light .wl-b2{color:#15171b;border-color:#15171b66}
+.wl.light .wl-chips span{color:#7a5d17;background:#fffc;border-color:#d8c088}
+.wl.light .wl-fig{filter:brightness(.72) saturate(1.4) drop-shadow(0 6px 18px #8a6a1c55)}
+.wl.light .wl-me,.wl.light .wl-card,.wl.light .wl-coaches,.wl.light .wl-camp,.wl.light .wl-camp .wl-ov{background:#fff;border-color:#e3dccb}
+.wl.light .wl-me{box-shadow:0 10px 30px -18px #8a6a1c66}
+.wl.light .wl-mew span,.wl.light .wl-pit small,.wl.light .wl-mestat span,.wl.light .wl-cb p,.wl.light .wl-leg,.wl.light .w-chm,.wl.light .w-note,.wl.light .wl-note2,.wl.light .wl-src{color:#5f5a50}
+.wl.light .wl-mew small,.wl.light .wl-next small{color:#8a8476}
+.wl.light .wl-mestat div{background:#faf7f0;border-color:#e3dccb}.wl.light .wl-mestat b.ok{color:#15803d}
+.wl.light .wl-next{background:linear-gradient(135deg,#fff4d6,#fff);border-color:#dcc78f}.wl.light .wl-next span{color:#15803d}
+.wl.light .m-ver{color:#15803d;border-color:#15803d66}
+.wl.light .wl-chs summary,.wl.light .w-demo{color:#8a6a1c;border-color:#8a6a1c66}
+.wl.light .w-chi{background:#faf8f3;border-color:#e3dccb}.wl.light .w-chi.ok{background:#effaf3;border-color:#16a34a77}
+.wl.light .w-dir{color:#8a8476}.wl.light .w-det{color:#2b2b2b}
+.wl.light .w-st{border-color:#d9d1bf;color:#77705f}.wl.light .w-st.on{color:#15803d;border-color:#16a34a88}
+.wl.light .wl-tag{color:#8a6a1c}.wl.light .wl-tag.g{color:#15803d}.wl.light .wl-tag.r{color:#c81e2b}
+.wl.light .wl-ext{color:#15803d}
+.wl.light .wl-bigmap{background:radial-gradient(80% 100% at 55% 40%,#fffaf0,#efe9dc 75%);border-color:#e3dccb}
+.wl.light .wl-bigmap text{stroke:#fffaf0;stroke-width:.6px}
+.wl.light .wl-camp .wl-ov p{color:#3f3b33}.wl.light .wl-camp .wl-ov b{color:#15171b}.wl.light .wl-camp .wl-ov h4,.wl.light .wl-cb h4{color:#15171b}
+.wl.light .wl-prog div{background:#fff;border-color:#e3dccb}.wl.light .wl-prog span{color:#66625a}
+.wl.light .w-feed{border-color:#e3dccb}.wl.light .w-post p{color:#2b2b2b}
+.wl.light .w-sub{color:#7a5d17;border-color:#c9a64e}.wl.light .w-sub.on{background:#e8c35a;color:#000}
+.wl.light .wl-card{box-shadow:0 8px 24px -18px #00000055}
+.wl-holo{background-color:#0a0a0a}
+.wl-m.light .wl-map{opacity:.32}
+.wl-m .wl-map{opacity:.5}
+
 .wl-pimg{padding:0;background:#000}
 .wl-pimg{min-height:0;aspect-ratio:2/3}.wl-pimg .wl-photo{position:absolute;inset:0;height:100%;object-fit:cover;object-position:top}
 .wp-live{position:absolute;left:.7rem;top:.7rem;background:#e8c35a;color:#000;font-weight:900;font-size:.7rem;letter-spacing:.08em;border-radius:999px;padding:.25rem .6rem}
@@ -229,8 +267,8 @@ body[data-role=fighter] #view-fight .panel:has(#fStart){display:none!important}
 .w-cdn{position:absolute;top:1.1rem;right:1.2rem;background:#e8c35a;color:#000;font-weight:900;font-size:.75rem;border-radius:999px;padding:.3rem .75rem}
 .wl-bt{display:grid;grid-template-columns:auto auto auto;justify-content:start;gap:.1rem .6rem;align-items:baseline;margin-top:.3rem}.wl-bt b{font-size:1.25rem;font-weight:900;text-transform:uppercase}.wl-bt em{font-style:normal;color:#e8c35a;font-weight:900;font-size:.75rem}.wl-bt small{grid-column:1/-1;color:#bbb}
 .wl-src{color:#999;margin-top:auto}
-.wl-holo{display:flex;align-items:flex-end;justify-content:center;background:radial-gradient(60% 80% at 50% 70%,#e8c35a33,#0a0a0a 70%)}
-.wl-holo.r{background:radial-gradient(60% 80% at 50% 70%,#ff5a5f33,#0a0a0a 70%)}
+.wl-holo{display:flex;align-items:flex-end;justify-content:center;background:radial-gradient(60% 80% at 50% 70%,#e8c35a33,#0a0a0a 70%) #0a0a0a}
+.wl-holo.r{background:radial-gradient(60% 80% at 50% 70%,#ff5a5f33,#0a0a0a 70%) #0a0a0a}
 .wl-holo img{height:95%;width:auto;display:block}
 .wl-vs{display:flex!important;align-items:center;justify-content:center;gap:1.4rem;background:radial-gradient(circle at 30% 50%,#ff5a5f33,transparent 50%),radial-gradient(circle at 70% 50%,#5aa9ff33,transparent 50%),#0a0a0a}
 .wl-vs i{width:3.2rem;height:3.2rem;border-radius:50%}.wl-vs .rd{background:#ff5a5f;box-shadow:0 0 30px #ff5a5f}.wl-vs .bl{background:#5aa9ff;box-shadow:0 0 30px #5aa9ff}.wl-vs b{font-size:2rem;font-weight:900;color:#fff}
@@ -3942,7 +3980,7 @@ $('.club-logo').addEventListener('click',()=>setView('arena'));
 function wldTopHTML(){const L=ATHLETES.map(a=>({a,r:ratingOf(a.id)})).sort((x,y)=>y.r.R-x.r.R).slice(0,5);
   return '<div class="wld-top">'+L.map((x,i)=>`<div><span>${i+1}. ${esc(display(x.a))} <small class="muted">${esc(x.a.disc)}</small></span><b style="color:${x.r.tc}">${PITM} ${x.r.R}</b></div>`).join('')+'</div><small class="muted">DEMO: пока один клуб — Mowgli Fight Club</small>'}
 function renderWorld(){$('#wldBody').innerHTML=worldHTML(false);bindWorld($('#wldBody'))}
-const WLD={sub:new Set([21]),fav:new Set(['f:4','c:mowgli','e:ufc333'])};
+const WLD={sub:new Set([21]),fav:new Set(['f:4','c:mowgli','e:ufc333']),light:true};try{const t=localStorage.getItem('fp.wl.theme');if(t)WLD.light=t==='light'}catch(e){}
 const WCH=[ // DEMO: вымышленные бойцы и клубы
   {dir:'in',who:'Тимур Д.',club:'Iron Wolves · Стамбул',disc:'MMA',kg:'77',pit:861,st:['a','c','f'],ok:true,det:'15.11 · Mowgli Fight Night #1 · 3 × 5 мин · трансляция в My PIT'},
   {dir:'out',who:'Рустам К.',club:'Kemer Fight Lab · Кемер',disc:'MMA',kg:'77',pit:884,st:['a'],ok:false,det:'администратор клуба соперника принял вызов · ждём тренера и бойца'},
@@ -3966,8 +4004,8 @@ function worldHTML(m){const a=byId.get(cardId)||ATHLETES[0],rt=ratingOf(a.id);
   const acc=WCH.filter(c=>c.ok).length,pend=WCH.filter(c=>!c.ok&&c.st.length).length,inc=WCH.filter(c=>!c.st.length).length;
   const stp=(c,k,l)=>`<i class="w-st ${c.st.includes(k)?'on':''}">${c.st.includes(k)?'✓':'…'} ${l}</i>`;
   const coaches=[{id:21,n:'Миржалал «MOWGLI»',s:'главный тренер · MMA'},...TRAINERS.map(t=>({id:t.id,n:t.name,s:t.spec}))];
-  return `<div class="wl ${m?'wl-m':''}">
-  <section class="wl-hero"><div class="wl-map">${mapSVG(false)}</div>
+  return `<div class="wl ${m?'wl-m':''} ${WLD.light?'light':''}">
+  <section class="wl-hero"><button type="button" class="wl-theme" data-wtheme aria-label="Сменить тему My PIT World">${WLD.light?'☾ Тёмная':'☀ Светлая'}</button><div class="wl-map">${mapSVG(false)}</div>
     <div class="wl-ht"><span class="wl-eb">MY PIT WORLD</span><h2>Мировое сообщество бойцов</h2>
       <p>Рейтинг PIT, вызовы на бой, соревнования, кэмпы и тренировки чемпионов — в одной сети. Регистрация бесплатная, в рейтинг идут только данные, подтверждённые клубом.</p>
       <div class="wl-cta"><button type="button" class="wl-b1" data-go="map">Найти клуб на карте</button><button type="button" class="wl-b2" data-go="me">Мои вызовы</button></div>
@@ -4016,7 +4054,7 @@ function worldHTML(m){const a=byId.get(cardId)||ATHLETES[0],rt=ratingOf(a.id);
     ${coaches.map(c=>`<div class="w-co"><img src="${trPhoto(c.id)}" alt=""><div><b>${esc(c.n)}</b><span class="muted">${esc(c.s)}</span></div><button type="button" class="w-sub ${WLD.sub.has(c.id)?'on':''}" data-sub="${c.id}">${WLD.sub.has(c.id)?'✓ Подписан':'Подписаться'}</button></div>`).join('')}
     <div class="w-feed">${WBLOG.filter(x=>WLD.sub.has(x.c)).map(x=>`<div class="w-post"><b>${esc(coaches.find(c=>c.id===x.c).n)}</b> · <span class="muted">${x.d}</span><p>${esc(x.t)}</p></div>`).join('')||'<p class="muted">Подпишитесь на тренера — его посты появятся здесь.</p>'}</div></div></section>
   </div>`}
-function bindWorld(R){R.querySelectorAll('[data-sub]').forEach(b=>b.addEventListener('click',()=>{const id=+b.dataset.sub;WLD.sub.has(id)?WLD.sub.delete(id):WLD.sub.add(id);reWorld()}));
+function bindWorld(R){R.querySelectorAll('[data-wtheme]').forEach(b=>b.addEventListener('click',()=>{WLD.light=!WLD.light;try{localStorage.setItem('fp.wl.theme',WLD.light?'light':'dark')}catch(e){}reWorld()}));R.querySelectorAll('[data-sub]').forEach(b=>b.addEventListener('click',()=>{const id=+b.dataset.sub;WLD.sub.has(id)?WLD.sub.delete(id):WLD.sub.add(id);reWorld()}));
   R.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>{const t=R.querySelector(`[data-sec="${b.dataset.go}"]`);if(t){t.scrollIntoView({behavior:'smooth',block:'start'});if(b.dataset.go==='me'){const d=t.querySelector('details');if(d)d.open=true}}}));
   R.querySelectorAll('[data-join]').forEach(b=>b.addEventListener('click',()=>toast(b.dataset.join==='PHUCAMP'?'Заявка на PHUCAMP отправлена в клуб (демо)':'Подписка на анонс оформлена (демо)')))}
 
