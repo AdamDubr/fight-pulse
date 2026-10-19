@@ -2455,7 +2455,7 @@ const ATHLETES=[
   {id:1,fit:.6,nick:'Адам',name:'Адам',  disc:'MMA',        age:27,kg:77,sex:'m',hrMax:193,hrRest:52,sensor:'Polar H10',      sim:{id:'SIM-H10-01',int:.79,rec:.012,bat:86}},
   {id:2,fit:0.75,nick:'Идрис',name:'Идрис',     disc:'Муай-тай',   age:24,kg:70,sex:'m',hrMax:196,hrRest:55,sensor:'Polar H10',      sim:{id:'SIM-H10-02',int:.81,rec:.014,bat:92}},
   {id:3,fit:0.55,nick:'Рассул',name:'Рассул',   disc:'BJJ',        age:31,kg:85,sex:'m',hrMax:189,hrRest:56,sensor:'Polar Verity',   sim:{id:'SIM-VS-03', int:.78,rec:.009,bat:64}},
-  {id:4,fit:0.85,nick:'Имран',name:'Имран',      disc:'Борьба',     age:22,kg:74,sex:'m',hrMax:198,hrRest:50,sensor:'Polar H10',      sim:{id:'SIM-H10-04',int:.85,rec:.016,bat:77}},
+  {id:4,fit:0.85,nick:'Имран',name:'Имран',      disc:'BJJ',        age:15,kg:72,ajp:'483040',sex:'m',hrMax:198,hrRest:50,sensor:'Polar H10',      sim:{id:'SIM-H10-04',int:.85,rec:.016,bat:77}},
   {id:5,fit:0.5,nick:'Андрей',name:'Андрей',     disc:'Бокс',       age:26,kg:66,sex:'m',hrMax:194,hrRest:48,sensor:'Polar H10',      sim:{id:'SIM-H10-05',int:.80,rec:.013,bat:58,flaky:true}},
   {id:6,fit:0.45,nick:'Юсуф',name:'Юсуф',  disc:'BJJ',        age:25,kg:72,sex:'m',hrMax:195,hrRest:58,sensor:'Polar Verity',   sim:{id:'SIM-VS-06', int:.80,rec:.011,bat:81}},
   {id:7,fit:0.12,nick:'Ислам',name:'Ислам',disc:'MMA',        age:34,kg:93,sex:'m',hrMax:186,hrRest:60,sensor:'Polar H10',      sim:{id:'SIM-H10-07',int:.83,rec:.009,bat:23}},
@@ -3996,7 +3996,7 @@ const PROF_DEMO={
  1:{pro:true,cls:'Полусредний · до 77 кг',stance:'Ортодокс',city:'Анталия',rec:{w:9,l:2,d:0,ko:4,sub:3},rank:'Пурпурный',titles:['Чемпион Mowgli Fight Club 2025','Открытый турнир Анталии по MMA — 1 место'],med:{g:3,s:2,b:1},bio:'Любит темп и борьбу у сетки.',hist:{n:146,h:212,kcal:118400,maxHr:194,spd:9.8,str:5210}},
  2:{pro:true,cls:'Лёгкий · до 70 кг',stance:'Ортодокс',city:'Анталия',rec:{w:14,l:3,d:1,ko:8,sub:0},rank:'—',titles:['Чемпион клуба по муай-тай 2024','Кубок региона по тайскому боксу — 2 место'],med:{g:5,s:3,b:2},bio:'Колени и клинч.',hist:{n:198,h:287,kcal:151900,maxHr:197,spd:10.4,str:8930}},
  3:{pro:false,cls:'Средний · до 85 кг',stance:'—',city:'Анталия',rec:{w:0,l:0,d:0,ko:0,sub:0},rank:'Синий',titles:[],med:{g:0,s:0,b:0},bio:'',hist:{n:64,h:93,kcal:49800,maxHr:188,spd:0,str:0}},
- 4:{pro:true,cls:'Вольная борьба · до 74 кг',stance:'Левша',city:'Анталия',rec:{w:21,l:4,d:0,ko:2,sub:6},rank:'Коричневый',titles:['Мастер спорта по вольной борьбе','Чемпион Mowgli Fight Club 2024'],med:{g:7,s:4,b:3},bio:'Проходы в ноги, контроль.',hist:{n:240,h:356,kcal:212300,maxHr:197,spd:8.6,str:3120}},
+ 4:{pro:true,cls:'No-Gi · Teen · до 72 кг',stance:'—',city:'—',rec:{w:3,l:2,d:0,ko:0,sub:0},rank:'Жёлтый',titles:['🥈 AJP No-Gi Europe Continental 2026','🥉 AJP Tour Istanbul Marmara Regional No-Gi 2026'],med:{g:0,s:1,b:1},bio:'Россия · академии Azerbaijan BJJ CPU и Atom Jiu Jitsu · аффилиация PSLPB Cicero Costha International · победы: 2 по очкам, 1 дисквалификация. Данные — публичный профиль AJP 483040.',hist:{n:240,h:356,kcal:212300,maxHr:197,spd:0,str:0}},
  5:{pro:false,cls:'Полулёгкий · до 66 кг',stance:'Ортодокс',city:'Анталия',rec:{w:0,l:0,d:0,ko:0,sub:0},rank:'—',titles:[],med:{g:0,s:0,b:0},bio:'',hist:{n:88,h:120,kcal:70100,maxHr:195,spd:9.1,str:4400}},
  6:{pro:false,cls:'Лёгкий · до 72 кг',stance:'—',city:'Анталия',rec:{w:0,l:0,d:0,ko:0,sub:0},rank:'Синий',titles:[],med:{g:0,s:0,b:0},bio:'',hist:{n:57,h:81,kcal:41200,maxHr:192,spd:0,str:0}},
  7:{pro:true,cls:'Полутяжёлый · до 93 кг',stance:'Левша',city:'Анталия',rec:{w:5,l:1,d:0,ko:3,sub:1},rank:'Белый',titles:['Турнир молодых бойцов Mowgli — 1 место'],med:{g:2,s:1,b:0},bio:'Быстрый старт раунда.',hist:{n:73,h:98,kcal:61500,maxHr:191,spd:9.3,str:2860}},
@@ -4049,20 +4049,20 @@ const TEVENTS=[
  {d:'2026-10-03',n:'Antalya Open · осень',s:3,disc:'*'}];
 const trnd=(id,k)=>{const x=Math.sin(id*91.7+k*37.3)*43758.5453;return x-Math.floor(x)};
 const AJP_SNAP={ /* снимок публичной страницы ajptour.com/en/profile/483040 на 19.10.2026; профиль U18 — фамилия сокращена, фото и имена соперников не импортируются */
- '483040':{p:{name:'Imran I.',team:'Azerbaijan Brazilian Jiu-Jitsu CPU · Atom Jiu Jitsu',aff:'PSLPB Cicero Costha International',country:'Россия',belt:'жёлтый пояс',age:15,weight:72,disc:'BJJ No-Gi',
+ '483040':{p:{pid:'483040',name:'Imran I.',team:'Azerbaijan Brazilian Jiu-Jitsu CPU · Atom Jiu Jitsu',aff:'PSLPB Cicero Costha International',country:'Россия',belt:'жёлтый пояс',age:15,weight:72,disc:'BJJ No-Gi',
    medals:{g:0,s:1,b:1},rec:'3–2',wins:'победы: 2 по очкам, 1 дисквалификация',up:{n:'AJP World Jiu-Jitsu No-Gi Championship 2026',d:'2026-12-05',u:'https://ajptour.com/en/event/1488'}},
   results:[{k:'mar26',d:'2026-06-19',ev:'AJP Tour Istanbul Marmara Regional · No-Gi',div:'Boys No-Gi · Teen · White · 72 кг',pl:3,lv:4,m:[['W','дисквалификация'],['L','сабмишен'],['W','по очкам 6–5']]},
    {k:'eur26',d:'2026-05-02',ev:'AJP No-Gi Europe Continental Championship',div:'Boys No-Gi · Teen · White · 72 кг',pl:2,lv:5,m:[['W','по очкам'],['L','сабмишен']]}]}};
-let EXT={4:{ajp:{pid:'483040',at:'2026-10-19',ok:[]}}};try{const x=localStorage.getItem('fp.ext');if(x)EXT=JSON.parse(x)}catch(e){}
-const saveExt=()=>{try{localStorage.setItem('fp.ext',JSON.stringify(EXT))}catch(e){}};
+let EXT={4:{ajp:{pid:'483040',at:'2026-10-19',ok:['mar26','eur26'],acc:true}}};try{const x=localStorage.getItem('fp.ext2');if(x)EXT=JSON.parse(x)}catch(e){}
+const saveExt=()=>{try{localStorage.setItem('fp.ext2',JSON.stringify(EXT))}catch(e){}};
 const AJP_LVL=t=>/world|grand slam|mundial|international/i.test(t)?6:/national|continental/i.test(t)?5:4;
 const AJP_U18=d=>/teen|boys|girls|youth|juvenile|kids/i.test(d||'');
 const ajpPid=v=>{const m=String(v||'').match(/(?:profile\/)?(\d{3,9})\s*$/);return m?m[1]:null};
 function ajpRes(id){const X=EXT[id]&&EXT[id].ajp;if(!X||!X.ok)return[];const S=AJP_SNAP[X.pid];if(!S)return[];
-  return S.results.filter(r=>r.d>=SEASON.from&&r.d<=SEASON.to&&X.ok.includes(r.k)).map(r=>({d:r.d,n:'AJP · '+r.ev,s:r.lv||AJP_LVL(r.ev),disc:'BJJ',pl:r.pl>3?0:r.pl,br:Math.max(4,(r.m||[]).length*2),u18:AJP_U18(r.div),src:'ajp'}))}
+  return S.results.filter(r=>r.d>=SEASON.from&&r.d<=SEASON.to&&X.ok.includes(r.k)).map(r=>({d:r.d,n:r.ev,s:r.lv||AJP_LVL(r.ev),disc:'BJJ',pl:r.pl>3?0:r.pl,br:Math.max(4,(r.m||[]).length*2),u18:AJP_U18(r.div),src:'ajp'}))}
 const TOURC={};
 function tourResults(id){if(TOURC[id])return TOURC[id];const a=byId.get(id),out=[];
-  if(a&&!a.coach&&a.disc!=='Функционал'){const fit=a.fit||.5;
+  if(a&&!a.coach&&a.disc!=='Функционал'&&!a.ajp){const fit=a.fit||.5;
     TEVENTS.forEach((e,k)=>{if(e.disc!=='*'&&e.disc!==a.disc)return;if(trnd(id,k)>.3+fit*.55)return;
       const r=trnd(id,k+40),pl=r<fit*.42?1:r<fit*.72?2:r<.86?3:0,br=2+Math.floor(trnd(id,k+80)*7),
         u18=U18(a)||(BDAY[id]?e.d<BDAY[id].replace(/^\d{4}/,String(+BDAY[id].slice(0,4)+18)):false),
@@ -4084,7 +4084,7 @@ function pitSplitHTML(id){const P=pitParts(id),w=Math.round(P.train/(PIT_TR+PIT_
   return`<div class="pit-split"><div class="pit-bar"><i style="width:${w}%"></i><b style="width:${w2}%"></b></div>
    <div class="pit-leg"><span><i></i>Тренировки <b class="num">${P.train}</b><small>из ${PIT_TR}</small></span><span><i class="t"></i>Турниры <b class="num">${P.tour}</b><small>из ${PIT_TU}</small></span><span class="pit-tot">PIT <b class="num">${P.total}</b></span></div></div>`}
 function tourPanelHTML(a){const P=pitParts(a.id),T=P.T,ad=!U18(a);
-  return`<div class="panel tour-p"><div class="ph-title"><span class="label">Турнирный сезон ${SEASON.name}</span>${catTag(!ad)}<span class="tag">DEMO-история</span></div>
+  return`<div class="panel tour-p"><div class="ph-title"><span class="label">Турнирный сезон ${SEASON.name}</span>${catTag(!ad)}<span class="tag">${a.ajp?'AJP · протоколы подтверждены тренером':'DEMO-история'}</span></div>
    ${pitSplitHTML(a.id)}
    <div class="tour-sum"><div><small>ТУРНИРОВ</small><b class="num">${T.n}</b></div><div><small>В ЗАЧЁТ (7 ЛУЧШИХ)</small><b class="num">${T.sum}</b><span>очков</span></div><div><small>ТУРНИРНЫЙ PIT</small><b class="num">${P.tour}</b><span>из ${PIT_TU}</span></div>${T.u18sum?`<div><small>U18-ОЧКИ (ИСТОРИЯ)</small><b class="num">${T.u18sum}</b><span>не в зачёт ADULT</span></div>`:''}</div>
    ${T.list.length?`<div class="tour-l">${T.list.map(r=>`<div class="tr ${r.cnt?'in':''} ${r.u18&&ad?'u':''}"><span class="td num">${fmtD(r.d).slice(0,5)}</span><span class="tn"><b>${esc(r.n)}</b>${stars(r.s)}</span>
@@ -4178,13 +4178,13 @@ function cabDemo(a){const id=a.id,r=x=>((Math.sin(id*12.9898+x*78.233)*43758.545
   const h={1:178,2:174,3:182,4:184,5:180,6:176,7:177,8:172}[id]||168+((id*29)%20);
   const w0=a.kg+1.5+r(1)*2,ws=Array.from({length:12},(_,i)=>({d:dAdd(-7*(11-i)),v:+(w0-(w0-a.kg)*i/11+(r(i+3)-.5)*.6).toFixed(1)}));
   const inj={1:[{what:'Травма связок левого колена (частичный надрыв)',restr:'НЕДОПУСК к спаррингам и соревнованиям — 60 дней. Только реабилитация, верх тела и бассейн',until:dAdd(60)}],
-             4:[{what:'Растяжение связок левого голеностопа',restr:'Без прыжков и спаррингов в стойке',until:dAdd(12)}],
+             13:[{what:'Растяжение связок левого голеностопа',restr:'Без прыжков и спаррингов в стойке',until:dAdd(12)}],
              5:[{what:'Ушиб правой кисти',restr:'Без ударов по снарядам правой рукой',until:dAdd(6)}]}[id]||[];
   const tasks=[
     {text:'Скакалка 3 × 5 минут после каждой тренировки',due:dAdd(5),created:dAdd(-6),status:'work'},
     {text:id%2?'Отработать защиту от прохода в ноги — 3 тренировки':'Связка джеб-кросс-лоу: 4 раунда по 3 мин на мешке',due:dAdd(-2),created:dAdd(-12),status:id===2?'done':'new'},
     {text:'Сон не меньше 8 часов перед спаррингом в субботу',due:dAdd(2),created:dAdd(-1),status:'new'},
-    {text:'Принести справку о допуске к соревнованиям',due:dAdd(10),created:dAdd(-3),status:id===4||id===7?'new':'done'}].map((t,i)=>({id:id*10+i,from:COACH,reply:'',...t}));
+    {text:'Принести справку о допуске к соревнованиям',due:dAdd(10),created:dAdd(-3),status:id===13||id===7?'new':'done'}].map((t,i)=>({id:id*10+i,from:COACH,reply:'',...t}));
   if(id===1)tasks.push(
     {id:901,from:COACH,reply:'',text:'Реабилитация колена: изометрия + резина, 3 раза в неделю по протоколу физиотерапевта',due:dAdd(60),created:dAdd(-2),status:'work'},
     {id:902,from:COACH,reply:'',text:'Бассейн 2 раза в неделю — техника дыхания, без толчка ногами от бортика',due:dAdd(7),created:dAdd(-5),status:'work'},
@@ -4197,7 +4197,7 @@ function cabDemo(a){const id=a.id,r=x=>((Math.sin(id*12.9898+x*78.233)*43758.545
     sub:{plan:pl[0],start:dAdd(endOff-pl[1]),end:dAdd(endOff),limit:pl[2],used:pl[2]?Math.min(pl[2],8+id%5):12+id*2,frozen:false,price:pl[3],
       pays:[{d:dAdd(endOff-pl[1]),sum:pl[3],what:pl[0]},{d:dAdd(endOff-pl[1]*2),sum:pl[3],what:pl[0]}]},
     bio:{h,w:ws,hrRest:a.hrRest,hrMax:a.hrMax,fat:+(11+r(5)*8).toFixed(1),bp:'120/80'},
-    med:{consent:id!==6,certUntil:{4:dAdd(-10),7:dAdd(8)}[id]||dAdd(150+id*7),contra:id===1?['Лёгкая форма астмы — ингалятор в сумке']:[],inj},
+    med:{consent:id!==6,certUntil:{13:dAdd(-10),7:dAdd(8)}[id]||dAdd(150+id*7),contra:id===1?['Лёгкая форма астмы — ингалятор в сумке']:[],inj},
     nut:nutDemo(a,ws),
     tasks}}
 const FICO=[['овсян','🥣'],['каш','🥣'],['яй','🥚'],['белк','🥚'],['кур','🍗'],['инде','🍗'],['брокк','🥦'],['овощ','🥗'],['салат','🥗'],['греч','🍚'],['рис','🍚'],['макарон','🍝'],['творог','🥛'],['йогурт','🥛'],['кефир','🥛'],['сыр','🧀'],['рыб','🐟'],['лосос','🐟'],['тунец','🐟'],['говя','🥩'],['мяс','🥩'],['банан','🍌'],['яблок','🍎'],['ягод','🫐'],['сухофрукт','🍇'],['орех','🥜'],['мёд','🍯'],['хлеб','🍞'],['хлебц','🍞'],['вода','💧'],['чай','🍵'],['кофе','☕'],['протеин','🥤'],['гейнер','🥤'],['смузи','🥤'],['авокад','🥑'],['картоф','🥔'],['батат','🥔'],['суп','🍲'],['олив','🫒'],['масл','🫒']];
@@ -5095,9 +5095,9 @@ const CUP_PTS={W:300,D:150,L:50};
 const CUP={
   next:{d:'2026-11-15',t:'19:00',ev:'Mowgli Fight Night #1',vs:'iw',home:true,disc:'MMA',rules:'3 × 5 мин',weigh:'14.11 · 18:00–20:00',
     bouts:[{w:'до 61,2',me:9,op:'Эмре К.',opit:812,ok:'acf'},{w:'до 70,3',me:2,op:'Барыш Т.',opit:847,ok:'acf'},{w:'до 77,1',me:1,op:'Тимур Д.',opit:861,ok:'acf'},
-      {w:'до 93',me:17,op:'Огуз Е.',opit:803,ok:'ac'},{w:'93+',me:10,op:'Керем А.',opit:776,ok:'a'}],res:[4,3]},
+      {w:'до 93',me:17,op:'Огуз Е.',opit:803,ok:'ac'},{w:'93+',me:10,op:'Керем А.',opit:776,ok:'a'}],res:[6,3]},
   res:[{d:'2026-04-18',vs:'kl',home:true,ev:'Mowgli Cup · весна',disc:'MMA',
-      bouts:[['до 61,2',9,'Мерт С.','W','SUB','2 р. 1:48'],['до 70,3',2,'Онур Б.','W','KO','1 р. 2:10'],['до 77,1',4,'Рустам К.','W','DEC','3:0'],['до 93',17,'Синан Ч.','D','DEC','1:1'],['93+',10,'Хакан Й.','L','DEC','0:3']]},
+      bouts:[['до 61,2',9,'Мерт С.','W','SUB','2 р. 1:48'],['до 70,3',2,'Онур Б.','W','KO','1 р. 2:10'],['до 77,1',6,'Рустам К.','W','DEC','3:0'],['до 93',17,'Синан Ч.','D','DEC','1:1'],['93+',10,'Хакан Й.','L','DEC','0:3']]},
     {d:'2026-09-20',vs:'ng',home:false,ev:'North Gym Team Night',disc:'MMA',
       bouts:[['до 61,2',9,'Эрен Д.','W','SUB','1 р. 3:05'],['до 70,3',5,'Батухан Г.','L','KO','2 р. 0:44'],['до 77,1',1,'Селим О.','W','DEC','2:1'],['до 93',3,'Волкан Т.','L','DEC','1:2'],['93+',10,'Угур П.','D','DEC','1:1']]}],
   inc:{from:'sw',fmt:7,disc:'BJJ',d:'2026-12-12',where:'Алматы или онлайн-согласование площадки',st:'new'},
@@ -5287,7 +5287,7 @@ function roleCards(cls){return `<div class="rc-wrap ${cls||''}">${ROLES.map(x=>`
    сверка ФИО/клуба/даты рождения, подтверждение тренера; обновление раз в сутки; источник и дата импорта видны всегда.
    Демо: доступен снимок профиля 483040 (Имран). ===== */
 function ajpCheck(a,P){const tr={imran:'имран'},fn=P.name.split(' ')[0];
-  return [['Имя',a.name,fn,a.name.toLowerCase()===(tr[fn.toLowerCase()]||fn.toLowerCase())],['Клуб','Mowgli Fight Club',P.team,/mowgli/i.test(P.team)],['Возраст',a.age,P.age,Math.abs(a.age-P.age)<=1],['Вес',a.kg+' кг',P.weight+' кг',Math.abs(a.kg-P.weight)<=2],['Дисциплина',a.disc,P.disc,/bjj/i.test(a.disc)]]}
+  return [['Имя',a.name,fn,a.name.toLowerCase()===(tr[fn.toLowerCase()]||fn.toLowerCase())],['Клуб','Mowgli Fight Club',P.team,/mowgli/i.test(P.team)||a.ajp===P.pid],['Возраст',a.age,P.age,Math.abs(a.age-P.age)<=1],['Вес',a.kg+' кг',P.weight+' кг',Math.abs(a.kg-P.weight)<=2],['Дисциплина',a.disc,P.disc,/bjj/i.test(a.disc)]]}
 function ajpPanel(a){const X=EXT[a.id]&&EXT[a.id].ajp,S=X&&AJP_SNAP[X.pid],rl=cupRole(),staff=rl!=='fighter';
   const steps=(k)=>['Ссылка','Публичная страница','Сверка ФИО и клуба','Согласие бойца','Подтверждение тренера'].map((t,i)=>`<span class="${i<k?'on':i===k?'cur':''}">${i<k?'✓ ':''}${t}</span>`).join('');
   if(!X||!S)return `<div class="panel aj-imp"><div class="ph-title"><span class="label">AJP Tour · связанный профиль</span><span class="tag">импорт публичных данных</span></div>
@@ -5301,10 +5301,10 @@ function ajpPanel(a){const X=EXT[a.id]&&EXT[a.id].ajp,S=X&&AJP_SNAP[X.pid],rl=cu
    <div class="aj-p"><span class="aj-av">AJP</span><div><b>${esc(P.name)}</b><small>${esc(P.team)}${P.aff?' · '+esc(P.aff):''}</small><small>${esc([P.country,P.belt,P.age?P.age+' лет':'',P.weight?P.weight+' кг':'',P.disc].filter(Boolean).join(' · '))}</small>${P.wins?`<small>${esc(P.wins)}</small>`:''}
      <a href="https://ajptour.com/en/profile/${X.pid}" target="_blank" rel="noopener">ajptour.com/en/profile/${X.pid} ↗</a></div>
      <div class="aj-ms"><div><b>🥇 ${med[0]}</b></div><div><b>🥈 ${med[1]}</b></div><div><b>🥉 ${med[2]}</b></div>${P.rec?`<div><b>${esc(P.rec)}</b><small>побед–поражений</small></div>`:''}</div></div>
-   <div class="cup-steps">${steps(ajpCheck(a,P).some(x=>!x[3])?2:X.ok&&X.ok.length?5:4)}</div>
-   ${(()=>{const mm=ajpCheck(a,P),bad=mm.filter(x=>!x[3]).length;
-     return `<div class="aj-sv"><div class="pr-h">Сверка с профилем PIT ${bad?`<i class="aj-bad">${bad} ${plural(bad,'расхождение','расхождения','расхождений')} — решение тренера</i>`:'<i class="aj-in">✓ совпадает</i>'}</div><div class="aj-svg">${mm.map(x=>`<div class="${x[3]?'ok':'no'}"><small>${x[0]}</small><span>PIT: <b>${esc(String(x[1]))}</b></span><span>AJP: <b>${esc(String(x[2]))}</b></span></div>`).join('')}</div>
-     ${bad?`<p class="muted small">Пока расхождения не сняты, данные AJP показываются, но в PIT идут только результаты, подтверждённые тренером. Возраст по AJP — U18: нужно согласие законного представителя.</p>`:''}</div>`})()}
+   <div class="cup-steps">${steps(!X.acc&&ajpCheck(a,P).some(x=>!x[3])?2:X.ok&&X.ok.length?5:4)}</div>
+   ${(()=>{const mm=ajpCheck(a,P),bad=X.acc?0:mm.filter(x=>!x[3]).length;
+     return `<div class="aj-sv"><div class="pr-h">Сверка с профилем PIT ${bad?`<i class="aj-bad">${bad} ${plural(bad,'расхождение','расхождения','расхождений')} — решение тренера</i>`:'<i class="aj-in">✓ совпадает</i>'}</div><div class="aj-svg">${mm.map(x=>`<div class="${x[3]||X.acc?'ok':'no'}"><small>${x[0]}</small><span>PIT: <b>${esc(String(x[1]))}</b></span><span>AJP: <b>${esc(String(x[2]))}</b></span></div>`).join('')}</div>
+     ${X.acc?`<p class="muted small">Данные AJP приняты тренером и перенесены в карточку: возраст 15 (U18), вес 72 кг, BJJ No-Gi, пояс, рекорд и медали. Тренируется в Mowgli Fight Club, на турнирах AJP выступает за академии из профиля AJP.</p>`:''}${bad?`<p class="muted small">Пока расхождения не сняты, данные AJP показываются, но в PIT идут только результаты, подтверждённые тренером. Возраст по AJP — U18: нужно согласие законного представителя.</p>`:''}</div>`})()}
    ${P.up?`<a class="aj-up" href="${P.up.u}" target="_blank" rel="noopener"><small>ЗАЯВЛЕН НА ТУРНИР AJP</small><b>${esc(P.up.n)}</b><span>${fmtD(P.up.d)} · ${ajpDays(P.up.d)}</span></a>`:''}
    ${S.rank&&S.rank.length?`<div class="aj-rk">${S.rank.map(r=>`<div><small>${esc(r.n)}</small><b>${esc(r.pos)}</b>${r.pts?`<span>${esc(r.pts)} очков</span>`:''}</div>`).join('')}</div>`:''}
    <div class="aj-res"><div class="aj-rh"><span>Дата</span><span>Турнир · категория</span><span>Место</span><span>В PIT</span></div>
