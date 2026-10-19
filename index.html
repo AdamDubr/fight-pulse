@@ -1463,6 +1463,42 @@ html.light body .s-nav{background:#fff!important;border-color:var(--line)!import
 html.light .s-nav button{color:#8a8377}
 html.light .s-nav button[aria-current="page"]{color:#15171b}
 html.light .s-nav .s-fin[aria-current="page"]{color:#b4740a}
+/* PIT: тренировки + турниры */
+.adult-b{display:inline-block;background:#3b82f6;color:#fff;font-weight:900;font-size:.68em;letter-spacing:.06em;line-height:1;padding:.22em .45em .2em;border-radius:.3em;vertical-align:.12em;white-space:nowrap;font-style:normal}
+.tstars{color:#e8c35a;letter-spacing:.05em;font-size:.8em;white-space:nowrap}.tstars i{font-style:normal;opacity:.22}
+html.light .tstars{color:#b58a1b}
+.pit-split{display:flex;flex-direction:column;gap:.45rem;margin:.4rem 0 .7rem}
+.pit-bar{display:flex;height:.7rem;border-radius:.4rem;overflow:hidden;background:var(--line-2)}
+.pit-bar i{display:block;height:100%;background:linear-gradient(90deg,#2fd27a,#16a34a)}.pit-bar b{display:block;height:100%;background:linear-gradient(90deg,#e8c35a,#b58a1b)}
+.pit-leg{display:flex;flex-wrap:wrap;gap:.3rem 1rem;align-items:baseline;font-size:.78rem;color:var(--muted)}
+.pit-leg span{display:inline-flex;align-items:baseline;gap:.3rem}.pit-leg i{width:.6rem;height:.6rem;border-radius:2px;background:#2fd27a;align-self:center}.pit-leg i.t{background:#e8c35a}
+.pit-leg b{color:var(--fg);font-weight:900;font-size:1rem}.pit-leg small{font-size:.65rem;color:var(--dim)}.pit-tot{margin-left:auto}.pit-tot b{font-size:1.2rem}
+.tour-p .ph-title{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}.tour-p .ph-title .tag{margin-left:auto}
+.tour-sum{display:grid;grid-template-columns:repeat(auto-fit,minmax(8rem,1fr));gap:.5rem;margin-bottom:.7rem}
+.tour-sum div{border:1px solid var(--line-2);border-radius:.6rem;padding:.5rem .65rem;background:var(--panel-2);display:flex;flex-direction:column}
+.tour-sum small{font-size:.58rem;letter-spacing:.12em;color:var(--dim);font-weight:800}.tour-sum b{font-size:1.35rem;font-weight:900}.tour-sum span{font-size:.65rem;color:var(--muted)}
+.tour-l{display:flex;flex-direction:column}
+.tour-l .tr{display:grid;grid-template-columns:3rem minmax(0,1fr) 7rem 3.5rem 7rem;gap:.6rem;align-items:center;padding:.45rem .2rem;border-top:1px solid var(--line);font-size:.82rem}
+.tour-l .tr.in{background:linear-gradient(90deg,#e8c35a12,transparent 60%)}
+.tour-l .tr.u{opacity:.75}
+.tour-l .td{color:var(--dim);font-size:.72rem}.tour-l .tn{display:flex;flex-direction:column;min-width:0}.tour-l .tn b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:700}
+.tour-l .tp{display:flex;flex-direction:column;font-weight:700}.tour-l .tp small,.tour-l .tst small{font-size:.62rem;color:var(--dim);font-weight:600}
+.tour-l .tpt{font-weight:900;text-align:right;font-size:1rem}.tour-l .tst{display:flex;align-items:center;gap:.3rem;justify-content:flex-end;flex-wrap:wrap}.tour-l .tst em{font-style:normal;font-size:.68rem;font-weight:800;color:#2fd27a}
+html.light .tour-l .tst em{color:#15803d}
+@media (max-width:760px){.tour-l .tr{grid-template-columns:2.6rem minmax(0,1fr) 3rem;grid-template-areas:"d n p" "d s s";row-gap:.2rem}.tour-l .td{grid-area:d}.tour-l .tn{grid-area:n}.tour-l .tpt{grid-area:p}.tour-l .tp{display:none}.tour-l .tst{grid-area:s;justify-content:flex-start}}
+#mobile .tour-l .tr{grid-template-columns:2.6rem minmax(0,1fr) 3rem;grid-template-areas:"d n p" "d s s";row-gap:.2rem}#mobile .tour-l .td{grid-area:d}#mobile .tour-l .tn{grid-area:n}#mobile .tour-l .tpt{grid-area:p}#mobile .tour-l .tp{display:none}#mobile .tour-l .tst{grid-area:s;justify-content:flex-start}
+#mobile .tour-p{margin-bottom:.8rem}
+.wl-pp{font-size:.62rem!important;color:var(--dim)!important;margin-top:.15rem!important}
+.pit-rules .pr-grid{display:grid;grid-template-columns:1.1fr 1fr 1.1fr;gap:1rem}
+.pr-c{background:var(--panel);border:1px solid var(--line-2);border-radius:1rem;padding:1rem;display:flex;flex-direction:column;gap:.5rem;min-width:0}
+.pr-h{font-size:.68rem;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:#e8c35a}
+.wl.light .pr-c{background:#fff;border-color:#e3dccb}.wl.light .pr-h{color:#8a6a1c}
+.pr-c p{margin:0;font-size:.8rem;color:var(--muted);line-height:1.45}
+.pr-st{display:flex;flex-direction:column;gap:.3rem}.pr-st div{display:grid;grid-template-columns:5.2rem minmax(0,1fr) auto;gap:.5rem;align-items:center;font-size:.78rem}.pr-st b{font-weight:900}
+.pr-ul{margin:0;padding-left:1.1rem;display:flex;flex-direction:column;gap:.35rem;font-size:.8rem;line-height:1.35}
+.wl-m .pit-rules .pr-grid{grid-template-columns:1fr}
+@media (max-width:1300px){.pit-rules .pr-grid{grid-template-columns:1fr 1fr}.pit-rules .pr-c:first-child{grid-column:1/-1}}
+.tour-p .ph-title .adult-b,.tour-p .ph-title .u18{font-size:.6rem!important;padding:.25em .5em}
 /* ===== СВЕТЛАЯ ТЕМА (по умолчанию). 3D-сцены, голограммы, постеры и фото остаются тёмными «экранами». ===== */
 html.light{color-scheme:light;
   --ink:#f4f1e9; --panel:#ffffff; --panel-2:#faf7f0; --line:#ebe5d6; --line-2:#ddd5c3;
@@ -2165,7 +2201,7 @@ const ATHLETES=[
   {id:15,fit:0.8, nick:'Паша',    name:'Павел',    disc:'Борьба',    age:15,kg:60,sex:'m',hrMax:205,hrRest:48,sensor:'Polar H10',    sim:{id:'SIM-H10-15',int:.85,rec:.016,bat:82}},
   {id:16,fit:0.5, nick:'Егорка',  name:'Егор',     disc:'BJJ',       age:16,kg:70,sex:'m',hrMax:204,hrRest:57,sensor:'Polar Verity', sim:{id:'SIM-VS-16', int:.77,rec:.010,bat:61}},
   {id:17,fit:0.55,nick:'Макс',    name:'Максим',   disc:'MMA',       age:33,kg:84,sex:'m',hrMax:188,hrRest:58,sensor:'Polar H10',    sim:{id:'SIM-H10-17',int:.81,rec:.010,bat:47}},
-  {id:18,fit:0.65,nick:'Тима',    name:'Тимур',    disc:'Муай-тай',  age:25,kg:72,sex:'m',hrMax:195,hrRest:52,sensor:'Polar H10',    sim:{id:'SIM-H10-18',int:.80,rec:.012,bat:79}},
+  {id:18,fit:0.65,nick:'Тима',    name:'Тимур',    disc:'Муай-тай',  age:18,kg:72,sex:'m',hrMax:195,hrRest:52,sensor:'Polar H10',    sim:{id:'SIM-H10-18',int:.80,rec:.012,bat:79}},
   {id:19,fit:0.35,nick:'Вова',    name:'Владимир', disc:'Бокс',      age:38,kg:90,sex:'m',hrMax:182,hrRest:63,sensor:'Polar H10',    sim:{id:'SIM-H10-19',int:.72,rec:.008,bat:36,flaky:true}},
   {id:20,fit:0.75,nick:'Кир',     name:'Кирилл',   disc:'Функционал',age:14,kg:56,sex:'m',hrMax:206,hrRest:47,sensor:'Coospo H808S', sim:{id:'SIM-HRM-20',int:.82,rec:.015,bat:90}},
   {id:21,fit:0.85,nick:'MOWGLI',  name:'Миржалал', disc:'MMA',       age:36,kg:78,sex:'m',hrMax:184,hrRest:48,sensor:'Polar H10',    sim:{id:'SIM-H10-21',int:.80,rec:.016,bat:93},coach:true},
@@ -3727,7 +3763,60 @@ function cardStats(id){const P=PROF[id],m=metrics.get(id),s=strikes.get(id);
 const WCATS=[[61.2,'ЛЕГЧАЙШИЙ'],[65.8,'ПОЛУЛЁГКИЙ'],[70.3,'ЛЁГКИЙ'],[77.1,'ПОЛУСРЕДНИЙ'],[83.9,'СРЕДНИЙ'],[93,'ПОЛУТЯЖЁЛЫЙ'],[999,'ТЯЖЁЛЫЙ']];
 const wcat=kg=>WCATS.find(c=>kg<=c[0])[1];
 const RTIERS=[[850,'ЧЕМПИОН','#e8c35a'],[700,'ЭЛИТА','#ff4562'],[500,'ПРЕТЕНДЕНТ','#ffc93c'],[300,'БОЕЦ','#8fb4ff'],[0,'НОВИЧОК','#a6a6a6']];
-function fpRating(id){const S=cardStats(id),G=progSummary(id),C=CAB[id],P=PROF[id],
+
+/* ===== Турнирный слой PIT (по мотивам AJP): уровни ★, 7 лучших результатов за сезон, ADULT / U18 ===== */
+const TSTARS={1:100,2:200,3:400,4:600,5:1000,6:2000};
+const TLVL={1:'Товарищеская встреча клубов',2:'Клубный турнир',3:'Городской',4:'Региональный',5:'Национальный',6:'Международный My PIT'};
+const TPLACE={1:1,2:.6,3:.35,0:.05},TPLN={1:'1-е',2:'2-е',3:'3-е',0:'участие'};
+const SEASON={name:'2025/26',from:'2025-11-01',to:'2026-10-31'},TOUR_CAP=3000,PIT_TR=700,PIT_TU=300;
+const BDAY={18:'2008-06-12'}; /* DEMO: Тимуру исполнилось 18 в июне 2026 — его прежние результаты остаются с пометкой U18 */
+const TEVENTS=[
+ {d:'2025-11-15',n:'Mowgli Fight Night #0',s:2,disc:'*'},{d:'2025-11-29',n:'Antalya Open · MMA',s:3,disc:'MMA'},
+ {d:'2025-12-13',n:'Akdeniz BJJ Open',s:3,disc:'BJJ'},{d:'2026-01-24',n:'Товарищеская встреча · Iron Wolves',s:1,disc:'*'},
+ {d:'2026-02-21',n:'Türkiye Muay Thai Cup',s:5,disc:'Муай-тай'},{d:'2026-03-07',n:'Средиземноморье · региональный',s:4,disc:'*'},
+ {d:'2026-03-28',n:'Antalya Boxing Night',s:3,disc:'Бокс'},{d:'2026-04-18',n:'Türkiye BJJ Nationals',s:5,disc:'BJJ'},
+ {d:'2026-05-09',n:'Товарищеская встреча · Side Fight Team',s:1,disc:'*'},{d:'2026-05-30',n:'Türkiye Wrestling Open',s:5,disc:'Борьба'},
+ {d:'2026-06-27',n:'Mowgli Fight Night #0.5',s:2,disc:'*'},{d:'2026-07-18',n:'Национальный турнир MMA',s:5,disc:'MMA'},
+ {d:'2026-08-22',n:'My PIT International Cup · Дубай',s:6,disc:'*'},{d:'2026-09-19',n:'Kemer Grappling Challenge',s:3,disc:'BJJ'},
+ {d:'2026-10-03',n:'Antalya Open · осень',s:3,disc:'*'}];
+const trnd=(id,k)=>{const x=Math.sin(id*91.7+k*37.3)*43758.5453;return x-Math.floor(x)};
+const TOURC={};
+function tourResults(id){if(TOURC[id])return TOURC[id];const a=byId.get(id),out=[];
+  if(a&&!a.coach&&a.disc!=='Функционал'){const fit=a.fit||.5;
+    TEVENTS.forEach((e,k)=>{if(e.disc!=='*'&&e.disc!==a.disc)return;if(trnd(id,k)>.3+fit*.55)return;
+      const r=trnd(id,k+40),pl=r<fit*.42?1:r<fit*.72?2:r<.86?3:0,br=2+Math.floor(trnd(id,k+80)*7),
+        u18=U18(a)||(BDAY[id]?e.d<BDAY[id].replace(/^\d{4}/,String(+BDAY[id].slice(0,4)+18)):false),
+        pts=Math.round(TSTARS[e.s]*TPLACE[pl]*(br<=2?.5:1));
+      out.push({...e,pl,br,u18,pts})})}
+  /* зачёт: 7 лучших в своей категории (ADULT или U18) */
+  const pool=out.filter(r=>r.u18===U18(a)).sort((x,y)=>y.pts-x.pts);pool.forEach((r,i)=>r.cnt=i<7);
+  out.sort((x,y)=>y.d.localeCompare(x.d));
+  return TOURC[id]={list:out,sum:pool.slice(0,7).reduce((q,r)=>q+r.pts,0),u18sum:U18(a)?0:out.filter(r=>r.u18).reduce((q,r)=>q+r.pts,0),n:out.length}}
+function pitParts(id){const S=cardStats(id),G=progSummary(id),C=CAB[id],
+  done=C.tasks.filter(t=>t.status==='done').length+6,st=streakWeeks(G.D),tr=G.D.reduce((q,x)=>q+x.trimp,0)/G.D.length,
+  raw=240*clamp(S.n/150,0,1)+180*clamp(G.hrr/30,0,1)+140*clamp(-G.hrStd/12,0,1)+160*clamp(tr/420,0,1)+90*clamp(done/15,0,1)+90*clamp(st/8,0,1),
+  T=tourResults(id),train=Math.round(raw/900*PIT_TR),tour=Math.round(PIT_TU*Math.sqrt(Math.min(1,T.sum/TOUR_CAP)));
+  return{train,tour,total:train+tour,T}}
+const catTag=u=>u?'<span class="u18">U18</span>':'<span class="adult-b">ADULT</span>';
+const stars=n=>'<span class="tstars" title="'+n+'★ · '+TLVL[n]+'">'+'★'.repeat(n)+'<i>'+'★'.repeat(6-n)+'</i></span>';
+function pitSplitHTML(id){const P=pitParts(id),w=Math.round(P.train/(PIT_TR+PIT_TU)*100),w2=Math.round(P.tour/(PIT_TR+PIT_TU)*100);
+  return`<div class="pit-split"><div class="pit-bar"><i style="width:${w}%"></i><b style="width:${w2}%"></b></div>
+   <div class="pit-leg"><span><i></i>Тренировки <b class="num">${P.train}</b><small>из ${PIT_TR}</small></span><span><i class="t"></i>Турниры <b class="num">${P.tour}</b><small>из ${PIT_TU}</small></span><span class="pit-tot">PIT <b class="num">${P.total}</b></span></div></div>`}
+function tourPanelHTML(a){const P=pitParts(a.id),T=P.T,ad=!U18(a);
+  return`<div class="panel tour-p"><div class="ph-title"><span class="label">Турнирный сезон ${SEASON.name}</span>${catTag(!ad)}<span class="tag">DEMO-история</span></div>
+   ${pitSplitHTML(a.id)}
+   <div class="tour-sum"><div><small>ТУРНИРОВ</small><b class="num">${T.n}</b></div><div><small>В ЗАЧЁТ (7 ЛУЧШИХ)</small><b class="num">${T.sum}</b><span>очков</span></div><div><small>ТУРНИРНЫЙ PIT</small><b class="num">${P.tour}</b><span>из ${PIT_TU}</span></div>${T.u18sum?`<div><small>U18-ОЧКИ (ИСТОРИЯ)</small><b class="num">${T.u18sum}</b><span>не в зачёт ADULT</span></div>`:''}</div>
+   ${T.list.length?`<div class="tour-l">${T.list.map(r=>`<div class="tr ${r.cnt?'in':''} ${r.u18&&ad?'u':''}"><span class="td num">${fmtD(r.d).slice(0,5)}</span><span class="tn"><b>${esc(r.n)}</b>${stars(r.s)}</span>
+     <span class="tp">${TPLN[r.pl]}${r.pl&&r.pl<=3?' место':''}<small>сетка ${r.br}${r.br<=2?' · ×0,5':''}</small></span><span class="tpt num">${r.pts}</span>
+     <span class="tst">${r.u18&&ad?catTag(1)+'<small>не в зачёт</small>':r.cnt?'<em>✓ в зачёте</em>':'<small>вне 7 лучших</small>'}</span></div>`).join('')}</div>`:'<div class="muted small">В этом сезоне турниров ещё не было.</div>'}
+   <div class="muted small" style="margin-top:.6rem">Очки = уровень турнира (1★ 100 · 2★ 200 · 3★ 400 · 4★ 600 · 5★ 1000 · 6★ 2000) × место (1-е 100%, 2-е 60%, 3-е 35%, участие 5%); сетка из 2 человек — ×0,5. В зачёт идут 7 лучших результатов сезона в своей категории. Результаты в категории U18 сохраняются в истории с пометкой U18 и не идут в зачёт ADULT. Турнирная часть — до ${PIT_TU} из 1000: ${TOUR_CAP} очков в зачёте = максимум, первые турниры дают больше (рост по корню).</div></div>`}
+function pitRulesHTML(a){return`<section class="pit-rules"><div class="wl-sh"><h3>Как считается PIT</h3><span class="w-demo">сезон ${SEASON.name} · DEMO</span></div>
+  <div class="pr-grid"><div class="pr-c"><div class="pr-h">PIT = тренировки + турниры</div>${pitSplitHTML(a.id)}<p>Тренировки — до ${PIT_TR}: посещаемость, нагрузка, восстановление, задания тренера. Турниры — до ${PIT_TU}: 7 лучших результатов сезона.</p></div>
+   <div class="pr-c"><div class="pr-h">Уровень турнира · очки за 1-е место</div><div class="pr-st">${[1,2,3,4,5,6].map(n=>`<div>${stars(n)}<span>${TLVL[n]}</span><b class="num">${TSTARS[n]}</b></div>`).join('')}</div></div>
+   <div class="pr-c"><div class="pr-h">Правила честного рейтинга</div><ul class="pr-ul"><li><b>7 лучших</b> результатов за сезон — количеством не накрутить</li><li><b>Сезон 12 месяцев</b> — турнирные очки обнуляются, гонка заново</li><li>2-е место — 60%, 3-е — 35%, участие — 5%</li><li>Сетка из 2 человек — <b>×0,5</b></li><li>${catTag(1)} и ${catTag(0)} — раздельные зачёты; U18-очки остаются в истории с пометкой</li><li>Бой засчитывается после подтверждения <b>обоих тренеров</b></li></ul></div></div></section>`}
+
+function fpRating(id){return pitParts(id).total}
+function fpRatingOld(id){const S=cardStats(id),G=progSummary(id),C=CAB[id],P=PROF[id],
   done=C.tasks.filter(t=>t.status==='done').length+6,st=streakWeeks(G.D),
   tr=G.D.reduce((q,x)=>q+x.trimp,0)/G.D.length;
   return Math.round(240*clamp(S.n/150,0,1)+180*clamp(G.hrr/30,0,1)+140*clamp(-G.hrStd/12,0,1)+160*clamp(tr/420,0,1)+90*clamp(done/15,0,1)+90*clamp(st/8,0,1)+100*clamp((P.pro?P.rec.w:0)/15,0,1))}
@@ -3746,7 +3835,7 @@ function renderCard(){
    <div class="fc-id"><span class="fc-num">${String(a.id).padStart(2,'0')}</span><span class="fc-disc">${esc(a.disc)} · ${esc(P.cls)}</span></div>
    <img class="fc-photo" src="${(CAB[cardId]&&CAB[cardId].person.photo)||avatar(cardId)}" alt="Фото ${esc(a.name)}"><div class="fc-nl" style="--tc:${rt.tc}"><h2 class="fc-name">${esc(a.name)}</h2><span class="fc-rg"><span class="fc-r1 num">${PITM}<small class="fc-pit">PIT</small>${rt.R}</span><em class="fc-tch">${rt.tn}</em></span></div>
    <div class="fc-tier">${rt.next?`до уровня ${rt.next[1]} — ещё ${rt.next[0]-rt.R} PIT`:'высший уровень клуба'}</div>${a.nick!==a.name?`<div class="fc-nick">«${esc(a.nick)}»</div>`:''}
-   <div class="fc-rate" style="--tc:${rt.tc}"><span>PIT RATING</span><i>#${rt.rank} из ${rt.of} в своём весе${U18(a)?' · U18':''}</i></div>
+   <div class="fc-rate" style="--tc:${rt.tc}"><span>PIT RATING</span><i>#${rt.rank} из ${rt.of} в своём весе${U18(a)?' · U18':''}</i><small>тренировки ${pitParts(a.id).train} · турниры ${pitParts(a.id).tour}</small></div>
    ${pro?`<div class="fc-rec"><div><b class="num">${P.rec.w}</b><small>ПОБЕД</small></div><span>–</span><div><b class="num">${P.rec.l}</b><small>ПОРАЖ.</small></div><span>–</span><div><b class="num">${P.rec.d}</b><small>НИЧЬИ</small></div></div>
      <div class="fc-recd">${P.rec.ko} KO/TKO · ${P.rec.sub} сабмишн · ${Math.max(0,P.rec.w-P.rec.ko-P.rec.sub)} решением</div>
      ${P.rank!=='—'?`<div class="fc-belt"><i style="--bc:${BELTS[P.rank]||'#3a3a3a'}"></i>${esc(P.rank)} пояс BJJ</div>`:''}
@@ -4301,6 +4390,7 @@ function secProgress(a,C){const G=progSummary(a.id),D=G.D,striker=!/BJJ|Борь
     <div><div class="label">Нагрузка за неделю, TRIMP</div><canvas id="pc3"></canvas></div>
     <div><div class="label">${striker?'Лучшая скорость удара, м/с':'Энергозатраты за неделю, ккал'}</div><canvas id="pc4"></canvas></div></div>
    <div class="muted small">«Стандартная нагрузка» — одинаковая разминка в начале тренировки; если пульс на ней снижается, выносливость растёт. Это расчётные оценки, не медицинские показатели.</div></div>`;
+  CB().firstElementChild.insertAdjacentHTML('beforebegin',tourPanelHTML(a));
   lineChart($('#pc1'),D.map(x=>x.hrStd),{c:'#2fd27a'});lineChart($('#pc2'),D.map(x=>x.hrr),{c:'#3b9cff'});lineChart($('#pc3'),D.map(x=>x.trimp),{c:'#ffc93c'});
   lineChart($('#pc4'),D.map(x=>striker?x.spd:x.kcal),{c:'#ff8a3d',dec:striker});
   const drawPC=()=>{lineChart($('#pc1'),D.map(x=>x.hrStd),{c:'#2fd27a'});lineChart($('#pc2'),D.map(x=>x.hrr),{c:'#3b9cff'});lineChart($('#pc3'),D.map(x=>x.trimp),{c:'#ffc93c'});lineChart($('#pc4'),D.map(x=>striker?x.spd:x.kcal),{c:'#ff8a3d',dec:striker})};
@@ -4605,7 +4695,7 @@ function worldHTML(m){const a=byId.get(cardId)||ATHLETES[0],rt=ratingOf(a.id);
   </section>
   <section class="wl-me" data-sec="me">
     <div class="wl-mecard"><img src="${CAB[a.id].person.photo||avatar(a.id)}" alt=""><div class="wl-mew"><small>ТВОЙ PIT</small><b>${esc(a.name)} <span class="m-ver">✓ Verified</span></b><span>Mowgli Fight Club · Анталья</span></div>
-      <div class="wl-pit"><span style="color:${rt.tc}">${PITM}</span><b style="color:${rt.tc}">${rt.R}</b><small>мир #${wr} · #${rt.rank} ${esc(rt.cat)}</small></div></div>
+      <div class="wl-pit"><span style="color:${rt.tc}">${PITM}</span><b style="color:${rt.tc}">${rt.R}</b><small>мир #${wr} · #${rt.rank} ${esc(rt.cat)}</small><small class="wl-pp">трен. ${pitParts(a.id).train} · турн. ${pitParts(a.id).tour}</small></div></div>
     <div class="wl-mestat"><div><b class="ok">${acc}</b><span>вызов принят</span></div><div><b>${pend}</b><span>на согласовании</span></div><div><b>${inc}</b><span>входящий ждёт</span></div></div>
     <div class="wl-next"><small>БЛИЖАЙШЕЕ</small><b>15.11 · Mowgli Fight Night #1</b><span>твой бой: vs Тимур Д. · Iron Wolves · ${PITM} 861</span></div>
     <details class="wl-chs"><summary>Мои вызовы на бой · ${WCH.length}</summary>
@@ -4613,6 +4703,7 @@ function worldHTML(m){const a=byId.get(cardId)||ATHLETES[0],rt=ratingOf(a.id);
        <div class="w-chm">${c.disc} · ${c.kg} кг · ${PITM} ${c.pit}</div><div class="w-sts">${stp(c,'a','админ')}${stp(c,'c','тренер')}${stp(c,'f','боец')}</div><div class="w-det">${c.det}</div></div>`).join('')}
       <div class="w-note">Вызов принимает администратор клуба → согласует с тренером и бойцом → все дают онлайн-согласие → детали подтверждены.</div></details>
   </section>
+  ${pitRulesHTML(a)}
   <section><div class="wl-sh"><h3>Лента</h3><span class="w-demo">новости — автоматически из источников · фото и тексты авторов</span></div>
     <div class="wl-feed">
       <article class="wl-card wl-big wl-ufc"><div class="wl-art nf-im" data-src="MMA Sucka"><img class="wl-photo" src="${NIMG.ufc}" alt="Волкановски и Евлоев" onerror="this.parentNode.classList.add('noimg');this.remove()"><b>UFC 333</b></div><div class="wl-ov"><span class="wl-tag">АНОНС · ГЛАВНЫЙ БОЙ</span><span class="w-cdn">${cnt}</span>
