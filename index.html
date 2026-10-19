@@ -1443,6 +1443,7 @@ button.sc-c:focus-visible{outline:2px solid var(--sc);outline-offset:2px}
 .wl-punch span{display:block;margin-top:.35rem;font-size:.66rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#e8c35a}
 .wl.light .wl-punch span{color:#8a6a1c}
 .wl-about{font-size:1rem!important}
+.sc-coach{flex-wrap:wrap;border-radius:1rem}.sc-coach button{text-transform:uppercase}
 /* ===== СВЕТЛАЯ ТЕМА (по умолчанию). 3D-сцены, голограммы, постеры и фото остаются тёмными «экранами». ===== */
 html.light{color-scheme:light;
   --ink:#f4f1e9; --panel:#ffffff; --panel-2:#faf7f0; --line:#ebe5d6; --line-2:#ddd5c3;
@@ -3163,25 +3164,28 @@ function schedInit(){if(SCHED)return;try{SCHED=JSON.parse(localStorage.getItem('
 /* тренеры клуба и кто по умолчанию ведёт направление (DEMO) */
 const SCH_CO=[{k:'mowgli',n:'Миржалал «MOWGLI»'},{k:'adam',n:'Адам'},{k:'andrey',n:'Андрей'}],SCH_DEFC={'MMA':'mowgli','BJJ':'mowgli','Борьба':'mowgli','Муай-тай':'adam','Бокс':'andrey','Функционал':'andrey'};
 const SCH_COL={'BJJ':'#7c8cff','MMA':'#ff4562','Бокс':'#e8a33a','Муай-тай':'#f97316','Борьба':'#2dd4bf','Функционал':'#4ade80'};
-const SCH_ME='mowgli',SCH_UI={all:false,open:null};
+const SCH_ME='mowgli',SCH_UI={all:false,open:null,co:'all'};
+/* чьи занятия показывать: тренер — свои/все; админ — выбранный тренер или все */
+const schWho=()=>ROLE.v==='admin'?(SCH_UI.co==='all'?null:SCH_UI.co):(SCH_UI.all?null:SCH_ME);
 const coName=k=>(SCH_CO.find(c=>c.k===k)||{n:'—'}).n;
 /* ближайшие занятия (сегодня и вперёд, 7 дней), длительность занятия 90 мин */
-function schUpcoming(all,lim){schedInit();const now=Date.now(),out=[];
+function schUpcoming(who,lim){schedInit();const now=Date.now(),out=[];
   for(let d=0;d<8&&out.length<lim;d++){const dt=new Date(TODAY.getTime()+d*DAY),dw=dt.getDay();
-    SCHED.classes.filter(c=>c.dow.includes(dw)&&(all||c.coach===SCH_ME)).sort((x,y)=>x.time.localeCompare(y.time)).forEach(c=>{
+    SCHED.classes.filter(c=>c.dow.includes(dw)&&(!who||c.coach===who)).sort((x,y)=>x.time.localeCompare(y.time)).forEach(c=>{
       const [h,mi]=c.time.split(':').map(Number),st=new Date(dt);st.setHours(h,mi,0,0);const en=st.getTime()+90*60e3;
       if(en>now&&out.length<lim)out.push({c,st:st.getTime(),en,d})})}
   return out}
-function schFrameHTML(){const L=schUpcoming(SCH_UI.all,6),now=Date.now(),wd=['вс','пн','вт','ср','чт','пт','сб'];
+function schFrameHTML(){const who=schWho(),adm=ROLE.v==='admin',L=schUpcoming(who,6),now=Date.now(),wd=['вс','пн','вт','ср','чт','пт','сб'];
   const cnt=disc=>disc==='Все группы'?ATHLETES.length:ATHLETES.filter(a=>a.disc===disc).length;
   const lbl=o=>o.d===0?'Сегодня':o.d===1?'Завтра':wd[new Date(o.st).getDay()]+' '+new Date(o.st).getDate()+'.'+String(new Date(o.st).getMonth()+1).padStart(2,'0');
   const stt=o=>{if(now>=o.st)return`<b class="sc-live">● идёт · до ${new Date(o.en).toTimeString().slice(0,5)}</b>`;const m=Math.round((o.st-now)/60e3);
     return m<=180?`<b class="sc-soon">через ${m>=60?Math.floor(m/60)+' ч ':''}${m%60} мин</b>`:''};
   const ev=(SCHED.events||[]).filter(e=>e.d>=dAdd(0)).sort((x,y)=>x.d.localeCompare(y.d))[0];
-  return `<div class="panel sc-fr"><div class="ph-title"><span class="label">${SCH_UI.all?'Ближайшие занятия клуба':'Мои ближайшие занятия'}</span><span class="muted small">${SCH_UI.all?'все тренеры':esc(coName(SCH_ME))}</span>
-     <div class="sc-seg" role="group" aria-label="Чьи занятия"><button data-scall="0" aria-pressed="${!SCH_UI.all}">МОИ</button><button data-scall="1" aria-pressed="${SCH_UI.all}">ВСЕ</button></div></div>
+  return `<div class="panel sc-fr"><div class="ph-title"><span class="label">${adm?'Ближайшие занятия тренеров':SCH_UI.all?'Ближайшие занятия клуба':'Мои ближайшие занятия'}</span><span class="muted small">${who?esc(coName(who)):'все тренеры'}</span>
+     ${adm?`<div class="sc-seg sc-coach" role="group" aria-label="Тренер"><button data-scco="all" aria-pressed="${SCH_UI.co==='all'}">ВСЕ</button>${SCH_CO.map(c=>`<button data-scco="${c.k}" aria-pressed="${SCH_UI.co===c.k}">${esc(c.n.split(' ')[0])}</button>`).join('')}</div>`
+       :`<div class="sc-seg" role="group" aria-label="Чьи занятия"><button data-scall="0" aria-pressed="${!SCH_UI.all}">МОИ</button><button data-scall="1" aria-pressed="${SCH_UI.all}">ВСЕ</button></div>`}</div>
    <div class="sc-row">${L.map(o=>{const k=o.st+'|'+o.c.disc,op=SCH_UI.open===k;return`<button type="button" class="sc-c${now>=o.st?' on':''}${op?' open':''}" data-sco="${k}" aria-expanded="${op}" style="--sc:${SCH_COL[o.c.disc]||'#e8c35a'}"><div class="sc-d"><span>${lbl(o)}</span><b class="num">${o.c.time}</b></div>
-     <div class="sc-g">${esc(o.c.disc)}</div><small>${cnt(o.c.disc)} бойцов${SCH_UI.all?' · '+esc(coName(o.c.coach)):''}</small>${stt(o)}<i class="sc-more">${op?'Свернуть ▴':'Состав ▾'}</i></button>`}).join('')||'<div class="muted small">На ближайшую неделю занятий нет — добавьте в «Расписании».</div>'}</div>
+     <div class="sc-g">${esc(o.c.disc)}</div><small>${cnt(o.c.disc)} бойцов${who?'':' · '+esc(coName(o.c.coach))}</small>${stt(o)}<i class="sc-more">${op?'Свернуть ▴':'Состав ▾'}</i></button>`}).join('')||'<div class="muted small">На ближайшую неделю занятий нет — добавьте в «Расписании».</div>'}</div>
    ${(()=>{const o=L.find(x=>SCH_UI.open===x.st+'|'+x.c.disc);if(!o)return'';
      const F=ATHLETES.filter(a=>o.c.disc==='Все группы'||a.disc===o.c.disc).map(a=>({a,r:ratingOf(a.id)})).sort((x,y)=>y.r.R-x.r.R);
      return`<div class="sc-det" style="--sc:${SCH_COL[o.c.disc]||'#e8c35a'}"><div class="sc-dh"><b>${esc(o.c.disc)} · ${lbl(o)} ${o.c.time}</b><span class="muted small">${esc(coName(o.c.coach))} · ${F.length} бойцов · сортировка по PIT</span><button type="button" class="sc-x" data-scx aria-label="Свернуть состав">✕</button></div>
@@ -3192,6 +3196,7 @@ function schFrameHTML(){const L=schUpcoming(SCH_UI.all,6),now=Date.now(),wd=['в
    ${ev?`<div class="sc-ev">🏆 Ближайшее событие: <b>${esc(ev.name)}</b> · ${fmtD(ev.d)}</div>`:''}</div>`}
 function schFrame(host){if(!host)return;const h=schFrameHTML();if(host.dataset.h===h)return;host.dataset.h=h;host.innerHTML=h;
   host.querySelectorAll('[data-scall]').forEach(b=>b.onclick=()=>{SCH_UI.all=b.dataset.scall==='1';SCH_UI.open=null;host.dataset.h='';schFrame(host)});
+  host.querySelectorAll('[data-scco]').forEach(b=>b.onclick=()=>{SCH_UI.co=b.dataset.scco;SCH_UI.open=null;host.dataset.h='';schFrame(host)});
   host.querySelectorAll('[data-sco]').forEach(b=>b.onclick=()=>{SCH_UI.open=SCH_UI.open===b.dataset.sco?null:b.dataset.sco;host.dataset.h='';schFrame(host)});
   host.querySelectorAll('[data-scx]').forEach(b=>b.onclick=()=>{SCH_UI.open=null;host.dataset.h='';schFrame(host)});
   host.querySelectorAll('[data-scf]').forEach(b=>b.onclick=()=>{ADM.sel=+b.dataset.scf;ADM.tab='roster';renderAdm();window.scrollTo(0,0)})}
