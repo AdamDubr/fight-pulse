@@ -1381,6 +1381,29 @@ html.light .tag.meas{color:var(--fg);border-color:#8a8377}
 @keyframes wlDotB{0%,47%{opacity:.45;width:.45rem}50%,97%{opacity:1;width:1.1rem;border-radius:.3rem}100%{opacity:.45;width:.45rem}}
 @media (prefers-reduced-motion:reduce){.wl-track{animation-duration:16s}}
 .wl-track .wl-photo.wl-contain{object-fit:contain!important;background:#2f5560}
+/* тренер: фрейм «Мои ближайшие занятия» */
+.coach{grid-template-areas:"summary summary" "sch sch" "ig ig" "table table" "fdk fdk" "alerts alerts" "ctrl ctrl"}
+@media (max-width:1100px){.coach{grid-template-areas:"summary" "sch" "ig" "table" "fdk" "alerts" "ctrl"}}
+#monSch{grid-area:sch;min-width:0}
+.sc-fr .ph-title{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap}
+.sc-seg{margin-left:auto;display:inline-flex;border:1px solid var(--line-2);border-radius:999px;padding:2px}
+.sc-seg button{appearance:none;border:0;background:none;color:var(--muted);font:inherit;font-size:.62rem;font-weight:800;letter-spacing:.1em;padding:.25rem .65rem;border-radius:999px;cursor:pointer}
+.sc-seg button[aria-pressed=true]{background:var(--fg);color:var(--ink)}
+.sc-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(10.5rem,1fr));gap:.6rem;margin-top:.6rem}
+.sc-c{position:relative;display:flex;flex-direction:column;gap:.2rem;padding:.6rem .7rem .65rem .85rem;border:1px solid var(--line-2);border-radius:.7rem;background:var(--panel-2);overflow:hidden}
+.sc-c::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--sc)}
+.sc-c.on{border-color:color-mix(in srgb,var(--sc) 60%,transparent);box-shadow:0 0 0 1px color-mix(in srgb,var(--sc) 35%,transparent)}
+.sc-d{display:flex;align-items:baseline;justify-content:space-between;gap:.4rem}
+.sc-d span{font-size:.66rem;font-weight:800;letter-spacing:.08em;color:var(--muted);text-transform:uppercase}
+.sc-d b{font-size:1.25rem;font-weight:900}
+.sc-g{font-weight:800;font-size:.95rem;color:var(--sc)}
+.sc-c small{font-size:.68rem;color:var(--dim)}
+.sc-live{font-size:.66rem;color:#2fd27a;font-weight:800}.sc-soon{font-size:.66rem;color:#e8a33a;font-weight:800}
+.sc-ev{margin-top:.6rem;font-size:.75rem;color:var(--muted)}
+#monSchM{margin:.8rem 0}
+#monSchM .sc-row{grid-template-columns:repeat(2,minmax(0,1fr))}
+html.light .sc-g{color:color-mix(in srgb,var(--sc) 70%,#000)}
+html.light .sc-live{color:#15803d}html.light .sc-soon{color:#a86400}
 /* ===== СВЕТЛАЯ ТЕМА (по умолчанию). 3D-сцены, голограммы, постеры и фото остаются тёмными «экранами». ===== */
 html.light{color-scheme:light;
   --ink:#f4f1e9; --panel:#ffffff; --panel-2:#faf7f0; --line:#ebe5d6; --line-2:#ddd5c3;
@@ -3012,7 +3035,7 @@ function renderCoach(){
   const hiN=live.filter(m=>zoneOf(m.hr,m.a.hrMax)>=4).length;
   const avgTr=Math.round(ms.reduce((s,m)=>s+m.trimp,0)/ms.length);
   const recs=ms.flatMap(m=>m.rec.slice(-1)).map(r=>r.hrr);const avgRec=recs.length?Math.round(recs.reduce((s,v)=>s+v,0)/recs.length):'—';
-  {let h=$('#monIGd');if(!h){h=document.createElement('div');h.id='monIGd';$('#cSum').after(h)}monIG(h)}$('#cSum').innerHTML=[
+  {let h=$('#monIGd');if(!h){h=document.createElement('div');h.id='monIGd';$('#cSum').after(h)}monIG(h);let sc=$('#monSch');if(!sc){sc=document.createElement('div');sc.id='monSch';$('#cSum').after(sc)}schFrame(sc)}$('#cSum').innerHTML=[
     ['На связи',`${live.length}/${ATHLETES.length}`,''],['Средний пульс группы',avgHr,'уд/мин'],
     ['В зонах Z4–Z5',hiN,'спортсменов'],['Средний запас сил',Math.round(ms.reduce((s,m)=>s+m.reserve,0)/ms.length)+'%','расчёт'],['Нужен отдых',ms.filter(m=>m.lvl==='bad').length,'запас < 40%'],['Нагрузка',ms.filter(m=>m.lvl==='mid').length,'запас 40–64%'],['Среднее HRR60',avgRec==='—'?'—':'−'+avgRec,'последний раунд']]
     .map(([k,v,s])=>`<div class="panel"><div class="label">${k}</div><div class="sumv">${v}</div><div class="muted small">${s}</div></div>`).join('');
@@ -3096,7 +3119,33 @@ const AVA={};function avatar(id){if(AVA[id])return AVA[id];const c=document.crea
 let SCHED=null;
 function schedInit(){if(SCHED)return;try{SCHED=JSON.parse(localStorage.getItem('fp.sched.v1'))}catch(e){}
   if(!SCHED)SCHED={classes:[{dow:[1,3,5],time:'19:00',disc:'BJJ'},{dow:[2,4],time:'20:00',disc:'MMA'},{dow:[1,3,5],time:'20:30',disc:'Бокс'},{dow:[2,4],time:'18:30',disc:'Муай-тай'},{dow:[6],time:'10:00',disc:'Функционал'},{dow:[6],time:'11:30',disc:'Борьба'}],
-    events:[{d:dAdd(9),name:'Открытый турнир Анталии · MMA'},{d:dAdd(23),name:'Клубные спарринги'},{d:dAdd(44),name:'Чемпионат региона · BJJ'}]}}
+    events:[{d:dAdd(9),name:'Открытый турнир Анталии · MMA'},{d:dAdd(23),name:'Клубные спарринги'},{d:dAdd(44),name:'Чемпионат региона · BJJ'}]}
+  SCHED.classes.forEach(c=>{if(!c.coach)c.coach=SCH_DEFC[c.disc]||'mowgli'})}
+/* тренеры клуба и кто по умолчанию ведёт направление (DEMO) */
+const SCH_CO=[{k:'mowgli',n:'Миржалал «MOWGLI»'},{k:'adam',n:'Адам'},{k:'andrey',n:'Андрей'}],SCH_DEFC={'MMA':'mowgli','BJJ':'mowgli','Борьба':'mowgli','Муай-тай':'adam','Бокс':'andrey','Функционал':'andrey'};
+const SCH_COL={'BJJ':'#7c8cff','MMA':'#ff4562','Бокс':'#e8a33a','Муай-тай':'#f97316','Борьба':'#2dd4bf','Функционал':'#4ade80'};
+const SCH_ME='mowgli',SCH_UI={all:false};
+const coName=k=>(SCH_CO.find(c=>c.k===k)||{n:'—'}).n;
+/* ближайшие занятия (сегодня и вперёд, 7 дней), длительность занятия 90 мин */
+function schUpcoming(all,lim){schedInit();const now=Date.now(),out=[];
+  for(let d=0;d<8&&out.length<lim;d++){const dt=new Date(TODAY.getTime()+d*DAY),dw=dt.getDay();
+    SCHED.classes.filter(c=>c.dow.includes(dw)&&(all||c.coach===SCH_ME)).sort((x,y)=>x.time.localeCompare(y.time)).forEach(c=>{
+      const [h,mi]=c.time.split(':').map(Number),st=new Date(dt);st.setHours(h,mi,0,0);const en=st.getTime()+90*60e3;
+      if(en>now&&out.length<lim)out.push({c,st:st.getTime(),en,d})})}
+  return out}
+function schFrameHTML(){const L=schUpcoming(SCH_UI.all,6),now=Date.now(),wd=['вс','пн','вт','ср','чт','пт','сб'];
+  const cnt=disc=>disc==='Все группы'?ATHLETES.length:ATHLETES.filter(a=>a.disc===disc).length;
+  const lbl=o=>o.d===0?'Сегодня':o.d===1?'Завтра':wd[new Date(o.st).getDay()]+' '+new Date(o.st).getDate()+'.'+String(new Date(o.st).getMonth()+1).padStart(2,'0');
+  const stt=o=>{if(now>=o.st)return`<b class="sc-live">● идёт · до ${new Date(o.en).toTimeString().slice(0,5)}</b>`;const m=Math.round((o.st-now)/60e3);
+    return m<=180?`<b class="sc-soon">через ${m>=60?Math.floor(m/60)+' ч ':''}${m%60} мин</b>`:''};
+  const ev=(SCHED.events||[]).filter(e=>e.d>=dAdd(0)).sort((x,y)=>x.d.localeCompare(y.d))[0];
+  return `<div class="panel sc-fr"><div class="ph-title"><span class="label">${SCH_UI.all?'Ближайшие занятия клуба':'Мои ближайшие занятия'}</span><span class="muted small">${SCH_UI.all?'все тренеры':esc(coName(SCH_ME))}</span>
+     <div class="sc-seg" role="group" aria-label="Чьи занятия"><button data-scall="0" aria-pressed="${!SCH_UI.all}">МОИ</button><button data-scall="1" aria-pressed="${SCH_UI.all}">ВСЕ</button></div></div>
+   <div class="sc-row">${L.map(o=>`<div class="sc-c${now>=o.st?' on':''}" style="--sc:${SCH_COL[o.c.disc]||'#e8c35a'}"><div class="sc-d"><span>${lbl(o)}</span><b class="num">${o.c.time}</b></div>
+     <div class="sc-g">${esc(o.c.disc)}</div><small>${cnt(o.c.disc)} бойцов${SCH_UI.all?' · '+esc(coName(o.c.coach)):''}</small>${stt(o)}</div>`).join('')||'<div class="muted small">На ближайшую неделю занятий нет — добавьте в «Расписании».</div>'}</div>
+   ${ev?`<div class="sc-ev">🏆 Ближайшее событие: <b>${esc(ev.name)}</b> · ${fmtD(ev.d)}</div>`:''}</div>`}
+function schFrame(host){if(!host)return;const h=schFrameHTML();if(host.dataset.h===h)return;host.dataset.h=h;host.innerHTML=h;
+  host.querySelectorAll('[data-scall]').forEach(b=>b.onclick=()=>{SCH_UI.all=b.dataset.scall==='1';host.dataset.h='';schFrame(host)})}
 const saveSched=()=>{try{localStorage.setItem('fp.sched.v1',JSON.stringify(SCHED))}catch(e){}};
 const MN=['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
 $('#admTabs').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{ADM.tab=b.dataset.adm;renderAdm()}));
@@ -3143,21 +3192,21 @@ function admMonMobile(B){
   const live=rows.filter(r=>r.m.hr&&r.st!=='lost'&&r.st!=='none');
   const avg=live.length?Math.round(live.reduce((q,r)=>q+r.m.hr,0)/live.length):0,az=live.length?zoneOf(avg,190):0;
   const hi=live.filter(r=>r.z>=4).length,act=Math.round(live.reduce((q,r)=>q+(strikes.get(r.a.id).act||0),0)/Math.max(1,live.length));
-  let ig=B.querySelector('#monIG');if(!ig||!B.querySelector('#monLive')){B.innerHTML='<div id="monLive"></div><div id="monIG"></div>';ig=B.querySelector('#monIG')}else B.appendChild(ig);
+  let ig=B.querySelector('#monIG');if(!ig||!B.querySelector('#monLive')){B.innerHTML='<div id="monLive"></div><div id="monSchM"></div><div id="monIG"></div>';ig=B.querySelector('#monIG')}else B.appendChild(ig);let scm=B.querySelector('#monSchM');if(!scm){scm=document.createElement('div');scm.id='monSchM'}B.appendChild(scm);schFrame(scm);
   const ml=B.querySelector('#monLive');ml.innerHTML=`<div class="ph-title"><span class="label">Монитор зала</span><span class="tag" style="color:#2fd27a;border-color:#2fd27a66">LIVE</span></div>
    <div class="kvs" style="margin-bottom:.7rem"><div><small>СЕЙЧАС В ЗАЛЕ</small><b class="num">${live.length} / ${ATHLETES.length}</b></div>
     <div><small>ТРЕНИРОВКА</small><b class="num">${fmt(train.total)}</b><span class="muted small"> ${train.label().toLowerCase()}</span></div>
     <div><small>СРЕДНИЙ ПУЛЬС</small><b class="num" style="color:${ZCOL[az]}">${avg||'--'}</b></div>
     <div><small>АКТИВНОСТЬ</small><b class="num">${act}</b></div>
     <div><small>В ЗОНАХ Z4–Z5</small><b class="num" style="color:${hi?ZCOL[4]:'inherit'}">${hi}</b></div></div>
-   <div id="monIGslot"></div><div class="label" style="margin:.3rem 0 .3rem">Бойцы в зале</div>
+   <div id="monSchSlot"></div><div id="monIGslot"></div><div class="label" style="margin:.3rem 0 .3rem">Бойцы в зале</div>
    ${rows.map(r=>{const ok=r.m.hr&&r.st!=='lost'&&r.st!=='none',cd=COND[r.m.lvl];
      return`<div class="msum"><span class="nm3">${esc(r.a.name)}</span>
       <b class="num" style="color:${ok?ZCOL[r.z]:'#555'}">${ok?r.m.hr:'--'}</b>
       <span class="zchip" style="--zc:${ZCOL[r.z]}">${ZONES[r.z].key}</span>
       <span class="rsv3" style="color:${cd.c}">${r.m.reserve}%</span>
       <span class="st3 ${ok?'on':''}">●</span></div>`}).join('')}
-   <div class="muted small" style="margin-top:.6rem">Короткая сводка для телефона. Полный монитор с таблицей и карточкой бойца — на планшете и большом экране.</div>`;{const sl=ml.querySelector('#monIGslot');if(sl)sl.replaceWith(ig)}monIG(ig)}
+   <div class="muted small" style="margin-top:.6rem">Короткая сводка для телефона. Полный монитор с таблицей и карточкой бойца — на планшете и большом экране.</div>`;{const sl=ml.querySelector('#monSchSlot');if(sl)sl.replaceWith(scm)}{const sl=ml.querySelector('#monIGslot');if(sl)sl.replaceWith(ig)}monIG(ig)}
 // ---- БОЙЦЫ: поиск и выбор ----
 function admRoster(B){
   if(ADM.sel){admFighter(B,byId.get(ADM.sel));return}
@@ -3281,11 +3330,12 @@ function admSched(B){schedInit();const base=new Date(TODAY.getFullYear(),TODAY.g
   B.innerHTML=`<div class="ph-title"><span class="label">Расписание · ${MN[M]} ${Y}</span><span><button class="btn" id="moP">‹</button> <button class="btn" id="moN">›</button></span></div>
    <div class="cal">${['Пн','Вт','Ср','Чт','Пт','Сб','Вс'].map((d2,i2)=>`<div class="cal-hd ${i2>=5?'we':''}">${d2}</div>`).join('')}${cells}</div>
    <div class="label" style="margin:.6rem 0 .3rem">Занятия недели</div>
-   <div class="schl">${SCHED.classes.map((c,i)=>`<span>${['Вс','Пн','Вт','Ср','Чт','Пт','Сб'].filter((_,k)=>c.dow.includes(k)).join('/')} ${c.time} · ${esc(c.disc)}<button data-dc="${i}">✕</button></span>`).join('')}</div>
+   <div class="schl">${SCHED.classes.map((c,i)=>`<span>${['Вс','Пн','Вт','Ср','Чт','Пт','Сб'].filter((_,k)=>c.dow.includes(k)).join('/')} ${c.time} · ${esc(c.disc)} · <i style="font-style:normal;opacity:.7">${esc(coName(c.coach))}</i><button data-dc="${i}">✕</button></span>`).join('')}</div>
    <div style="display:flex;gap:.5rem;align-items:end;flex-wrap:wrap">
     <label class="fe"><span>Дни</span><span style="display:flex;gap:.3rem">${['Пн','Вт','Ср','Чт','Пт','Сб','Вс'].map((d2,k)=>`<label style="display:flex;gap:2px;font-size:.68rem"><input type="checkbox" class="scD" value="${(k+1)%7}">${d2}</label>`).join('')}</span></label>
     <label class="fe"><span>Время</span><input type="time" id="scT" value="19:00"></label>
     <label class="fe"><span>Группа</span><select id="scG">${DISCS.map(d2=>`<option>${d2}</option>`).join('')}<option>Все группы</option></select></label>
+    <label class="fe"><span>Тренер</span><select id="scC">${SCH_CO.map(c=>`<option value="${c.k}">${esc(c.n)}</option>`).join('')}</select></label>
     <button class="btn primary" id="scAdd">+ ЗАНЯТИЕ</button></div>
    <div class="label" style="margin:.8rem 0 .3rem">Соревнования и события</div>
    <div class="schl">${SCHED.events.slice().sort((x,y)=>x.d.localeCompare(y.d)).map((e,i)=>`<span>🏆 ${fmtD(e.d)} · ${esc(e.name)}<button data-de="${i}">✕</button></span>`).join('')||'<span class="muted small">Нет событий</span>'}</div>
@@ -3296,7 +3346,7 @@ function admSched(B){schedInit();const base=new Date(TODAY.getFullYear(),TODAY.g
    <div class="muted small" style="margin-top:.6rem">Расписание хранится в этом браузере (демо). В продукте — календарь клуба с напоминаниями бойцам.</div>`;
   $('#moP').onclick=()=>{ADM.mo--;admSched(B)};$('#moN').onclick=()=>{ADM.mo++;admSched(B)};
   $('#scAdd').onclick=()=>{const dow=[...B.querySelectorAll('.scD:checked')].map(i=>+i.value);if(!dow.length){toast('Отметьте дни недели');return}
-    SCHED.classes.push({dow,time:$('#scT').value||'19:00',disc:$('#scG').value});saveSched();admSched(B)};
+    SCHED.classes.push({dow,time:$('#scT').value||'19:00',disc:$('#scG').value,coach:$('#scC').value});saveSched();admSched(B)};
   $('#evAdd').onclick=()=>{const nm=$('#evN').value.trim();if(!nm)return;SCHED.events.push({d:$('#evD').value||dAdd(14),name:nm});saveSched();admSched(B);toast('Событие добавлено')};
   B.querySelectorAll('[data-dc]').forEach(b2=>b2.onclick=()=>{SCHED.classes.splice(+b2.dataset.dc,1);saveSched();admSched(B)});
   B.querySelectorAll('[data-de]').forEach(b2=>b2.onclick=()=>{SCHED.events.splice(+b2.dataset.de,1);saveSched();admSched(B)})}
