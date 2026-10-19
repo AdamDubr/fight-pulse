@@ -1306,7 +1306,7 @@ body.m-tv .top .tabs [data-view=card],body.m-tv .top .tabs [data-view=coach]{dis
 @media (max-width:760px){.tiers{grid-template-columns:1fr}.tier .btnrow{flex-direction:column}}
 
 .adm-tabs button .al{background:none;border:0;padding:0;grid-template-columns:none;font-size:inherit;border-radius:0}
-@media (max-width:1800px){.top .clock{display:none}.dm-x{display:none}}
+@media (max-width:2200px){.top .clock{display:none}.dm-x{display:none}}
 .thm-btn{appearance:none;flex:none;display:inline-grid;place-items:center;width:1.9rem;height:1.9rem;border-radius:50%;border:1px solid var(--line-2);background:var(--panel);color:var(--fg);font-size:.95rem;line-height:1;cursor:pointer;padding:0}
 .thm-btn:hover{border-color:#e8c35a}.thm-btn:focus-visible{outline:2px solid #e8c35a;outline-offset:2px}
 .m-top .thm-btn{width:30px;height:30px;font-size:15px}
@@ -1436,6 +1436,13 @@ button.sc-c:focus-visible{outline:2px solid var(--sc);outline-offset:2px}
 .wl.light .wl-about{border-left-color:#c9a447}
 .wl-ht p b{color:inherit;font-weight:800}
 .wl-m .wl-dec{font-size:1rem}
+.wld{overflow-x:hidden!important;overflow-y:auto}
+.wl-m.light{margin:0!important}
+.wl-hero{max-width:100%}
+.wl-punch{font-weight:900;font-size:1.12rem;line-height:1.3;letter-spacing:.01em;color:inherit!important}
+.wl-punch span{display:block;margin-top:.35rem;font-size:.66rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#e8c35a}
+.wl.light .wl-punch span{color:#8a6a1c}
+.wl-about{font-size:1rem!important}
 /* ===== СВЕТЛАЯ ТЕМА (по умолчанию). 3D-сцены, голограммы, постеры и фото остаются тёмными «экранами». ===== */
 html.light{color-scheme:light;
   --ink:#f4f1e9; --panel:#ffffff; --panel-2:#faf7f0; --line:#ebe5d6; --line-2:#ddd5c3;
@@ -4550,8 +4557,8 @@ function worldHTML(m){const a=byId.get(cardId)||ATHLETES[0],rt=ratingOf(a.id);
     <div class="wl-ht"><span class="wl-eb">MY PIT WORLD</span>
       <div class="wl-dec" aria-label="PIT — Performance Index of Training"><span><b>P</b>erformance</span><span><b>I</b>ndex of</span><span><b>T</b>raining</span><em>индекс тренировок бойца</em></div>
       <h2>Мировое сообщество бойцов</h2>
-      <p class="wl-about"><b>Кто мы.</b> PIT RATING делает тренировки в единоборствах измеримыми: клуб подключает пульсометры, система считает индекс PIT по реальной нагрузке, посещаемости и результатам, а тренер подтверждает данные.</p>
-      <p><b>My PIT</b> — личное пространство бойца в мировой сети: рейтинг, вызовы на бой, соревнования, кэмпы и тренировки чемпионов. Регистрация бесплатная, в рейтинг идут только данные, подтверждённые клубом.</p>
+      <p class="wl-about"><b>Твой пот — в цифрах.</b> Каждая тренировка считается: пульс, нагрузка, посещаемость, результат. Тренер подтверждает — мир видит.</p>
+      <p class="wl-punch">Расти в рейтинге. Бросай вызов. Выходи на бой.<span>Бесплатно для бойца · только честные данные клуба</span></p>
       <div class="wl-cta"><button type="button" class="wl-b1" data-go="map">Найти клуб на карте</button><button type="button" class="wl-b2" data-go="me">Мои вызовы</button></div>
       <div class="wl-chips wl-chips1"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8.3-7 10-4-1.7-7-5.5-7-10V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg>Verified-рейтинг</span><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 11V7.5a3.5 3.5 0 0 1 7 0V9h1.5A2.5 2.5 0 0 1 18 11.5V14a6 6 0 0 1-6 6h-1a4 4 0 0 1-4-4z"/><path d="M7 13h6M14 9v3"/></svg>Бои с согласия тренеров</span><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2.5"/><path d="M10.5 10v5l4-2.5z"/><path d="M8 3l4 3 4-3"/></svg>Трансляции в My PIT</span></div></div>
     <img class="wl-fig" src="${WIMG.hero}" alt="">
@@ -4615,7 +4622,7 @@ function applyRole(r){if(r)ROLE.v=r;try{localStorage.setItem('fp.role',ROLE.v)}c
   const v=ROLE.v;document.body.dataset.role=v;
   $('#roleSel').value=v;
   if(!MOB.on)cab.role=v==='fighter'?'athlete':'coach';
-  $('.tabs [data-view=card]').textContent=v==='fighter'?'МОЙ КАБИНЕТ':'КАБИНЕТ';
+  $('.tabs [data-view=card]').textContent=v==='fighter'?'МОЙ КАБИНЕТ':'КАБИНЕТ';$('.tabs [data-view=coach]').textContent=v==='admin'?'УПРАВЛЕНИЕ':'ТРЕНЕР';
   if(v==='fighter'){cardId=MOB.me;if(ui.view==='coach')ui.view='card'}
   if(v!=='admin'&&ADM.tab==='fin')ADM.tab='mon';
   if(v==='coach'&&cab.sec==='sub')cab.sec='card';
