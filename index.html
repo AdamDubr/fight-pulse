@@ -1427,6 +1427,15 @@ button.sc-c:focus-visible{outline:2px solid var(--sc);outline-offset:2px}
 .wl.light .wl-chips1 svg{background:#8a6a1c1c}
 
 .wl-m .wl-chips1{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));width:auto;min-width:0;overflow:visible}.wl-m .wl-chips1 span{flex-direction:column;justify-content:flex-start;text-align:center;white-space:normal;gap:.3rem;font-size:.62rem;line-height:1.2;border-radius:.8rem!important;padding:.5rem .35rem!important}.wl-m .wl-chips1 svg{width:1.05rem;height:1.05rem}
+/* My PIT: расшифровка и «о нас» в герое */
+.wl-dec{display:flex;flex-wrap:wrap;align-items:baseline;gap:.15rem .55rem;font-weight:800;font-size:clamp(1rem,1.5vw,1.3rem);letter-spacing:.02em;color:#c9c9c9;margin-top:-.2rem}
+.wl-dec b{color:#e8c35a;font-weight:900;font-size:1.25em}
+.wl-dec em{flex-basis:100%;font-style:normal;font-size:.62rem;font-weight:800;letter-spacing:.22em;text-transform:uppercase;color:var(--dim)}
+.wl.light .wl-dec{color:#3a3730}.wl.light .wl-dec b{color:#8a6a1c}
+.wl-about{border-left:3px solid #e8c35a;padding-left:.8rem}
+.wl.light .wl-about{border-left-color:#c9a447}
+.wl-ht p b{color:inherit;font-weight:800}
+.wl-m .wl-dec{font-size:1rem}
 /* ===== СВЕТЛАЯ ТЕМА (по умолчанию). 3D-сцены, голограммы, постеры и фото остаются тёмными «экранами». ===== */
 html.light{color-scheme:light;
   --ink:#f4f1e9; --panel:#ffffff; --panel-2:#faf7f0; --line:#ebe5d6; --line-2:#ddd5c3;
@@ -4447,7 +4456,10 @@ document.querySelectorAll('.tabs button').forEach(b=>b.addEventListener('click',
 $('.club-logo').addEventListener('click',()=>setView('arena'));
 function wldTopHTML(){const L=ATHLETES.map(a=>({a,r:ratingOf(a.id)})).sort((x,y)=>y.r.R-x.r.R).slice(0,5);
   return '<div class="wld-top">'+L.map((x,i)=>`<div><span>${i+1}. ${esc(display(x.a))} <small class="muted">${esc(x.a.disc)}</small></span><b style="color:${x.r.tc}">${PITM} ${x.r.R}</b></div>`).join('')+'</div><small class="muted">DEMO: пока один клуб — Mowgli Fight Club</small>'}
-function renderWorld(){$('#wldBody').innerHTML=worldHTML(false);bindWorld($('#wldBody'))}
+/* My PIT одинаков для всех ролей: на узком экране — мобильная вёрстка, как у бойца */
+const wNarrow=()=>innerWidth<=760;
+function renderWorld(){const B=$('#wldBody');B.dataset.m=wNarrow()?'1':'0';B.innerHTML=worldHTML(wNarrow());bindWorld(B)}
+addEventListener('resize',()=>{const B=$('#wldBody');if(B&&ui.view==='world'&&!MOB.on&&B.dataset.m!==(wNarrow()?'1':'0'))renderWorld()});
 const WLD={sub:new Set([21]),fav:new Set(['f:4','c:mowgli','e:ufc333']),get light(){return THEME.light}};
 function syncThemeUI(){const l=THEME.light;document.querySelectorAll('[data-gtheme]').forEach(b=>{b.textContent=l?'☾':'☀';b.title=l?'Включить тёмную тему':'Включить светлую тему';b.setAttribute('aria-label',b.title)})}
 function setTheme(l){THEME.light=l;effTheme();try{localStorage.setItem('fp.theme',l?'light':'dark');localStorage.removeItem('fp.wl.theme')}catch(e){}
@@ -4535,8 +4547,11 @@ function worldHTML(m){const a=byId.get(cardId)||ATHLETES[0],rt=ratingOf(a.id);
   const coaches=[{id:21,n:'Миржалал «MOWGLI»',s:'главный тренер · MMA'},...TRAINERS.map(t=>({id:t.id,n:t.name,s:t.spec}))];
   return `<div class="wl ${m?'wl-m':''} ${WLD.light?'light':''}">
   <section class="wl-hero"><div class="wl-map">${mapSVG(false)}</div>
-    <div class="wl-ht"><span class="wl-eb">MY PIT WORLD</span><h2>Мировое сообщество бойцов</h2>
-      <p>Рейтинг PIT, вызовы на бой, соревнования, кэмпы и тренировки чемпионов — в одной сети. Регистрация бесплатная, в рейтинг идут только данные, подтверждённые клубом.</p>
+    <div class="wl-ht"><span class="wl-eb">MY PIT WORLD</span>
+      <div class="wl-dec" aria-label="PIT — Performance Index of Training"><span><b>P</b>erformance</span><span><b>I</b>ndex of</span><span><b>T</b>raining</span><em>индекс тренировок бойца</em></div>
+      <h2>Мировое сообщество бойцов</h2>
+      <p class="wl-about"><b>Кто мы.</b> PIT RATING делает тренировки в единоборствах измеримыми: клуб подключает пульсометры, система считает индекс PIT по реальной нагрузке, посещаемости и результатам, а тренер подтверждает данные.</p>
+      <p><b>My PIT</b> — личное пространство бойца в мировой сети: рейтинг, вызовы на бой, соревнования, кэмпы и тренировки чемпионов. Регистрация бесплатная, в рейтинг идут только данные, подтверждённые клубом.</p>
       <div class="wl-cta"><button type="button" class="wl-b1" data-go="map">Найти клуб на карте</button><button type="button" class="wl-b2" data-go="me">Мои вызовы</button></div>
       <div class="wl-chips wl-chips1"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8.3-7 10-4-1.7-7-5.5-7-10V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg>Verified-рейтинг</span><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 11V7.5a3.5 3.5 0 0 1 7 0V9h1.5A2.5 2.5 0 0 1 18 11.5V14a6 6 0 0 1-6 6h-1a4 4 0 0 1-4-4z"/><path d="M7 13h6M14 9v3"/></svg>Бои с согласия тренеров</span><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2.5"/><path d="M10.5 10v5l4-2.5z"/><path d="M8 3l4 3 4-3"/></svg>Трансляции в My PIT</span></div></div>
     <img class="wl-fig" src="${WIMG.hero}" alt="">
