@@ -1207,7 +1207,7 @@ body.m-on.m-frame::after{content:'Предпросмотр мобильной в
 .modal-box canvas{height:min(70vh,54rem)}
 body.m-on .modal-box canvas{height:auto;width:100%}
 @media (max-width:1500px),(max-height:900px){.f-strk{top:.5rem;width:14.5rem;padding:.5rem .65rem;gap:.3rem}.sk-big b{font-size:2.3rem}.sk-row b{font-size:1.2rem}.sk-note,.sk-lr{display:none}.f-hud .bpm2{font-size:4rem}}
-body.m-tv .top .tabs [data-view=card],body.m-tv .top .tabs [data-view=coach]{display:none!important}
+body.m-tv .top .tabs [data-view=card],body.m-tv .top .tabs [data-view=coach],body.m-tv[data-role=fighter] .top .tabs [data-view=world]{display:none!important}
 /* ---- v107: конструктор раундов + лига ---- */
 @media (min-width:761px){main{display:flex;flex-direction:column}main>.view{flex:1 1 0;height:auto}main>#wkBar{flex:none}#wkBar .wk-c b{font-size:3.7rem}#wkBar{padding:.4rem 1.1rem .6rem}}
 .lg-r .nm b .u18{margin-left:.35em}
@@ -1449,6 +1449,9 @@ button.sc-c:focus-visible{outline:2px solid var(--sc);outline-offset:2px}
 @media (max-width:760px){
  body.m-force-desk:not(.m-tv):not([data-role=fighter]) .s-nav{display:grid;position:fixed;left:0;right:0;bottom:0;z-index:60;grid-template-columns:repeat(7,1fr);align-items:start;box-sizing:border-box;height:calc(60px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);background:#0a0a0a;padding:6px 4px env(safe-area-inset-bottom,0px)}
  body.m-force-desk:not(.m-tv)[data-role=coach] .s-nav{grid-template-columns:repeat(6,1fr)}
+ body.m-tv[data-role=fighter] .f-nav{display:grid;position:fixed;left:0;right:0;bottom:0;z-index:60;grid-template-columns:repeat(7,1fr);align-items:start;box-sizing:border-box;height:calc(60px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);background:#0a0a0a;padding:6px 4px env(safe-area-inset-bottom,0px)}
+ body.m-tv[data-role=fighter] #mobBtn{display:none!important}
+ body.m-tv[data-role=fighter] main{padding-bottom:calc(60px + env(safe-area-inset-bottom,0px))!important;box-sizing:border-box}
  body[data-role=coach] .s-nav .s-fin{display:none}
  body.m-force-desk:not(.m-tv):not([data-role=fighter]) .top .tabs{display:none!important}
  body.m-force-desk:not(.m-tv):not([data-role=fighter]) #mobBtn{display:none!important}
@@ -1456,7 +1459,7 @@ button.sc-c:focus-visible{outline:2px solid var(--sc);outline-offset:2px}
  body.m-force-desk:not(.m-tv):not([data-role=fighter]) main{padding-bottom:calc(60px + env(safe-area-inset-bottom,0px))!important;box-sizing:border-box}
 }
 .s-nav button{position:relative;background:none;border:0;color:#6d6d6d;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:9.6px;overflow:hidden;text-overflow:ellipsis;font-weight:600;padding:4px 0;min-width:0;letter-spacing:-.02em;font-family:inherit;cursor:pointer;white-space:nowrap}
-.s-nav svg{width:24px;height:24px}
+.s-nav svg{width:24px;height:24px}.f-nav svg{fill:currentColor}.f-nav button{font-size:9px;letter-spacing:-.04em}
 .s-nav button[aria-current="page"]{color:#fff}
 .s-nav .s-fin[aria-current="page"]{color:#f5a524}
 html.light body .s-nav{background:#fff!important;border-color:var(--line)!important}
@@ -2326,6 +2329,15 @@ html.light .a-stage [style*="color:"],html.light body.m-on .m-holo3d .mh-ov [sty
     <button data-t="world" title="My PIT World — сообщество бойцов"><svg viewBox="0 0 100 124"><path d="M8 44L50 12 92 44V62L50 30 8 62Z"/><path d="M8 74L50 42 92 74V92L50 60 8 92Z" opacity=".65"/><path d="M8 104L50 72 92 104V122L50 90 8 122Z" opacity=".38"/></svg>My PIT</button>
   </nav>
 </div>
+<nav class="s-nav f-nav" id="fNav" aria-label="Разделы бойца (режим TV)">
+    <button data-ft="home"><svg viewBox="0 0 24 24"><path d="M3 11 12 4l9 7v9h-6v-6H9v6H3z"/></svg>Главная</button>
+    <button data-ft="live"><svg viewBox="0 0 24 24"><path d="M2 13h4l2.5-6 4 12 3-9 2 3H22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Тренировка</button>
+    <button data-ft="ach"><svg viewBox="0 0 24 24"><path d="M7 3h10v3h4v3a5 5 0 0 1-5 5 5 5 0 0 1-3 2.6V19h4v2H7v-2h4v-2.4A5 5 0 0 1 8 14a5 5 0 0 1-5-5V6h4zm0 5H5v1a3 3 0 0 0 2 2.8zm10 0v3.8A3 3 0 0 0 19 9V8z"/></svg>Рост</button>
+    <button data-ft="tasks"><svg viewBox="0 0 24 24"><path d="M5 3h14v18H5zm3 4v2h8V7zm0 4v2h8v-2zm0 4v2h5v-2z"/></svg>Задания</button>
+    <button data-ft="me"><svg viewBox="0 0 24 24"><path d="M12 12a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9zm-8 9c0-4.4 3.6-7 8-7s8 2.6 8 7z"/></svg>Профиль</button>
+    <button data-ft="tv" title="Экраны зала: ARENA, все участники, бой"><svg viewBox="0 0 24 24"><path d="M3 5h18a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1h-7v2h3v2H7v-2h3v-2H3a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1zm1 2v9h16V7z"/></svg>TV</button>
+    <button data-ft="world" title="My PIT World — сообщество бойцов"><svg viewBox="0 0 100 124"><path d="M8 44L50 12 92 44V62L50 30 8 62Z"/><path d="M8 74L50 42 92 74V92L50 60 8 92Z" opacity=".65"/><path d="M8 104L50 72 92 104V122L50 90 8 122Z" opacity=".38"/></svg>My PIT</button>
+  </nav>
 <nav class="s-nav" id="sNav" aria-label="Разделы (персонал)">
     <button data-sv="arena"><svg viewBox="0 0 24 24"><path d="M2 13h4l2.5-6 4 12 3-9 2 3H22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Зал</button>
     <button data-sv="grid"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/></svg>Участники</button>
@@ -4677,6 +4689,8 @@ $('#mNav').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>
   if(b.dataset.t==='tv'){MOB.frame=false;document.body.classList.add('m-force-desk','m-tv');MOB.on=false;document.body.classList.remove('m-on','m-frame');setView('arena');return}
   MOB.tab=b.dataset.t;MOB.sub=null;renderMobile();$('#mMain').scrollTop=0}));
 $('#mAva').addEventListener('click',()=>{MOB.tab='me';MOB.sub=null;renderMobile()});
+$('#fNav').querySelectorAll('[data-ft]').forEach(b=>{b.setAttribute('aria-current',b.dataset.ft==='tv'?'page':'false');b.addEventListener('click',()=>{const t=b.dataset.ft;if(t==='tv'){setView('arena');window.scrollTo(0,0);return}
+  document.body.classList.remove('m-force-desk','m-tv');MOB.frame=!mq.matches;applyMode.force=true;applyMode();MOB.tab=t;MOB.sub=null;renderMobile();const mm=$('#mMain');if(mm)mm.scrollTop=0})});
 // --- достижения: считаются из истории и профиля ---
 const ICO={
  sess:'<path d="M4 10h3v4H4zm13 0h3v4h-3zM7 8h2v8H7zm8 0h2v8h-2zM9 11h6v2H9z"/>',
