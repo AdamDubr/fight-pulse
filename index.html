@@ -1579,6 +1579,17 @@ html.light .m-upsell b{color:#8a6a1c!important}
 /* светлая тема: мобильная голограмма — тёмный «экран» с тёмной палитрой внутри */
 html.light body.m-on .m-holo3d{--fg:#ffffff;--muted:#a6a6a6;--dim:#8a8a8a;--line:#202020;--line-2:#363636;color:#fff;background:radial-gradient(80% 70% at 50% 45%,#1d1d1d,#070707 75%);border-radius:14px}
 html.light body.m-on .m-holo3d .mh-ov [style*="color:"]{filter:brightness(1.6) saturate(1.2)}
+
+/* светлая тема: карточка бойца */
+html.light .fcard{background:radial-gradient(90% 60% at 50% 0%,#ffffff,#f3eee2 70%)!important;color:#15171b;box-shadow:0 18px 40px -24px #0006}
+html.light .fc-frame{background:linear-gradient(180deg,#f0d78a,#b8902e 45%,#e8c35a 75%,#8a6a1c)!important}
+html.light .fc-name{background:linear-gradient(180deg,#2a2c31 0%,#15171b 50%,#4a4c52 100%)!important;-webkit-background-clip:text!important;background-clip:text!important;color:transparent!important}
+html.light .fc-top img{filter:invert(1) brightness(.35)}
+html.light .fc-bg{filter:invert(1);opacity:.06}
+html.light .fc-r1,html.light .fc-rate b{text-shadow:none}
+html.light .fc-stats .today b{color:#c2570c}
+html.light .fc-photo{border-color:#d9d1bf}
+html.light .fc-belt i{box-shadow:inset 0 0 0 1px rgba(0,0,0,.15)}
 </style>
 
 <div id="roleGate" hidden><div class="rg-box"><div class="rg-logo" id="rgLogo"></div><div class="rg-t">Демо PIT RATING · кем входите?</div><div id="rgCards"></div><div class="rg-n">Роль можно сменить: на компьютере — «ВХОД» в шапке, на телефоне — вкладка «Профиль».</div></div></div>
@@ -1953,6 +1964,12 @@ const ZONES=[
   {key:'Z5',label:'Максимальная',lo:.9,w:5}];
 const ZCOL_D=['#56667a','#74a98f','#2fd27a','#3b9cff','#ffc93c','#ff4562'],ZCOL_L=['#7d8a99','#4f8a6d','#16a34a','#1d6fe0','#c28400','#e11d48'];
 const ZCOL=[...ZCOL_D];
+const THEME={light:document.documentElement.classList.contains('light')};
+/* Бой, Arena (голограмма тренировки) и на телефоне «Тренировка»/TV — всегда тёмные */
+const DARKV=new Set(['arena','fight']),DARKM=new Set(['live','tv']);
+function effTheme(){let v='',mob=false;try{mob=MOB.on;v=mob?MOB.tab:ui.view}catch(e){try{v=ui.view}catch(_){v='arena'}}
+  const l=THEME.light&&!(mob?DARKM.has(v):DARKV.has(v)),r=document.documentElement;
+  if(r.classList.contains('light')!==l){r.classList.toggle('light',l);applyPal();return true}return false}
 const isL=()=>document.documentElement.classList.contains('light'),CFG=()=>isL()?'#15171b':'#fff',CFC=()=>isL()?'#a87800':'#ffd34e';
 function applyPal(){ZCOL.splice(0,6,...(document.documentElement.classList.contains('light')?ZCOL_L:ZCOL_D))}applyPal();
 /* 3D-голограмма всегда на тёмной сцене — цвета светлой палитры переводим обратно в яркие */
@@ -4158,7 +4175,7 @@ const badge=(x,big)=>`<div class="m-bd ${x.ok?'ok':''} ${big?'big':''}"><div cla
 // --- экраны ---
 function mTPill(){const tp=document.getElementById('mTPill');if(tp){const fm=fight.state==='running'||fight.state==='paused';tp.style.setProperty('--pc',fm?'#ff3d52':train.color());tp.innerHTML=!fm&&wk.active()?`<span class="ph" style="background:${wk.color()}">Р${wk.round}/${wk.cfg.rounds} · ${wk.phase==='rest'?'ОТДЫХ':wk.phase==='prep'?'ГОТОВЬСЯ':'РАБОТА'}</span><span class="num">${fmt(wk.remaining())}</span>`:fm?`<span class="ph">БОЙ · Р${fight.round}</span><span class="num">${fmt(fight.remaining())}</span>`:`<span class="ph">${train.label()}</span><span class="num">${fmt(train.total)}</span>`}}
 setInterval(()=>{if(MOB.on)mTPill()},1000);
-function renderMobile(){if(!MOB.on)return;mTPill();{const st=$('.fc-stage'),wr=$('.fc-wrap');[['#fCard',st],['#fcShareRow',st],['#fcEdit',wr]].forEach(([q,pp])=>{const e=$(q);if(e&&pp&&e.closest('#mobile'))pp.appendChild(e)})}const id=MOB.me,a=byId.get(id),C=CAB[id],P=PROF[id];cardId=id;
+function renderMobile(){if(!MOB.on)return;effTheme();mTPill();{const st=$('.fc-stage'),wr=$('.fc-wrap');[['#fCard',st],['#fcShareRow',st],['#fcEdit',wr]].forEach(([q,pp])=>{const e=$(q);if(e&&pp&&e.closest('#mobile'))pp.appendChild(e)})}const id=MOB.me,a=byId.get(id),C=CAB[id],P=PROF[id];cardId=id;
   $('#mAva').innerHTML=C.person.photo?`<img src="${C.person.photo}" alt="">`:esc(a.name[0]);
   $('#mNav').querySelectorAll('button').forEach(b=>b.setAttribute('aria-current',b.dataset.t===MOB.tab?'page':'false'));
   const od=C.tasks.filter(t=>t.status!=='done').length;$('#mTB').hidden=!od;$('#mTB').textContent=od;
@@ -4255,7 +4272,7 @@ setInterval(()=>{if(MOB.on&&MOB.tab==='live'&&$('#shareModal').hidden)renderMobi
 mq.matches&&applyMode();
 
 /* ---- shell ---- */
-function setView(v){ui.view=v;document.querySelectorAll('.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.view===v));
+function setView(v){ui.view=v;effTheme();document.querySelectorAll('.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.view===v));
   ['arena','grid','fight','league','card','coach','world'].forEach(k=>$('#view-'+k).hidden=k!==v);if(v==='world')renderWorld();if(v==='card')renderCab();if(v==='arena'||v==='fight')Body3D.setView(v);else if(!(v==='coach'&&ADM.tab==='mon'))Body3D.setActive(false);
   ui.cycleStart=performance.now();tickUI();if(v==='coach')renderAlerts()}
 document.querySelectorAll('.tabs button').forEach(b=>b.addEventListener('click',()=>setView(b.dataset.view)));
@@ -4264,10 +4281,9 @@ function wldTopHTML(){const L=ATHLETES.map(a=>({a,r:ratingOf(a.id)})).sort((x,y)
   return '<div class="wld-top">'+L.map((x,i)=>`<div><span>${i+1}. ${esc(display(x.a))} <small class="muted">${esc(x.a.disc)}</small></span><b style="color:${x.r.tc}">${PITM} ${x.r.R}</b></div>`).join('')+'</div><small class="muted">DEMO: пока один клуб — Mowgli Fight Club</small>'}
 function renderWorld(){$('#wldBody').innerHTML=worldHTML(false);bindWorld($('#wldBody'))}
 const WLD={sub:new Set([21]),fav:new Set(['f:4','c:mowgli','e:ufc333']),get light(){return THEME.light}};
-const THEME={light:document.documentElement.classList.contains('light')};
 function syncThemeUI(){const l=THEME.light,tb=document.getElementById('themeBtn');if(tb){tb.textContent=l?'☾':'☀';tb.title=l?'Тёмная тема':'Светлая тема'}
   document.querySelectorAll('[data-gtheme]').forEach(b=>b.textContent=l?'☾ Тёмная тема':'☀ Светлая тема')}
-function setTheme(l){THEME.light=l;document.documentElement.classList.toggle('light',l);applyPal();try{localStorage.setItem('fp.theme',l?'light':'dark');localStorage.removeItem('fp.wl.theme')}catch(e){}
+function setTheme(l){THEME.light=l;effTheme();try{localStorage.setItem('fp.theme',l?'light':'dark');localStorage.removeItem('fp.wl.theme')}catch(e){}
   syncThemeUI();window.dispatchEvent(new Event('fp-theme'));
   if(MOB.on)renderMobile();else{if(ui.view==='world')renderWorld();try{tickUI()}catch(e){}}}
 document.getElementById('themeBtn').addEventListener('click',()=>setTheme(!THEME.light));
@@ -4519,7 +4535,7 @@ function tickUI(){if(MOB.on)return;
 }
 // идти на первого публичного
 select(0);renderArena();
-setInterval(()=>{step();tickUI()},1000);
+setInterval(()=>{step();tickUI()},1000);setInterval(()=>{if(effTheme()){try{if(MOB.on)renderMobile();else{if(ui.view==='world')renderWorld();tickUI()}}catch(e){}}},400);
 addEventListener('resize',()=>tickUI());
 tickUI();
 </script>
