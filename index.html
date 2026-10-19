@@ -810,7 +810,7 @@ table{font-size:.8rem}
 .sk-act small{font-size:.58rem;letter-spacing:.14em;color:var(--dim);font-weight:700}
 .sk-act .b{height:.55rem;border-radius:.3rem;background:#262626;overflow:hidden}.sk-act .b i{display:block;height:100%;width:var(--a);background:linear-gradient(90deg,#737373,#fff);transition:width .8s}
 .sk-act b{font-weight:800;font-size:1rem;min-width:2ch;text-align:right}
-.sk-last{height:1.5rem;display:flex;align-items:center;gap:.5rem;font-weight:800;font-size:.95rem;letter-spacing:.06em}
+.sk-last{height:1.5rem;display:flex;align-items:center;gap:.5rem;font-weight:800;font-size:.95rem;letter-spacing:.06em;width:max-content;max-width:100%;transform-origin:left center;white-space:nowrap}
 .sk-last .hd{font-size:.62rem;letter-spacing:.14em;padding:.1rem .4rem;border-radius:.2rem;background:var(--cc);color:#fff}
 .sk-last.hit{animation:skhit .5s ease-out}
 @keyframes skhit{0%{transform:scale(1.25);filter:brightness(2)}100%{transform:none;filter:none}}
@@ -3762,15 +3762,25 @@ function admFin(B){
   const pays=[],tdI=isoD(TODAY),per=pl=>pl.includes('Годовой')?365:pl.includes('3 мес')?90:30;
   ATHLETES.forEach(a=>{const C=CAB[a.id],P=per(C.sub.plan),startOff=238-a.id*9,subCat=C.sub.plan.includes('Индивидуальные')?'ind':'grp';
     for(let d=startOff;d>=-7;d-=P){const dt=dAdd(-d);if(dt<=tdI)pays.push({d:dt,sum:C.sub.price,what:C.sub.plan,who:a.name,cat:subCat,pm:(a.id*13+d)%10<4?'cash':'iban'})}
-    if(PROF[a.id].pro)for(let m=0;m<8;m++){const dt=dAdd(-(5+m*30+a.id));if(dt<=tdI)pays.push({d:dt,sum:PRO_PRICE,what:'Подписка PRO',who:a.name,cat:'sub',pm:'iban'})}});
+    if(PROF[a.id].pro)for(let m=0;m<8;m++){const dt=dAdd(-(5+m*30+a.id));if(dt<=tdI)pays.push({d:dt,sum:PRO_PRICE,what:'Подписка PRO',who:a.name,cat:'sub',pm:'iban'})}
+    // услуги тренеров, разовые услуги, взносы, кэмп (демо-история + оплаты, внесённые в кабинете)
+    const S=subsOf(a),seen=new Set(),shift=(e,dd)=>isoD(new Date(new Date(e).getTime()-dd*DAY));
+    C.sub.pays.forEach(q=>{if(q.what!==C.sub.plan&&!/^Подписка/.test(q.what)&&q.d<=tdI){pays.push({d:q.d,sum:q.sum,what:q.what,who:a.name,cat:'svc',pm:'iban'});seen.add(q.d+'|'+q.what.split(' · ')[0])}});
+    const add=(d,sum,what)=>{if(d<=tdI&&!seen.has(d+'|'+what))pays.push({d,sum,what,who:a.name,cat:'svc',pm:(a.id+sum)%3?'iban':'cash'})};
+    if(a.id===1||igR(a.id,40)<.7)add(dAdd(20+(a.id*29)%300-365),50,'Клубный взнос');
+    if(a.id!==1&&igR(a.id,41)<.15)add(dAdd(-10-a.id*9),2600,'BJJ PHUCAMP');
+    if(a.id%3===0)for(let m=0;m<4;m++)add(dAdd(-(12+a.id%9+m*60)),10,'Индекс жировой массы тела');
+    if(S.plan)for(let m=1;m<=4;m++)add(shift(S.plan.end,30*m),79,'План тренировок');
+    if(S.nut)for(let m=1;m<=4;m++)add(shift(S.nut.end,30*m),45,'План питания');
+    if(S.pt){const pk=(SVC_PRICE_PT[S.pt.pack]||250);add(dAdd(-(6+a.id%10)),pk,'Индивидуальная тренировка');}});
   pays.sort((x,y)=>y.d.localeCompare(x.d));
-  const CATS={grp:['Групповые занятия','#22e07a'],ind:['Индивидуальные','#58a6ff'],sub:['Подписка PRO','#ffd34e']};
+  const CATS={grp:['Групповые занятия','#22e07a'],ind:['Индивидуальные','#58a6ff'],sub:['Подписка PRO','#ffd34e'],svc:['Услуги и взносы','#ff8a3c']};
   const mo=v=>v.slice(0,7),thisMo=tdI.slice(0,7),sum=f=>pays.filter(f).reduce((q,p2)=>q+p2.sum,0);
   const all=sum(()=>true),inMo=sum(p2=>mo(p2.d)===thisMo),first=pays[pays.length-1].d;
   const byCat=k=>sum(p2=>p2.cat===k);
   // поступления по услугам прайса
-  const SVC=[['Взрослые групповые','Групповые · взрослые · 1 мес','#22e07a'],['Детская группа ММА','Групповые · дети ММА · 1 мес','#9bf06a'],['Индивидуальные ММА / BJJ','Индивидуальные ММА/BJJ · 1 мес','#58a6ff'],['Индивидуальные Бокс / Кикбокс','Индивидуальные Бокс/Кикбокс · 1 мес','#9d7bff'],['Подписка PRO','Подписка PRO','#ffd34e']];
-  const svcRows=SVC.map(([n,k,c])=>({n,c,vAll:sum(p2=>p2.what===k),vMo:sum(p2=>p2.what===k&&mo(p2.d)===thisMo)}));
+  const SVR=[['Взрослые групповые','Групповые · взрослые · 1 мес','#22e07a'],['Детская группа ММА','Групповые · дети ММА · 1 мес','#9bf06a'],['Индивидуальные ММА / BJJ','Индивидуальные ММА/BJJ · 1 мес','#58a6ff'],['Индивидуальные Бокс / Кикбокс','Индивидуальные Бокс/Кикбокс · 1 мес','#9d7bff'],['Подписка PRO','Подписка PRO','#ffd34e'],['Услуги тренеров, взносы, кэмп','__svc','#ff8a3c']];
+  const svcRows=SVR.map(([n,k,c])=>{const f=k==='__svc'?(p2=>p2.cat==='svc'):(p2=>p2.what===k);return{n,c,vAll:sum(f),vMo:sum(p2=>f(p2)&&mo(p2.d)===thisMo)}});
   // касса: наличные и счёт (демо: поступления без учёта расходов)
   const cash=sum(p2=>p2.pm==='cash'),iban=all-cash;
   // недополученные оплаты: абонемент истёк более 3 дней назад и не продлён
@@ -3783,14 +3793,15 @@ function admFin(B){
   // помесячная динамика с начала работы
   const m0=new Date(+first.slice(0,4),+first.slice(5,7)-1,1),mos=[];
   for(let d2=new Date(m0);d2<=TODAY;d2.setMonth(d2.getMonth()+1)){const k=isoD(new Date(d2)).slice(0,7);
-    mos.push({k,g:sum(p2=>p2.cat==='grp'&&mo(p2.d)===k),i:sum(p2=>p2.cat==='ind'&&mo(p2.d)===k),s:sum(p2=>p2.cat==='sub'&&mo(p2.d)===k)})}
+    mos.push({k,g:sum(p2=>p2.cat==='grp'&&mo(p2.d)===k),i:sum(p2=>p2.cat==='ind'&&mo(p2.d)===k),s:sum(p2=>p2.cat==='sub'&&mo(p2.d)===k),v:sum(p2=>p2.cat==='svc'&&mo(p2.d)===k),vx:sum(p2=>p2.cat==='svc'&&!/PHUCAMP/.test(p2.what)&&mo(p2.d)===k)})}
   // прогноз на следующий месяц (расчёт, не гарантия)
   const nxt=new Date(TODAY.getFullYear(),TODAY.getMonth()+1,1),nxtK=isoD(nxt).slice(0,7);
   const renew=ATHLETES.filter(a=>CAB[a.id].sub.end.slice(0,7)===nxtK),renewSum=renew.reduce((q,a)=>q+CAB[a.id].sub.price,0);
   const overdue=ATHLETES.filter(a=>dLeft(CAB[a.id].sub.end)<0),overSum=overdue.reduce((q,a)=>q+CAB[a.id].sub.price,0);
   const last3=mos.slice(-4,-1),indAvg=last3.length?Math.round(last3.reduce((q,m)=>q+m.i,0)/last3.length):0;
   const subNext=ATHLETES.filter(a=>PROF[a.id].pro).length*PRO_PRICE;
-  const fc=renewSum+indAvg+subNext,fcHi=fc+overSum;
+  const svcAvg=last3.length?Math.round(last3.reduce((q,m)=>q+m.vx,0)/last3.length):0; // кэмп — разовый, в прогноз не входит
+  const fc=renewSum+indAvg+subNext+svcAvg,fcHi=fc+overSum;
   const T=v=>usd(v);
   B.innerHTML=`<div class="ph-title"><span class="label">Финансы клуба · с начала работы (${fmtD(first)})</span><span class="tag">DEMO · касса</span></div>
    <div class="fkpi">
@@ -3815,6 +3826,7 @@ function admFin(B){
      <span><i style="display:inline-block;width:.7rem;height:.7rem;background:linear-gradient(180deg,#2fe77f,#0e9e55);border-radius:.15rem;margin-right:.35rem;vertical-align:-1px"></i>Групповые</span>
      <span><i style="display:inline-block;width:.7rem;height:.7rem;background:linear-gradient(180deg,#74b7ff,#2a5fd9);border-radius:.15rem;margin-right:.35rem;vertical-align:-1px"></i>Индивидуальные</span>
      <span><i style="display:inline-block;width:.7rem;height:.7rem;background:linear-gradient(180deg,#ffd94e,#c9921e);border-radius:.15rem;margin-right:.35rem;vertical-align:-1px"></i>Подписки</span>
+      <span><i style="display:inline-block;width:.7rem;height:.7rem;background:linear-gradient(180deg,#ffb26b,#d9621a);border-radius:.15rem;margin-right:.35rem;vertical-align:-1px"></i>Услуги и взносы</span>
      <span><i style="display:inline-block;width:.7rem;height:.7rem;border:1px dashed #ffd34e;border-radius:.15rem;margin-right:.35rem;vertical-align:-1px"></i>Прогноз</span>
      <span><i style="display:inline-block;width:.9rem;height:2px;background:#fff;opacity:.8;margin-right:.35rem;vertical-align:3px"></i>Итог месяца</span></div>
    <div class="label" style="margin:.8rem 0 .3rem">Прогноз · ${MN[nxt.getMonth()]} ${nxt.getFullYear()} <span class="tag calc">РАСЧЁТ</span></div>
@@ -3823,6 +3835,7 @@ function admFin(B){
      <div><small>ПРОДЛЕНИЯ АБОНЕМЕНТОВ · ${renew.length}</small><b class="num">${T(renewSum)}</b></div>
      <div><small>ИНДИВИДУАЛЬНЫЕ · СРЕДНЕЕ ЗА 3 МЕС</small><b class="num">${T(indAvg)}</b></div>
      <div><small>ПОДПИСКИ PRO</small><b class="num">${T(subNext)}</b></div>
+     <div><small>УСЛУГИ И ВЗНОСЫ · СРЕДНЕЕ ЗА 3 МЕС · БЕЗ КЭМПА</small><b class="num">${T(svcAvg)}</b></div>
      <div><small>ЕСЛИ ВЕРНУТСЯ ПРОСРОЧЕННЫЕ · ${overdue.length}</small><b class="num" style="color:#9aa0a6">до ${T(fcHi)}</b></div></div>
    <div class="muted small" style="margin-bottom:.4rem">Прогноз — расчёт по текущим абонементам и среднему за последние месяцы, не гарантированный доход.</div>
    <div class="label" style="margin:.8rem 0 .3rem">Недополученные оплаты · просрочка больше 3 дней</div>
@@ -3844,7 +3857,7 @@ function admFin(B){
      <tr><td>Клубный взнос</td><td class="num" style="text-align:right">$50/год</td></tr>
      <tr><td>BJJ PHUCAMP · 27.02–27.03.2027</td><td class="num" style="text-align:right">$2 600</td></tr></tbody></table>
    <div class="muted small" style="margin-top:.6rem">Демо-данные. В продукте — онлайн-эквайринг и экспорт в бухгалтерию.</div>`;
-  finBars($('#cvFin'),mos.slice(-6).concat([{k:nxtK,g:renewSum,i:indAvg,s:subNext,fc:true}]));
+  finBars($('#cvFin'),mos.slice(-6).concat([{k:nxtK,g:renewSum,i:indAvg,s:subNext,v:svcAvg,fc:true}]));
   finDonut($('#cvDnt'),svcRows.filter(r=>r.vAll>0));
   B.querySelectorAll('[data-cnt]').forEach(el=>finNum(el,+el.dataset.cnt));
   requestAnimationFrame(()=>requestAnimationFrame(()=>B.querySelectorAll('.bar4 i').forEach(i=>i.style.width=i.dataset.w+'%')))}
@@ -3862,20 +3875,20 @@ function finBars(cv,arr){
   const W=cv.clientWidth||cv.parentElement.clientWidth||600,H=265,dpr=window.devicePixelRatio||1;
   cv.width=W*dpr;cv.height=H*dpr;cv.style.height=H+'px';
   const g=cv.getContext('2d');g.setTransform(dpr,0,0,dpr,0,0);
-  const max=Math.max(...arr.map(m=>m.g+m.i+m.s),1),pad=8,step=(W-pad*2)/arr.length,bw=Math.min(68,step*.6),base=H-36,top=46;
-  const GR={g:['#0e9e55','#2fe77f'],i:['#2a5fd9','#74b7ff'],s:['#c9921e','#ffd94e']},GLOW={g:'#2fe77f',i:'#74b7ff',s:'#ffd94e'};
+  const max=Math.max(...arr.map(m=>m.g+m.i+m.s+(m.v||0)),1),pad=8,step=(W-pad*2)/arr.length,bw=Math.min(68,step*.6),base=H-36,top=46;
+  const GR={g:['#0e9e55','#2fe77f'],i:['#2a5fd9','#74b7ff'],s:['#c9921e','#ffd94e'],v:['#d9621a','#ffb26b']},GLOW={g:'#2fe77f',i:'#74b7ff',s:'#ffd94e',v:'#ffb26b'};
   const t0=performance.now(),D=1050,thisK=isoD(TODAY).slice(0,7);
   const draw=now=>{const p=Math.min(1,(now-t0)/D);g.clearRect(0,0,W,H);
     // сетка
     g.strokeStyle=isL()?'rgba(0,0,0,.08)':'rgba(255,255,255,.07)';g.lineWidth=1;
     for(let r=1;r<=4;r++){const y=base-(base-top)*r/4;g.beginPath();g.moveTo(pad,y);g.lineTo(W-pad,y);g.stroke()}
     const pts=[];
-    arr.forEach((m,j)=>{const cx=pad+step*j+step/2,x=cx-bw/2,tot=m.g+m.i+m.s;
+    arr.forEach((m,j)=>{const cx=pad+step*j+step/2,x=cx-bw/2,tot=m.g+m.i+m.s+(m.v||0);
       const dl=j/arr.length*.4,e=Math.max(0,Math.min(1,(p-dl)/(1-.4))),ez=1-Math.pow(1-e,3);
       // подсветка текущего месяца
       if(m.k===thisK){g.fillStyle=isL()?'rgba(0,0,0,.045)':'rgba(255,255,255,.045)';g.beginPath();g.roundRect(cx-step*.44,top-18,step*.88,base-top+30,8);g.fill()}
       g.globalAlpha=m.fc?.45:1;
-      let y=base;const segs=['g','i','s'].filter(k=>m[k]>0);
+      let y=base;const segs=['g','i','s','v'].filter(k=>m[k]>0);
       segs.forEach((k,si)=>{const h=(m[k]/max)*(base-top)*ez;if(h<=0)return;
         const gr=g.createLinearGradient(0,y-h,0,y);gr.addColorStop(0,GR[k][1]);gr.addColorStop(1,GR[k][0]);
         g.fillStyle=gr;g.shadowColor=GLOW[k];g.shadowBlur=m.fc?0:10;
@@ -3964,7 +3977,7 @@ function drawFight(){const f=fit(F.cFight);if(!f)return;const{x,w,h}=f;const t0=
   if(t0==null){x.fillStyle='#737373';x.font='500 12px Montserrat,sans-serif';x.fillText('Бой ещё не начат',pl,h/2);return}
   const span=Math.max(60,t1-t0),X=t=>pl+(t-t0)/span*(w-pl-pr),Y=v=>pt+(1-(v-lo)/(hi-lo))*(h-pt-pb);
   x.font='500 10px Montserrat,sans-serif';x.strokeStyle='rgba(160,160,160,.12)';x.fillStyle='#737373';
-  for(let v=lo;v<=hi;v+=20){const y=Math.round(Y(v))+.5;x.beginPath();x.moveTo(pl,y);x.lineTo(w-pr,y);x.stroke();x.fillText(v,2,y+3)}
+  const lbl=(h-pt-pb)/((hi-lo)/20)<15?40:20;for(let v=lo;v<=hi;v+=20){const y=Math.round(Y(v))+.5;x.beginPath();x.moveTo(pl,y);x.lineTo(w-pr,y);x.stroke();if((v-lo)%lbl===0)x.fillText(v,2,y+3)}
   const mk=fight.marks;x.fillStyle=(isL()?'rgba(0,0,0,.045)':'rgba(255,255,255,.06)');
   for(let i=0;i<mk.length;i++){if(mk[i].phase==='rest'){const s=mk[i].t,e=mk[i+1]?mk[i+1].t:t1;x.fillRect(X(s),pt,X(e)-X(s),h-pt-pb)}
     if(mk[i].phase==='work'){x.fillStyle='#a6a6a6';x.fillText('Р'+mk[i].round,X(mk[i].t)+3,pt+10);x.fillStyle=(isL()?'rgba(0,0,0,.045)':'rgba(255,255,255,.06)')}}
@@ -4040,10 +4053,10 @@ function cardStats(id){const P=PROF[id],m=metrics.get(id),s=strikes.get(id);
   return{n:P.hist.n+1,h:P.hist.h+(m.active/3600),kcal:P.hist.kcal+m.kcal,maxHr:Math.max(P.hist.maxHr,m.max||0),spd:Math.max(P.hist.spd,s.best||0),str:P.hist.str+s.n,today:m.kcal}}
 /* ---- PIT RATING (Performance Index of Training): клубный рейтинг в весовой категории (РАСЧЁТ, единый стандарт клуба).
    Очки 0–1000: объём тренировок, восстановление HRR, выносливость, средний TRIMP, дисциплина (задания), серия недель, рекорд (Pro).
-   Ранг — место среди бойцов клуба той же весовой категории. Уровни: НОВИЧОК → БОЕЦ → ПРЕТЕНДЕНТ → ЭЛИТА → ЧЕМПИОН. */
+   Ранг — место среди бойцов клуба той же весовой категории. Классы (утв. 20.10.2026, шкала уровня подготовки по мировой практике): F1 BEGINNER · F2 NOVICE · F3 INTERMEDIATE · F4 ADVANCED · F5 ELITE · F6 PRO · F7 WORLD CLASS, шаг ~143. Боевой опыт отдельно: N/C/B/A-class, U18 — IMMAF A/B/C, BJJ — пояс. */
 const WCATS=[[61.2,'ЛЕГЧАЙШИЙ'],[65.8,'ПОЛУЛЁГКИЙ'],[70.3,'ЛЁГКИЙ'],[77.1,'ПОЛУСРЕДНИЙ'],[83.9,'СРЕДНИЙ'],[93,'ПОЛУТЯЖЁЛЫЙ'],[999,'ТЯЖЁЛЫЙ']];
 const wcat=kg=>WCATS.find(c=>kg<=c[0])[1];
-const RTIERS=[[850,'ЧЕМПИОН','#e8c35a'],[700,'ЭЛИТА','#ff4562'],[500,'ПРЕТЕНДЕНТ','#ffc93c'],[300,'БОЕЦ','#8fb4ff'],[0,'НОВИЧОК','#a6a6a6']];
+const RTIERS=[[858,'F7 WORLD CLASS','#e8c35a'],[715,'F6 PRO','#ff4562'],[572,'F5 ELITE','#ff8a3c'],[429,'F4 ADVANCED','#ffc93c'],[286,'F3 INTERMEDIATE','#4fd1a5'],[143,'F2 NOVICE','#8fb4ff'],[0,'F1 BEGINNER','#a6a6a6']];
 
 /* ===== Турнирный слой PIT (по мотивам AJP): уровни ★, 7 лучших результатов за сезон, ADULT / U18 ===== */
 const TSTARS={1:100,2:200,3:400,4:600,5:1000,6:2000};
@@ -4128,7 +4141,7 @@ function renderCard(){
    <header class="fc-top"><img src="${$('.club-logo').src}" alt="Mowgli Fight Club"><span class="demo">DEMO</span>${pro?'<i class="pro big">PRO</i>':''}</header>
    <div class="fc-id"><span class="fc-num">${String(a.id).padStart(2,'0')}</span><span class="fc-disc">${esc(a.disc)} · ${esc(P.cls)}</span></div>
    <img class="fc-photo" src="${(CAB[cardId]&&CAB[cardId].person.photo)||avatar(cardId)}" alt="Фото ${esc(a.name)}"><div class="fc-nl" style="--tc:${rt.tc}"><h2 class="fc-name">${esc(a.name)}</h2><span class="fc-rg"><span class="fc-r1 num">${PITM}<small class="fc-pit">PIT</small>${rt.R}</span><em class="fc-tch">${rt.tn}</em></span></div>
-   <div class="fc-tier">${rt.next?`до уровня ${rt.next[1]} — ещё ${rt.next[0]-rt.R} PIT`:'высший уровень клуба'}</div>${a.nick!==a.name?`<div class="fc-nick">«${esc(a.nick)}»</div>`:''}
+   <div class="fc-tier">${rt.next?`до класса ${rt.next[1]} — ещё ${rt.next[0]-rt.R} PIT`:'высший класс'}</div>${a.nick!==a.name?`<div class="fc-nick">«${esc(a.nick)}»</div>`:''}
    <div class="fc-rate" style="--tc:${rt.tc}"><span>PIT RATING</span><i>#${rt.rank} из ${rt.of} в своём весе${U18(a)?' · U18':''}</i><small>тренировки ${pitParts(a.id).train} · турниры ${pitParts(a.id).tour}</small></div>
    ${pro?`<div class="fc-rec"><div><b class="num">${P.rec.w}</b><small>ПОБЕД</small></div><span>–</span><div><b class="num">${P.rec.l}</b><small>ПОРАЖ.</small></div><span>–</span><div><b class="num">${P.rec.d}</b><small>НИЧЬИ</small></div></div>
      <div class="fc-recd">${P.rec.ko} KO/TKO · ${P.rec.sub} сабмишн · ${Math.max(0,P.rec.w-P.rec.ko-P.rec.sub)} решением</div>
@@ -4311,6 +4324,7 @@ const SVC={fat:{name:'Индекс жировой массы тела',ico:'⚖�
   plan:{name:'План тренировок',ico:'📋',price:79,desc:'программа на 4 недели под цель и график, задания приходят в приложение, корректировка каждую неделю'},
   nut:{name:'План питания',ico:'🥗',price:45,desc:'рацион и КБЖУ под цель и вес, список покупок на неделю, корректировка раз в 2 недели'}};
 const TRAINERS=[{id:1,name:'Адам',role:'Тренер',spec:'MMA · BJJ · ударная техника',exp:'15 лет в единоборствах'},{id:5,name:'Андрей',role:'Тренер',spec:'Бокс · ОФП · снижение веса',exp:'8 лет тренерской практики'}];
+const SVC_PRICE_PT={1:55,5:250,10:450};
 const usd=v=>'$'+(+v).toLocaleString('ru-RU',{maximumFractionDigits:2});
 const trn=id=>TRAINERS.find(t=>t.id===id)||TRAINERS[0];
 const trPhoto=id=>(CAB[id]&&CAB[id].person.photo)||avatar(id);
@@ -5070,7 +5084,7 @@ function clubPage(k){const R=clubRanks(),c=R.byK[k];
     <div class="cup-c"><div class="pr-h">Топ-5 по PIT</div>${byP.map(x=>row(x,x.P)).join('')}</div>
     <div class="cup-c"><div class="pr-h">Топ-5 по турнирным очкам</div>${byT.map(x=>row(x,nf(x.T))).join('')}</div>
     <div class="cup-c"><div class="pr-h">Состав по дисциплинам · ${ros.length}</div>${Object.entries(dc).sort((x,y)=>y[1]-x[1]).map(([d,v])=>`<div class="cs-bar"><span>${d}</span><i style="width:${Math.round(v/mx*100)}%"></i><b>${v}</b></div>`).join('')}<p class="cup-p">ADULT ${ros.filter(a=>!U18(a)).length} · U18 ${ros.filter(a=>U18(a)).length}</p></div>
-    <div class="cup-c"><div class="pr-h">Уровни PIT</div>${tiers.map(t=>`<div class="cs-bar"><span style="color:${t.c}">${t.n}</span><i style="width:${Math.round(t.v/ros.length*100)}%;background:${t.c}"></i><b>${t.v}</b></div>`).join('')}<p class="cup-p">Уровень — по общему PIT: 850+ Чемпион, 700+ Элита, 500+ Претендент, 300+ Боец.</p></div>
+    <div class="cup-c"><div class="pr-h">Классы PIT</div>${tiers.map(t=>`<div class="cs-bar"><span style="color:${t.c}">${t.n}</span><i style="width:${Math.round(t.v/ros.length*100)}%;background:${t.c}"></i><b>${t.v}</b></div>`).join('')}<p class="cup-p">Уровень — по общему PIT: 850+ Чемпион, 700+ Элита, 500+ Претендент, 300+ Боец.</p></div>
    </div></div>`}
 function rewardsHTML(){const a=byId.get(cardId)||ATHLETES[0],rt=ratingOf(a.id),dl=dLeft(SEASON.to),u=U18(a);
   const peers=ATHLETES.filter(x=>!x.coach&&wcat(x.kg)===rt.cat&&U18(x)===u).map(x=>({x,P:fpRating(x.id)})).sort((p,q)=>q.P-p.P),lead=peers[0],gap=lead.P-rt.R;
