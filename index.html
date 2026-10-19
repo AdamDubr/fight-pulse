@@ -1014,7 +1014,9 @@ body.m-on.m-frame::after{content:'Предпросмотр мобильной в
 #shImgM{position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.88);display:flex;align-items:center;justify-content:center;padding:16px;overflow:auto}
 #shImgM[hidden]{display:none}.shm-box{width:100%;max-width:520px;text-align:center}
 .shm-box img{display:block;margin:0 auto;max-width:100%;max-height:68vh;border-radius:14px;box-shadow:0 10px 40px #000;-webkit-touch-callout:default;user-select:auto}
-.shm-box p{color:#bdbdbd;font-size:14px;margin:12px 0}.shm-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}.shm-row .btn{text-decoration:none}
+.shm-box p{color:#bdbdbd;font-size:14px;margin:12px 0}
+.shm-pages{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:6px}.shm-pages figure{margin:0;flex:0 0 100%;scroll-snap-align:center;display:flex;flex-direction:column;align-items:center;gap:8px}.shm-pages:has(figure+figure) figure{flex-basis:82%}
+.nshare{margin-left:auto;margin-right:.5rem;font-size:.66rem;letter-spacing:.12em;padding:.3rem .6rem}.shm-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}.shm-row .btn{text-decoration:none}
 .m-shop{margin-top:14px;background:var(--panel-2,#141414);border:1px solid var(--line-2,#2a2a2a);border-radius:14px;padding:12px 14px}
 .m-shop-r{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid #ffffff10;font-size:15px}.m-shop-r:last-child{border-bottom:0}.m-shop-r b{white-space:nowrap}
 .m-nutt .m-h button{font-size:inherit}
@@ -1329,7 +1331,7 @@ html.light .tag.meas{color:var(--fg);border-color:#8a8377}
 #cabTabs.cab-tiles,html.light #cabTabs.cab-tiles{position:static!important;box-shadow:none!important;background:none!important;padding:.2rem 0 .4rem!important;margin:0!important}
 .cab-tiles button{min-height:4.1rem}
 .adm-tabs button .as{background:none;border:0;padding:0}
-.shot-narrow .pcharts{grid-template-columns:1fr!important}.shot-narrow .pks{grid-template-columns:1fr 1fr!important}
+.shot-narrow .pcharts{grid-template-columns:1fr!important}.shot-narrow.cgrid2,.shot-narrow .cgrid2{grid-template-columns:1fr!important}.shot-narrow .pks{grid-template-columns:1fr 1fr!important}
 /* лента новостей: фреймы */
 .nf-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem;margin-top:1rem}
 .nf{display:flex;flex-direction:column;gap:.7rem;background:var(--panel);border:1px solid var(--line-2);border-top:3px solid var(--nc);border-radius:1rem;padding:.9rem;min-width:0}
@@ -4413,23 +4415,61 @@ async function cardCanvas(){const el=$('#fCard');let tmp=null,mark=null;
   try{return await html2canvas(el,{backgroundColor:isL()?'#f4f1e9':'#0a0a0a',scale:2,useCORS:true,logging:false})}
   finally{el.style.background=ob;if(fr)fr.style.display='';if(tmp){mark.replaceWith(el);tmp.remove()}}}
 const toJpeg=cv=>new Promise(r=>cv.toBlob(b=>r(b),'image/jpeg',.92));
-async function shareImg(cv,name,title,blob){name=name.replace(/\.png$/i,'.jpg');blob=blob||await toJpeg(cv);const url=URL.createObjectURL(blob);
+// «Поделиться»: длинная картинка режется на страницы формата экрана телефона (9:16), разрез — по «тихой» полосе фона, а не по тексту
+const PAGE_R=16/9;
+// точки, где можно резать: верх заголовков и блоков (разрез над заголовком держит его вместе с содержимым)
+const CUT_SEL='.panel,.ph-title,.label,.m-h,.pr-h,.pcharts>div,.m-sec,.svcs,.ptab,.cgrid2>*,.kvs+.label';
+function shotHints(el,sc){const r0=el.getBoundingClientRect().top;return[...new Set([...el.querySelectorAll(CUT_SEL)].filter(e=>e.offsetParent!==null)
+  .map(e=>Math.round((e.getBoundingClientRect().top-r0)*sc)).filter(v=>v>8))].sort((a,b)=>a-b)}
+async function snapEl(el,opt){const h=shotHints(el,opt.scale||1);const cv=await html2canvas(el,opt);cv._hints=h;return cv}
+function splitPages(cv){const W=cv.width,H=cv.height,fh=Math.round(W*.075),PT=Math.round(W*.035),PH=Math.round(W*PAGE_R),CH=PH-fh-PT;
+  if(H<=PH)return[cv];
+  const x=cv.getContext('2d',{willReadFrequently:true}),st=Math.max(2,Math.round(W/240)),bp=x.getImageData(2,2,1,1).data;
+  const near=(d,o)=>Math.abs(d[o]-bp[0])+Math.abs(d[o+1]-bp[1])+Math.abs(d[o+2]-bp[2])<16;
+  // строка-кандидат на разрез: не отличается от строки выше; «фон» — если вся строка цвета подложки (промежуток между блоками)
+  let RT=[];const scan=(y0,n)=>{const d=x.getImageData(0,y0,W,n+1).data,res=[];RT=[];
+    for(let r=1;r<=n;r++){let bad=0,bgc=0,tot=0,rt=0;for(let c=0;c<W;c+=st){const a=((r*W)+c)*4,b=(((r-1)*W)+c)*4;tot++;
+      if(Math.abs(d[a]-d[b])+Math.abs(d[a+1]-d[b+1])+Math.abs(d[a+2]-d[b+2])>18){bad++;if(c>W*.62&&c<W*.95)rt++}if(near(d,a))bgc++}
+      RT.push(rt>0);res.push(bad/tot<.02?(bgc/tot>.9?2:1):0)}return res};
+  const n=Math.ceil(H/CH),cuts=[];let y=0;
+  const HN=(cv._hints||[]).sort((p,q)=>p-q).filter((h,i,A)=>!A.slice(0,i).some(p=>h-p<W*.07)).map(h=>h-Math.round(W*.012));   // блок и его заголовок рядом — режем над блоком
+  for(let k=1;k<n;k++){const lo0=y+Math.round(CH*.3),hi0=Math.min(y+CH,H-1),tg0=Math.min(hi0,Math.round(H*k/n)),hc=HN.filter(h=>h>lo0&&h<=hi0);
+    if(hc.length){const c=hc.reduce((b,h)=>Math.abs(h-tg0)<Math.abs(b-tg0)?h:b);cuts.push([y,c]);y=c;continue}
+    const lo=Math.max(y+Math.round(CH*.3),0),hi=Math.min(y+CH,H-1),tgt=Math.min(hi,Math.round(H*k/n)),ex=Math.min(lo-y,Math.round(W*.12)),q=scan(lo-ex,hi-lo+ex);
+    const runs=[];for(let r=0;r<q.length;){if(!q[r]){r++;continue}let e=r,bg=q[r]===2;while(e<q.length&&q[e]){if(q[e]!==2)bg=false;e++}runs.push({r,e,len:e-r,bg});r=e}
+    let best=null;runs.forEach((u,i)=>{if(u.r<ex||u.len<Math.round(W*.008))return;const mid=lo-ex+u.r+1+Math.floor(u.len/2);
+      let sc=(u.bg?3:1)*Math.pow(Math.min(u.len,W*.06),1.6)-Math.abs(mid-tgt)/CH*W*.25;
+      const pv=runs[i-1];if(pv&&u.r-pv.e<W*.045&&pv.len>=W*.012&&!RT.slice(pv.e,u.r).some(Boolean))sc-=1e6;   // над разрезом строка-заголовок (одна строка слева, справа пусто): не отрывать заголовок от его блока
+      if(!best||sc>best.sc)best={mid,sc}})
+    const cut=best&&best.sc>-1e5?best.mid:best?best.mid:hi;cuts.push([y,cut]);y=cut}
+  cuts.push([y,H]);if(H-y>CH){const last=cuts.pop();cuts.push([last[0],last[0]+CH],[last[0]+CH,H])}
+  const bg=`rgb(${bp[0]},${bp[1]},${bp[2]})`,lum=(bp[0]*.3+bp[1]*.59+bp[2]*.11)/255;
+  return cuts.map(([a,b],i)=>{const c=document.createElement('canvas');c.width=W;c.height=PH;const g=c.getContext('2d');
+    g.fillStyle=bg;g.fillRect(0,0,W,PH);const ty=i?PT:0;g.drawImage(cv,0,a,W,b-a,0,ty,W,b-a);
+    const fy=PH-fh;g.fillStyle=lum>.5?'rgba(0,0,0,.06)':'rgba(255,255,255,.05)';g.fillRect(0,fy,W,fh);
+    g.fillStyle=lum>.5?'#9a7419':'#e8c35a';g.font=`800 ${Math.round(fh*.34)}px Montserrat,sans-serif`;g.textBaseline='middle';g.textAlign='left';
+    g.fillText('PIT RATING · pitrating.com',Math.round(W*.05),fy+fh/2);
+    g.textAlign='right';g.fillStyle=lum>.5?'#6b665c':'#9aa0a6';g.fillText(`${i+1} / ${cuts.length}`,Math.round(W*.95),fy+fh/2);return c})}
+const pageName=(name,i,n)=>n>1?name.replace(/\.jpg$/i,`-${i+1}.jpg`):name;
+async function shareImg(c,name,title){name=name.replace(/\.png$/i,'.jpg');const n=c.blobs.length,urls=c.blobs.map(b=>URL.createObjectURL(b));
   let m=$('#shImgM');if(!m){m=document.createElement('div');m.id='shImgM';document.body.appendChild(m)}
-  const file=window.File?new File([blob],name,{type:'image/jpeg'}):null,can=!!(file&&navigator.canShare&&navigator.canShare({files:[file]}));
-  m.innerHTML=`<div class="shm-box"><img src="${url}" alt="${esc(title)}"><p>${can?'Нажмите «Поделиться» → «Сохранить изображение» или выберите WhatsApp, Telegram…':'Удерживайте картинку пальцем → «Сохранить в Фото» / «Поделиться»'}</p>
-   <div class="shm-row">${can?'<button class="btn primary" id="shmS">ПОДЕЛИТЬСЯ ↗</button>':''}<a class="btn${can?'':' primary'}" id="shmD" href="${url}" download="${name}">СКАЧАТЬ</a><a class="btn" href="${url}" target="_blank" rel="noopener">ОТКРЫТЬ</a><button class="btn" id="shmX">ЗАКРЫТЬ</button></div>
+  const files=window.File?c.blobs.map((b,i)=>new File([b],pageName(name,i,n),{type:'image/jpeg'})):null,can=!!(files&&navigator.canShare&&navigator.canShare({files}));
+  m.innerHTML=`<div class="shm-box">${n>1?`<p style="margin:0 0 .4rem"><b>${n} страницы</b> · формат экрана телефона</p>`:''}<div class="shm-pages">${urls.map((u,i)=>`<figure><img src="${u}" alt="${esc(title)} ${i+1}/${n}">${n>1?`<a class="btn sm" href="${u}" download="${pageName(name,i,n)}">СКАЧАТЬ ${i+1}/${n}</a>`:''}</figure>`).join('')}</div>
+   <p>${can?'Нажмите «Поделиться» → «Сохранить изображения» или выберите WhatsApp, Telegram…':'Удерживайте картинку пальцем → «Сохранить в Фото» / «Поделиться»'}</p>
+   <div class="shm-row">${can?`<button class="btn primary" id="shmS">ПОДЕЛИТЬСЯ${n>1?' · '+n+' стр.':''} ↗</button>`:''}${n===1?`<a class="btn${can?'':' primary'}" id="shmD" href="${urls[0]}" download="${name}">СКАЧАТЬ</a><a class="btn" href="${urls[0]}" target="_blank" rel="noopener">ОТКРЫТЬ</a>`:''}<button class="btn" id="shmX">ЗАКРЫТЬ</button></div>
    <p class="muted small">Если ничего не происходит — откройте демо в Safari или Chrome: встроенные браузеры мессенджеров иногда блокируют сохранение.</p></div>`;m.hidden=false;
   $('#shmX').onclick=()=>{m.hidden=true};m.onclick=e=>{if(e.target===m)m.hidden=true};
-  const sb=$('#shmS');if(sb)sb.onclick=()=>{navigator.share({files:[file],title}).catch(e=>{if(e&&e.name!=='AbortError')toast('Удерживайте картинку, чтобы сохранить')})}}
-// карточка готовится заранее — тогда нажатие сразу открывает системное «Поделиться» (жест не теряется)
+  const sb=$('#shmS');if(sb)sb.onclick=()=>{navigator.share({files,title}).catch(e=>{if(e&&e.name!=='AbortError')toast('Удерживайте картинку, чтобы сохранить')})}}
+// картинка готовится заранее — тогда нажатие сразу открывает системное «Поделиться» (жест не теряется)
 const SHC={};
-async function prepShot(key,build){if(SHC[key]&&(SHC[key].busy||SHC[key].blob))return;SHC[key]={busy:true};try{const cv=await build();SHC[key]={cv,blob:await toJpeg(cv)}}catch(e){delete SHC[key]}}
+async function prepShot(key,build){if(SHC[key]&&(SHC[key].busy||SHC[key].blobs))return;SHC[key]={busy:true};
+  try{const cv=await build(),pages=splitPages(cv);SHC[key]={cv,pages,blobs:await Promise.all(pages.map(toJpeg))}}catch(e){delete SHC[key]}}
 function reprep(key,build,ms){delete SHC[key];clearTimeout(reprep['t'+key]);reprep['t'+key]=setTimeout(()=>prepShot(key,build),ms||700)}
 function shareShot(key,name,title,build){name=name.replace(/\.png$/i,'.jpg').replace(/\s+/g,'-');const c=SHC[key];
-  if(c&&c.blob){const f=window.File?new File([c.blob],name,{type:'image/jpeg'}):null;
-    if(f&&navigator.canShare&&navigator.canShare({files:[f]})){navigator.share({files:[f],title}).catch(e=>{if(e&&e.name!=='AbortError')shareImg(c.cv,name,title,c.blob)});return}
-    shareImg(c.cv,name,title,c.blob);return}
-  toast('Готовлю изображение…');prepShot(key,build).then(()=>{const c2=SHC[key];if(c2&&c2.blob)shareImg(c2.cv,name,title,c2.blob);else toast('Не удалось подготовить картинку')})}
+  if(c&&c.blobs){const n=c.blobs.length,files=window.File?c.blobs.map((b,i)=>new File([b],pageName(name,i,n),{type:'image/jpeg'})):null;
+    if(files&&navigator.canShare&&navigator.canShare({files})){navigator.share({files,title}).catch(e=>{if(e&&e.name!=='AbortError')shareImg(c,name,title)});return}
+    shareImg(c,name,title);return}
+  toast('Готовлю изображение…');prepShot(key,build).then(()=>{const c2=SHC[key];if(c2&&c2.blobs)shareImg(c2,name,title);else toast('Не удалось подготовить картинку')})}
 const cardBuild=id=>async()=>{const pc=cardId;cardId=id;try{return await cardCanvas()}finally{cardId=pc}};
 function prepCard(id){return prepShot('card:'+id,cardBuild(id))}
 function shareCard(){const id=cardId,a2=byId.get(id);shareShot('card:'+id,'pit-rating-'+a2.name+'.jpg','PIT RATING — карточка бойца',cardBuild(id))}
@@ -4617,7 +4657,7 @@ function secNut(a,C){const n=C.nut,b=C.bio,coach=cab.role==='coach',ro=RO(),w=b.
     <div class="fd-cards">${FOODS.map((F,i5)=>`<div class="fd sel" data-fd="${i5}" role="button" tabindex="0" title="+${F.b} ${F.u}"><i>${fico(F.n)}</i><b>${esc(F.n)}</b><small>+${F.b} ${F.u} · ${F.k} ккал</small></div>`).join('')}</div>`:''}
    <div class="muted small" style="margin-top:.6rem">План и ккал — ориентиры тренера (расчёт), не медицинские назначения. Отметки приёмов видит тренер.</div></div>`;
   CB().innerHTML=`<div class="cgrid2">
-   <div class="panel"><div class="ph-title"><span class="label">Режим питания</span><span class="tag" style="color:${NUTC[n.mode]};border-color:${NUTC[n.mode]}55">${esc(n.mode).toUpperCase()}</span></div>
+   <div class="panel"><div class="ph-title"><span class="label">Режим питания</span><button class="btn sm nshare" id="nShare" data-html2canvas-ignore="true">ПОДЕЛИТЬСЯ ↗</button><span class="tag" style="color:${NUTC[n.mode]};border-color:${NUTC[n.mode]}55">${esc(n.mode).toUpperCase()}</span></div>
     <div class="kvs"><div><small>ОРИЕНТИР</small><b class="num">${n.kcal}</b> <em>ккал/день</em></div><div><small>ВОДА</small><b class="num">${n.water}</b> <em>л/день</em></div><div><small>НАЗНАЧЕНО</small><b>${fmtD(n.upd)}</b></div></div>
     <div class="label" style="margin:.8rem 0 .4rem">План от тренера</div>
     ${coach?`<div class="fe-grid two"><label class="fe"><span>Режим</span><select id="nMode" class="sel">${Object.keys(NUTC).filter(m=>!(U18(a)&&m==='Весогонка')).map(m=>`<option ${m===n.mode?'selected':''}>${m}</option>`).join('')}</select></label>
@@ -4667,7 +4707,16 @@ function secNut(a,C){const n=C.nut,b=C.bio,coach=cab.role==='coach',ro=RO(),w=b.
   $('#ncGoal')?.addEventListener('change',e=>{cut.goal=+e.target.value||cut.goal;saveCab();renderCab()});
   $('#ncBy')?.addEventListener('change',e=>{cut.by=e.target.value;saveCab();renderCab()});
   $('#ncStop')?.addEventListener('click',()=>{n.cut=null;if(n.mode==='Весогонка')n.mode='Поддержание';saveCab();renderCab()});
-  $('#ncStart')?.addEventListener('click',()=>{n.cut={goal:+$('#ncGoal2').value||w-3,by:$('#ncBy2').value||dAdd(14),start:isoD(TODAY),startW:w};n.mode='Весогонка';n.upd=isoD(TODAY);saveCab();renderCab();toast('Весогонка назначена (демо)')})}
+  $('#ncStart')?.addEventListener('click',()=>{n.cut={goal:+$('#ncGoal2').value||w-3,by:$('#ncBy2').value||dAdd(14),start:isoD(TODAY),startW:w};n.mode='Весогонка';n.upd=isoD(TODAY);saveCab();renderCab();toast('Весогонка назначена (демо)')});
+  // «Поделиться» из раздела Питание: весь раздел (режим, весогонка, меню), на компьютере — в ширину телефона, страницами 9:16
+  const nutPBuild=async()=>{const el=CB().querySelector('.cgrid2')||CB(),ow=el.style.width,wide=el.getBoundingClientRect().width>560;
+    const ft=document.createElement('div');ft.className='muted small';ft.style.cssText='margin-top:10px;padding:0 4px';ft.textContent=`${a.name} · питание от тренера · ${fmtD(n.upd)} · PIT RATING · pitrating.com`;el.appendChild(ft);
+    const rdw=()=>{if(cut&&$('#cvNW'))lineChart($('#cvNW'),b.w.map(x=>x.v),{c:NUTC['Весогонка'],dec:1,goal:cut.goal})};
+    if(wide){el.style.width='430px';el.classList.add('shot-narrow');rdw()}
+    try{return await snapEl(el,{backgroundColor:isL()?'#f4f1e9':'#0a0a0a',scale:2,useCORS:true,logging:false})}
+    finally{ft.remove();if(wide){el.style.width=ow;el.classList.remove('shot-narrow');rdw()}}};
+  $('#nShare')?.addEventListener('click',()=>shareShot('nutp:'+a.id,'pit-rating-pitanie-'+a.name+'.jpg','PIT RATING — питание',nutPBuild));
+  if(MOB.on)reprep('nutp:'+a.id,nutPBuild,900)}
 // ---------- ЗАДАНИЯ ТРЕНЕРА ----------
 const TST={new:['НОВОЕ','#8fb4ff'],work:['В РАБОТЕ','#ffc93c'],done:['ВЫПОЛНЕНО','#2fd27a']};
 function secTasks(a,C){const coach=cab.role==='coach',T=C.tasks.slice().sort((x,y)=>(x.status==='done')-(y.status==='done')||x.due.localeCompare(y.due));
@@ -4707,14 +4756,15 @@ function secProgress(a,C){const G=progSummary(a.id),D=G.D,striker=!/BJJ|Борь
     /* для картинки панель снимается в ширину карточки (колонкой, как на телефоне) */
     const sw=Math.min(pan.offsetWidth,Math.round(parseFloat(getComputedStyle(document.documentElement).fontSize)*31)),ow=pan.style.width;
     pan.style.width=sw+'px';pan.classList.add('shot-narrow');drawPC();
-    try{c2=await html2canvas(pan,{backgroundColor:isL()?'#f4f1e9':'#0a0a0a',scale:2,logging:false})}finally{btn.style.visibility='';pan.style.width=ow;pan.classList.remove('shot-narrow');drawPC()}
+    try{c2=await snapEl(pan,{backgroundColor:isL()?'#f4f1e9':'#0a0a0a',scale:2,logging:false})}finally{btn.style.visibility='';pan.style.width=ow;pan.classList.remove('shot-narrow');drawPC()}
     const c1=await cardBuild(a.id)();
     /* один стандарт: обе части одной ширины (по карточке) и с одинаковыми скруглёнными углами */
     const cw=c1.width,h2=Math.round(c2.height*cw/c2.width),R=Math.round((parseFloat(getComputedStyle($('#fCard')).borderTopLeftRadius)||19)*2),
       pad=40,W=cw+pad*2,cv=document.createElement('canvas');cv.width=W;cv.height=c1.height+h2+pad*3;const x=cv.getContext('2d');
     x.fillStyle=isL()?'#f4f1e9':'#0a0a0a';x.fillRect(0,0,W,cv.height);
     const put=(c,y,h)=>{x.save();x.beginPath();x.roundRect(pad,y,cw,h,R);x.clip();x.drawImage(c,pad,y,cw,h);x.restore()};
-    put(c1,pad,c1.height);put(c2,pad*2+c1.height,h2);return cv};
+    put(c1,pad,c1.height);put(c2,pad*2+c1.height,h2);
+    const y2=pad*2+c1.height,k2=cw/c2.width;cv._hints=[y2-Math.round(pad/2)+Math.round(W*.012)].concat((c2._hints||[]).map(h=>y2+Math.round(h*k2)));return cv};
   $('#pShare').onclick=()=>shareShot('prog:'+a.id,'pit-rating-progress-'+a.name+'.jpg','PIT RATING — прогресс',progBuild);
   if(MOB.on)reprep('prog:'+a.id,progBuild,900)}
 function wrapImg(src){return new Promise(r=>{if(!src)return r(null);const i=new Image();i.onload=()=>r(i);i.onerror=()=>r(null);i.src=src})}
@@ -4806,7 +4856,7 @@ function renderMobile(){if(!MOB.on)return;effTheme();mTPill();{const st=$('.fc-s
   const od=C.tasks.filter(t=>t.status!=='done').length;$('#mTB').hidden=!od;$('#mTB').textContent=od;
   const B=$('#mBody');B.className='mt-'+MOB.tab;if(MOB.tab!=='live')Body3D.setActive(false);
   if(!P.pro&&(MOB.tab==='live'||MOB.tab==='ach'||(MOB.tab==='tasks'&&!(subsOf(a).plan||subsOf(a).nut)))){mLocked(a,C,P,B,{live:'Тренировка',ach:'Рост и прогресс',tasks:'Задания и питание'}[MOB.tab]);return}
-  ({world:mWorld,home:mHome,live:mLive,ach:mAch,tasks:()=>{B.innerHTML='';secTasks(a,C);const nb=document.createElement('div');nb.className='m-sec m-nutt';nb.innerHTML='<div class="m-h">Питание от тренера <button id="mNutShare">поделиться ↗</button></div><div id="mNutT"></div>';B.appendChild(nb);const pr=cab.role;cab.role='athlete';ADM.el=nb.querySelector('#mNutT');try{secNut(a,C,P)}finally{ADM.el=null;cab.role=pr}nb.insertAdjacentHTML('beforeend',shopList(C));nb.insertAdjacentHTML('beforeend',`<div class="muted small" style="margin-top:8px">${esc(a.name)} · назначил ${esc(C.nut.by||COACH)} · ${fmtD(C.nut.upd)} · PIT RATING · pitrating.com</div>`);const nutBuild=async()=>{const bt=$('#mNutShare');if(bt)bt.style.visibility='hidden';try{return await html2canvas(nb,{backgroundColor:'#0a0a0a',scale:2,logging:false})}finally{if(bt)bt.style.visibility=''}};$('#mNutShare').onclick=()=>shareShot('nut:'+a.id,'pitanie-'+a.name+'.jpg','Питание от тренера',nutBuild);reprep('nut:'+a.id,nutBuild,800)},me:mMe})[MOB.tab](a,C,P,B)}
+  ({world:mWorld,home:mHome,live:mLive,ach:mAch,tasks:()=>{B.innerHTML='';secTasks(a,C);const nb=document.createElement('div');nb.className='m-sec m-nutt';nb.innerHTML='<div class="m-h">Питание от тренера <button id="mNutShare">поделиться ↗</button></div><div id="mNutT"></div>';B.appendChild(nb);const pr=cab.role;cab.role='athlete';ADM.el=nb.querySelector('#mNutT');try{secNut(a,C,P)}finally{ADM.el=null;cab.role=pr}nb.insertAdjacentHTML('beforeend',shopList(C));nb.insertAdjacentHTML('beforeend',`<div class="muted small" style="margin-top:8px">${esc(a.name)} · назначил ${esc(C.nut.by||COACH)} · ${fmtD(C.nut.upd)} · PIT RATING · pitrating.com</div>`);const nutBuild=async()=>{const bt=$('#mNutShare');if(bt)bt.style.visibility='hidden';try{return await snapEl(nb,{backgroundColor:isL()?'#f4f1e9':'#0a0a0a',scale:2,logging:false})}finally{if(bt)bt.style.visibility=''}};$('#mNutShare').onclick=()=>shareShot('nut:'+a.id,'pitanie-'+a.name+'.jpg','Питание от тренера',nutBuild);reprep('nut:'+a.id,nutBuild,800)},me:mMe})[MOB.tab](a,C,P,B)}
 function shopList(C){const n=C.nut,days=n.week?Object.values(n.week):[n.meals||[]],map=new Map();
   days.forEach(ML=>(ML||[]).forEach(ml=>(ml.items||[]).forEach(it=>{const m=String(it).trim().match(/^(.*?)\s([\d.,]+)\s?(г|кг|шт|л|мл)\.?$/i);
     if(!m){const k=String(it).trim();if(!map.has(k))map.set(k,{n:k,q:0,u:''});return}
