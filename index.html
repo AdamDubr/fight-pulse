@@ -1672,54 +1672,53 @@ html.pg-lock,html.pg-lock body{overflow:hidden}
 .wl-m .br{grid-template-columns:1fr;gap:.6rem}.wl-m .br-col{height:auto}
 .wl-m .tp-r{grid-template-columns:1.8rem minmax(0,1fr) auto;grid-template-areas:"m n p" "m s s" "m e e";row-gap:.1rem}.wl-m .tp-m{grid-area:m}.wl-m .tp-r>b:not(.tp-pt){grid-area:n}.wl-m .tp-r small{grid-area:s}.wl-m .tp-r em{grid-area:e}.wl-m .tp-pt{grid-area:p}
 .wl-m .cs-med{grid-template-columns:repeat(2,1fr)}.wl-m .tp-team{grid-template-columns:1fr}
-/* Стартовая страница входа */
-#roleGate{padding:0!important;display:block!important;background:#050505!important;overflow-y:auto}#roleGate[hidden]{display:none!important}
-.gt{min-height:100%;display:flex;flex-direction:column;gap:1.4rem;padding:1.4rem clamp(1rem,4vw,3.5rem) 1.2rem;color:#f2efe8;position:relative;isolation:isolate;
-  background:radial-gradient(60% 60% at 75% 35%,#e8c35a22,transparent 70%),radial-gradient(50% 50% at 10% 90%,#e8c35a10,transparent 70%),linear-gradient(#ffffff06 1px,transparent 1px) 0 0/100% 48px,#050505}
-.gt-top{display:flex;align-items:center;gap:.8rem}.gt-club{height:2.4rem;width:auto}.gt-x{color:#e8c35a;font-weight:900}.gt-pit{display:flex;align-items:center;font-weight:900;letter-spacing:.16em;color:#f2efe8}.gt-pit .pit-line{height:1.9rem;width:auto;color:#f2efe8}
-.gt-sp{flex:1}.gt-top .demo{font-size:.7rem}
-.gt-main{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:2rem;align-items:center;flex:1}
-.gt-l{display:flex;flex-direction:column;gap:1.1rem}
-.gt-eb{font-size:.8rem;letter-spacing:.22em;text-transform:uppercase;color:#a8a294;font-weight:700}.gt-eb b{color:#e8c35a;font-weight:900}
-.gt h1{margin:0;font-size:clamp(2rem,4.4vw,4.1rem);line-height:1.02;font-weight:900;letter-spacing:-.01em}.gt h1 em{font-style:normal;color:#e8c35a}
-.gt-l>p{margin:0;max-width:36rem;font-size:clamp(.95rem,1.3vw,1.12rem);line-height:1.55;color:#c9c4b8}
-.gt-live{display:flex;flex-wrap:wrap;gap:.5rem}.gt-live span{display:inline-flex;align-items:center;gap:.45rem;font-size:.78rem;padding:.45rem .8rem;border-radius:2rem;border:1px solid #ffffff1f;background:#ffffff08;color:#c9c4b8}.gt-live b{color:#f2efe8}
-.gt-dot{width:.5rem;height:.5rem;border-radius:50%;background:#2fd27a;box-shadow:0 0 0 0 #2fd27a88;animation:gtP 1.6s infinite}
-@keyframes gtP{70%{box-shadow:0 0 0 .5rem #2fd27a00}100%{box-shadow:0 0 0 0 #2fd27a00}}
-.gt-fig{position:relative;margin:0;justify-self:center;width:min(100%,26rem);aspect-ratio:3/4;border-radius:1.4rem;background:radial-gradient(60% 55% at 50% 45%,#2a2210,#0a0a0a 75%);border:1px solid #e8c35a44;overflow:hidden;display:flex;align-items:flex-end;justify-content:center}
-.gt-fig>img{height:92%;width:auto;position:relative;z-index:1;filter:drop-shadow(0 0 1.4rem #e8c35a55);animation:gtB 4s ease-in-out infinite}
-@keyframes gtB{50%{transform:translateY(-.4rem)}}
-.gt-ring{position:absolute;left:50%;bottom:4%;width:80%;aspect-ratio:3/1;transform:translateX(-50%);border-radius:50%;border:1px solid #e8c35a66;box-shadow:0 0 2rem #e8c35a33 inset;animation:gtR 3s ease-in-out infinite}
-@keyframes gtR{50%{opacity:.5;transform:translateX(-50%) scale(1.06)}}
-.gt-tag{position:absolute;z-index:2;display:flex;flex-direction:column;background:#0b0b0dcc;border:1px solid #ffffff22;border-radius:.8rem;padding:.5rem .75rem;backdrop-filter:blur(6px)}
-.gt-tag small{font-size:.55rem;letter-spacing:.14em;color:#a8a294;font-weight:800}.gt-tag b{font-size:1.9rem;font-weight:900;line-height:1;font-variant-numeric:tabular-nums;transition:color .4s}.gt-tag span{font-size:.62rem;color:#c9c4b8}
-.gt-tag.t1{top:1rem;left:1rem}.gt-tag.t2{top:1rem;right:1rem;text-align:right}
-.gt-ecg{position:absolute;left:0;right:0;bottom:22%;width:100%;height:2.4rem;z-index:0;opacity:.55}.gt-ecg path{fill:none;stroke:#e8c35a;stroke-width:1.4;stroke-dasharray:600;stroke-dashoffset:600;animation:gtE 2.4s linear infinite}
-@keyframes gtE{to{stroke-dashoffset:0}}
-.gt-fig figcaption{position:absolute;bottom:.6rem;left:0;right:0;text-align:center;font-size:.6rem;color:#8a8478;z-index:2}
-.gt-roles{display:flex;flex-direction:column;gap:.8rem}
-.gt-rh{display:flex;align-items:baseline;gap:.8rem;flex-wrap:wrap}.gt-rh b{font-size:1.25rem;font-weight:900}.gt-rh span{font-size:.8rem;color:#a8a294}
-.gt-rw{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.9rem}
-.gt-rc{appearance:none;font:inherit;color:inherit;text-align:left;cursor:pointer;display:grid;grid-template-columns:3.2rem minmax(0,1fr);grid-template-areas:"p t" "l l" "g g";gap:.7rem .8rem;align-items:center;background:#111113;border:1px solid #ffffff1c;border-radius:1.1rem;padding:1rem;transition:border-color .2s,transform .2s,box-shadow .2s}
-.gt-rc:hover,.gt-rc:focus-visible{border-color:#e8c35a;transform:translateY(-2px);box-shadow:0 .8rem 2rem #00000066;outline:none}
-.gt-rc>img,.gt-ic{grid-area:p;width:3.2rem;height:3.2rem;border-radius:50%;object-fit:cover;border:2px solid #e8c35a}.gt-ic{display:grid;place-items:center;background:#e8c35a18;color:#e8c35a}.gt-ic svg{width:1.5rem;height:1.5rem}
-.gt-rt{grid-area:t;display:flex;flex-direction:column}.gt-rt b{font-size:1.15rem;font-weight:900;color:#e8c35a;letter-spacing:.04em}.gt-rt small{font-size:.78rem;color:#c9c4b8}
-.gt-rc ul{grid-area:l;margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.3rem;font-size:.8rem;color:#c9c4b8}.gt-rc li::before{content:'✓';color:#2fd27a;font-weight:900;margin-right:.45rem}
-.gt-go{grid-area:g;justify-self:start;font-size:.75rem;font-weight:900;letter-spacing:.12em;text-transform:uppercase;padding:.55rem 1rem;border-radius:2rem;background:#e8c35a;color:#15120a}
-.gt-note{margin:0;font-size:.74rem;color:#8a8478}.gt-ft{font-size:.66rem;color:#6f6a60;letter-spacing:.06em}
+/* Страница входа PIT RATING (email + пароль, демо-роли) */
+#roleGate{padding:0!important;display:block!important;overflow-y:auto;background:#050505!important}#roleGate[hidden]{display:none!important}
+.lg{position:relative;min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2.5rem 1.25rem 1.5rem;color:#f2efe8;overflow:hidden;isolation:isolate;
+  background:radial-gradient(70% 55% at 50% 42%,#e8c35a14,transparent 70%),#050505;font-family:Montserrat,system-ui,sans-serif}
+.lg-ecg{position:absolute;left:0;right:0;top:50%;width:100%;height:12rem;transform:translateY(-50%);z-index:-1;pointer-events:none}
+.lg-ecg path{fill:none;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+.lg-ecg .b{stroke:#e8c35a;stroke-opacity:.09;stroke-width:1.2}
+.lg-ecg .p{stroke:#e8c35a;stroke-width:2;stroke-dasharray:260 2600;stroke-dashoffset:2860;filter:drop-shadow(0 0 6px #e8c35a);animation:lgRun 3.6s linear infinite}
+@keyframes lgRun{to{stroke-dashoffset:0}}
+.lg-glow{position:absolute;left:50%;top:50%;width:34rem;height:34rem;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,#e8c35a22,transparent 65%);z-index:-1;animation:lgBeat 1.2s ease-in-out infinite}
+@keyframes lgBeat{0%,100%{transform:translate(-50%,-50%) scale(1)}14%{transform:translate(-50%,-50%) scale(1.06)}28%{transform:translate(-50%,-50%) scale(1)}42%{transform:translate(-50%,-50%) scale(1.035)}}
+.lg-thm{position:absolute;top:1rem;right:1rem}
+.lg-card{width:100%;max-width:23rem;display:flex;flex-direction:column;align-items:stretch;gap:1rem;padding:2rem 1.6rem 1.5rem;border-radius:1.4rem;background:#0e0e10cc;border:1px solid #ffffff17;backdrop-filter:blur(14px);box-shadow:0 2rem 4rem #0009;animation:lgIn .7s cubic-bezier(.2,.8,.2,1) both}
+@keyframes lgIn{from{opacity:0;transform:translateY(1rem) scale(.98)}}
+.lg-mark{align-self:center;width:3.6rem;height:4.4rem;filter:drop-shadow(0 0 1rem #e8c35a55)}.lg-mark svg{width:100%;height:100%}
+.lg-mark path{fill:#e8c35a;opacity:.22;animation:lgCh 2.4s ease-in-out infinite}.lg-mark .c2{animation-delay:.25s}.lg-mark .c3{animation-delay:.5s}
+@keyframes lgCh{0%,100%{opacity:.22}20%,55%{opacity:1}}
+.lg-word{text-align:center;font-weight:900;font-size:1.7rem;letter-spacing:.2em;margin-top:-.2rem}.lg-word span{font-weight:400}
+.lg-sub{text-align:center;font-size:.68rem;letter-spacing:.24em;text-transform:uppercase;color:#8f8a7e;margin-top:-.6rem}
+.lg-f{display:flex;flex-direction:column;gap:.75rem;margin-top:.4rem}
+.lg-f label>span{display:block;font-size:.66rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#8f8a7e;margin-bottom:.35rem}
+.lg-f input[type=email],.lg-f input[type=password],.lg-f input[type=text]{width:100%;box-sizing:border-box;font:inherit;font-size:.95rem;color:#f2efe8;background:#ffffff08;border:1px solid #ffffff1f;border-radius:.8rem;padding:.8rem .9rem;outline:none;transition:border-color .2s,box-shadow .2s}
+.lg-f input:focus{border-color:#e8c35a;box-shadow:0 0 0 3px #e8c35a26}
+.lg-pw{position:relative}.lg-pw input{padding-right:5.5rem!important}.lg-eye{position:absolute;right:.4rem;top:50%;transform:translateY(-50%);border:0;background:none;color:#8f8a7e;font:inherit;font-size:.7rem;font-weight:700;cursor:pointer;padding:.4rem .5rem}
+.lg-row{display:flex;justify-content:space-between;align-items:center;font-size:.76rem}.lg-rem{display:flex;gap:.4rem;align-items:center;color:#c9c4b8;cursor:pointer}.lg-rem input{accent-color:#e8c35a}
+.lg-fg{color:#e8c35a;text-decoration:none;font-weight:700}
+.lg-btn{margin-top:.2rem;border:0;border-radius:.8rem;padding:.9rem;font:inherit;font-weight:900;font-size:.85rem;letter-spacing:.16em;text-transform:uppercase;color:#15120a;cursor:pointer;
+  background:linear-gradient(110deg,#e8c35a 40%,#fff2c4 50%,#e8c35a 60%) 0 0/250% 100%;animation:lgSh 4s ease-in-out infinite;transition:transform .15s}
+.lg-btn:hover{transform:translateY(-1px)}.lg-btn:active{transform:translateY(1px)}
+@keyframes lgSh{0%,60%{background-position:100% 0}100%{background-position:-50% 0}}
+.lg-msg{margin:0;min-height:1em;font-size:.76rem;line-height:1.4;color:#e8a33a;text-align:center}.lg-msg:empty{display:none}
+.lg-or{display:flex;align-items:center;gap:.7rem;font-size:.64rem;letter-spacing:.2em;text-transform:uppercase;color:#6f6a60}.lg-or::before,.lg-or::after{content:'';flex:1;height:1px;background:#ffffff17}
+.lg-demo{display:grid;grid-template-columns:1fr 1fr 1.45fr;gap:.45rem}
+.lg-demo button{font:inherit;font-size:.74rem;font-weight:800;color:#f2efe8;background:transparent;border:1px solid #ffffff22;border-radius:2rem;padding:.6rem .2rem;cursor:pointer;transition:border-color .2s,background .2s,color .2s}
+.lg-demo button:hover,.lg-demo button:focus-visible{border-color:#e8c35a;color:#e8c35a;background:#e8c35a10;outline:none}
+.lg-ft{margin-top:1.6rem;font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:#5d5950}
 html.light #roleGate{background:#f4f1e9!important}
-html.light .gt{color:#15171b;background:radial-gradient(60% 60% at 75% 35%,#e8c35a33,transparent 70%),linear-gradient(#0000000a 1px,transparent 1px) 0 0/100% 48px,#f4f1e9}
-html.light .gt-pit,html.light .gt-pit .pit-line{color:#15171b}html.light .gt h1 em,html.light .gt-eb b,html.light .gt-x{color:#8a6a1c}
-html.light .gt-eb,html.light .gt-rh span{color:#6f6a60}html.light .gt-l>p,html.light .gt-rt small,html.light .gt-rc ul{color:#4a463e}
-html.light .gt-live span{background:#fff;border-color:#e3dccb;color:#4a463e}html.light .gt-live b{color:#15171b}
-html.light .gt-rc{background:#fff;border-color:#e3dccb}html.light .gt-rc:hover{box-shadow:0 .8rem 2rem #8a6a1c22}html.light .gt-rt b{color:#8a6a1c}html.light .gt-rc li::before{color:#15803d}
-html.light .gt-ic{background:#fff4d6;color:#8a6a1c;border-color:#c9a032}html.light .gt-rc>img{border-color:#c9a032}html.light .gt-go{background:#c9a032;color:#fff}
-html.light .gt-note{color:#6f6a60}html.light .gt-ft{color:#8b8578}html.light .gt-club{filter:invert(1) brightness(.35)}
-@media (max-width:900px){.gt-main{grid-template-columns:1fr;gap:1.2rem}.gt-fig{order:-1;width:100%;max-width:none;aspect-ratio:auto;height:16rem}.gt-fig>img{height:95%}.gt-ring{width:55%}.gt-l{gap:.9rem}}
-@media (max-width:640px){.gt-rw{grid-template-columns:1fr}}
-@media (max-width:520px){.gt{padding:1rem 1rem calc(1rem + env(safe-area-inset-bottom));gap:1.1rem}.gt-club{height:1.9rem}.gt-pit .pit-line{height:1.5rem}.gt-tag b{font-size:1.5rem}.gt-tag{padding:.4rem .6rem}
-  .gt-rc{grid-template-areas:"p t" "l l";grid-template-columns:2.8rem minmax(0,1fr) ;padding:.85rem}.gt-rc>img,.gt-ic{width:2.8rem;height:2.8rem}.gt-go{display:none}.gt-rc::after{content:'›';position:absolute;right:1rem;top:1.2rem;font-size:1.4rem;color:#e8c35a}.gt-rc{position:relative}
-  .gt-live span{font-size:.7rem;padding:.35rem .65rem}}
+html.light .lg{color:#15171b;background:radial-gradient(70% 55% at 50% 42%,#e8c35a2e,transparent 70%),#f4f1e9}
+html.light .lg-card{background:#ffffffd9;border-color:#e3dccb;box-shadow:0 2rem 4rem #8a6a1c22}
+html.light .lg-ecg .b{stroke:#8a6a1c;stroke-opacity:.12}html.light .lg-ecg .p{stroke:#c9a032;filter:drop-shadow(0 0 5px #e8c35a)}
+html.light .lg-mark path{fill:#c9a032}html.light .lg-sub,html.light .lg-f label>span,html.light .lg-eye{color:#8b8578}
+html.light .lg-f input[type=email],html.light .lg-f input[type=password],html.light .lg-f input[type=text]{color:#15171b;background:#faf7f0;border-color:#e3dccb}
+html.light .lg-rem{color:#4a463e}html.light .lg-fg{color:#8a6a1c}html.light .lg-or{color:#a39d90}html.light .lg-or::before,html.light .lg-or::after{background:#e3dccb}
+html.light .lg-demo button{color:#15171b;border-color:#e3dccb;background:#fff}html.light .lg-demo button:hover{color:#8a6a1c;border-color:#c9a032;background:#fff8e6}html.light .lg-ft{color:#a39d90}
+html.light .lg-glow{background:radial-gradient(circle,#e8c35a33,transparent 65%)}
+@media (max-width:420px){.lg{padding:2rem 1rem 1rem}.lg-card{padding:1.6rem 1.2rem 1.3rem;border-radius:1.2rem}.lg-word{font-size:1.5rem}}
+@media (prefers-reduced-motion:reduce){.lg-ecg .p,.lg-glow,.lg-mark path,.lg-btn,.lg-card{animation:none}.lg-mark path{opacity:1}}
 /* AJP Tour */
 .aj{display:flex;flex-direction:column;gap:1rem}
 .aj-g2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
@@ -5322,37 +5321,29 @@ function ajpBind(a,root){const r=root||document;
   r.querySelector('#ajRef')?.addEventListener('click',()=>{EXT[a.id].ajp.at=isoD(new Date());saveExt();toast('Данные AJP обновлены (демо — снимок)');ajpRefresh()});
   r.querySelectorAll('[data-ajk]').forEach(b=>b.addEventListener('click',()=>{const X=EXT[a.id].ajp;X.ok=[...new Set([...(X.ok||[]),b.dataset.ajk])];saveExt();TOURC[a.id]=null;RANKC=null;toast('Результат AJP подтверждён и засчитан в PIT');ajpRefresh()}))}
 function ajpRefresh(){if(MOB.on)renderMobile();else renderCab()}
-/* ===== Стартовая страница входа ===== */
-const GATE_R=[{r:'fighter',t:'Боец',who:'Адам · MMA',id:1,ic:'<path d="M7 11V7.5a3.5 3.5 0 0 1 7 0V9h1.5A2.5 2.5 0 0 1 18 11.5V14a6 6 0 0 1-6 6h-1a4 4 0 0 1-4-4z"/><path d="M7 13h6M14 9v3"/>',
-   f:['Мой PIT и рост по неделям','Задания, питание, допуск','Турниры, вызовы, My PIT World']},
-  {r:'coach',t:'Тренер',who:'Миржалал «MOWGLI»',id:21,ic:'<circle cx="12" cy="12" r="8.5"/><path d="M12 7v5l3 2"/><path d="M9 2.5h6"/>',
-   f:['Монитор зала вживую: пульс и зоны','Группы, раунды, расписание','Состав на командный матч']},
-  {r:'admin',t:'Администратор',who:'Управление клубом',id:0,ic:'<rect x="3.5" y="4" width="17" height="16" rx="2.5"/><path d="M3.5 9h17M8 14h3M8 17h6"/>',
-   f:['CRM, абонементы, оплаты','Финансы и отчёты','Вызовы клубам, заявки на турниры']}];
-function gateHTML(){const logo=document.querySelector('.club-logo'),pit=document.querySelector('.brand .by .pit-line'),a=byId.get(1),rt=ratingOf(1),R=clubRanks();
-  const ph=x=>x.id?`<img src="${(CAB[x.id]&&CAB[x.id].person.photo)||avatar(x.id)}" alt="">`:`<span class="gt-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${x.ic}</svg></span>`;
-  return `<div class="gt">
-  <header class="gt-top">${logo?`<img class="gt-club" src="${logo.src}" alt="Mowgli Fight Club">`:''}<span class="gt-x">×</span><span class="gt-pit">${pit?pit.outerHTML:'PIT RATING'}</span>
-    <span class="gt-sp"></span><span class="demo">DEMO</span><button type="button" class="thm-btn" data-gtheme aria-label="Сменить тему">☾</button></header>
-  <main class="gt-main">
-    <section class="gt-l"><span class="gt-eb"><b>P</b>erformance <b>I</b>ndex of <b>T</b>raining</span>
-      <h1>Каждая тренировка&nbsp;—<br><em>в&nbsp;рейтинге.</em></h1>
-      <p>Пульс с датчика, нагрузка, восстановление и турниры — в одном индексе PIT. Тренер видит зал вживую, боец — свой рост, клуб — место в мире.</p>
-      <div class="gt-live"><span><i class="gt-dot"></i><b id="gtOn">—</b> на датчиках сейчас</span><span>${RCTRY.TR[0]} Mowgli · <b>#${R.me.r}</b> в мире</span><span>15.11 · <b>Mowgli Fight Night #1</b></span></div></section>
-    <figure class="gt-fig"><div class="gt-ring"></div><img src="${WIMG.hero}" alt="Голограмма бойца"><div class="gt-tag t1"><small>ПУЛЬС · ${esc(a.name)}</small><b id="gtHr">—</b><span id="gtZ">BPM</span></div>
-      <div class="gt-tag t2"><small>PIT</small><b style="color:${rt.tc}">${rt.R}</b><span>${rt.tn} · #${rt.rank} в весе</span></div>
-      <svg class="gt-ecg" viewBox="0 0 300 40" preserveAspectRatio="none" aria-hidden="true"><path d="M0 22 H70 L80 22 L86 8 L94 36 L100 22 H160 L170 22 L176 6 L184 38 L190 22 H300"/></svg>
-      <figcaption>данные — симулятор телеметрии (DEMO)</figcaption></figure>
-  </main>
-  <section class="gt-roles" aria-label="Выбор роли"><div class="gt-rh"><b>Войти в демо</b><span>без пароля · выберите роль</span></div>
-    <div class="gt-rw">${GATE_R.map(x=>`<button type="button" class="gt-rc" data-role-pick="${x.r}">${ph(x)}<span class="gt-rt"><b>${x.t}</b><small>${esc(x.who)}</small></span><ul>${x.f.map(f=>`<li>${f}</li>`).join('')}</ul><span class="gt-go">Войти →</span></button>`).join('')}</div>
-    <p class="gt-note">В рабочей версии — вход по номеру телефона и коду клуба. Роль можно сменить: на компьютере — «ВХОД» в шапке, на телефоне — «Профиль».</p></section>
-  <footer class="gt-ft">PIT RATING · Performance Index of Training · все данные демо-версии сгенерированы симулятором</footer></div>`}
-function gateTick(){const g=$('#roleGate');if(!g||g.hidden){clearInterval(gateTick.t);return}
-  const m=metrics.st.get(1),on=ATHLETES.filter(a=>{const x=metrics.st.get(a.id);return x&&x.hr}).length,el=$('#gtHr');
-  $('#gtOn').textContent=on+' '+plural(on,'боец','бойца','бойцов');
-  if(el&&m&&m.hr){const hr=Math.round(m.hr),z=zoneOf(hr,byId.get(1).hrMax);el.textContent=hr;el.style.color=ZCOL[z];$('#gtZ').textContent='BPM · зона '+z}}
-function gateShow(){const g=$('#roleGate');g.innerHTML=gateHTML();try{syncThemeUI()}catch(e){}bindRoleCards(g);g.hidden=false;gateTick();clearInterval(gateTick.t);gateTick.t=setInterval(gateTick,1000)}
+/* ===== Страница входа: PIT RATING, email + пароль; демо-роли ===== */
+function gateHTML(){const D='M0 100 L40 100 L52 92 L60 100 L70 100 L76 112 L84 34 L92 160 L100 100 L116 100 L128 86 L142 100 L200 100 L240 100 L252 92 L260 100 L270 100 L276 112 L284 34 L292 160 L300 100 L316 100 L328 86 L342 100 L400 100 L440 100 L452 92 L460 100 L470 100 L476 112 L484 34 L492 160 L500 100 L516 100 L528 86 L542 100 L600 100 L640 100 L652 92 L660 100 L670 100 L676 112 L684 34 L692 160 L700 100 L716 100 L728 86 L742 100 L800 100 L840 100 L852 92 L860 100 L870 100 L876 112 L884 34 L892 160 L900 100 L916 100 L928 86 L942 100 L1000 100 L1040 100 L1052 92 L1060 100 L1070 100 L1076 112 L1084 34 L1092 160 L1100 100 L1116 100 L1128 86 L1142 100 L1200 100';
+  return `<div class="lg"><svg class="lg-ecg" viewBox="0 0 1200 200" preserveAspectRatio="none" aria-hidden="true"><path class="b" d="${D}"/><path class="p" d="${D}"/></svg><div class="lg-glow" aria-hidden="true"></div>
+  <button type="button" class="thm-btn lg-thm" data-gtheme aria-label="Сменить тему">☾</button>
+  <main class="lg-card" aria-label="Вход в PIT RATING">
+    <div class="lg-mark" aria-hidden="true"><svg viewBox="0 0 100 124"><path class="c1" d="M8 104L50 72 92 104V122L50 90 8 122Z"/><path class="c2" d="M8 74L50 42 92 74V92L50 60 8 92Z"/><path class="c3" d="M8 44L50 12 92 44V62L50 30 8 62Z"/></svg></div>
+    <div class="lg-word">PIT <span>RATING</span></div><div class="lg-sub">Performance Index of Training</div>
+    <form class="lg-f" id="lgF" novalidate>
+      <label><span>Email</span><input type="email" id="lgE" autocomplete="username" inputmode="email" placeholder="name@mail.com" required></label>
+      <label><span>Пароль</span><div class="lg-pw"><input type="password" id="lgP" autocomplete="current-password" placeholder="••••••••" required minlength="6"><button type="button" class="lg-eye" id="lgEye">показать</button></div></label>
+      <div class="lg-row"><label class="lg-rem"><input type="checkbox" checked> Запомнить меня</label><a href="#" class="lg-fg" id="lgFg">Забыли пароль?</a></div>
+      <button class="lg-btn" type="submit">Войти</button><p class="lg-msg" id="lgM" role="status"></p></form>
+    <div class="lg-or"><span>демо-вход</span></div>
+    <div class="lg-demo"><button type="button" data-role-pick="fighter">Боец</button><button type="button" data-role-pick="coach">Тренер</button><button type="button" data-role-pick="admin">Администратор</button></div>
+  </main><footer class="lg-ft">PIT RATING · демо-версия</footer></div>`}
+function gateShow(){const g=$('#roleGate');g.innerHTML=gateHTML();try{syncThemeUI()}catch(e){}bindRoleCards(g);g.hidden=false;
+  const M=$('#lgM'),E=$('#lgE'),P=$('#lgP');
+  $('#lgEye').onclick=()=>{const t=P.type==='password';P.type=t?'text':'password';$('#lgEye').textContent=t?'скрыть':'показать'};
+  $('#lgFg').onclick=e=>{e.preventDefault();M.textContent=/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(E.value)?'Ссылка для сброса пароля придёт на '+E.value+' (в рабочей версии).':'Введите email — пришлём ссылку для сброса пароля.'};
+  $('#lgF').onsubmit=e=>{e.preventDefault();
+    if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(E.value)){M.textContent='Проверьте email.';E.focus();return}
+    if(P.value.length<6){M.textContent='Пароль — не короче 6 символов.';P.focus();return}
+    P.value='';M.textContent='Демо-версия: вход по почте заработает в рабочей версии. Пока выберите демо-роль ниже.'}}
 function bindRoleCards(root){root.querySelectorAll('[data-role-pick]').forEach(b=>b.addEventListener('click',()=>enterRole(b.dataset.rolePick)))}
 function enterRole(r){$('#roleGate').hidden=true;
   if(r==='fighter'){MOB.me=1;try{localStorage.setItem('fp.me',1)}catch(e){}applyRole('fighter');
