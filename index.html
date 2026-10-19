@@ -1404,6 +1404,29 @@ html.light .tag.meas{color:var(--fg);border-color:#8a8377}
 #monSchM .sc-row{grid-template-columns:repeat(2,minmax(0,1fr))}
 html.light .sc-g{color:color-mix(in srgb,var(--sc) 70%,#000)}
 html.light .sc-live{color:#15803d}html.light .sc-soon{color:#a86400}
+button.sc-c{appearance:none;font:inherit;color:inherit;text-align:left;cursor:pointer;transition:transform .15s,border-color .15s}
+button.sc-c:hover{transform:translateY(-1px);border-color:color-mix(in srgb,var(--sc) 55%,transparent)}
+button.sc-c:focus-visible{outline:2px solid var(--sc);outline-offset:2px}
+.sc-c.open{border-color:var(--sc);box-shadow:0 8px 22px -14px var(--sc)}
+.sc-more{font-style:normal;font-size:.62rem;font-weight:800;letter-spacing:.08em;color:var(--muted);margin-top:.25rem}
+.sc-det{margin-top:.7rem;border:1px solid color-mix(in srgb,var(--sc) 45%,var(--line-2));border-left:4px solid var(--sc);border-radius:.8rem;padding:.75rem .85rem;background:var(--panel-2);animation:scIn .2s ease-out}
+@keyframes scIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.sc-dh{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;margin-bottom:.6rem}.sc-dh b{font-weight:900}
+.sc-x{margin-left:auto;appearance:none;border:1px solid var(--line-2);background:var(--panel);color:var(--fg);border-radius:50%;width:1.8rem;height:1.8rem;cursor:pointer}
+.sc-fl{display:grid;grid-template-columns:repeat(auto-fill,minmax(19rem,1fr));gap:.45rem}
+.sc-f{appearance:none;font:inherit;color:inherit;cursor:pointer;display:grid;grid-template-columns:2.4rem minmax(0,1fr) auto .5rem;align-items:center;gap:.6rem;text-align:left;padding:.45rem .55rem;border:1px solid var(--line-2);border-radius:.6rem;background:var(--panel)}
+.sc-f:hover{border-color:var(--sc)}
+.sc-f img{width:2.4rem;height:2.4rem;border-radius:50%;object-fit:cover;border:2px solid var(--line-2)}
+.sc-fn{display:block;min-width:0;line-height:1.25}.sc-fn b{font-size:.85rem;white-space:nowrap}.sc-fn .u18{margin:0 0 0 .3em;font-size:.6rem}.sc-fn small{display:block;font-size:.62rem;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-transform:lowercase}
+.sc-fr2{display:flex;flex-direction:column;align-items:flex-end;line-height:1.1}.sc-fr2 b{color:var(--tc);font-size:1rem;font-weight:900;white-space:nowrap}.sc-fr2 b .pitm{width:.7em;height:.85em;margin-right:.15em;vertical-align:-.05em}.sc-fr2 small{font-size:.58rem;color:var(--dim);white-space:nowrap}
+.sc-on{width:.5rem;height:.5rem;border-radius:50%;background:var(--line-2)}.sc-on.y{background:#2fd27a;box-shadow:0 0 8px #2fd27a}
+#monSchM .sc-fl{grid-template-columns:1fr}
+.wl-chips1{flex-wrap:nowrap!important;gap:.5rem!important;width:0;min-width:100%;overflow-x:auto;scrollbar-width:none}.wl-chips1::-webkit-scrollbar{display:none}
+.wl-chips1 span{display:inline-flex;align-items:center;gap:.45rem;white-space:nowrap;flex:0 1 auto;min-width:0;padding:.42rem .85rem .42rem .6rem!important}
+.wl-chips1 svg{width:1.15rem;height:1.15rem;flex:none;padding:.18rem;border-radius:50%;background:#e8c35a22;box-sizing:content-box}
+.wl.light .wl-chips1 svg{background:#8a6a1c1c}
+
+.wl-m .wl-chips1{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));width:auto;min-width:0;overflow:visible}.wl-m .wl-chips1 span{flex-direction:column;justify-content:flex-start;text-align:center;white-space:normal;gap:.3rem;font-size:.62rem;line-height:1.2;border-radius:.8rem!important;padding:.5rem .35rem!important}.wl-m .wl-chips1 svg{width:1.05rem;height:1.05rem}
 /* ===== СВЕТЛАЯ ТЕМА (по умолчанию). 3D-сцены, голограммы, постеры и фото остаются тёмными «экранами». ===== */
 html.light{color-scheme:light;
   --ink:#f4f1e9; --panel:#ffffff; --panel-2:#faf7f0; --line:#ebe5d6; --line-2:#ddd5c3;
@@ -3124,7 +3147,7 @@ function schedInit(){if(SCHED)return;try{SCHED=JSON.parse(localStorage.getItem('
 /* тренеры клуба и кто по умолчанию ведёт направление (DEMO) */
 const SCH_CO=[{k:'mowgli',n:'Миржалал «MOWGLI»'},{k:'adam',n:'Адам'},{k:'andrey',n:'Андрей'}],SCH_DEFC={'MMA':'mowgli','BJJ':'mowgli','Борьба':'mowgli','Муай-тай':'adam','Бокс':'andrey','Функционал':'andrey'};
 const SCH_COL={'BJJ':'#7c8cff','MMA':'#ff4562','Бокс':'#e8a33a','Муай-тай':'#f97316','Борьба':'#2dd4bf','Функционал':'#4ade80'};
-const SCH_ME='mowgli',SCH_UI={all:false};
+const SCH_ME='mowgli',SCH_UI={all:false,open:null};
 const coName=k=>(SCH_CO.find(c=>c.k===k)||{n:'—'}).n;
 /* ближайшие занятия (сегодня и вперёд, 7 дней), длительность занятия 90 мин */
 function schUpcoming(all,lim){schedInit();const now=Date.now(),out=[];
@@ -3141,11 +3164,21 @@ function schFrameHTML(){const L=schUpcoming(SCH_UI.all,6),now=Date.now(),wd=['в
   const ev=(SCHED.events||[]).filter(e=>e.d>=dAdd(0)).sort((x,y)=>x.d.localeCompare(y.d))[0];
   return `<div class="panel sc-fr"><div class="ph-title"><span class="label">${SCH_UI.all?'Ближайшие занятия клуба':'Мои ближайшие занятия'}</span><span class="muted small">${SCH_UI.all?'все тренеры':esc(coName(SCH_ME))}</span>
      <div class="sc-seg" role="group" aria-label="Чьи занятия"><button data-scall="0" aria-pressed="${!SCH_UI.all}">МОИ</button><button data-scall="1" aria-pressed="${SCH_UI.all}">ВСЕ</button></div></div>
-   <div class="sc-row">${L.map(o=>`<div class="sc-c${now>=o.st?' on':''}" style="--sc:${SCH_COL[o.c.disc]||'#e8c35a'}"><div class="sc-d"><span>${lbl(o)}</span><b class="num">${o.c.time}</b></div>
-     <div class="sc-g">${esc(o.c.disc)}</div><small>${cnt(o.c.disc)} бойцов${SCH_UI.all?' · '+esc(coName(o.c.coach)):''}</small>${stt(o)}</div>`).join('')||'<div class="muted small">На ближайшую неделю занятий нет — добавьте в «Расписании».</div>'}</div>
+   <div class="sc-row">${L.map(o=>{const k=o.st+'|'+o.c.disc,op=SCH_UI.open===k;return`<button type="button" class="sc-c${now>=o.st?' on':''}${op?' open':''}" data-sco="${k}" aria-expanded="${op}" style="--sc:${SCH_COL[o.c.disc]||'#e8c35a'}"><div class="sc-d"><span>${lbl(o)}</span><b class="num">${o.c.time}</b></div>
+     <div class="sc-g">${esc(o.c.disc)}</div><small>${cnt(o.c.disc)} бойцов${SCH_UI.all?' · '+esc(coName(o.c.coach)):''}</small>${stt(o)}<i class="sc-more">${op?'Свернуть ▴':'Состав ▾'}</i></button>`}).join('')||'<div class="muted small">На ближайшую неделю занятий нет — добавьте в «Расписании».</div>'}</div>
+   ${(()=>{const o=L.find(x=>SCH_UI.open===x.st+'|'+x.c.disc);if(!o)return'';
+     const F=ATHLETES.filter(a=>o.c.disc==='Все группы'||a.disc===o.c.disc).map(a=>({a,r:ratingOf(a.id)})).sort((x,y)=>y.r.R-x.r.R);
+     return`<div class="sc-det" style="--sc:${SCH_COL[o.c.disc]||'#e8c35a'}"><div class="sc-dh"><b>${esc(o.c.disc)} · ${lbl(o)} ${o.c.time}</b><span class="muted small">${esc(coName(o.c.coach))} · ${F.length} бойцов · сортировка по PIT</span><button type="button" class="sc-x" data-scx aria-label="Свернуть состав">✕</button></div>
+      <div class="sc-fl">${F.map(({a,r})=>{const m=metrics.get(a.id),st=metrics.status(m),on=st==='live'||st==='stale';
+        return`<button type="button" class="sc-f" data-scf="${a.id}" title="Открыть карточку бойца"><img src="${(CAB[a.id]&&CAB[a.id].person.photo)||avatar(a.id)}" alt=""><span class="sc-fn"><b>${esc(a.name)}</b>${u18Badge(a)}<small>${a.kg} кг · ${esc(r.cat)}</small></span>
+         <span class="sc-fr2" style="--tc:${r.tc}"><b class="num">${PITM}${r.R}</b><small>${esc(r.tn)} · #${r.rank} из ${r.of}</small></span><i class="sc-on${on?' y':''}" title="${on?'датчик на связи':'нет в зале'}"></i></button>`}).join('')}</div>
+      <div class="muted small" style="margin-top:.5rem">PIT — расчётный рейтинг клуба (не медицинский показатель). Щелчок по бойцу — его карточка с назначениями.</div></div>`})()}
    ${ev?`<div class="sc-ev">🏆 Ближайшее событие: <b>${esc(ev.name)}</b> · ${fmtD(ev.d)}</div>`:''}</div>`}
 function schFrame(host){if(!host)return;const h=schFrameHTML();if(host.dataset.h===h)return;host.dataset.h=h;host.innerHTML=h;
-  host.querySelectorAll('[data-scall]').forEach(b=>b.onclick=()=>{SCH_UI.all=b.dataset.scall==='1';host.dataset.h='';schFrame(host)})}
+  host.querySelectorAll('[data-scall]').forEach(b=>b.onclick=()=>{SCH_UI.all=b.dataset.scall==='1';SCH_UI.open=null;host.dataset.h='';schFrame(host)});
+  host.querySelectorAll('[data-sco]').forEach(b=>b.onclick=()=>{SCH_UI.open=SCH_UI.open===b.dataset.sco?null:b.dataset.sco;host.dataset.h='';schFrame(host)});
+  host.querySelectorAll('[data-scx]').forEach(b=>b.onclick=()=>{SCH_UI.open=null;host.dataset.h='';schFrame(host)});
+  host.querySelectorAll('[data-scf]').forEach(b=>b.onclick=()=>{ADM.sel=+b.dataset.scf;ADM.tab='roster';renderAdm();window.scrollTo(0,0)})}
 const saveSched=()=>{try{localStorage.setItem('fp.sched.v1',JSON.stringify(SCHED))}catch(e){}};
 const MN=['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
 $('#admTabs').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{ADM.tab=b.dataset.adm;renderAdm()}));
@@ -4505,7 +4538,7 @@ function worldHTML(m){const a=byId.get(cardId)||ATHLETES[0],rt=ratingOf(a.id);
     <div class="wl-ht"><span class="wl-eb">MY PIT WORLD</span><h2>Мировое сообщество бойцов</h2>
       <p>Рейтинг PIT, вызовы на бой, соревнования, кэмпы и тренировки чемпионов — в одной сети. Регистрация бесплатная, в рейтинг идут только данные, подтверждённые клубом.</p>
       <div class="wl-cta"><button type="button" class="wl-b1" data-go="map">Найти клуб на карте</button><button type="button" class="wl-b2" data-go="me">Мои вызовы</button></div>
-      <div class="wl-chips"><span>✓ Verified-рейтинг</span><span>Бои с согласия тренеров</span><span>Трансляции в My PIT</span></div></div>
+      <div class="wl-chips wl-chips1"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8.3-7 10-4-1.7-7-5.5-7-10V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg>Verified-рейтинг</span><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 11V7.5a3.5 3.5 0 0 1 7 0V9h1.5A2.5 2.5 0 0 1 18 11.5V14a6 6 0 0 1-6 6h-1a4 4 0 0 1-4-4z"/><path d="M7 13h6M14 9v3"/></svg>Бои с согласия тренеров</span><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2.5"/><path d="M10.5 10v5l4-2.5z"/><path d="M8 3l4 3 4-3"/></svg>Трансляции в My PIT</span></div></div>
     <img class="wl-fig" src="${WIMG.hero}" alt="">
   </section>
   <section class="wl-me" data-sec="me">
