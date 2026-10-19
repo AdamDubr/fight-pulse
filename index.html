@@ -1444,6 +1444,23 @@ button.sc-c:focus-visible{outline:2px solid var(--sc);outline-offset:2px}
 .wl.light .wl-punch span{color:#8a6a1c}
 .wl-about{font-size:1rem!important}
 .sc-coach{flex-wrap:wrap;border-radius:1rem}.sc-coach button{text-transform:uppercase}
+/* нижнее меню персонала на телефоне */
+.s-nav{display:none}
+@media (max-width:760px){
+ body.m-force-desk:not(.m-tv):not([data-role=fighter]) .s-nav{display:grid;position:fixed;left:0;right:0;bottom:0;z-index:60;grid-template-columns:repeat(7,1fr);border-top:1px solid var(--line);background:#0a0a0a;padding:6px 4px calc(env(safe-area-inset-bottom,0px) + 6px)}
+ body.m-force-desk:not(.m-tv)[data-role=coach] .s-nav{grid-template-columns:repeat(6,1fr)}
+ body[data-role=coach] .s-nav .s-fin{display:none}
+ body.m-force-desk:not(.m-tv):not([data-role=fighter]) .top .tabs{display:none!important}
+ body.m-force-desk:not(.m-tv):not([data-role=fighter]) #app{padding-bottom:calc(64px + env(safe-area-inset-bottom,0px))}
+}
+.s-nav button{position:relative;background:none;border:0;color:#6d6d6d;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:9.6px;overflow:hidden;text-overflow:ellipsis;font-weight:600;padding:4px 0;min-width:0;letter-spacing:-.02em;font-family:inherit;cursor:pointer;white-space:nowrap}
+.s-nav svg{width:24px;height:24px}
+.s-nav button[aria-current="page"]{color:#fff}
+.s-nav .s-fin[aria-current="page"]{color:#f5a524}
+html.light body .s-nav{background:#fff!important;border-color:var(--line)!important}
+html.light .s-nav button{color:#8a8377}
+html.light .s-nav button[aria-current="page"]{color:#15171b}
+html.light .s-nav .s-fin[aria-current="page"]{color:#b4740a}
 /* ===== СВЕТЛАЯ ТЕМА (по умолчанию). 3D-сцены, голограммы, постеры и фото остаются тёмными «экранами». ===== */
 html.light{color-scheme:light;
   --ink:#f4f1e9; --panel:#ffffff; --panel-2:#faf7f0; --line:#ebe5d6; --line-2:#ddd5c3;
@@ -2053,6 +2070,15 @@ html.light .a-stage [style*="color:"],html.light body.m-on .m-holo3d .mh-ov [sty
     <button data-t="world" title="My PIT World — сообщество бойцов"><svg viewBox="0 0 100 124"><path d="M8 44L50 12 92 44V62L50 30 8 62Z"/><path d="M8 74L50 42 92 74V92L50 60 8 92Z" opacity=".65"/><path d="M8 104L50 72 92 104V122L50 90 8 122Z" opacity=".38"/></svg>My PIT</button>
   </nav>
 </div>
+<nav class="s-nav" id="sNav" aria-label="Разделы (персонал)">
+    <button data-sv="arena"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 13h4l2.5-6 4 12 3-9 2 3H22"/></svg>Зал</button>
+    <button data-sv="grid"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Участники</button>
+    <button data-sv="fight"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 11V7.5a3.5 3.5 0 0 1 7 0V9h1.5A2.5 2.5 0 0 1 18 11.5V14a6 6 0 0 1-6 6h-1a4 4 0 0 1-4-4z"/><path d="M7 13h6M14 9v3"/></svg>Бой</button>
+    <button data-sv="card"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2.5"/><circle cx="9" cy="11" r="2.2"/><path d="M6 16c.6-1.6 1.8-2.4 3-2.4s2.4.8 3 2.4M14 10h4M14 13.5h3"/></svg>Кабинет</button>
+    <button data-sv="coach" class="s-co"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4v5c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V7z"/><path d="M9 12l2 2 4-4"/></svg><span class="s-col">Тренер</span></button>
+    <button data-sv="fin" class="s-fin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M15 9.5c-.6-1-1.7-1.5-3-1.5-1.7 0-3 .9-3 2.2 0 2.9 6 1.6 6 4.6 0 1.3-1.3 2.2-3 2.2-1.4 0-2.6-.6-3.1-1.6M12 6.5v11"/></svg>Финансы</button>
+    <button data-sv="world"><svg viewBox="0 0 100 124" fill="currentColor"><path d="M8 44L50 12 92 44V62L50 30 8 62Z"/><path d="M8 74L50 42 92 74V92L50 60 8 92Z" opacity=".65"/><path d="M8 104L50 72 92 104V122L50 90 8 122Z" opacity=".38"/></svg>My PIT</button>
+  </nav>
 <script src="three.min.js"></script>
 <script>/* html2canvas-pro 2.5.0 (встроен для экспорта карточки) *//*!
 * html2canvas-pro 2.5.0 <https://yorickshan.github.io/html2canvas-pro/>
@@ -3202,7 +3228,14 @@ function schFrame(host){if(!host)return;const h=schFrameHTML();if(host.dataset.h
   host.querySelectorAll('[data-scf]').forEach(b=>b.onclick=()=>{ADM.sel=+b.dataset.scf;ADM.tab='roster';renderAdm();window.scrollTo(0,0)})}
 const saveSched=()=>{try{localStorage.setItem('fp.sched.v1',JSON.stringify(SCHED))}catch(e){}};
 const MN=['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
-$('#admTabs').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{ADM.tab=b.dataset.adm;renderAdm()}));
+$('#admTabs').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{ADM.tab=b.dataset.adm;renderAdm();sNavSync()}));
+/* нижнее меню персонала (тренер/админ на телефоне) — как у бойца */
+function sNavSync(){const n=document.getElementById('sNav');if(!n)return;const v=ui.view,k=v==='coach'&&ADM.tab==='fin'&&ROLE.v==='admin'?'fin':v;
+  n.querySelectorAll('[data-sv]').forEach(b=>b.setAttribute('aria-current',b.dataset.sv===k?'page':'false'));
+  const l=n.querySelector('.s-col');if(l)l.textContent=ROLE.v==='admin'?'Клуб':'Тренер'}
+document.getElementById('sNav').addEventListener('click',e=>{const b=e.target.closest('[data-sv]');if(!b)return;const v=b.dataset.sv;
+  if(v==='fin'){ADM.tab='fin';setView('coach');renderAdm()}else{if(v==='coach'&&ADM.tab==='fin')ADM.tab='mon';setView(v);if(v==='coach')renderAdm()}
+  sNavSync();window.scrollTo(0,0);const m=document.querySelector('main');if(m)m.scrollTop=0});
 function renderAdm(){const co=$('.coach'),B=$('#admBody');
   $('#admTabs').querySelectorAll('button').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.adm===ADM.tab)));
   const x=ADM.tab!=='mon';
@@ -4461,7 +4494,7 @@ setInterval(()=>{if(MOB.on&&MOB.tab==='live'&&$('#shareModal').hidden)renderMobi
 mq.matches&&applyMode();
 
 /* ---- shell ---- */
-function setView(v){ui.view=v;effTheme();document.querySelectorAll('.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.view===v));
+function setView(v){ui.view=v;effTheme();try{sNavSync()}catch(e){}document.querySelectorAll('.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.view===v));
   ['arena','grid','fight','league','card','coach','world'].forEach(k=>$('#view-'+k).hidden=k!==v);if(v==='world')renderWorld();if(v==='card')renderCab();if(v==='arena'||v==='fight')Body3D.setView(v);else if(!(v==='coach'&&ADM.tab==='mon'))Body3D.setActive(false);
   ui.cycleStart=performance.now();tickUI();if(v==='coach')renderAlerts()}
 document.querySelectorAll('.tabs button').forEach(b=>b.addEventListener('click',()=>setView(b.dataset.view)));
@@ -4627,7 +4660,7 @@ function applyRole(r){if(r)ROLE.v=r;try{localStorage.setItem('fp.role',ROLE.v)}c
   const v=ROLE.v;document.body.dataset.role=v;
   $('#roleSel').value=v;
   if(!MOB.on)cab.role=v==='fighter'?'athlete':'coach';
-  $('.tabs [data-view=card]').textContent=v==='fighter'?'МОЙ КАБИНЕТ':'КАБИНЕТ';$('.tabs [data-view=coach]').textContent=v==='admin'?'УПРАВЛЕНИЕ':'ТРЕНЕР';
+  $('.tabs [data-view=card]').textContent=v==='fighter'?'МОЙ КАБИНЕТ':'КАБИНЕТ';$('.tabs [data-view=coach]').textContent=v==='admin'?'УПРАВЛЕНИЕ':'ТРЕНЕР';try{sNavSync()}catch(e){}
   if(v==='fighter'){cardId=MOB.me;if(ui.view==='coach')ui.view='card'}
   if(v!=='admin'&&ADM.tab==='fin')ADM.tab='mon';
   if(v==='coach'&&cab.sec==='sub')cab.sec='card';
