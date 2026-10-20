@@ -77,6 +77,7 @@ main{min-height:0;overflow-y:auto;overflow-x:hidden}
 .cab-role{display:none!important}
 body[data-role=fighter] .tabs [data-view=coach]{display:none!important}
 body:not([data-role=admin]) #admTabs [data-adm=fin]{display:none!important}
+body:not([data-role=admin]) #admTabs [data-adm=imp]{display:none!important}
 body[data-role=coach] #cabTabs [data-sec=sub]{display:none!important}
 body[data-role=fighter] #fcList,body[data-role=fighter] #fcSel{display:none!important}
 body[data-role=fighter] .cab{grid-template-columns:minmax(0,1fr)}
@@ -2329,7 +2330,7 @@ html.light .a-stage [style*="color:"],html.light body.m-on .m-holo3d .mh-ov [sty
     </section>
 
     <section class="view" id="view-coach" hidden>
-      <nav class="adm-tabs" id="admTabs" aria-label="Разделы тренера"><button data-adm="mon" style="--c:#ff5a5f" aria-selected="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 13h4l2.5-6 4 12 3-9 2 3H22"/></svg><span>МОНИТОР</span></button><button data-adm="roster" style="--c:#5aa9ff"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.6 2.7-6 6-6s6 2.4 6 6"/><circle cx="17" cy="9" r="2.6"/><path d="M15.5 14.2c3 .2 5.5 2.4 5.5 5.8"/></svg><span>БОЙЦЫ</span></button><button data-adm="groups" style="--c:#b48cff"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="2"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="2"/></svg><span>ГРУППЫ</span></button><button data-adm="wk" style="--c:#4ade80"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13.5" r="7.5"/><path d="M12 9.5v4l2.6 2.2M9.5 2.5h5M12 2.5V6"/></svg><span>РАУНДЫ</span></button><button data-adm="league" style="--c:#e8c35a"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4h10v4a5 5 0 0 1-10 0z"/><path d="M7 6H4v1.5A3.5 3.5 0 0 0 7.5 11M17 6h3v1.5A3.5 3.5 0 0 1 16.5 11M12 13v4M8 21h8l-1-4H9z"/></svg><span>ЛИГА</span></button><button data-adm="sched" style="--c:#2dd4bf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2.5"/><path d="M3 10h18M8 3v4M16 3v4M7.5 14h3M13.5 14h3M7.5 17.5h3"/></svg><span class="al">РАСПИСАНИЕ</span><span class="as">ГРАФИК</span></button><button data-adm="fin" style="--c:#f5a524"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M15 8.6c-.6-.9-1.7-1.4-3-1.4-1.9 0-3.2 1-3.2 2.4 0 3.3 6.6 1.7 6.6 4.9 0 1.4-1.4 2.4-3.4 2.4-1.4 0-2.6-.6-3.2-1.6M12 5v2.2M12 16.9V19"/></svg><span>ФИНАНСЫ</span></button></nav>
+      <nav class="adm-tabs" id="admTabs" aria-label="Разделы тренера"><button data-adm="mon" style="--c:#ff5a5f" aria-selected="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 13h4l2.5-6 4 12 3-9 2 3H22"/></svg><span>МОНИТОР</span></button><button data-adm="roster" style="--c:#5aa9ff"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.6 2.7-6 6-6s6 2.4 6 6"/><circle cx="17" cy="9" r="2.6"/><path d="M15.5 14.2c3 .2 5.5 2.4 5.5 5.8"/></svg><span>БОЙЦЫ</span></button><button data-adm="groups" style="--c:#b48cff"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="2"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="2"/></svg><span>ГРУППЫ</span></button><button data-adm="wk" style="--c:#4ade80"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13.5" r="7.5"/><path d="M12 9.5v4l2.6 2.2M9.5 2.5h5M12 2.5V6"/></svg><span>РАУНДЫ</span></button><button data-adm="league" style="--c:#e8c35a"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4h10v4a5 5 0 0 1-10 0z"/><path d="M7 6H4v1.5A3.5 3.5 0 0 0 7.5 11M17 6h3v1.5A3.5 3.5 0 0 1 16.5 11M12 13v4M8 21h8l-1-4H9z"/></svg><span>ЛИГА</span></button><button data-adm="sched" style="--c:#2dd4bf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2.5"/><path d="M3 10h18M8 3v4M16 3v4M7.5 14h3M13.5 14h3M7.5 17.5h3"/></svg><span class="al">РАСПИСАНИЕ</span><span class="as">ГРАФИК</span></button><button data-adm="fin" style="--c:#f5a524"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M15 8.6c-.6-.9-1.7-1.4-3-1.4-1.9 0-3.2 1-3.2 2.4 0 3.3 6.6 1.7 6.6 4.9 0 1.4-1.4 2.4-3.4 2.4-1.4 0-2.6-.6-3.2-1.6M12 5v2.2M12 16.9V19"/></svg><span>ФИНАНСЫ</span></button><button data-adm="imp" style="--c:#e8c35a"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/><path d="M12 4v11M7.5 10.5 12 15l4.5-4.5"/></svg><span>ИМПОРТ</span></button></nav>
       <div class="coach">
         <div id="admBody" class="panel" hidden></div>
         <div class="c-ctrl">
@@ -3584,7 +3585,7 @@ function renderAdm(){const co=$('.coach'),B=$('#admBody');
   const x=ADM.tab!=='mon';
   if(!x){if(innerWidth<=760){co.classList.add('admx');B.hidden=false;admMonMobile(B)}else{co.classList.remove('admx');B.hidden=true;tickUI()}return}
   co.classList.add('admx');B.hidden=false;Body3D.setActive(false);
-  ({roster:admRoster,groups:admGroups,wk:admWk,league:admLeague,sched:admSched,fin:admFin})[ADM.tab](B)}
+  ({roster:admRoster,groups:admGroups,wk:admWk,league:admLeague,sched:admSched,fin:admFin,imp:B2=>window.admImport(B2)})[ADM.tab](B)}
 // ---- мобильная сводка монитора: только смотреть, без выбора и назначений ----
 // ---- инфографика загрузки: сегодня против прошлых таких же дней недели (DEMO-история) ----
 const ATT={manual:new Set()};const igR=(id,k)=>{const x=Math.sin(id*12.9898+k*78.233)*43758.5453;return x-Math.floor(x)};
@@ -5511,7 +5512,7 @@ function applyRole(r){if(r)ROLE.v=r;try{localStorage.setItem('fp.role',ROLE.v)}c
   if(!MOB.on)cab.role=v==='fighter'?'athlete':'coach';
   $('.tabs [data-view=card]').textContent=v==='fighter'?'МОЙ КАБИНЕТ':'КАБИНЕТ';$('.tabs [data-view=coach]').textContent=v==='admin'?'УПРАВЛЕНИЕ':'ТРЕНЕР';try{sNavSync()}catch(e){}
   if(v==='fighter'){cardId=MOB.me;if(ui.view==='coach')ui.view='card'}
-  if(v!=='admin'&&ADM.tab==='fin')ADM.tab='mon';
+  if(v!=='admin'&&(ADM.tab==='fin'||ADM.tab==='imp'))ADM.tab='mon';
   if(v==='coach'&&cab.sec==='sub')cab.sec='card';
   if(!MOB.on)setView(ui.view);if(ui.view==='coach')renderAdm()}
 $('#roleSel').addEventListener('change',e=>applyRole(e.target.value));
@@ -5666,3 +5667,382 @@ setInterval(()=>{step();tickUI()},1000);setInterval(()=>{if(effTheme()){try{if(M
 addEventListener('resize',()=>tickUI());
 tickUI();
 </script>
+<style>
+/* ===== PIT CRM · импорт из сторонних CRM ===== */
+.imp{--gc:#e8c35a;--gcb:color-mix(in srgb,var(--gc) 14%,transparent);display:flex;flex-direction:column;gap:1rem}
+html.light .imp{--gc:#9a7419}
+.imp-h{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:.6rem}
+.imp-h h2{margin:0;font-family:var(--font-display);font-weight:800;letter-spacing:.04em;font-size:1.35rem}
+.imp-h p{margin:.25rem 0 0;color:var(--muted);font-size:.85rem;max-width:46rem}
+.imp-steps{display:flex;gap:.35rem;overflow-x:auto;scrollbar-width:none;padding-bottom:.1rem}
+.imp-steps::-webkit-scrollbar{display:none}
+.imp-steps span{flex:1 0 auto;display:flex;align-items:center;gap:.4rem;padding:.45rem .7rem;border:1px solid var(--line-2);border-radius:.6rem;font-size:.78rem;font-weight:700;color:var(--dim);white-space:nowrap}
+.imp-steps span i{font-style:normal;display:grid;place-items:center;width:1.35rem;height:1.35rem;border-radius:50%;border:1px solid currentColor;font-size:.7rem}
+.imp-steps span.on{color:var(--fg);border-color:var(--gc);background:var(--gcb)}
+.imp-steps span.ok{color:var(--muted)}.imp-steps span.ok i{background:var(--gc);border-color:var(--gc);color:#111}
+.imp-card{border:1px solid var(--line-2);border-radius:.8rem;padding:1rem;background:var(--panel-2)}
+.imp-card h3{margin:0 0 .6rem;font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.imp-src{display:grid;grid-template-columns:repeat(auto-fill,minmax(11.5rem,1fr));gap:.55rem}
+.imp-src button{position:relative;text-align:left;display:flex;flex-direction:column;gap:.2rem;padding:.75rem .8rem;border:1px solid var(--line-2);border-radius:.7rem;background:var(--panel);color:var(--fg);cursor:pointer;min-height:4.6rem}
+.imp-src button b{font-size:.95rem;padding-right:2.4rem}.imp-src button small{color:var(--muted);font-size:.72rem;line-height:1.3}
+.imp-src button[aria-pressed=true]{border-color:var(--gc);box-shadow:0 0 0 1px var(--gc) inset;background:var(--gcb)}
+.imp-src button em{order:-1;align-self:flex-start;margin-bottom:.15rem;font-style:normal;font-size:.58rem;font-weight:800;letter-spacing:.08em;padding:.12rem .35rem;border-radius:.25rem;background:var(--gc);color:#111}
+.imp-src button em.api{order:0;position:absolute;top:.5rem;right:.5rem;margin:0;background:none;border:1px solid var(--line-2);color:var(--muted)}
+.imp-how{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.imp-how ol{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.35rem;font-size:.88rem}
+.imp-how .note{font-size:.78rem;color:var(--muted);margin-top:.6rem;line-height:1.45}
+.imp-drop{border:2px dashed var(--line-2);border-radius:.8rem;padding:1.6rem 1rem;text-align:center;cursor:pointer;transition:border-color .15s,background .15s}
+.imp-drop.over,.imp-drop:hover{border-color:var(--gc);background:var(--gcb)}
+.imp-drop b{display:block;font-size:1rem;margin-bottom:.3rem}.imp-drop small{color:var(--muted)}
+.imp textarea{width:100%;min-height:7rem;resize:vertical;background:var(--panel);color:var(--fg);border:1px solid var(--line-2);border-radius:.5rem;padding:.6rem;font:inherit;font-size:.8rem;box-sizing:border-box}
+.imp select,.imp input[type=text],.imp input[type=search]{background:var(--panel);color:var(--fg);border:1px solid var(--line-2);border-radius:.45rem;padding:.4rem .5rem;font:inherit;font-size:.82rem;max-width:100%}
+.imp-nav{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:space-between;align-items:center}
+.imp-nav .sp{flex:1}
+.imp .btn.gold{background:var(--gc);border-color:var(--gc);color:#111;font-weight:800}
+.imp .btn[disabled]{opacity:.45;pointer-events:none}
+.imp-grid{display:flex;flex-direction:column;border:1px solid var(--line-2);border-radius:.6rem;overflow:hidden}
+.imp-grid>div{display:grid;gap:.6rem;align-items:center;padding:.5rem .7rem;border-top:1px solid var(--line);font-size:.83rem}
+.imp-grid>div:first-child{border-top:0}
+.imp-grid>.hd{background:var(--panel);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);font-weight:700}
+.imp-grid .ex{color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.imp-cols>div{grid-template-columns:minmax(8rem,1fr) minmax(8rem,1.3fr) minmax(10rem,1fr) 1.6rem}
+.imp-pk>div{grid-template-columns:minmax(9rem,1.2fr) 3.5rem 6rem minmax(12rem,1.5fr)}
+.imp-rw>div{grid-template-columns:2.2rem minmax(9rem,1.4fr) 7.5rem minmax(9rem,1.3fr) 6.5rem 6rem minmax(9rem,1.5fr)}
+.imp-db>div{grid-template-columns:minmax(9rem,1.4fr) 7.5rem minmax(9rem,1.3fr) 6.5rem 6rem 8rem}
+.imp-ok{color:#2fd27a}.imp-warn{color:#f5a524}.imp-err{color:#ff4562}
+.imp-pill{display:inline-flex;align-items:center;gap:.25rem;padding:.12rem .45rem;border-radius:1rem;font-size:.68rem;font-weight:700;border:1px solid currentColor;white-space:nowrap}
+.imp-kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(9rem,1fr));gap:.55rem}
+.imp-kpi button,.imp-kpi div{text-align:left;padding:.7rem .8rem;border:1px solid var(--line-2);border-radius:.7rem;background:var(--panel);color:var(--fg);font:inherit;cursor:pointer}
+.imp-kpi div{cursor:default}
+.imp-kpi b{display:block;font-family:var(--font-display);font-size:1.6rem;line-height:1.1}
+.imp-kpi small{color:var(--muted);font-size:.72rem}
+.imp-kpi [aria-pressed=true]{border-color:var(--gc);background:var(--gcb)}
+.imp-consent{display:flex;gap:.6rem;align-items:flex-start;font-size:.82rem;line-height:1.45;padding:.8rem;border:1px solid var(--line-2);border-radius:.7rem}
+.imp-consent input{margin-top:.2rem;width:1.1rem;height:1.1rem;accent-color:var(--gc);flex:none}
+.imp-sync{display:grid;grid-template-columns:repeat(auto-fit,minmax(14rem,1fr));gap:.6rem}
+.imp-sync label{display:flex;gap:.55rem;align-items:flex-start;padding:.75rem;border:1px solid var(--line-2);border-radius:.7rem;cursor:pointer;font-size:.82rem;line-height:1.4}
+.imp-sync label:has(input:checked){border-color:var(--gc);background:var(--gcb)}
+.imp-sync input{accent-color:var(--gc);margin-top:.2rem}
+.imp-sync b{display:block;font-size:.9rem}
+.imp-tools{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}
+.imp-tools input[type=search]{flex:1;min-width:12rem}
+.imp-log{font-size:.78rem;color:var(--muted);display:flex;flex-direction:column;gap:.25rem}
+.imp-banner{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;justify-content:space-between;margin-top:1rem;padding:.75rem .9rem;border:1px solid var(--line-2);border-radius:.7rem;background:var(--panel-2);font-size:.85rem}
+.imp-banner b{color:var(--gc,#e8c35a)}html.light .imp-banner b{color:#9a7419}
+@media(max-width:760px){
+  .imp-how{grid-template-columns:1fr}
+  .imp-src{grid-template-columns:1fr 1fr}
+  .imp-grid>.hd{display:none}
+  .imp-cols>div,.imp-pk>div{grid-template-columns:1fr 1fr}
+  .imp-cols>div>.ex{grid-column:1/-1;order:3}
+  .imp-cols>div>:last-child{display:none}
+  .imp-pk>div>:nth-child(2),.imp-pk>div>:nth-child(3){font-size:.75rem;color:var(--muted)}
+  .imp-pk>div>:last-child{grid-column:1/-1}
+  .imp-rw>div,.imp-db>div{grid-template-columns:1fr auto;row-gap:.2rem}
+  .imp-rw>div>:nth-child(1){display:none}
+  .imp-rw>div>:nth-child(n+3):not(:last-child),.imp-db>div>:nth-child(n+3){font-size:.74rem;color:var(--muted)}
+  .imp-rw>div>:last-child{grid-column:1/-1}
+}
+</style>
+<script>
+"use strict";
+/* =====================================================================
+   PIT CRM — импорт базы из сторонних CRM (Maksisoft и др.)
+   Всё разбирается в браузере: файл никуда не отправляется.
+   В продукте: тот же мастер на сервере PIT + журнал импорта.
+   ===================================================================== */
+(function(){
+const LS='fp.imp.v1';
+const CRMS=[
+ {k:'maksisoft',n:'Maksisoft',d:'Maksigym · турникет, абонементы',api:false,mowgli:true,
+  how:['Войдите в панель Maksisoft (адрес вида <i>клуб.maksigym.com</i>).','ARAMA / KAYIT EKRANI → <b>AKTİF ABONELİKLER</b> (при необходимости — и PASİF ABONELİKLER).','Выгрузите таблицу в Excel кнопкой экспорта. Если кнопки нет — выделите таблицу, скопируйте (⌘C / Ctrl+C) и вставьте на следующем шаге.','Если не удаётся — запросите у поддержки Maksisoft выгрузку участников в Excel: база принадлежит клубу.'],
+  note:'Открытого API у Maksisoft не найдено — перенос через файл или копирование таблицы. Турникет Maksisoft может продолжать работать: PIT CRM ведёт абонементы и оплаты параллельно.'},
+ {k:'gymdesk',n:'Gymdesk',d:'Members → Export',api:true,how:['Members → список участников.','Export → CSV.','Загрузите файл на следующем шаге.'],note:'Постоянная синхронизация — через Zapier (вебхук «новый участник / оплата»).'},
+ {k:'zen',n:'Zen Planner',d:'Reports → Members',api:true,how:['Reports → отчёт по участникам и абонементам.','Export → Excel / CSV.','Загрузите файл.'],note:'API — через партнёрскую программу Daxko; разовый перенос — файлом.'},
+ {k:'spark',n:'Spark Membership',d:'Contacts → Export',api:true,how:['Contacts / Members → выбрать всех.','Export → CSV.','Загрузите файл.'],note:'Синхронизация — через Zapier.'},
+ {k:'kicksite',n:'Kicksite',d:'Students → Export',api:false,how:['Students → активные студенты.','Export → CSV.','Загрузите файл.'],note:''},
+ {k:'mindbody',n:'Mindbody',d:'Reports → Clients',api:true,how:['Reports → Client / Membership report.','Export → Excel.','Загрузите файл.'],note:''},
+ {k:'yclients',n:'YCLIENTS',d:'Клиенты → Экспорт',api:true,how:['Клиенты → база клиентов.','Экспорт в Excel (абонементы — отдельным отчётом).','Загрузите файл.'],note:'У YCLIENTS есть REST API — возможна постоянная синхронизация.'},
+ {k:'alfa',n:'Альфа CRM',d:'Клиенты → Excel',api:true,how:['Клиенты → фильтр «активные».','Выгрузить в Excel.','Загрузите файл.'],note:'Есть API — возможна постоянная синхронизация.'},
+ {k:'moyklass',n:'МойКласс',d:'Ученики → Экспорт',api:true,how:['Ученики → все активные.','Экспорт в Excel.','Загрузите файл.'],note:'Есть API — возможна постоянная синхронизация.'},
+ {k:'file',n:'Excel / CSV / Google Таблицы',d:'любая другая база',api:false,how:['Одна строка — один участник, в первой строке — заголовки.','Google Таблицы: Файл → Скачать → CSV или XLSX.','Можно просто скопировать диапазон и вставить.'],note:'Подойдёт любая таблица: колонки сопоставим на шаге 3.'}];
+const FIELDS=[['skip','— не импортировать'],['name','Имя и фамилия'],['first','Имя'],['last','Фамилия'],['phone','Телефон'],['email','E-mail'],['dob','Дата рождения'],['sex','Пол'],['pkg','Абонемент / пакет'],['start','Начало абонемента'],['end','Окончание абонемента'],['left','Осталось занятий'],['price','Цена абонемента'],['paid','Оплачено'],['debt','Долг'],['card','Карта / турникет'],['note','Заметка'],['status','Статус']];
+const FN=Object.fromEntries(FIELDS);
+const ALIAS={name:['ad soyad','adı soyadı','adi soyadi','ad-soyad','isim soyisim','isim','üye','uye','müşteri','musteri','name','full name','fullname','member','client','фио','имя фамилия','клиент','ученик','участник'],
+ first:['ad','adı','adi','first name','firstname','имя'],last:['soyad','soyadı','soyadi','last name','lastname','surname','фамилия'],
+ phone:['telefon','tel','gsm','cep','cep telefonu','phone','mobile','phone number','телефон','мобильный'],email:['e-posta','eposta','e-mail','email','mail','почта'],
+ dob:['doğum tarihi','dogum tarihi','doğum','birth','birthday','date of birth','дата рождения','др'],sex:['cinsiyet','gender','sex','пол'],
+ pkg:['paket','paket adı','abonelik','abonelik türü','üyelik','uyelik','üyelik tipi','membership','plan','package','абонемент','тариф','пакет'],
+ start:['başlangıç','baslangic','başlangıç tarihi','start','start date','начало','дата начала'],end:['bitiş','bitis','bitiş tarihi','end','end date','expiry','expires','окончание','дата окончания','действует до'],
+ left:['kalan ders','kalan seans','kalan','remaining','sessions left','осталось','осталось занятий'],price:['ücret','ucret','fiyat','tutar','price','amount','цена','стоимость','сумма'],
+ paid:['ödenen','odenen','paid','оплачено'],debt:['borç','borc','kalan borç','kalan borc','balance','debt','долг'],card:['kart','kart no','kart numarası','card','rfid','карта'],
+ note:['not','açıklama','aciklama','notes','note','комментарий','заметка'],status:['durum','status','статус']};
+const norm=s=>String(s??'').toLocaleLowerCase('tr').replace(/ı/g,'i').replace(/i̇/g,'i').replace(/[._:*#№]/g,' ').replace(/\s+/g,' ').trim();
+const TRL={'а':'a','б':'b','в':'v','г':'g','д':'d','е':'e','ё':'e','ж':'zh','з':'z','и':'i','й':'y','к':'k','л':'l','м':'m','н':'n','о':'o','п':'p','р':'r','с':'s','т':'t','у':'u','ф':'f','х':'h','ц':'ts','ч':'ch','ш':'sh','щ':'sch','ъ':'','ы':'y','ь':'','э':'e','ю':'yu','я':'ya','ş':'s','ç':'c','ğ':'g','ı':'i','ö':'o','ü':'u','â':'a','î':'i','û':'u'};
+const lat=s=>String(s||'').toLocaleLowerCase('tr').split('').map(c=>TRL[c]??c).join('').replace(/kh/g,'h').replace(/iy\b/g,'y').replace(/[^a-z ]/g,'').replace(/\s+/g,' ').trim();
+const digits=s=>String(s||'').replace(/\D/g,'');
+const maskPh=s=>{const d=digits(s).replace(/^0+/,'');return d.length<7?'—':'+'+(d.length>10?d.slice(0,d.length-10):'90')+' '+d.slice(-10,-7)+' ••• •• '+d.slice(-2)};
+const CUR={TRY:'₺',USD:'$',EUR:'€',RUB:'₽',GBP:'£',AED:'AED ',KZT:'₸'};
+const money=(v,c)=>v==null||v===''?'—':(CUR[c]||'')+Math.round(+v).toLocaleString('ru-RU');
+
+/* ---------- состояние ---------- */
+const IMP={step:1,src:'maksisoft',raw:null,map:{},pkg:{},cur:'TRY',consent:false,flt:'all',q:'',dflt:'all',dq:'',sync:'parallel',fix:new Set()};
+let STORE=null;try{STORE=JSON.parse(localStorage.getItem(LS)||'null')}catch(e){}
+const save=()=>{try{STORE?localStorage.setItem(LS,JSON.stringify(STORE)):localStorage.removeItem(LS)}catch(e){}};
+window.IMPDB={get:()=>STORE};
+
+/* ---------- демо-выгрузка Maksisoft (вымышленные люди) ---------- */
+function demoMaksisoft(){
+  const R=(i,k)=>{const x=Math.sin(i*91.7+k*12.3)*43758.5453;return x-Math.floor(x)};
+  const PK=[['MMA 12 DERS',3000,20],['KICK BOKS 12 DERS',2800,6],['MMA 3 aylık',8000,4],['MMA 6 AYLIK',15000,2],['MMA ÇOCUK',2500,8],['BOKS 3 AYLIK',7500,5],['BOKS 6 AYLIK',14000,2],['4 SEANS ÖZEL DERS',6000,4],['KICK BOKS ÖZEL',9000,2],['CAPOEIRA',2000,3]];
+  const FM=['Emre','Burak','Mert','Can','Kerem','Onur','Arda','Yusuf','Efe','Barış','Serkan','Tolga','Oğuz','Deniz','Murat','Kaan','Volkan','Hakan','Cem','Ozan','Alper','Umut','Eren','Batuhan','Selim','Timur','Ruslan','Artem','Nikita','Denis','Maksim','Ilya'],
+        FF=['Elif','Zeynep','Ayşe','Selin','Ece','Merve','Derya','Aylin','Polina','Daria'],
+        LN=['Yıldız','Kaya','Demir','Şahin','Çelik','Aydın','Öztürk','Arslan','Doğan','Kılıç','Aslan','Koç','Kurt','Özkan','Şimşek','Polat','Korkmaz','Erdem','Ivanov','Sokolov','Orlov','Belov','Kuznetsov','Akın','Tekin','Uçar'];
+  const fx=d=>{const t=new Date(TODAY.getTime()+d*DAY);return String(t.getDate()).padStart(2,'0')+'.'+String(t.getMonth()+1).padStart(2,'0')+'.'+t.getFullYear()};
+  const H=['Sıra','Ad Soyad','Telefon','Cinsiyet','Doğum Tarihi','Paket','Başlangıç','Bitiş','Kalan Ders','Ücret','Ödenen','Kalan Borç','Kart No','Durum'];
+  const rows=[];const pk=[];PK.forEach(p=>{for(let j=0;j<p[2];j++)pk.push(p)});
+  const fixed=[['Adam M.','m',33],['Idris Hasanov','m',24],['Rassul Gadzhiev','m',31],['Andrey Smirnov','m',26],['Sergey Petrov','m',30]];
+  for(let i=0;i<56;i++){const p=pk[i],child=/ÇOCUK/.test(p[0]),fem=!child&&R(i,1)<.14;
+    let nm,sx,age;if(i<5&&!child&&!/ÖZEL|CAPOEIRA/.test(p[0])){[nm,sx,age]=fixed[i]}
+    else{nm=(fem?FF[Math.floor(R(i,2)*FF.length)]:FM[Math.floor(R(i,3)*FM.length)])+' '+LN[Math.floor(R(i,4)*LN.length)];sx=fem?'f':'m';age=child?8+Math.floor(R(i,5)*7):17+Math.floor(R(i,6)*22)}
+    const months=(/(\d+)\s*ay/i.exec(p[0])||[])[1]|0,lessons=(/(\d+)\s*(ders|seans)/i.exec(p[0])||[])[1]|0,len=months?months*30:30;
+    const endOff=i===7?3:i===12?-2:i===30?9:Math.floor(R(i,7)*len)-2+(i%11===0?1:4),stOff=endOff-len;
+    const paid=R(i,8)<.82?p[1]:Math.round(p[1]*(.4+R(i,9)*.4)/100)*100;
+    const ph=i===19||i===41?'':'0 5'+(30+Math.floor(R(i,10)*25))+' '+(100+Math.floor(R(i,11)*899))+' '+String(Math.floor(R(i,12)*99)).padStart(2,'0')+' '+String(Math.floor(R(i,13)*99)).padStart(2,'0');
+    const dobY=TODAY.getFullYear()-age;
+    rows.push([String(i+1),nm.toLocaleUpperCase('tr'),ph,sx==='f'?'BAYAN':'BAY',`${String(1+Math.floor(R(i,14)*27)).padStart(2,'0')}.${String(1+Math.floor(R(i,15)*12)).padStart(2,'0')}.${dobY}`,p[0],fx(i===23?stOff+len+5:stOff),fx(endOff),lessons?String(Math.max(0,Math.round(lessons*Math.max(0,endOff)/len))):'',
+      p[1].toLocaleString('tr-TR')+' TL',paid.toLocaleString('tr-TR')+' TL',(p[1]-paid).toLocaleString('tr-TR')+' TL',String(100200+i*37),'AKTİF'])}
+  rows.push(rows[9].slice());rows[56][0]='57'; // повтор строки — как бывает при двух выгрузках
+  return{name:'Maksisoft_aktif_abonelikler_DEMO.xlsx',headers:H,rows,demo:true}}
+
+/* ---------- разбор файлов ---------- */
+function parseDelim(txt){txt=txt.replace(/^﻿/,'');const first=txt.split(/\r?\n/).find(l=>l.trim())||'';
+  const d=['\t',';',','].map(c=>[c,first.split(c).length]).sort((a,b)=>b[1]-a[1])[0][0];
+  const out=[];let row=[],f='',q=false;
+  for(let i=0;i<txt.length;i++){const c=txt[i];
+    if(q){if(c==='"'){if(txt[i+1]==='"'){f+='"';i++}else q=false}else f+=c}
+    else if(c==='"'&&f==='')q=true;else if(c===d){row.push(f);f=''}
+    else if(c==='\n'||c==='\r'){if(c==='\r'&&txt[i+1]==='\n')i++;row.push(f);f='';if(row.some(x=>x.trim()))out.push(row);row=[]}
+    else f+=c}
+  row.push(f);if(row.some(x=>x.trim()))out.push(row);return out.map(r=>r.map(x=>x.trim()))}
+function decodeText(buf){let t=new TextDecoder('utf-8').decode(buf);if(t.includes('�')){try{t=new TextDecoder('windows-1254').decode(buf)}catch(e){}}return t}
+function loadXLSX(){return new Promise((ok,no)=>{if(window.XLSX)return ok(window.XLSX);const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';s.onload=()=>ok(window.XLSX);s.onerror=()=>no(new Error('xlsx'));document.head.appendChild(s)})}
+function toTable(name,arr){arr=arr.filter(r=>r.some(x=>String(x??'').trim()));if(!arr.length)return null;
+  // строка заголовков — первая, где узнаём ≥2 колонки
+  let hi=0;for(let i=0;i<Math.min(arr.length,15);i++){if(arr[i].filter(h=>guess(h)!=='skip').length>=2){hi=i;break}}
+  const headers=arr[hi].map((h,i)=>String(h||'').trim()||('Колонка '+(i+1)));
+  const rows=arr.slice(hi+1).map(r=>headers.map((_,i)=>r[i]==null?'':String(r[i]).trim()));
+  return{name,headers,rows}}
+async function readFile(f){const ext=(f.name.split('.').pop()||'').toLowerCase(),buf=await f.arrayBuffer();
+  if(ext==='xlsx'||ext==='xls'){let X;try{X=await loadXLSX()}catch(e){throw new Error('Для Excel нужен интернет. Без сети сохраните файл как CSV (Файл → Сохранить как → CSV UTF-8) или скопируйте таблицу и вставьте.')}
+    const wb=X.read(buf,{type:'array',cellDates:true});const sh=wb.Sheets[wb.SheetNames[0]];
+    const arr=X.utils.sheet_to_json(sh,{header:1,raw:false,dateNF:'dd.mm.yyyy',defval:''});return toTable(f.name,arr)}
+  if(ext==='html'||ext==='htm'){const doc=new DOMParser().parseFromString(decodeText(buf),'text/html');const t=doc.querySelector('table');if(!t)throw new Error('В файле нет таблицы');
+    return toTable(f.name,[...t.rows].map(r=>[...r.cells].map(c=>c.textContent.trim())))}
+  return toTable(f.name,parseDelim(decodeText(buf)))}
+function guess(h){const n=norm(h);if(!n)return'skip';for(const k in ALIAS)if(ALIAS[k].includes(n))return k;
+  for(const k of ['debt','paid','left','phone','email','dob','start','end','pkg','price','card','sex','status','name'])if(ALIAS[k].some(a=>a.length>3&&n.includes(a)))return k;return'skip'}
+function autoMap(){const m={},used=new Set();IMP.raw.headers.forEach((h,i)=>{let g=guess(h);if(g!=='skip'&&used.has(g))g='skip';if(/^(sıra|sira|no|#|№|id)$/.test(norm(h)))g='skip';m[i]=g;if(g!=='skip')used.add(g)});
+  IMP.map=m;const allTxt=IMP.raw.rows.slice(0,30).flat().join(' ');
+  IMP.cur=/₺|\bTL\b|TRY/.test(allTxt)||IMP.src==='maksisoft'?'TRY':/€|EUR/.test(allTxt)?'EUR':/₽|RUB|руб/.test(allTxt)?'RUB':/\$|USD/.test(allTxt)?'USD':'TRY'}
+
+/* ---------- значения ---------- */
+function pDate(s){s=String(s||'').trim();if(!s)return null;let m;
+  if(m=/^(\d{4})-(\d{1,2})-(\d{1,2})/.exec(s))return`${m[1]}-${m[2].padStart(2,'0')}-${m[3].padStart(2,'0')}`;
+  if(m=/^(\d{1,2})[./-](\d{1,2})[./-](\d{2,4})/.exec(s)){let y=+m[3];if(y<100)y+=y>40?1900:2000;return`${y}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`}
+  if(/^\d{5}$/.test(s)){const d=new Date(Date.UTC(1899,11,30)+(+s)*DAY);return d.toISOString().slice(0,10)}
+  const d=new Date(s);return isNaN(d)?null:isoD(d)}
+function pNum(s){s=String(s??'').replace(/[^\d,.\-]/g,'');if(!s)return null;
+  if(/,\d{1,2}$/.test(s))s=s.replace(/\./g,'').replace(',','.');else s=s.replace(/[.,](?=\d{3}(\D|$))/g,'').replace(',','.');const v=parseFloat(s);return isNaN(v)?null:v}
+const tcase=s=>String(s||'').toLocaleLowerCase('tr').replace(/(^|[\s-])(\S)/g,(a,b,c)=>b+c.toLocaleUpperCase('tr'));
+function pkgInfo(p){const n=norm(p),mo=(/(\d+)\s*(ay|aylık|aylik|мес|month)/.exec(n)||[])[1],ls=(/(\d+)\s*(ders|seans|занят|lesson|class)/.exec(n)||[])[1];
+  const disc=/kick ?boks|kickbox|кикбокс/.test(n)?'Кикбоксинг':/boks|box|бокс/.test(n)?'Бокс':/mma|мма/.test(n)?'MMA':/bjj|jiu|джиу/.test(n)?'BJJ':/muay|тай/.test(n)?'Муай-тай':/capoeira|капоэйр/.test(n)?'Капоэйра':/güreş|gures|борьб|wrestl/.test(n)?'Борьба':/fitness|fonksiyonel|функц/.test(n)?'Функционал':'—';
+  const ind=/özel|ozel|private|personal|индивид|персон/.test(n),kid=/çocuk|cocuk|kids|child|дет/.test(n);
+  return{disc,ind,kid,months:mo?+mo:ls?null:1,lessons:ls?+ls:null}}
+const PIT_PLANS=['Групповые · взрослые · 1 мес','Групповые · дети ММА · 1 мес','Индивидуальные ММА/BJJ · 1 мес','Индивидуальные Бокс/Кикбокс · 1 мес'];
+function suggestPlan(p){const i=pkgInfo(p);
+  if(i.kid&&i.disc==='MMA')return PIT_PLANS[1];
+  if(i.ind&&(i.disc==='MMA'||i.disc==='BJJ'))return PIT_PLANS[2];
+  if(i.ind&&(i.disc==='Бокс'||i.disc==='Кикбоксинг'))return PIT_PLANS[3];
+  if(i.disc==='MMA'&&i.months===1&&!i.lessons)return PIT_PLANS[0];
+  return'new'}
+function newPlanName(p){const i=pkgInfo(p);return (i.disc!=='—'?i.disc+(i.ind?' · индивидуальные':''):i.ind?'Индивидуальные':tcase(p))+(i.kid?' · дети':'')+(i.lessons?` · ${i.lessons} занятий`:i.months?` · ${i.months} мес`:'')}
+
+/* ---------- сборка записей ---------- */
+function records(){const R=IMP.raw,M=IMP.map,col=k=>{const e=Object.entries(M).find(([,v])=>v===k);return e?+e[0]:-1};
+  const ci={};FIELDS.forEach(([k])=>ci[k]=col(k));const g=(r,k)=>ci[k]<0?'':r[ci[k]]||'';
+  const seenPh=new Map(),seenKey=new Map();
+  return R.rows.map((r,ix)=>{let name=g(r,'name')||[g(r,'first'),g(r,'last')].filter(Boolean).join(' ');name=tcase(name.trim());
+    const rec={ix,name,phone:g(r,'phone'),email:g(r,'email'),dob:pDate(g(r,'dob')),sex:/^(bayan|kadın|kadin|k|f|female|ж|жен)/i.test(g(r,'sex'))?'f':g(r,'sex')?'m':'',
+      pkg:g(r,'pkg').trim(),start:pDate(g(r,'start')),end:pDate(g(r,'end')),left:pNum(g(r,'left')),price:pNum(g(r,'price')),paid:pNum(g(r,'paid')),debt:pNum(g(r,'debt')),card:g(r,'card'),note:g(r,'note'),issues:[],level:'ok'};
+    if(rec.debt==null&&rec.price!=null&&rec.paid!=null)rec.debt=Math.max(0,rec.price-rec.paid);
+    const iss=(l,t)=>{rec.issues.push(t);if(l==='err'||rec.level!=='err')rec.level=l==='err'?'err':rec.level==='ok'?l:rec.level};
+    if(!name)iss('err','нет имени');
+    if(rec.start&&rec.end&&rec.end<rec.start)iss('err','окончание раньше начала');
+    if(ci.end>=0&&g(r,'end')&&!rec.end)iss('err','дата окончания не распознана');
+    const ph=digits(rec.phone);if(!ph)iss('warn','нет телефона — приглашение в My PIT не отправить');else if(ph.length<10)iss('warn','короткий номер телефона');
+    if(rec.dob){const age=Math.floor((TODAY-new Date(rec.dob))/(365.25*DAY));rec.age=age;if(age<18)iss('warn','U18 — нужно согласие представителя')}
+    const key=lat(name)+'|'+rec.pkg+'|'+rec.start;
+    if(seenKey.has(key)){rec.dupOf=seenKey.get(key);iss('err','повтор строки '+(seenKey.get(key)+1))}else seenKey.set(key,ix);
+    if(ph&&!rec.dupOf&&seenPh.has(ph)){rec.issues.push('тот же телефон, что в строке '+(seenPh.get(ph)+1)+' — объединим как второй абонемент');rec.sameAs=seenPh.get(ph)}else if(ph)seenPh.set(ph,ix);
+    // совпадение с бойцами, уже заведёнными в PIT
+    const ln=lat(name).split(' ');const hit=ATHLETES.find(a=>{const f=lat(CAB[a.id].person.fio).split(' ');if(f[0]!==ln[0])return false;
+      const s1=f[1]||'',s2=ln[1]||'';return !s1||!s2||s1===s2||(s2.length<=2&&s1.startsWith(s2))});
+    if(hit){rec.match=hit.id}
+    if(IMP.fix.has(ix)&&rec.level==='err'&&!rec.dupOf&&name){rec.level='warn';rec.issues.push('исправлено вручную: дата окончания не переносится')}
+    rec.plan=IMP.pkg[rec.pkg]||'new';return rec})}
+
+/* ---------- отрисовка ---------- */
+const STEPS=['Источник','Файл','Колонки','Абонементы','Проверка','Готово'];
+function stepsHTML(){return`<div class="imp-steps">${STEPS.map((s,i)=>`<span class="${IMP.step===i+1?'on':IMP.step>i+1?'ok':''}"><i>${IMP.step>i+1?'✓':i+1}</i>${s}</span>`).join('')}</div>`}
+function head(){return`<div class="imp-h"><div><h2>Импорт из CRM</h2><p>Перенос участников, абонементов и долгов из прежней системы в PIT CRM. Файл разбирается прямо в браузере и никуда не отправляется.</p></div>
+  ${STORE?`<button class="btn" data-go="base">База после импорта · ${STORE.members.length}</button>`:''}</div>`}
+
+function vSrc(){const c=CRMS.find(x=>x.k===IMP.src);
+  return`<div class="imp-card"><h3>1 · Откуда переносим</h3><div class="imp-src">${CRMS.map(x=>`<button data-src="${x.k}" aria-pressed="${x.k===IMP.src}"><b>${x.n}</b><small>${x.d}</small>${x.mowgli?'<em>СЕЙЧАС В MOWGLI</em>':x.api?'<em class="api">API</em>':''}</button>`).join('')}</div></div>
+  <div class="imp-card imp-how"><div><h3>Как выгрузить из ${c.n}</h3><ol>${c.how.map(h=>`<li>${h}</li>`).join('')}</ol>${c.note?`<div class="note">${c.note}</div>`:''}</div>
+   <div><h3>Что переносится</h3><ol style="list-style:none;padding:0">
+    <li>✓ Участники: имя, телефон, e-mail, дата рождения, пол</li><li>✓ Абонементы: пакет, начало, окончание, остаток занятий</li><li>✓ Цена, оплачено, долг — в валюте файла</li><li>✓ Номер карты турникета</li>
+    <li class="muted">✕ Пароли и платёжные данные — не переносятся</li><li class="muted">✕ В рейтинг PIT и My PIT — только после согласия самого бойца</li></ol></div></div>
+  <div class="imp-nav"><span class="sp"></span><button class="btn gold" data-go="2">ДАЛЕЕ · ЗАГРУЗИТЬ ФАЙЛ</button></div>`}
+
+function vFile(){const c=CRMS.find(x=>x.k===IMP.src);
+  return`<div class="imp-card"><h3>2 · Файл выгрузки из ${c.n}</h3>
+   <label class="imp-drop" id="impDrop"><input type="file" id="impFile" accept=".csv,.txt,.tsv,.xlsx,.xls,.html,.htm" hidden>
+     <b>Перетащите файл сюда или нажмите, чтобы выбрать</b><small>Excel (.xlsx, .xls), CSV, TXT · кодировки UTF-8 и Windows-1254 (турецкая)</small></label>
+   <div style="margin-top:1rem"><h3>…или вставьте таблицу</h3><textarea id="impPaste" placeholder="Выделите таблицу в ${c.n} или Excel вместе с заголовками, скопируйте и вставьте сюда"></textarea>
+   <div class="imp-nav" style="margin-top:.5rem"><button class="btn" id="impPasteGo">РАЗОБРАТЬ ВСТАВКУ</button>${IMP.src==='maksisoft'?`<button class="btn" id="impDemo">ПРИМЕР ВЫГРУЗКИ MAKSISOFT · DEMO</button>`:''}</div></div>
+   ${IMP.raw?`<div class="note muted small" style="margin-top:.8rem">Загружено: <b>${esc(IMP.raw.name)}</b> · ${IMP.raw.rows.length} строк · ${IMP.raw.headers.length} колонок</div>`:''}</div>
+  <div class="imp-nav"><button class="btn" data-go="1">‹ НАЗАД</button><span class="sp"></span><button class="btn gold" data-go="3" ${IMP.raw?'':'disabled'}>ДАЛЕЕ · КОЛОНКИ</button></div>`}
+
+function vCols(){const R=IMP.raw,used=Object.values(IMP.map).filter(v=>v!=='skip'),hasName=used.includes('name')||used.includes('first');
+  const ex=i=>R.rows.slice(0,3).map(r=>r[i]).filter(Boolean).join(' · ');
+  const n=used.length;
+  return`<div class="imp-card"><h3>3 · Сопоставление колонок · распознано ${n} из ${R.headers.length}</h3>
+   <div class="imp-grid imp-cols"><div class="hd"><span>Колонка в файле</span><span>Пример</span><span>Поле PIT CRM</span><span></span></div>
+   ${R.headers.map((h,i)=>{const v=IMP.map[i]||'skip';return`<div><b>${esc(h)}</b><span class="ex">${esc(ex(i))||'—'}</span>
+     <select data-col="${i}">${FIELDS.map(([k,t])=>`<option value="${k}" ${k===v?'selected':''}>${t}</option>`).join('')}</select><span class="${v==='skip'?'muted':'imp-ok'}">${v==='skip'?'–':'✓'}</span></div>`}).join('')}</div>
+   ${hasName?'':'<div class="imp-err small" style="margin-top:.6rem">Укажите колонку с именем — без неё импорт невозможен.</div>'}
+   <div class="note muted small" style="margin-top:.6rem">Сопоставление запоминается для ${esc(CRMS.find(x=>x.k===IMP.src).n)} — при следующей выгрузке колонки встанут сами.</div></div>
+  <div class="imp-nav"><button class="btn" data-go="2">‹ НАЗАД</button><span class="sp"></span><button class="btn gold" data-go="4" ${hasName?'':'disabled'}>ДАЛЕЕ · АБОНЕМЕНТЫ</button></div>`}
+
+function vPkg(){const recs=records(),cnt={},pr={};recs.forEach(r=>{const k=r.pkg||'(без пакета)';cnt[k]=(cnt[k]||0)+1;if(r.price!=null)pr[k]=r.price});
+  const keys=Object.keys(cnt).sort((a,b)=>cnt[b]-cnt[a]);keys.forEach(k=>{if(!(k in IMP.pkg))IMP.pkg[k]=suggestPlan(k)});
+  return`<div class="imp-card"><h3>4 · Абонементы · ${keys.length} видов в файле</h3>
+   <div class="imp-tools" style="margin-bottom:.7rem"><span class="small">Валюта сумм в файле</span><select id="impCur">${Object.keys(CUR).map(c=>`<option ${c===IMP.cur?'selected':''}>${c}</option>`).join('')}</select>
+    <span class="muted small">Суммы переносятся как есть, без пересчёта: цены зала — в валюте клуба.</span></div>
+   <div class="imp-grid imp-pk"><div class="hd"><span>Пакет в ${esc(CRMS.find(x=>x.k===IMP.src).n)}</span><span>Чел.</span><span>Цена</span><span>Абонемент в PIT CRM</span></div>
+   ${keys.map(k=>{const i=pkgInfo(k),v=IMP.pkg[k];return`<div><span><b>${esc(k)}</b><br><small class="muted">${[i.disc,i.kid?'дети':'',i.ind?'индивидуальные':'',i.lessons?i.lessons+' занятий':i.months?i.months+' мес':''].filter(x=>x&&x!=='—').join(' · ')}</small></span>
+     <span class="num">${cnt[k]}</span><span class="num">${money(pr[k],IMP.cur)}</span>
+     <select data-pkg="${esc(k)}"><option value="new" ${v==='new'?'selected':''}>+ Создать «${esc(newPlanName(k))}»</option>${PIT_PLANS.map(p=>`<option ${p===v?'selected':''}>${p}</option>`).join('')}<option value="skip" ${v==='skip'?'selected':''}>— не импортировать</option></select></div>`}).join('')}</div>
+   <div class="note muted small" style="margin-top:.6rem">Новые абонементы появятся в «Абонементы и подписки» с ценой из файла — их можно отредактировать после импорта.</div></div>
+  <div class="imp-nav"><button class="btn" data-go="3">‹ НАЗАД</button><span class="sp"></span><button class="btn gold" data-go="5">ДАЛЕЕ · ПРОВЕРКА</button></div>`}
+
+function vCheck(){const recs=records().filter(r=>r.plan!=='skip'),ok=recs.filter(r=>r.level!=='err'),
+    st={all:recs.length,new:ok.filter(r=>!r.match&&r.sameAs==null).length,match:ok.filter(r=>r.match).length,warn:recs.filter(r=>r.level==='warn').length,err:recs.filter(r=>r.level==='err').length,
+      exp:ok.filter(r=>r.end&&dLeft(r.end)>=0&&dLeft(r.end)<=10).length,debt:ok.filter(r=>r.debt>0).length,
+      debtSum:ok.reduce((s,r)=>s+(r.debt>0?r.debt:0),0)};
+  const F={all:()=>true,new:r=>r.level!=='err'&&!r.match&&r.sameAs==null,match:r=>r.match&&r.level!=='err',warn:r=>r.level==='warn',err:r=>r.level==='err'};
+  const q=IMP.q.toLocaleLowerCase('tr'),L=recs.filter(F[IMP.flt]).filter(r=>!q||r.name.toLocaleLowerCase('tr').includes(q));
+  const k=(f,n,t,cl='')=>`<button data-flt="${f}" aria-pressed="${IMP.flt===f}"><b class="${cl}">${n}</b><small>${t}</small></button>`;
+  const people=new Set(ok.map(r=>r.sameAs??r.ix)).size;
+  return`<div class="imp-card"><h3>5 · Проверка перед импортом</h3>
+   <div class="imp-kpi">${k('all',st.all,'строк в файле')}${k('new',st.new,'новых участников','imp-ok')}${k('match',st.match,'уже есть в PIT — объединим')}${k('warn',st.warn,'с предупреждением','imp-warn')}${k('err',st.err,'ошибки — не перенесём','imp-err')}
+    <div><b>${st.exp}</b><small>абонемент кончается ≤10 дней</small></div><div><b>${money(st.debtSum,IMP.cur)}</b><small>долги · ${st.debt} чел.</small></div></div>
+   <div class="imp-tools" style="margin:.8rem 0 .5rem"><input type="search" id="impQ" placeholder="Поиск по имени" value="${esc(IMP.q)}"><span class="muted small">${L.length} из ${recs.length}</span></div>
+   <div class="imp-grid imp-rw"><div class="hd"><span>#</span><span>Участник</span><span>Телефон</span><span>Абонемент</span><span>До</span><span>Долг</span><span>Статус</span></div>
+   ${L.slice(0,200).map(r=>{const m=r.match?byId.get(r.match):null,left=r.end?dLeft(r.end):null;
+     return`<div><span class="muted num">${r.ix+1}</span><span><b>${esc(r.name)||'—'}</b>${r.age!=null&&r.age<18?' <span class="tag">U18</span>':''}${m?`<br><small class="muted">→ ${esc(CAB[m.id].person.fio)} в PIT</small>`:''}</span>
+      <span class="num">${maskPh(r.phone)}</span><span>${esc(r.pkg)||'—'}${r.left!=null?` <small class="muted">· ост. ${r.left}</small>`:''}</span>
+      <span class="num ${left!=null&&left<0?'imp-err':left!=null&&left<=10?'imp-warn':''}">${r.end?fmtD(r.end):'—'}</span><span class="num ${r.debt>0?'imp-warn':''}">${r.debt>0?money(r.debt,IMP.cur):'—'}</span>
+      <span>${r.level==='err'?`<span class="imp-pill imp-err">✕ ${esc(r.issues[0])}</span>${!r.dupOf&&r.name?` <button class="btn" style="padding:.1rem .4rem;font-size:.68rem" data-fix="${r.ix}">ПЕРЕНЕСТИ БЕЗ ДАТЫ</button>`:''}`
+        :r.match?`<span class="imp-pill" style="color:var(--gc)">⇄ объединим</span>`:r.sameAs!=null?`<span class="imp-pill imp-ok">+ 2-й абонемент</span>`:`<span class="imp-pill imp-ok">+ новый</span>`}
+        ${r.level!=='err'&&r.issues.length?`<br><small class="imp-warn">${r.issues.map(esc).join(' · ')}</small>`:''}</span></div>`}).join('')||'<div class="muted">Нет строк</div>'}</div></div>
+  <label class="imp-consent"><input type="checkbox" id="impCons" ${IMP.consent?'checked':''}><span><b>Клуб — оператор персональных данных (KVKK / GDPR).</b> Подтверждаю, что участники давали клубу согласие на обработку данных. Импортированные участники попадают только в базу клуба (PIT CRM): в рейтинг PIT, My PIT и на экраны зала — лишь после их личного согласия в приглашении. Для U18 — согласие законного представителя.</span></label>
+  <div class="imp-nav"><button class="btn" data-go="4">‹ НАЗАД</button><span class="sp"></span><span class="muted small">Будет создано участников: <b>${people-st.match}</b> · обновлено: <b>${st.match}</b> · абонементов: <b>${ok.length}</b></span><button class="btn gold" id="impRun" ${IMP.consent&&ok.length?'':'disabled'}>ИМПОРТИРОВАТЬ ${ok.length}</button></div>`}
+
+function run(){const recs=records().filter(r=>r.plan!=='skip'&&r.level!=='err'),src=CRMS.find(x=>x.k===IMP.src);
+  const byPerson=new Map();recs.forEach(r=>{const key=r.sameAs??r.ix;if(!byPerson.has(key))byPerson.set(key,{name:r.name,phone:r.phone,email:r.email,dob:r.dob,age:r.age,sex:r.sex,card:r.card,match:r.match||null,subs:[],inv:'none',disc:pkgInfo(r.pkg).disc});
+    byPerson.get(key).subs.push({pkg:r.pkg,plan:r.plan==='new'?newPlanName(r.pkg):r.plan,start:r.start,end:r.end,left:r.left,price:r.price,paid:r.paid,debt:r.debt})});
+  const newPlans=[...new Set(recs.filter(r=>r.plan==='new').map(r=>newPlanName(r.pkg)))];
+  STORE={src:src.n,srcK:src.k,file:IMP.raw.name,demo:!!IMP.raw.demo,at:new Date().toISOString(),cur:IMP.cur,members:[...byPerson.values()],plans:newPlans,
+    stats:{rows:IMP.raw.rows.length,subs:recs.length,skipped:IMP.raw.rows.length-recs.length},sync:IMP.sync,maps:{...(STORE&&STORE.maps||{}),[src.k]:IMP.raw.headers.map((h,i)=>[norm(h),IMP.map[i]])}};
+  save();IMP.step=6;IMP.dflt='all';IMP.dq='';toast(`Импорт завершён: ${STORE.members.length} участников из ${src.n}`)}
+
+function vDone(){if(!STORE)return vSrc();const S=STORE,M=S.members,sub=m=>m.subs.reduce((a,b)=>!a||String(b.end)>String(a.end)?b:a,null);
+  const F={all:()=>true,exp:m=>{const s=sub(m),l=s&&s.end?dLeft(s.end):null;return l!=null&&l<=10},debt:m=>m.subs.some(s=>s.debt>0),nophone:m=>!digits(m.phone),u18:m=>m.age!=null&&m.age<18,inv:m=>m.inv==='none'&&digits(m.phone)&&!m.match};
+  const q=IMP.dq.toLocaleLowerCase('tr'),L=M.filter(F[IMP.dflt]).filter(m=>!q||m.name.toLocaleLowerCase('tr').includes(q));
+  const cnt=f=>M.filter(F[f]).length,debt=M.reduce((s,m)=>s+m.subs.reduce((x,y)=>x+(y.debt>0?y.debt:0),0),0),sent=M.filter(m=>m.inv!=='none').length;
+  const k=(f,n,t,cl='')=>`<button data-dflt="${f}" aria-pressed="${IMP.dflt===f}"><b class="${cl}">${n}</b><small>${t}</small></button>`;
+  return`<div class="imp-card"><h3>6 · Импорт из ${esc(S.src)} завершён${S.demo?' · DEMO':''}</h3>
+   <div class="imp-log"><span>Файл: <b>${esc(S.file)}</b> · ${new Date(S.at).toLocaleString('ru-RU',{dateStyle:'short',timeStyle:'short'})}</span>
+    <span>Строк ${S.stats.rows} → абонементов перенесено ${S.stats.subs}, пропущено ${S.stats.skipped} · участников ${M.length}, из них объединено с бойцами PIT ${M.filter(m=>m.match).length}</span>
+    ${S.plans.length?`<span>Созданы абонементы: ${S.plans.map(esc).join(' · ')}</span>`:''}</div>
+   <div class="imp-kpi" style="margin-top:.8rem">${k('all',M.length,'участников в базе')}${k('exp',cnt('exp'),'истекают ≤10 дней / истекли','imp-warn')}${k('debt',money(debt,S.cur),'долги · '+cnt('debt')+' чел.','imp-warn')}${k('nophone',cnt('nophone'),'без телефона')}${k('u18',cnt('u18'),'U18')}${k('inv',cnt('inv'),'ждут приглашения в My PIT','imp-ok')}</div></div>
+  <div class="imp-card"><h3>Дальше</h3><div class="imp-tools">
+    <button class="btn gold" id="impInvite" ${cnt('inv')?'':'disabled'}>ПРИГЛАСИТЬ В MY PIT · ${cnt('inv')}</button>
+    <button class="btn" id="impCsv">СКАЧАТЬ ОТЧЁТ CSV</button><button class="btn" id="impAgain">НОВЫЙ ИМПОРТ</button><button class="btn warn" id="impUndo">ОТМЕНИТЬ ИМПОРТ</button></div>
+    <div class="note muted small" style="margin-top:.6rem">Приглашение — WhatsApp/SMS со ссылкой: боец сам подтверждает профиль и согласие, тренер принимает его в клуб → он появляется в рейтинге PIT. Отправлено: ${sent}. В демо сообщения не уходят.</div></div>
+  <div class="imp-card"><h3>Синхронизация с ${esc(S.src)}</h3><div class="imp-sync">
+    <label><input type="radio" name="impSync" value="move" ${S.sync==='move'?'checked':''}><span><b>Переехать в PIT CRM</b>Абонементы и оплаты ведутся в PIT. ${esc(S.src)} можно отключить${S.srcK==='maksisoft'?' (турникет — оставить)':''}.</span></label>
+    <label><input type="radio" name="impSync" value="parallel" ${S.sync==='parallel'?'checked':''}><span><b>Параллельно · раз в неделю</b>Загружайте свежую выгрузку — PIT обновит абонементы по телефону и имени, новых добавит, дубли не создаст.</span></label>
+    <label><input type="radio" name="impSync" value="api" ${S.sync==='api'?'checked':''} ${CRMS.find(x=>x.k===S.srcK)?.api?'':'disabled'}><span><b>Автоматически · API</b>${CRMS.find(x=>x.k===S.srcK)?.api?'Постоянная синхронизация через API / Zapier — настраивается при подключении клуба.':'Для '+esc(S.src)+' открытого API нет — доступно только по договору с разработчиком.'}</span></label></div></div>
+  <div class="imp-card"><h3>База клуба после импорта</h3>
+   <div class="imp-tools" style="margin-bottom:.5rem"><input type="search" id="impDQ" placeholder="Поиск по имени" value="${esc(IMP.dq)}"><span class="muted small">${L.length} из ${M.length}</span></div>
+   <div class="imp-grid imp-db"><div class="hd"><span>Участник</span><span>Телефон</span><span>Абонемент</span><span>До</span><span>Долг</span><span>My PIT</span></div>
+   ${L.map(m=>{const s=sub(m),l=s&&s.end?dLeft(s.end):null,d=m.subs.reduce((x,y)=>x+(y.debt>0?y.debt:0),0);
+     return`<div><span><b>${esc(m.name)}</b>${m.age!=null&&m.age<18?' <span class="tag">U18</span>':''}${m.subs.length>1?` <span class="tag">${m.subs.length} абон.</span>`:''}<br><small class="muted">${esc(m.disc)}${m.card?' · карта '+esc(m.card):''}</small></span>
+      <span class="num">${maskPh(m.phone)}</span><span>${esc(s?s.plan:'—')}</span><span class="num ${l!=null&&l<0?'imp-err':l!=null&&l<=10?'imp-warn':''}">${s&&s.end?fmtD(s.end):'—'}</span>
+      <span class="num ${d>0?'imp-warn':''}">${d>0?money(d,S.cur):'—'}</span>
+      <span>${m.match?'<span class="imp-pill imp-ok">✓ уже в PIT</span>':m.inv==='sent'?'<span class="imp-pill" style="color:var(--gc)">приглашён</span>':digits(m.phone)?'<span class="imp-pill muted">не приглашён</span>':'<span class="imp-pill imp-warn">нет телефона</span>'}</span></div>`}).join('')||'<div class="muted">Нет участников</div>'}</div></div>`}
+
+function render(B){B=B||$('#admBody');if(!B)return;const sy=window.scrollY;
+  const v=[null,vSrc,vFile,vCols,vPkg,vCheck,vDone][IMP.step]();
+  B.innerHTML=`<div class="imp">${head()}${stepsHTML()}${v}</div>`;bind(B);window.scrollTo(0,sy)}
+function go(n,B){IMP.step=n;render(B);const t=B.querySelector('.imp-steps');if(t&&t.getBoundingClientRect().top<0)t.scrollIntoView({block:'start',behavior:'smooth'})}
+function setRaw(t,B){if(!t||!t.rows.length){toast('Не удалось найти строки в таблице');return}IMP.raw=t;IMP.pkg={};IMP.fix=new Set();IMP.flt='all';IMP.q='';autoMap();
+  const mem=STORE&&STORE.maps&&STORE.maps[IMP.src];if(mem){const mm=new Map(mem);t.headers.forEach((h,i)=>{const v=mm.get(norm(h));if(v)IMP.map[i]=v})}
+  toast(`${t.rows.length} строк · распознано колонок: ${Object.values(IMP.map).filter(v=>v!=='skip').length}`);go(3,B)}
+function bind(B){
+  B.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{const g=b.dataset.go;if(g==='base'){IMP.step=6;render(B);return}go(+g,B)});
+  B.querySelectorAll('[data-src]').forEach(b=>b.onclick=()=>{IMP.src=b.dataset.src;render(B)});
+  const fi=$('#impFile',B),dr=$('#impDrop',B);
+  if(fi){const take=async f=>{if(!f)return;try{setRaw(await readFile(f),B)}catch(e){toast(e.message||'Не удалось прочитать файл')}};
+    fi.onchange=()=>take(fi.files[0]);
+    ['dragenter','dragover'].forEach(ev=>dr.addEventListener(ev,e=>{e.preventDefault();dr.classList.add('over')}));
+    ['dragleave','drop'].forEach(ev=>dr.addEventListener(ev,e=>{e.preventDefault();dr.classList.remove('over')}));
+    dr.addEventListener('drop',e=>take(e.dataTransfer.files[0]))}
+  const pg=$('#impPasteGo',B);if(pg)pg.onclick=()=>{const t=$('#impPaste',B).value;if(!t.trim()){toast('Вставьте таблицу');return}setRaw(toTable('Вставка из буфера',parseDelim(t)),B)};
+  const dm=$('#impDemo',B);if(dm)dm.onclick=()=>setRaw(demoMaksisoft(),B);
+  B.querySelectorAll('[data-col]').forEach(s=>s.onchange=()=>{const i=+s.dataset.col,v=s.value;if(v!=='skip')Object.keys(IMP.map).forEach(j=>{if(IMP.map[j]===v)IMP.map[j]='skip'});IMP.map[i]=v;IMP.pkg={};render(B)});
+  B.querySelectorAll('[data-pkg]').forEach(s=>s.onchange=()=>{IMP.pkg[s.dataset.pkg]=s.value});
+  const cu=$('#impCur',B);if(cu)cu.onchange=()=>{IMP.cur=cu.value;render(B)};
+  B.querySelectorAll('[data-flt]').forEach(b=>b.onclick=()=>{IMP.flt=b.dataset.flt;render(B)});
+  B.querySelectorAll('[data-dflt]').forEach(b=>b.onclick=()=>{IMP.dflt=b.dataset.dflt;render(B)});
+  B.querySelectorAll('[data-fix]').forEach(b=>b.onclick=()=>{IMP.fix.add(+b.dataset.fix);render(B)});
+  const sq=(id,key)=>{const i=$(id,B);if(i)i.oninput=()=>{IMP[key]=i.value;render(B);const j=$(id,B);j.focus();j.setSelectionRange(j.value.length,j.value.length)}};sq('#impQ','q');sq('#impDQ','dq');
+  const cs=$('#impCons',B);if(cs)cs.onchange=()=>{IMP.consent=cs.checked;render(B)};
+  const rn=$('#impRun',B);if(rn)rn.onclick=()=>{run();render(B);window.scrollTo(0,0)};
+  const iv=$('#impInvite',B);if(iv)iv.onclick=()=>{let n=0;STORE.members.forEach(m=>{if(m.inv==='none'&&digits(m.phone)&&!m.match){m.inv='sent';n++}});save();toast(`DEMO: ${n} приглашений подготовлено (WhatsApp/SMS) — в рабочей версии уйдут бойцам`);render(B)};
+  const ag=$('#impAgain',B);if(ag)ag.onclick=()=>{IMP.raw=null;IMP.consent=false;go(1,B)};
+  const un=$('#impUndo',B);if(un)un.onclick=()=>{if(!confirm('Удалить всех участников и абонементы этого импорта? Бойцы, которые уже были в PIT, не изменятся.'))return;STORE=null;save();IMP.raw=null;IMP.consent=false;IMP.step=1;toast('Импорт отменён — данные удалены');render(B)};
+  B.querySelectorAll('[name=impSync]').forEach(r=>r.onchange=()=>{STORE.sync=r.value;save();toast(r.value==='parallel'?'Напоминание о еженедельной выгрузке — по понедельникам':'Сохранено')});
+  const cv=$('#impCsv',B);if(cv)cv.onclick=()=>{const L=[['Имя','Телефон','E-mail','Дата рождения','Пакет','Абонемент PIT','Начало','Окончание','Осталось','Цена','Оплачено','Долг','Валюта','Карта','My PIT']];
+    STORE.members.forEach(m=>m.subs.forEach(s=>L.push([m.name,m.phone,m.email,m.dob||'',s.pkg,s.plan,s.start||'',s.end||'',s.left??'',s.price??'',s.paid??'',s.debt??'',STORE.cur,m.card,m.match?'уже в PIT':m.inv])));
+    const csv='﻿'+L.map(r=>r.map(x=>{x=String(x??'');return/[;"\n]/.test(x)?'"'+x.replace(/"/g,'""')+'"':x}).join(';')).join('\r\n');
+    const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download='pit-crm-import-'+STORE.srcK+'.csv';document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500)}}
+
+window.admImport=function(B){if(ROLE.v!=='admin'){B.innerHTML='<div class="muted">Импорт базы доступен администратору клуба.</div>';return}
+  if(STORE&&IMP.step===1&&!IMP.raw&&!IMP._seen){IMP.step=6;IMP._seen=true}render(B)};
+
+/* плашка в «Бойцы клуба»: импортированные участники (только админ) */
+const _roster=admRoster;
+admRoster=function(B){_roster(B);if(ADM.sel||ROLE.v!=='admin')return;
+  const n=STORE?STORE.members.filter(m=>!m.match).length:0;
+  const d=document.createElement('div');d.className='imp-banner';
+  d.innerHTML=n?`<span>Из импорта ${esc(STORE.src)}: <b>${n}</b> участников в базе клуба — в рейтинг PIT попадут после приглашения и согласия.</span><button class="btn" data-imp>ОТКРЫТЬ ИМПОРТ</button>`
+    :`<span>Переходите с другой CRM? Перенесите участников, абонементы и долги за пару минут — <b>Maksisoft</b>, Gymdesk, Zen Planner, YCLIENTS, Excel.</span><button class="btn" data-imp>ИМПОРТ ИЗ CRM</button>`;
+  B.appendChild(d);d.querySelector('[data-imp]').onclick=()=>{ADM.tab='imp';renderAdm();sNavSync();window.scrollTo(0,0)}};
+})();
+</script>
+
