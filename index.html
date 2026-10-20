@@ -5825,7 +5825,7 @@ function parseDelim(txt){txt=txt.replace(/^﻿/,'');const first=txt.split(/\r?\n
     else if(c==='\n'||c==='\r'){if(c==='\r'&&txt[i+1]==='\n')i++;row.push(f);f='';if(row.some(x=>x.trim()))out.push(row);row=[]}
     else f+=c}
   row.push(f);if(row.some(x=>x.trim()))out.push(row);return out.map(r=>r.map(x=>x.trim()))}
-function decodeText(buf){let t=new TextDecoder('utf-8').decode(buf);if(t.includes('�')){try{t=new TextDecoder('windows-1254').decode(buf)}catch(e){}}return t}
+function decodeText(buf){let t=new TextDecoder('utf-8').decode(buf);if(t.includes('\uFFFD')){try{t=new TextDecoder('windows-1254').decode(buf)}catch(e){}}return t}
 function loadXLSX(){return new Promise((ok,no)=>{if(window.XLSX)return ok(window.XLSX);const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';s.onload=()=>ok(window.XLSX);s.onerror=()=>no(new Error('xlsx'));document.head.appendChild(s)})}
 function toTable(name,arr){arr=arr.filter(r=>r.some(x=>String(x??'').trim()));if(!arr.length)return null;
   // строка заголовков — первая, где узнаём ≥2 колонки
