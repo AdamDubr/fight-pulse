@@ -900,7 +900,7 @@ table{font-size:.8rem}
  .top .brand{order:0;flex:0 1 auto;min-width:0}
  #roundPill{order:1;margin-left:auto;font-size:.74rem;letter-spacing:.04em;padding:.22rem .55rem;gap:.45rem;white-space:nowrap}
  #roundPill #rpText{display:none} body:not(.m-on){margin:0!important} #app{padding-left:8px!important;padding-right:8px!important} #view-arena #aLeft,#view-arena #aRight,#aStage .st-round,#aStage .st-note{display:none!important} #view-arena .arena{display:flex!important;flex-direction:column;gap:.6rem;height:auto!important} #aStage{order:0;height:470px!important;min-height:470px;flex:none!important;width:100%} #view-arena .a-charts,#view-arena .a-strip{order:1}
- #aStage .mh-ov{display:block!important}#aStage .mh-ov .c small{font-size:11.5px;letter-spacing:.1em}#aStage .mh-ov .c b{font-size:19px}#aStage .mh-ov .c b.xl{font-size:36px}#aStage .mh-ov .c em{font-size:12px}#aStage .mh-ov .mz{font-size:11.5px;padding:2px 5px}#aStage .mh-ov .c{max-width:36%}#aStage .mh-ov .tl,#aStage .mh-ov .bl{left:8px}#aStage .mh-ov .tr,#aStage .mh-ov .br{right:8px}#aStage .mh-ov .bl,#aStage .mh-ov .br{bottom:44px}#aStage .mh-ov .sens{font-size:14px}#aStage .mh-ov .sens .u18{font-size:10px} body:not(.m-on) *{scrollbar-width:none} body:not(.m-on) *::-webkit-scrollbar{display:none;width:0;height:0} .adm-tabs{position:sticky;top:0;z-index:30;background:var(--bg,#0a0a0a);padding:.6rem 0 .5rem;margin-top:.2rem;box-shadow:0 8px 14px -10px #000} .top .tabs{order:3;flex:1 1 100%;width:100%;flex-wrap:nowrap;justify-content:space-between} .top .tabs button{flex:1 1 auto;padding:.38rem .2rem;font-size:.66rem;letter-spacing:.04em;white-space:nowrap;text-align:center} #demoBadge,#clock,#fsBtn{display:none!important} #mobBtn{order:1;font-size:0;padding:.28rem .5rem;margin-left:.3rem}#mobBtn::before{content:'‹ НАЗАД';font-size:.68rem;font-weight:700;letter-spacing:.06em} .top .brand .by{display:none!important} .top .brand::after{content:'DEMO';margin-left:.45rem;font-size:.62rem;font-weight:700;letter-spacing:.08em;color:#e8c35a;border:1px dashed #e8c35a99;border-radius:.3rem;padding:.12rem .35rem;align-self:center} .top .brand{display:flex;align-items:center}
+ #aStage .mh-ov{display:block!important}#aStage .mh-ov .c small{font-size:11.5px;letter-spacing:.1em}#aStage .mh-ov .c b{font-size:19px}#aStage .mh-ov .c b.xl{font-size:36px}#aStage .mh-ov .c em{font-size:12px}#aStage .mh-ov .mz{font-size:11.5px;padding:2px 5px}#aStage .mh-ov .c{max-width:36%}#aStage .mh-ov .tl,#aStage .mh-ov .bl{left:8px}#aStage .mh-ov .tr,#aStage .mh-ov .br{right:8px}#aStage .mh-ov .bl,#aStage .mh-ov .br{bottom:44px}#aStage .mh-ov .sens{font-size:14px}#aStage .mh-ov .sens .u18{font-size:10px} body:not(.m-on) *{scrollbar-width:none} body:not(.m-on) *::-webkit-scrollbar{display:none;width:0;height:0} .adm-tabs{position:sticky;top:0;z-index:30;background:var(--bg,#0a0a0a);padding:.6rem 0 .5rem;margin-top:.2rem;box-shadow:0 8px 14px -10px #000} .top .tabs{order:3;flex:1 1 100%;width:100%;flex-wrap:nowrap;justify-content:space-between} .top .tabs button{flex:1 1 auto;padding:.38rem .2rem;font-size:.66rem;letter-spacing:.04em;white-space:nowrap;text-align:center} #demoBadge,#clock,#fsBtn{display:none!important} #mobBtn{order:1;font-size:0;padding:.28rem .5rem;margin-left:.3rem}#mobBtn::before{content:'‹ НАЗАД';font-size:.68rem;font-weight:700;letter-spacing:.06em} .top .brand .by{display:none!important} .top .brand::after{content:none;display:none;margin-left:.45rem;font-size:.62rem;font-weight:700;letter-spacing:.08em;color:#e8c35a;border:1px dashed #e8c35a99;border-radius:.3rem;padding:.12rem .35rem;align-self:center} .top .brand{display:flex;align-items:center}
  #roundPill .ph{font-size:.6rem;padding:.1rem .4rem}
  #roundPill .num{font-size:.85rem}
  .top .brand .club-logo{height:2rem}
@@ -2085,6 +2085,7 @@ html.light .fc-belt i{box-shadow:inset 0 0 0 1px rgba(0,0,0,.15)}
 html.light .a-stage{--fg:#ffffff;--muted:#a6a6a6;--dim:#8a8a8a;--line:#202020;--line-2:#363636;color:#fff;background:radial-gradient(75% 80% at 50% 50%,#1e1e1e,#080808 78%);box-shadow:0 20px 50px -30px #0008}
 html.light .a-stage .st-word{filter:blur(3px)!important}
 html.light .a-stage [style*="color:"],html.light body.m-on .m-holo3d .mh-ov [style*="color:"]{filter:brightness(1.6) saturate(1.2)}
+.demo,.top #demoBadge{display:none!important}
 </style>
 
 <div id="roleGate" hidden></div>
@@ -2136,8 +2137,8 @@ html.light .a-stage [style*="color:"],html.light body.m-on .m-holo3d .mh-ov [sty
     <label class="role-sw" id="roleSw"><span>ВХОД</span><select id="roleSel" aria-label="Вход как (демо)"><option value="admin">АДМИН</option><option value="coach">ТРЕНЕР</option><option value="fighter">БОЕЦ</option></select></label>
     <span class="clock num" id="clock">00:00</span>
     <a class="iconbtn" id="toHome" href="/" hidden title="Главное меню PIT" aria-label="Главное меню PIT" style="text-decoration:none">⌂</a><a class="iconbtn" id="toCrm" href="/crm/" hidden title="PIT CRM" aria-label="Перейти в PIT CRM" style="text-decoration:none;font-weight:800;letter-spacing:.06em">CRM</a>
-    <button class="iconbtn" id="mobBtn" title="Мобильная версия спортсмена" aria-label="Мобильная версия спортсмена">▯</button>
-    <button class="iconbtn" id="fsBtn" title="Полноэкранный режим" aria-label="Полноэкранный режим">⛶</button>
+    <button class="iconbtn" id="mobBtn" title="Мобильная версия спортсмена" aria-label="Мобильная версия спортсмена"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" style="display:block"><rect x="7" y="2.5" width="10" height="19" rx="2"/><path d="M11 18.5h2"/></svg></button>
+    <button class="iconbtn" id="fsBtn" title="Полноэкранный режим" aria-label="Полноэкранный режим"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" style="display:block"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
   </header>
 
   <main>
@@ -3600,7 +3601,7 @@ function monIG(host){if(!host)return;if(typeof groupsInit==='function')groupsIni
   const n=rows.length,here=rows.filter(r=>r.here).length,pct=Math.round(here/n*100),
     past=[4,3,2,1].map(k=>rows.filter(r=>r.hist[7-k]).length),avgP=past.reduce((q,v)=>q+v,0)/4,d=avgP?Math.round((here/avgP-1)*100):0,
     G=(typeof GROUPS!=='undefined'&&GROUPS?GROUPS:[]).map(g=>({n:g.name,t:g.ids.length,h:g.ids.filter(id=>rows.find(r=>r.a.id===id)?.here).length})).filter(g=>g.t);
-  if(!host.querySelector('.ig')){host.innerHTML=`<div class="ig"><div class="ig-h"><span class="label">Посещаемость · сегодня, ${wd}</span><span class="tag">датчик на связи = пришёл · DEMO-история</span></div>
+  if(!host.querySelector('.ig')){host.innerHTML=`<div class="ig"><div class="ig-h"><span class="label">Посещаемость · сегодня, ${wd}</span><span class="tag">датчик на связи = пришёл</span></div>
      <div class="ig-top"><div class="ig-ring"><svg viewBox="0 0 120 120"><circle class="bg" cx="60" cy="60" r="50"/><circle class="ig-arc" cx="60" cy="60" r="50" stroke-dasharray="314.16" stroke-dashoffset="314.16"/></svg>
        <div class="ig-rv"><b class="num" data-k="here">0</b><small>из ${n} бойцов<br>пришли</small></div></div>
       <div class="ig-cmp"><div class="ig-kv"><div><small>НЕ ПРИШЛИ</small><b class="num" data-k="abs" style="color:#ff4562">0</b><em>из записанных</em></div><div><small>К ПРОШЛЫМ</small><b class="num" data-k="d">0%</b><em>${wdP} · в среднем <span data-k="avg">0</span></em></div></div>
@@ -4137,7 +4138,7 @@ function pitSplitHTML(id){const P=pitParts(id),w=Math.round(P.train/(PIT_TR+PIT_
   return`<div class="pit-split"><div class="pit-bar"><i style="width:${w}%"></i><b style="width:${w2}%"></b></div>
    <div class="pit-leg"><span><i></i>Тренировки <b class="num">${P.train}</b><small>из ${PIT_TR}</small></span><span><i class="t"></i>Турниры <b class="num">${P.tour}</b><small>из ${PIT_TU}</small></span><span class="pit-tot">PIT <b class="num">${P.total}</b></span></div></div>`}
 function tourPanelHTML(a){const P=pitParts(a.id),T=P.T,ad=!U18(a);
-  return`<div class="panel tour-p"><div class="ph-title"><span class="label">Турнирный сезон ${SEASON.name}</span>${catTag(!ad)}<span class="tag">${a.ajp?'AJP · протоколы подтверждены тренером':'DEMO-история'}</span></div>
+  return`<div class="panel tour-p"><div class="ph-title"><span class="label">Турнирный сезон ${SEASON.name}</span>${catTag(!ad)}<span class="tag">${a.ajp?'AJP · протоколы подтверждены тренером':'история'}</span></div>
    ${pitSplitHTML(a.id)}
    <div class="tour-sum"><div><small>ТУРНИРОВ</small><b class="num">${T.n}</b></div><div><small>В ЗАЧЁТ (7 ЛУЧШИХ)</small><b class="num">${T.sum}</b><span>очков</span></div><div><small>ТУРНИРНЫЙ PIT</small><b class="num">${P.tour}</b><span>из ${PIT_TU}</span></div>${T.u18sum?`<div><small>U18-ОЧКИ (ИСТОРИЯ)</small><b class="num">${T.u18sum}</b><span>не в зачёт ADULT</span></div>`:''}</div>
    ${T.list.length?`<div class="tour-l">${T.list.map(r=>`<div class="tr ${r.cnt?'in':''} ${r.u18&&ad?'u':''}"><span class="td num">${fmtD(r.d).slice(0,5)}</span><span class="tn"><b>${esc(r.n)}</b>${stars(r.s)}</span>
@@ -4186,7 +4187,7 @@ function renderCardStats(){const el=$('#fcStats');if(!el)return;const S=cardStat
    <div class="today"><span class="tag calc">РАСЧЁТ</span> Сегодня: <b class="num">${Math.round(S.today)}</b> ккал</div>`}
 function renderEdit(){const a=byId.get(cardId),P=PROF[cardId],pro=P.pro,dis=pro?'':'disabled';
   const f=(lbl,html,isPro)=>`<label class="fe ${isPro&&!pro?'locked':''}"><span>${lbl}${isPro?' <i class="pro">PRO</i>':''}</span>${html}</label>`;
-  $('#fcEdit').innerHTML=`<div class="ph-title"><span class="label">Личный кабинет · ${esc(a.name)}</span><span class="tag">DEMO</span></div>
+  $('#fcEdit').innerHTML=`<div class="ph-title"><span class="label">Личный кабинет · ${esc(a.name)}</span></div>
    <label class="protgl"><input type="checkbox" id="feP" ${pro?'checked':''}> <span>Подписка <b>Pro</b> (демо-переключатель)</span></label>
    <div class="fe-grid">
     ${f('Псевдоним',`<input id="feNick" value="${esc(a.nick)}">`)}
@@ -4639,7 +4640,7 @@ function photoEditor(im,C){$('#pEditor').hidden=false;const cv=$('#pCv'),x=cv.ge
 function secSub(a,C){const s=C.sub,left=dLeft(s.end),tot=Math.max(1,Math.round((new Date(s.end)-new Date(s.start))/DAY)),pct=clamp(1-left/tot,0,1);
   const st=s.frozen?['ЗАМОРОЖЕН','#8fb4ff']:left<0?['ИСТЁК','#ff3d52']:left<=7?['ЗАКАНЧИВАЕТСЯ','#ffc93c']:['АКТИВЕН','#2fd27a'];
   CB().innerHTML=`<div class="cgrid2">
-   <div class="panel subcard" style="--sc:${st[1]}"><div class="ph-title"><span class="label">Абонемент</span><span class="tag">DEMO</span></div>
+   <div class="panel subcard" style="--sc:${st[1]}"><div class="ph-title"><span class="label">Абонемент</span></div>
     <div class="sub-plan">${esc(s.plan)}</div><div class="sub-st">${st[0]}</div>
     <div class="sub-big"><b class="num">${left<0?0:left}</b><span>${left<0?`истёк ${dd(-left)} назад`:plural(left,'день остался','дня осталось','дней осталось')}</span></div>
     <div class="bar2"><i style="width:${Math.round(pct*100)}%;background:var(--sc)"></i></div>
