@@ -212,6 +212,22 @@ const NO_ACCESS = (email) => new Response(`<!doctype html><meta charset=utf-8><m
 <p>${email ? `Адрес <b>${email.replace(/[<>&"]/g, '')}</b> пока не добавлен в клуб.` : 'Не удалось подтвердить вход.'} Попросите администратора клуба добавить вас в разделе «Доступ».</p>
 <p><a href="/auth/logout">Выйти и войти с другим e-mail</a></p></div></body>`, { status: 403, headers: { 'content-type': 'text/html; charset=utf-8' } });
 
+/* Arena в реальном режиме: бойцы из PIT CRM вместо демо-списка. Отдаём минимум полей. */
+async function arenaReal(req, env) {
+  const res = await env.ASSETS.fetch(req);
+  if (!res.ok || !(res.headers.get('content-type') || '').includes('text/html')) return res;
+  const r = await env.DB.prepare("SELECT id,data FROM docs WHERE col='members' AND deleted=0").all();
+  const today = new Date().toISOString().slice(0, 10);
+  const age = d => { if (!/^\d{4}-\d{2}-\d{2}$/.test(d || '')) return null; const b = new Date(d), n = new Date(); let a = n.getFullYear() - b.getFullYear(); if (n < new Date(n.getFullYear(), b.getMonth(), b.getDate())) a--; return a > 3 && a < 90 ? a : null };
+  const members = (r.results || []).map(x => { let m = {}; try { m = JSON.parse(x.data) } catch (e) { } return { id: x.id, m } })
+    .filter(({ m }) => m && m.name && !m.frozen && (m.kind === 'staff' || !m.end || m.end >= today))
+    .map(({ id, m }) => ({ id, name: m.name, first: m.first || String(m.name).split(/\s+/).slice(-1)[0], disc: m.disc || 'MMA', kind: m.kind || 'group', age: age(m.dob), consentPublic: m.consentPublic || null, end: m.end || '', start: m.start || '', plan: m.plan || '', left: m.left ?? null }))
+    .sort((a, b) => a.name.localeCompare(b.name, 'ru'));
+  const inj = '<script>window.PIT_REAL=' + JSON.stringify({ club: env.CLUB || 'mowgli', members }).replace(/</g, '\\u003c') + '</script>';
+  const html = (await res.text()).replace('<meta charset="utf-8">', '<meta charset="utf-8">' + inj);
+  return new Response(html, { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' } });
+}
+
 export default {
   async fetch(req, env) {
     const url = new URL(req.url), path = url.pathname;
@@ -242,6 +258,7 @@ export default {
       if (!o) return new Response('Not found', { status: 404 });
       return new Response(o.body, { headers: { 'content-type': o.httpMetadata?.contentType || 'application/octet-stream', 'cache-control': 'private, max-age=3600' } });
     }
+    if (path === '/arena/' || path === '/arena/index.html') return arenaReal(req, env);
     // Тренеру касса и отчёты недоступны на уровне данных (FIN_COLS), интерфейс прячет их сам
     return env.ASSETS.fetch(req);
   }

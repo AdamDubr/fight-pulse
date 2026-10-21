@@ -28,7 +28,7 @@ body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:1rem
 :root{padding-top:0!important}
 button,input,select{font:inherit;color:inherit}
 .num{font-family:var(--mono);font-variant-numeric:tabular-nums}
-.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:none;width:100%;margin:0 auto;padding-left:max(clamp(16px,2.2vw,40px),env(safe-area-inset-left,0px));padding-right:max(clamp(16px,2.2vw,40px),env(safe-area-inset-right,0px))}
 
 /* top bar */
 .top{position:sticky;top:0;padding-top:env(safe-area-inset-top,0px);z-index:10;background:var(--panel);border-bottom:1px solid var(--line)}
