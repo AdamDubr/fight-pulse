@@ -1,24 +1,15 @@
 /* PIT · глобус клубов для My PIT.
-   Canvas + d3-geo (orthographic), суша точечной сеткой, анимированный перелёт к клубу, перетаскивание пальцем/мышью.
+   Canvas + d3-geo (orthographic), суша точечной сеткой (заранее рассчитана из Natural Earth 110m), анимированный перелёт к клубу, перетаскивание пальцем/мышью.
    PITGlobe.mount(el, {clubs:[{id,name,city,lat,lon}], focus:id, onPick(club)}) → {destroy, focus(id)} */
 (function () {
   'use strict';
   const GOLD = '#e8c35a';
-  let LAND = null, DOTS = null;
+  let DOTS = null;
 
-  async function loadLand() {
-    if (LAND) return LAND;
-    const topo = await fetch('/vendor/land-110m.json').then(r => r.json());
-    LAND = topojson.feature(topo, topo.objects.land);
-    return LAND;
-  }
-  function buildDots(land) {
+  async function loadDots() {
     if (DOTS) return DOTS;
-    const out = [], step = 1.6;
-    for (let lat = -58; lat <= 78; lat += step) {
-      const k = Math.max(1, Math.round(1 / Math.cos(lat * Math.PI / 180)));
-      for (let lon = -180; lon < 180; lon += step * k) if (d3.geoContains(land, [lon, lat])) out.push([lon, lat]);
-    }
+    const a = await fetch('/vendor/land-dots.json').then(r => r.json()), out = [];
+    for (let i = 0; i < a.length; i += 2) out.push([a[i] / 10, a[i + 1] / 10]);
     DOTS = out; return out;
   }
   const ease = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
@@ -35,7 +26,7 @@
     const path = d3.geoPath(proj, ctx);
     const grat = d3.geoGraticule10();
     let W = 0, H = 0, R = 0, dpr = 1, rot = [100, -20, 0], zoom = .92, raf = 0, alive = true, t0 = performance.now(), anim = null, drag = null, idle = 0;
-    let land = null, dots = null;
+    let dots = null;
 
     function size() {
       const r = el.getBoundingClientRect(); dpr = Math.min(2, devicePixelRatio || 1);
@@ -89,7 +80,7 @@
           ctx.fillStyle = `rgba(232,195,90,${(.18 + .55 * cosc).toFixed(3)})`;
           ctx.fillRect(xy[0] - ds / 2, xy[1] - ds / 2, ds, ds);
         }
-      } else if (land) { ctx.beginPath(); path(land); ctx.fillStyle = 'rgba(232,195,90,.25)'; ctx.fill() }
+      }
       // блик
       const h = ctx.createRadialGradient(cx - r * .45, cy - r * .5, 0, cx - r * .45, cy - r * .5, r * .9);
       h.addColorStop(0, 'rgba(255,255,255,.07)'); h.addColorStop(1, 'rgba(255,255,255,0)');
@@ -133,7 +124,7 @@
     cv.addEventListener('pointerup', e => { const d = drag; drag = null; idle = performance.now(); cv.style.cursor = 'grab'; if (d && d.moved < 6) { const c = hit(e); if (c && opt.onPick) opt.onPick(c) } });
     const ro = new ResizeObserver(size); ro.observe(el); size();
     raf = requestAnimationFrame(frame);
-    loadLand().then(l => { land = l; setTimeout(() => { dots = buildDots(l) }, 30); fly(opt.focus || (clubs[0] && clubs[0].id), 2800) }).catch(() => fly(opt.focus || (clubs[0] && clubs[0].id), 1200));
+    loadDots().then(d => { dots = d; fly(opt.focus || (clubs[0] && clubs[0].id), 2800) }).catch(() => fly(opt.focus || (clubs[0] && clubs[0].id), 1200));
     return { focus: id => fly(id, 1600), destroy() { alive = false; cancelAnimationFrame(raf); ro.disconnect(); cv.remove() } };
   }
   window.PITGlobe = { mount };
