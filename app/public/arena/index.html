@@ -3546,7 +3546,7 @@ const AVA={};function avatar(id){if(AVA[id])return AVA[id];const c=document.crea
   return AVA[id]=c.toDataURL()}
 let SCHED=null;
 function schedInit(){if(SCHED)return;try{SCHED=JSON.parse(localStorage.getItem((REAL?'fp.sched.v1.real':'fp.sched.v1')))}catch(e){}
-  if(!SCHED&&REAL)SCHED={classes:[],events:[]};
+  if(REAL)SCHED=pitSched();
   if(!SCHED)SCHED={classes:[{dow:[1,3,5],time:'19:00',disc:'BJJ'},{dow:[2,4],time:'20:00',disc:'MMA'},{dow:[1,3,5],time:'20:30',disc:'Бокс'},{dow:[2,4],time:'18:30',disc:'Муай-тай'},{dow:[6],time:'10:00',disc:'Функционал'},{dow:[6],time:'11:30',disc:'Борьба'}],
     events:[{d:dAdd(9),name:'Открытый турнир Анталии · MMA'},{d:dAdd(23),name:'Клубные спарринги'},{d:dAdd(44),name:'Чемпионат региона · BJJ'}]}
   SCHED.classes.forEach(c=>{if(!c.coach)c.coach=SCH_DEFC[c.disc]||'mowgli'})}
@@ -3589,7 +3589,37 @@ function schFrame(host){if(!host)return;const h=schFrameHTML();if(host.dataset.h
   host.querySelectorAll('[data-sco]').forEach(b=>b.onclick=()=>{SCH_UI.open=SCH_UI.open===b.dataset.sco?null:b.dataset.sco;host.dataset.h='';schFrame(host)});
   host.querySelectorAll('[data-scx]').forEach(b=>b.onclick=()=>{SCH_UI.open=null;host.dataset.h='';schFrame(host)});
   host.querySelectorAll('[data-scf]').forEach(b=>b.onclick=()=>{ADM.sel=+b.dataset.scf;ADM.tab='roster';renderAdm();window.scrollTo(0,0)})}
-const saveSched=()=>{try{localStorage.setItem((REAL?'fp.sched.v1.real':'fp.sched.v1'),JSON.stringify(SCHED))}catch(e){}};
+const saveSched=()=>{if(REAL){pitSaveSched();return}try{localStorage.setItem('fp.sched.v1',JSON.stringify(SCHED))}catch(e){}};
+/* ===== Связь с PIT CRM: расписание, события, бойцы — сразу после изменений в CRM ===== */
+function pitSched(){const R=window.PIT_REAL||{},sc=R.schedule||{};
+  if(Array.isArray(sc.coaches)&&sc.coaches.length)SCH_CO.splice(0,SCH_CO.length,...sc.coaches.map(c=>({k:c.k,n:c.n})));
+  return{classes:(sc.classes||[]).map(c=>({id:c.id,dow:c.dow||[],time:c.time,disc:c.disc,coach:c.coach||(SCH_CO[0]&&SCH_CO[0].k),dur:c.dur||null,cap:c.cap||null})),
+    events:Object.values(R.events||{}).filter(e=>e&&e.date).map(e=>({d:e.date,name:e.title||e.name||'Событие'})).sort((a,b)=>a.d.localeCompare(b.d))}}
+async function pitSaveSched(){const R=window.PIT_REAL||(window.PIT_REAL={});
+  const data={...(R.schedule||{}),classes:SCHED.classes.map(c=>({id:c.id||('c'+Date.now().toString(36)+Math.random().toString(36).slice(2,5)),dow:c.dow,time:c.time,disc:c.disc,coach:c.coach,dur:c.dur||60,cap:c.cap||null})),coaches:SCH_CO.map(c=>({k:c.k,n:c.n})),updatedAt:new Date().toISOString()};
+  R.schedule=data;
+  try{const r=await fetch('/api/write',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({op:'set',col:'club',id:'schedule',data})});if(!r.ok)throw 0}catch(e){try{toast('Расписание не сохранилось в CRM — нет связи')}catch(_){}}}
+function pitSig(list){return list.map(m=>[m.id,m.name,m.disc,m.kind,m.end,m.frozen?1:0,m.consentPublic].join('|')).sort().join('\n')}
+function pitLive(){if(!REAL)return;const R=window.PIT_REAL;let since=R.since||0,busy=false,pend=false;
+  const mem=new Map((R.membersAll||[]).map(m=>[m.id,m]));const sig0=pitSig(R.members||[]);
+  const today=()=>new Date().toISOString().slice(0,10);
+  const active=()=>[...mem.values()].filter(m=>m&&m.name&&!m.frozen&&(m.kind==='staff'||!m.end||m.end>=today()));
+  const banner=t=>{let b=document.getElementById('pitSyncB');if(!t){if(b)b.remove();return}if(!b){b=document.createElement('div');b.id='pitSyncB';b.style.cssText='position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:9999;background:#111;color:#f3dc95;border:1px solid #e8c35a;border-radius:10px;padding:10px 14px;font:600 13px/1.3 Montserrat,system-ui,sans-serif;max-width:calc(100% - 32px);box-shadow:0 10px 30px rgba(0,0,0,.35)';document.body.appendChild(b)}b.textContent=t};
+  const tryReload=()=>{if(train.state==='running'||fight.state!=='idle'){pend=true;banner('В CRM изменился состав бойцов — обновлю экран после тренировки');return}location.reload()};
+  train.on&&train.on('state',()=>{if(pend&&train.state!=='running'&&fight.state==='idle')location.reload()});
+  async function poll(){if(busy||document.hidden)return;busy=true;
+    try{const r=await fetch('/api/sync?since='+since,{cache:'no-store'});if(r.status===401){location.reload();return}if(!r.ok)return;const j=await r.json();
+      let sch=false,mch=false;
+      for(const d of j.docs||[]){
+        if(d.c==='club'&&d.i==='schedule'){R.schedule=d.d||{};sch=true}
+        else if(d.c==='events'){R.events=R.events||{};if(d.d)R.events[d.i]=d.d;else delete R.events[d.i];sch=true}
+        else if(d.c==='members'){if(d.d)mem.set(d.i,{id:d.i,...d.d});else mem.delete(d.i);mch=true}}
+      since=j.since||since;
+      if(sch){SCHED=pitSched();try{if(ui.view==='coach')renderAdm()}catch(e){}}
+      if(mch&&pitSig(active())!==sig0)tryReload();
+      if(j.more)setTimeout(poll,50)}
+    catch(e){}finally{busy=false}}
+  setInterval(poll,5000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)poll()})}
 const MN=['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
 $('#admTabs').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{ADM.tab=b.dataset.adm;renderAdm();sNavSync()}));
 /* нижнее меню персонала (тренер/админ на телефоне) — как у бойца */
@@ -5690,7 +5720,7 @@ function tickUI(){if(MOB.on)return;
     $('#aKcal').textContent=m.kcal>=1?Math.round(m.kcal):'0';$('#aKcalR').textContent=live?`сейчас ≈ ${keytel(m.hr,a).toFixed(1)} ккал/мин`:'';$('#aKcK').textContent=m.mode==='fight'?'Сожжено · тренировка + бой':'Сожжено · тренировка'}else if(ui.view==='grid')renderGrid();else if(ui.view==='fight')renderFight();else if(ui.view==='card'){if(cab.sec==='card')renderCardStats()}else renderCoach();
   if(ui.view!=='fight'){const fp=$('#fightPill');fp.hidden=fight.state==='idle'||fight.state==='finished';$('#fpText').textContent=`${display(byId.get(fight.ids[0]))} — ${display(byId.get(fight.ids[1]))} · Р${fight.round}`;$('#fpTime').textContent=fmt(fight.remaining())}
 }
-if(REAL){document.body.classList.add('real');const r=document.querySelector('input[name=src][value=ws]');if(r){r.checked=true;r.dispatchEvent(new Event('change',{bubbles:true}))}const sl=document.querySelector('input[name=src][value=sim]');if(sl)sl.closest('label').style.display='none'}
+if(REAL){pitLive();document.body.classList.add('real');const r=document.querySelector('input[name=src][value=ws]');if(r){r.checked=true;r.dispatchEvent(new Event('change',{bubbles:true}))}const sl=document.querySelector('input[name=src][value=sim]');if(sl)sl.closest('label').style.display='none'}
 // идти на первого публичного
 select(0);renderArena();
 setInterval(()=>{step();tickUI()},1000);setInterval(()=>{if(effTheme()){try{if(MOB.on)renderMobile();else{if(ui.view==='world')renderWorld();tickUI()}}catch(e){}}},400);

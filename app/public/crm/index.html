@@ -194,6 +194,7 @@ html[data-role=trainer] #ldone,html[data-role=trainer] [data-dr=askdel]{display:
     <button role="tab" data-tab="members" aria-selected="false">Бойцы</button>
     <button role="tab" data-tab="leads" aria-selected="false">Заявки</button>
     <button role="tab" data-tab="events" aria-selected="false">События</button>
+    <button role="tab" data-tab="sched" aria-selected="false">Расписание</button>
     <button role="tab" data-tab="cash" aria-selected="false">Касса</button>
     <button role="tab" data-tab="rep" aria-selected="false">Отчёты</button>
     <button role="tab" data-tab="plans" aria-selected="false">Настройки</button>
@@ -251,8 +252,8 @@ function render(){
   document.body.classList.toggle('ro',!S.canWrite);
   document.querySelectorAll('.tabs button').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.tab===S.tab)));
   const v=$('#view');const sy=scrollY;
-  v.innerHTML=({today:vToday,members:vMembers,leads:vLeads,cash:vCash,events:vEvents,rep:vReports,plans:vSettings})[S.tab]();
-  bindView(v);scrollTo(0,sy);
+  v.innerHTML=({today:vToday,members:vMembers,leads:vLeads,cash:vCash,events:vEvents,sched:vSched,rep:vReports,plans:vSettings})[S.tab]();
+  bindView(v);if(S.tab==='sched')bindSched(v);scrollTo(0,sy);
   if(S.open)renderDrawer();else if(S.ov)renderOv();
 }
 function loadingOrEmpty(){
@@ -526,6 +527,39 @@ function newId(){return 'm'+Date.now().toString(36)+Math.random().toString(36).s
 function csvSave(name,rows){const csv='﻿'+rows.map(r=>r.map(x=>{x=String(x??'');return/[;"\n]/.test(x)?'"'+x.replace(/"/g,'""')+'"':x}).join(';')).join('\r\n');
   claude.use('downloads').then(dl=>{if(!dl){toast('Скачивание недоступно в этом окне');return}return dl.save({filename:name,data:csv}).then(()=>toast('Файл сохранён'),e=>{if(e&&e.code!=='declined')toast('Не удалось сохранить файл')})})}
 
+/* ===== Расписание групп: общий источник для CRM, экранов зала (Arena) и записи бойцов ===== */
+const SDAYS=['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
+const SDISC=['MMA','BJJ','Бокс','Муай-тай','Кикбоксинг','Борьба','Функционал','Капоэйра','Дети · MMA'];
+const SCO0=[{k:'mowgli',n:'Джалял «MOWGLI»'},{k:'adam',n:'Адам'},{k:'andrey',n:'Андрей'}];
+const SCH=()=>{const d=S.sched||{};return{classes:Array.isArray(d.classes)?d.classes:[],coaches:Array.isArray(d.coaches)&&d.coaches.length?d.coaches:SCO0}};
+const saveSch=(x,msg)=>write(()=>DB.doc('club/schedule').set({...SCH(),...x,updatedAt:new Date().toISOString()}),msg);
+function vSched(){const {classes,coaches}=SCH(),co=k=>coaches.find(c=>c.k===k)?.n||'—';
+  const byDay=SDAYS.map((d,i)=>({d,i:i+1,list:classes.filter(c=>(c.dow||[]).includes(i+1)).sort((a,b)=>String(a.time).localeCompare(String(b.time)))}));
+  return`<div class="head"><div><h1>Расписание</h1><p class="sub">Группы клуба по дням недели. Это расписание видят экраны зала (Arena) и бойцы при записи.</p></div></div>
+  <section class="card"><h2 style="margin:0 0 .7rem;font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)">Неделя</h2>
+   <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,11rem),1fr));gap:.6rem">${byDay.map(x=>`<div style="border:1px solid var(--line);border-radius:.6rem;padding:.6rem;min-width:0"><b style="font-size:.82rem">${x.d}</b>
+    ${x.list.map(c=>`<div style="display:flex;gap:.4rem;align-items:baseline;margin-top:.45rem;font-size:.84rem"><b class="num">${esc(c.time)}</b><span style="min-width:0">${esc(c.disc)}<small style="display:block;color:var(--muted);font-size:.72rem">${esc(co(c.coach))}${c.dur?' · '+c.dur+' мин':''}</small></span></div>`).join('')||'<div style="color:var(--muted);font-size:.78rem;margin-top:.4rem">—</div>'}</div>`).join('')}</div></section>
+  <section class="card"><h2 style="margin:0 0 .7rem;font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)">Группы · ${classes.length}</h2>
+   <div class="list">${classes.slice().sort((a,b)=>String(a.time).localeCompare(String(b.time))).map(c=>`<div class="row" style="grid-template-columns:minmax(0,1fr) auto;cursor:default"><span class="nm">${esc(c.disc)} · ${esc(c.time)}<small>${(c.dow||[]).map(d=>SDAYS[d-1]).join(', ')} · ${esc(co(c.coach))}${c.dur?' · '+c.dur+' мин':''}${c.cap?' · до '+c.cap+' чел.':''}</small></span><button class="btn sm w-only" type="button" data-sdel="${esc(c.id)}">Удалить</button></div>`).join('')||'<div class="empty">Групп пока нет. Добавьте первую ниже.</div>'}</div>
+   <form class="card form w-only" id="schf" style="margin-top:.8rem;background:var(--panel-2)">
+    <div class="f" style="grid-column:1/-1"><span style="font-size:.74rem;font-weight:700;color:var(--muted)">Дни</span><div class="chips" style="margin-top:.3rem">${SDAYS.map((d,i)=>`<label class="chip" style="display:inline-flex;gap:.3rem;align-items:center"><input type="checkbox" name="sd" value="${i+1}"> ${d}</label>`).join('')}</div></div>
+    <label class="f">Время<input type="time" id="s_t" required value="19:00"></label>
+    <label class="f">Длительность, мин<input type="number" id="s_dur" min="15" max="240" step="5" value="60"></label>
+    <label class="f">Направление<select id="s_d">${SDISC.map(d=>`<option>${d}</option>`).join('')}</select></label>
+    <label class="f">Тренер<select id="s_c">${coaches.map(c=>`<option value="${esc(c.k)}">${esc(c.n)}</option>`).join('')}</select></label>
+    <label class="f">Мест в группе<input type="number" id="s_cap" min="1" max="200" placeholder="${esc(String(SET().groupCap||''))}"></label>
+    <div class="f" style="justify-content:flex-end"><button class="btn gold" type="submit">+ Добавить группу</button></div></form></section>
+  <section class="card"><h2 style="margin:0 0 .7rem;font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)">Тренеры</h2>
+   <div class="chips">${coaches.map(c=>`<span class="chip" style="cursor:default">${esc(c.n)}${classes.some(x=>x.coach===c.k)?'':` <button type="button" class="w-only" data-codel="${esc(c.k)}" aria-label="Убрать тренера" style="border:0;background:none;color:var(--bad);cursor:pointer;font-weight:800">×</button>`}</span>`).join('')}</div>
+   <form id="cof" class="w-only" style="display:flex;gap:.5rem;margin-top:.7rem;flex-wrap:wrap"><input type="text" id="co_n" placeholder="Имя тренера" maxlength="40" style="flex:1;min-width:10rem"><button class="btn" type="submit">+ Тренер</button></form></section>`}
+function bindSched(v){
+  const f=$('#schf',v);if(f)f.addEventListener('submit',e=>{e.preventDefault();const dow=[...f.querySelectorAll('input[name=sd]:checked')].map(x=>+x.value);if(!dow.length){toast('Отметьте дни');return}
+    const c={id:'c'+Date.now().toString(36),dow,time:$('#s_t',v).value,dur:Math.max(15,+$('#s_dur',v).value||60),disc:$('#s_d',v).value,coach:$('#s_c',v).value,cap:$('#s_cap',v).value?Math.max(1,+$('#s_cap',v).value):null};
+    saveSch({classes:[...SCH().classes,c]},'Группа добавлена: '+c.disc+' '+c.time)});
+  v.querySelectorAll('[data-sdel]').forEach(b=>b.addEventListener('click',()=>{if(!b.dataset.sure){b.dataset.sure=1;b.textContent='Точно?';return}saveSch({classes:SCH().classes.filter(c=>c.id!==b.dataset.sdel)},'Группа удалена')}));
+  v.querySelectorAll('[data-codel]').forEach(b=>b.addEventListener('click',()=>saveSch({coaches:SCH().coaches.filter(c=>c.k!==b.dataset.codel)},'Тренер убран')));
+  const cf=$('#cof',v);if(cf)cf.addEventListener('submit',e=>{e.preventDefault();const n=$('#co_n',v).value.trim();if(!n)return;saveSch({coaches:[...SCH().coaches,{k:'co'+Date.now().toString(36),n}]},'Тренер добавлен: '+n)});
+}
 function bindView(v){
   v.querySelectorAll('[data-open]').forEach(b=>{const go=e=>{if(e.target.closest('[data-visit]'))return;S.open=b.dataset.open;S.drMode='view';renderDrawer()};b.addEventListener('click',go);b.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();go(e)}})});
   v.querySelectorAll('[data-visit]').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation();markVisit(b.dataset.visit)}));
@@ -640,7 +674,7 @@ function awayList(){const n=SET().retDays,ref=TRACK0>today()?today():TRACK0;
 
 /* ---------- заявки и пробные ---------- */
 const LSTAT=[['new','Новая','info'],['booked','Записан на пробное','warn'],['done','Пробное прошёл','gold'],['bought','Купил абонемент','ok'],['lost','Отказ','bad']];
-const LSRC=['Instagram','Google / карты','Рекомендация','Мимо проходил','Сайт','Другое'];
+const LSRC=['PIT · регистрация','Instagram','Google / карты','Рекомендация','Мимо проходил','Сайт','Другое'];
 const LLOST=['Дорого','Не подошло расписание','Далеко','Не понравилось','Не пришёл на пробное','Другое'];
 const lst=k=>LSTAT.find(x=>x[0]===k)||LSTAT[0];
 function vLeads(){const L=S.leads.slice().sort((a,b)=>String(b.ts).localeCompare(String(a.ts))),f=S.lflt||'open',
@@ -958,7 +992,7 @@ function bindMods(v){
 }
 
 document.querySelectorAll('.tabs button').forEach(b=>b.addEventListener('click',()=>{S.tab=b.dataset.tab;try{localStorage.setItem('mowgli.tab',S.tab)}catch(e){}render();scrollTo(0,0)}));
-try{let t=localStorage.getItem('mowgli.tab');if(t==='fin'||t==='shop')t='cash';if(['today','members','leads','cash','events','rep','plans'].includes(t))S.tab=t}catch(e){}
+try{let t=localStorage.getItem('mowgli.tab');if(t==='fin'||t==='shop')t='cash';if(['today','members','leads','cash','events','sched','rep','plans'].includes(t))S.tab=t}catch(e){}
 function setThm(d){document.documentElement.classList.toggle("dk",d);const b=$("#thm");b.textContent=d?"☀":"☾";b.setAttribute("aria-label",d?"Светлая тема":"Тёмная тема");try{localStorage.setItem("mowgli.theme",d?"dark":"light")}catch(e){}}
 let DK=false;try{DK=localStorage.getItem("mowgli.theme")==="dark"}catch(e){}setThm(DK);$("#thm").addEventListener("click",()=>{DK=!DK;setThm(DK)});
 render();
@@ -981,6 +1015,7 @@ render();
   db.collection('events').onSnapshot(s=>{S.events=s.docs.map(d=>({id:d.id,...d.data()}));rr()},err);
   db.collection('audit').onSnapshot(s=>{const o={};s.docs.forEach(d=>o[d.id]=d.data());S.audit=o;if(S.tab==='rep')rr()},err);
   db.doc('club/settings').onSnapshot(s=>{S.settings=s.exists?s.data():null;rr()},err);
+  db.doc('club/schedule').onSnapshot(s=>{S.sched=s.exists?s.data():null;rr()},err);
   db.collection('freezes').onSnapshot(s=>{S.freezes=s.docs.map(d=>({id:d.id,...d.data()}));rr()},err);
   db.collection('expenses').onSnapshot(s=>{S.expenses=s.docs.map(d=>({id:d.id,...d.data()}));S.ready.e=true;rr()},err);
   db.collection('diary').onSnapshot(s=>{S.diary=s.docs.map(d=>({id:d.id,...d.data()}));rr()},err);

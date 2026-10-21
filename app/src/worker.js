@@ -1,6 +1,7 @@
 // PIT RATING — app.pitrating.com
 // Вход: собственный (код на e-mail → сессия), на переходный период также Cloudflare Access. Роли: owner | admin | trainer.
 import { authRoutes, sessionEmail, sessionsOf, revokeAll } from './auth.js';
+import { myRoutes } from './my.js';
 // Данные: D1 (документы коллекций), файлы: R2.
 
 const ROLES = { owner: 3, admin: 2, trainer: 1 };
@@ -217,13 +218,19 @@ async function arenaReal(req, env) {
   const res = await env.ASSETS.fetch(req);
   if (!res.ok || !(res.headers.get('content-type') || '').includes('text/html')) return res;
   const r = await env.DB.prepare("SELECT id,data FROM docs WHERE col='members' AND deleted=0").all();
+  const mx = await env.DB.prepare('SELECT COALESCE(MAX(seq),0) AS s FROM docs').first();
+  const sch = await env.DB.prepare("SELECT data FROM docs WHERE col='club' AND id='schedule' AND deleted=0").first();
+  const ev = await env.DB.prepare("SELECT id,data FROM docs WHERE col='events' AND deleted=0").all();
+  const events = {}; for (const x of ev.results || []) { try { const e = JSON.parse(x.data); events[x.id] = { title: e.title, date: e.date, end: e.end || null } } catch (e) { } }
   const today = new Date().toISOString().slice(0, 10);
   const age = d => { if (!/^\d{4}-\d{2}-\d{2}$/.test(d || '')) return null; const b = new Date(d), n = new Date(); let a = n.getFullYear() - b.getFullYear(); if (n < new Date(n.getFullYear(), b.getMonth(), b.getDate())) a--; return a > 3 && a < 90 ? a : null };
-  const members = (r.results || []).map(x => { let m = {}; try { m = JSON.parse(x.data) } catch (e) { } return { id: x.id, m } })
+  const all = (r.results || []).map(x => { let m = {}; try { m = JSON.parse(x.data) } catch (e) { } return { id: x.id, m } });
+  const membersAll = all.map(({ id, m }) => ({ id, name: m.name, disc: m.disc, kind: m.kind, end: m.end || '', frozen: !!m.frozen, consentPublic: m.consentPublic || null }));
+  const members = all
     .filter(({ m }) => m && m.name && !m.frozen && (m.kind === 'staff' || !m.end || m.end >= today))
     .map(({ id, m }) => ({ id, name: m.name, first: m.first || String(m.name).split(/\s+/).slice(-1)[0], disc: m.disc || 'MMA', kind: m.kind || 'group', age: age(m.dob), consentPublic: m.consentPublic || null, end: m.end || '', start: m.start || '', plan: m.plan || '', left: m.left ?? null }))
     .sort((a, b) => a.name.localeCompare(b.name, 'ru'));
-  const inj = '<script>window.PIT_REAL=' + JSON.stringify({ club: env.CLUB || 'mowgli', members }).replace(/</g, '\\u003c') + '</script>';
+  const inj = '<script>window.PIT_REAL=' + JSON.stringify({ club: env.CLUB || 'mowgli', since: mx ? mx.s : 0, members, membersAll, schedule: sch ? JSON.parse(sch.data) : null, events }).replace(/</g, '\\u003c') + '</script>';
   const html = (await res.text()).replace('<meta charset="utf-8">', '<meta charset="utf-8">' + inj);
   return new Response(html, { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' } });
 }
@@ -237,6 +244,14 @@ export default {
       try { const r = await authRoutes(req, env, path); if (r) return r } catch (e) { return json({ error: 'server' }, 500) }
       return json({ error: 'not_found' }, 404);
     }
+    // My PIT — кабинет бойца: нужен только вход по коду, роль сотрудника не нужна
+    if (path === '/my' || path.startsWith('/my/') || path === '/api/my') {
+      const email = env.DEV === '1' && env.DEV_EMAIL ? String(req.headers.get('x-dev-email') || env.DEV_EMAIL).toLowerCase() : await sessionEmail(req, env);
+      if (!email) return path === '/api/my' ? json({ error: 'unauthorized' }, 401) : new Response(null, { status: 302, headers: { location: '/login?next=%2Fmy%2F' } });
+      if (path === '/api/my') { try { return await myRoutes(req, env, path, email) } catch (e) { return json({ error: 'server', message: String(e && e.message || e) }, 500) } }
+      if (path === '/my') return new Response(null, { status: 301, headers: { location: '/my/' } });
+      return env.ASSETS.fetch(req);
+    }
     const me = await whoami(req, env);
     if (!me) {
       if (path.startsWith('/api/')) return json({ error: 'unauthorized' }, 401);
@@ -244,7 +259,7 @@ export default {
     }
     if (!me.role) {
       if (path.startsWith('/api/')) return json({ error: 'unauthorized' }, 401);
-      return NO_ACCESS(me.email);
+      return new Response(null, { status: 302, headers: { location: '/my/' } });   // боец — в свой кабинет
     }
     if (path.startsWith('/api/')) {
       try { return await api(req, env, me, path); }

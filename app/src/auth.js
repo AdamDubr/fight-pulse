@@ -92,7 +92,8 @@ export async function authRoutes(req, env, path) {
       .bind(ipk, t, t, IP_WINDOW, t, IP_WINDOW, t).run();
     // одинаковый ответ для всех адресов
     const ok = json({ ok: true });
-    if (!(await isStaff(env, email))) { await log(env, email, 'unknown', req); return ok }
+    // код получает любой адрес: сотрудники попадают в систему клуба по роли, остальные — в кабинет бойца My PIT
+    if (!(await isStaff(env, email))) await log(env, email, 'fighter', req);
     const cur = await env.DB.prepare('SELECT sent_at,sent_count,window_start FROM auth_codes WHERE email=?').bind(email).first();
     if (cur && t - cur.sent_at < RESEND_GAP) return json({ error: 'wait', wait: Math.ceil((RESEND_GAP - (t - cur.sent_at)) / 1000) }, 429);
     const inWin = cur && t - cur.window_start < SEND_WINDOW;
@@ -141,7 +142,8 @@ export async function authRoutes(req, env, path) {
       await env.DB.prepare('DELETE FROM sessions WHERE id=?').bind(id).run();
       if (s) await log(env, s.email, 'logout', req);
     }
-    return new Response(null, { status: 302, headers: { location: '/login', 'set-cookie': `${COOKIE}=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0` } });
+    const nx = new URL(req.url).searchParams.get('next') || '';
+    return new Response(null, { status: 302, headers: { location: nx.startsWith('/my') ? '/login?next=%2Fmy%2F' : '/login', 'set-cookie': `${COOKIE}=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0` } });
   }
   return null;
 }
