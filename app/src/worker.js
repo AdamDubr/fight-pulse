@@ -241,7 +241,7 @@ export default {
   async fetch(req, env) {
     const url = new URL(req.url), path = url.pathname;
     // открыто без входа: страница входа, логотипы, методы входа
-    if (path === '/login' || path === '/login.html' || path.startsWith('/brand/')) return env.ASSETS.fetch(req);
+    if (path === '/login' || path === '/login.html' || path.startsWith('/brand/') || path.startsWith('/vendor/')) return env.ASSETS.fetch(req);
     if (path.startsWith('/auth/')) {
       try { const r = await authRoutes(req, env, path); if (r) return r } catch (e) { return json({ error: 'server' }, 500) }
       return json({ error: 'not_found' }, 404);

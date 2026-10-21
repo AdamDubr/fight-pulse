@@ -9,7 +9,7 @@ const sha = async s => [...new Uint8Array(await crypto.subtle.digest('SHA-256', 
 const digits = p => String(p || '').replace(/\D/g, '');
 const samePhone = (a, b) => { a = digits(a); b = digits(b); return a.length >= 9 && b.length >= 9 && a.slice(-10) === b.slice(-10) };
 const DISCS = ['MMA', 'Бокс', 'BJJ', 'Кикбоксинг', 'Муай-тай', 'Борьба', 'Функционал', 'Капоэйра'];
-export const CLUBS = { mowgli: { id: 'mowgli', name: 'Mowgli Fight Club', city: 'Анталья' } };
+export const CLUBS = { mowgli: { id: 'mowgli', name: 'Mowgli Fight Club', city: 'Анталья', cityEn: 'Antalya', country: 'TR', lat: 36.8969, lon: 30.7133, discs: ['MMA', 'BJJ', 'Бокс', 'Муай-тай', 'Борьба', 'Функционал'] } };
 
 const SCHEMA = [
   `CREATE TABLE IF NOT EXISTS fighters (email TEXT PRIMARY KEY, data TEXT NOT NULL, club TEXT, mid TEXT, lead TEXT, created INTEGER NOT NULL, updated INTEGER NOT NULL)`,

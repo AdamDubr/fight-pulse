@@ -59,6 +59,14 @@ textarea{min-height:4.5rem;resize:vertical}
 .foot{text-align:center;color:var(--muted);font-size:.74rem;padding-bottom:1rem}
 .foot a{color:inherit}
 [hidden]{display:none!important}
+.globe{position:relative;width:100%;aspect-ratio:1/1;max-height:min(72vh,560px);margin:0 auto}
+.club{display:flex;gap:.9rem;align-items:center}
+.club .flag{font-size:1.7rem;line-height:1}
+.club b{display:block;font-size:1.02rem}.club small{display:block;color:var(--muted);font-size:.8rem}
+.tags{display:flex;flex-wrap:wrap;gap:.3rem;margin-top:.45rem}.tags span{font-size:.7rem;font-weight:700;border:1px solid var(--line-2);border-radius:2rem;padding:.12rem .5rem;color:var(--muted)}
+@media (max-width:420px){.club{flex-wrap:wrap}.club .btn{width:100%}}
+.clubchip{display:flex;align-items:center;gap:.6rem;background:var(--panel-2);border:1px solid var(--gold);border-radius:.6rem;padding:.55rem .7rem;font-weight:700}
+.clubchip span{min-width:0}.clubchip span:nth-child(2){flex:1}.clubchip small{display:block;color:var(--muted);font-weight:600;font-size:.76rem}
 </style>
 </head>
 <body>
@@ -69,10 +77,11 @@ textarea{min-height:4.5rem;resize:vertical}
 </div></header>
 <main><div class="wrap" id="v"><div class="ld" data-t="loading">Загрузка…</div></div></main>
 <div class="foot">PIT RATING · Performance Index of Training · <a href="https://pitrating.com">pitrating.com</a></div>
+<script src="/vendor/d3-array.min.js"></script><script src="/vendor/d3-geo.min.js"></script><script src="/vendor/topojson-client.min.js"></script><script src="/my/globe.js"></script>
 <script>
 "use strict";
 const T={
-ru:{loading:'Загрузка…',out:'Выйти',regH:'Регистрация бойца',regP:'Пара минут — и клуб увидит вас. Данные видит только ваш клуб.',club:'Клуб',last:'Фамилия',first:'Имя',dob:'Дата рождения',phone:'Телефон',disc:'Направление',want:'Хочу начать с',grp:'Группа',ind:'Индивидуально',note:'Комментарий для тренера',noteP:'Опыт, цели, травмы — по желанию',
+ru:{pickH:'Выберите свой клуб',pickP:'Клубы PIT RATING на карте мира. Покрутите глобус и нажмите на свой клуб.',mine:'Это мой клуб',soon:'Скоро здесь появятся новые клубы. Вашего клуба нет? Расскажите тренеру о PIT RATING.',chg:'Сменить',out:'Выйти',regH:'Регистрация бойца',regP:'Пара минут — и клуб увидит вас. Данные видит только ваш клуб.',club:'Клуб',last:'Фамилия',first:'Имя',dob:'Дата рождения',phone:'Телефон',disc:'Направление',want:'Хочу начать с',grp:'Группа',ind:'Индивидуально',note:'Комментарий для тренера',noteP:'Опыт, цели, травмы — по желанию',
  u18H:'Боец младше 18 лет',u18P:'Нужен родитель или законный представитель.',pName:'Имя родителя',pPhone:'Телефон родителя',pOk:'Я — родитель / законный представитель и даю согласие на занятия и обработку данных',
  consH:'Согласия',cData:'Согласен на обработку моих данных клубом и PIT RATING',cDataS:'Обязательно. Имя, контакты, дата рождения, посещения и показатели тренировок.',cPhoto:'Фото и видео с тренировок',cPhotoS:'Клуб может использовать в своих соцсетях.',cPub:'Показывать моё имя и пульс на экранах зала и в рейтинге',cPubS:'Можно выключить в любой момент.',cMsg:'Сообщения от клуба',cMsgS:'Расписание, напоминания, акции.',
  send:'Зарегистрироваться',save:'Сохранить',cancel:'Отмена',edit:'Изменить анкету',del:'Удалить мои данные',delSure:'Точно удалить? Нажмите ещё раз',
@@ -82,7 +91,7 @@ ru:{loading:'Загрузка…',out:'Выйти',regH:'Регистрация 
  soonH:'Скоро в My PIT',soonP:'Пульс и нагрузка с тренировок, рейтинг PIT, турниры и прогресс — появятся, когда клуб подключит датчики.',
  profH:'Анкета',privacy:'Ваши данные хранятся у клуба, к которому вы записались. Удалить их можно здесь в любой момент.',
  err:{name:'Укажите фамилию и имя',dob:'Проверьте дату рождения',phone:'Укажите телефон',club:'Выберите клуб',consent:'Нужно согласие на обработку данных',parent:'Для бойца младше 18 лет укажите родителя и его согласие',server:'Не получилось. Попробуйте ещё раз'},saved:'Сохранено'},
-en:{loading:'Loading…',out:'Sign out',regH:'Fighter sign-up',regP:'Two minutes and your club will see you. Only your club sees your data.',club:'Club',last:'Last name',first:'First name',dob:'Date of birth',phone:'Phone',disc:'Discipline',want:'I want to start with',grp:'Group',ind:'Private',note:'Note for the coach',noteP:'Experience, goals, injuries — optional',
+en:{pickH:'Choose your club',pickP:'PIT RATING clubs on the world map. Spin the globe and tap your club.',mine:'This is my club',soon:'More clubs are coming soon. Club not here? Tell your coach about PIT RATING.',chg:'Change',out:'Sign out',regH:'Fighter sign-up',regP:'Two minutes and your club will see you. Only your club sees your data.',club:'Club',last:'Last name',first:'First name',dob:'Date of birth',phone:'Phone',disc:'Discipline',want:'I want to start with',grp:'Group',ind:'Private',note:'Note for the coach',noteP:'Experience, goals, injuries — optional',
  u18H:'Fighter under 18',u18P:'A parent or legal guardian is required.',pName:'Parent name',pPhone:'Parent phone',pOk:'I am the parent / legal guardian and consent to training and data processing',
  consH:'Consents',cData:'I agree to the club and PIT RATING processing my data',cDataS:'Required. Name, contacts, date of birth, visits and training metrics.',cPhoto:'Photos and videos from training',cPhotoS:'The club may post them on its social media.',cPub:'Show my name and heart rate on gym screens and in the rating',cPubS:'You can turn it off at any time.',cMsg:'Messages from the club',cMsgS:'Schedule, reminders, offers.',
  send:'Sign up',save:'Save',cancel:'Cancel',edit:'Edit profile',del:'Delete my data',delSure:'Sure? Tap again to delete',
@@ -92,7 +101,7 @@ en:{loading:'Loading…',out:'Sign out',regH:'Fighter sign-up',regP:'Two minutes
  soonH:'Coming to My PIT',soonP:'Heart rate and load from training, PIT rating, tournaments and progress — once your club connects sensors.',
  profH:'Profile',privacy:'Your data is kept by the club you signed up with. You can delete it here at any time.',
  err:{name:'Enter your first and last name',dob:'Check the date of birth',phone:'Enter your phone',club:'Choose a club',consent:'Consent to data processing is required',parent:'For under-18s add a parent and their consent',server:'Something went wrong. Try again'},saved:'Saved'},
-tr:{loading:'Yükleniyor…',out:'Çıkış',regH:'Sporcu kaydı',regP:'İki dakika — kulübünüz sizi görsün. Verilerinizi yalnızca kulübünüz görür.',club:'Kulüp',last:'Soyadı',first:'Adı',dob:'Doğum tarihi',phone:'Telefon',disc:'Branş',want:'Başlamak istiyorum',grp:'Grup',ind:'Özel ders',note:'Antrenöre not',noteP:'Deneyim, hedefler, sakatlıklar — isteğe bağlı',
+tr:{pickH:'Kulübünüzü seçin',pickP:'Dünya haritasında PIT RATING kulüpleri. Küreyi çevirin ve kulübünüze dokunun.',mine:'Benim kulübüm',soon:'Yakında yeni kulüpler eklenecek. Kulübünüz yok mu? Antrenörünüze PIT RATING’i anlatın.',chg:'Değiştir',out:'Çıkış',regH:'Sporcu kaydı',regP:'İki dakika — kulübünüz sizi görsün. Verilerinizi yalnızca kulübünüz görür.',club:'Kulüp',last:'Soyadı',first:'Adı',dob:'Doğum tarihi',phone:'Telefon',disc:'Branş',want:'Başlamak istiyorum',grp:'Grup',ind:'Özel ders',note:'Antrenöre not',noteP:'Deneyim, hedefler, sakatlıklar — isteğe bağlı',
  u18H:'18 yaş altı sporcu',u18P:'Veli veya yasal temsilci gerekli.',pName:'Veli adı',pPhone:'Veli telefonu',pOk:'Veli / yasal temsilciyim; antrenmana ve veri işlemeye onay veriyorum',
  consH:'Onaylar',cData:'Verilerimin kulüp ve PIT RATING tarafından işlenmesini kabul ediyorum',cDataS:'Zorunlu. Ad, iletişim, doğum tarihi, katılım ve antrenman verileri.',cPhoto:'Antrenman foto ve videoları',cPhotoS:'Kulüp sosyal medyasında kullanabilir.',cPub:'Adım ve nabzım salon ekranlarında ve sıralamada görünsün',cPubS:'İstediğiniz zaman kapatabilirsiniz.',cMsg:'Kulüpten mesajlar',cMsgS:'Program, hatırlatmalar, kampanyalar.',
  send:'Kayıt ol',save:'Kaydet',cancel:'İptal',edit:'Profili düzenle',del:'Verilerimi sil',delSure:'Emin misiniz? Silmek için tekrar dokunun',
@@ -108,7 +117,8 @@ let L=(()=>{try{const s=localStorage.getItem('pit.lang');if(T[s])return s}catch(
 const t=k=>T[L][k],dn=d=>(DISC_T[L]||{})[d]||d;
 const fd=d=>{if(!d)return'—';const x=new Date(d+(d.length===10?'T12:00:00':''));return isNaN(x)?d:x.toLocaleDateString({ru:'ru-RU',en:'en-GB',tr:'tr-TR'}[L],{day:'numeric',month:'long',year:'numeric'})};
 const ageOf=d=>{if(!/^\d{4}-\d{2}-\d{2}$/.test(d||''))return null;const b=new Date(d+'T12:00:00'),n=new Date();let a=n.getFullYear()-b.getFullYear();if(n<new Date(n.getFullYear(),b.getMonth(),b.getDate()))a--;return a};
-let D=null,EDIT=false;
+let D=null,EDIT=false,PICK=null,GL=null;
+const FLAG={TR:'🇹🇷'},cityOf=c=>L==='ru'?c.city:(c.cityEn||c.city);
 function applyLang(){document.documentElement.lang=L;document.querySelectorAll('[data-t]').forEach(e=>{const v=T[L][e.dataset.t];if(typeof v==='string')e.textContent=v});document.querySelectorAll('.lang button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.l===L)))}
 document.querySelectorAll('.lang button').forEach(b=>b.onclick=()=>{L=b.dataset.l;try{localStorage.setItem('pit.lang',L)}catch(e){}applyLang();render()});
 async function api(o){const r=await fetch('/api/my',{cache:'no-store',credentials:'same-origin',...o});if(r.status===401){location.replace('/login?next=%2Fmy%2F');throw new Error('auth')}const j=await r.json().catch(()=>({}));if(!r.ok)throw Object.assign(new Error(j.error||'server'),{code:j.error});return j}
@@ -116,18 +126,18 @@ async function api(o){const r=await fetch('/api/my',{cache:'no-store',credential
 function form(){const p=D.profile||{},clubs=D.clubs||[],discs=D.discs||[];const kind=p.kind||'group';
   return `<div><h1>${t('regH')}</h1><p class="sub">${t('regP')}</p></div>
   <form class="card" id="rf" novalidate><div class="grid">
-    <label class="f full"><span>${t('club')} <span class=\"req\">*</span></span><select id="r_club" required>${clubs.map(c=>`<option value="${esc(c.id)}" ${c.id===p.club?'selected':''}>${esc(c.name)} · ${esc(c.city)}</option>`).join('')}</select></label>
-    <label class="f"><span>${t('last')} <span class=\"req\">*</span></span><input id="r_last" autocomplete="family-name" value="${esc(p.last)}" required></label>
-    <label class="f"><span>${t('first')} <span class=\"req\">*</span></span><input id="r_first" autocomplete="given-name" value="${esc(p.first)}" required></label>
-    <label class="f"><span>${t('dob')} <span class=\"req\">*</span></span><input id="r_dob" type="date" autocomplete="bday" value="${esc(p.dob)}" max="${new Date().toISOString().slice(0,10)}" required></label>
-    <label class="f"><span>${t('phone')} <span class=\"req\">*</span></span><input id="r_phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="+90 5__ ___ __ __" value="${esc(p.phone)}" required></label>
+    ${(()=>{const c=clubs.find(x=>x.id===(PICK||p.club))||clubs[0]||{};return`<div class="f full"><span style="font-size:.78rem;font-weight:700;color:var(--muted)">${t('club')}</span><div class="clubchip"><span aria-hidden="true">${FLAG[c.country]||'🥋'}</span><span>${esc(c.name)}<small>${esc(cityOf(c))}</small></span><button class="btn sm" type="button" id="chg">${t('chg')}</button></div><input type="hidden" id="r_club" value="${esc(c.id)}"></div>`})()}
+    <label class="f"><span>${t('last')} <span class="req">*</span></span><input id="r_last" autocomplete="family-name" value="${esc(p.last)}" required></label>
+    <label class="f"><span>${t('first')} <span class="req">*</span></span><input id="r_first" autocomplete="given-name" value="${esc(p.first)}" required></label>
+    <label class="f"><span>${t('dob')} <span class="req">*</span></span><input id="r_dob" type="date" autocomplete="bday" value="${esc(p.dob)}" max="${new Date().toISOString().slice(0,10)}" required></label>
+    <label class="f"><span>${t('phone')} <span class="req">*</span></span><input id="r_phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="+90 5__ ___ __ __" value="${esc(p.phone)}" required></label>
     <label class="f full">${t('disc')}<select id="r_disc">${discs.map(d=>`<option value="${esc(d)}" ${d===(p.disc||'MMA')?'selected':''}>${esc(dn(d))}</option>`).join('')}</select></label>
     <div class="f full"><label class="f" style="margin-bottom:.3rem">${t('want')}</label><div class="seg"><label><input type="radio" name="r_kind" value="group" ${kind!=='ind'?'checked':''}>${t('grp')}</label><label><input type="radio" name="r_kind" value="ind" ${kind==='ind'?'checked':''}>${t('ind')}</label></div></div>
     <label class="f full">${t('note')}<textarea id="r_note" maxlength="300" placeholder="${esc(t('noteP'))}">${esc(p.note)}</textarea></label>
   </div></form>
   <section class="card" id="u18" hidden><h2>${t('u18H')}</h2><p class="note" style="margin-bottom:.75rem">${t('u18P')}</p><div class="grid">
-    <label class="f"><span>${t('pName')} <span class=\"req\">*</span></span><input id="r_pn" value="${esc(p.parent?.name)}"></label>
-    <label class="f"><span>${t('pPhone')} <span class=\"req\">*</span></span><input id="r_pp" type="tel" inputmode="tel" value="${esc(p.parent?.phone)}"></label></div>
+    <label class="f"><span>${t('pName')} <span class="req">*</span></span><input id="r_pn" value="${esc(p.parent?.name)}"></label>
+    <label class="f"><span>${t('pPhone')} <span class="req">*</span></span><input id="r_pp" type="tel" inputmode="tel" value="${esc(p.parent?.phone)}"></label></div>
     <label class="chk" style="margin-top:.6rem"><input type="checkbox" id="r_pok" ${p.parentConsent?'checked':''}><span>${t('pOk')}</span></label></section>
   <section class="card"><h2>${t('consH')}</h2>
     <label class="chk"><input type="checkbox" id="c_data" ${p.consentData?'checked':''}><span>${t('cData')} <span class="req">*</span><small>${t('cDataS')}</small></span></label>
@@ -139,14 +149,15 @@ function form(){const p=D.profile||{},clubs=D.clubs||[],discs=D.discs||[];const 
   <p class="note">${t('privacy')}</p>`}
 
 function bindForm(){const dob=$('#r_dob'),u=()=>{const a=ageOf(dob.value);$('#u18').hidden=!(a!=null&&a<18)};dob.addEventListener('change',u);dob.addEventListener('input',u);u();
-  if($('#cx'))$('#cx').onclick=()=>{EDIT=false;render()};
+  if($('#cx'))$('#cx').onclick=()=>{EDIT=false;PICK=null;render()};
+  $('#chg').onclick=()=>{PICK=null;render();window.scrollTo({top:0})};
   $('#go').onclick=async()=>{const m=$('#m'),b=$('#go');m.textContent='';m.className='msg';
     const v=id=>$(id).value.trim();
     const prof={club:$('#r_club').value,last:v('#r_last'),first:v('#r_first'),dob:v('#r_dob'),phone:v('#r_phone'),disc:$('#r_disc').value,kind:document.querySelector('input[name=r_kind]:checked')?.value||'group',note:v('#r_note'),
       parent:{name:v('#r_pn'),phone:v('#r_pp')},parentConsent:$('#r_pok').checked,consentData:$('#c_data').checked,photoConsent:$('#c_photo').checked,consentPublic:$('#c_pub').checked,consentMsg:$('#c_msg').checked,lang:L};
     const loc=!prof.last||!prof.first?'name':!prof.dob?'dob':prof.phone.replace(/\D/g,'').length<9?'phone':!prof.consentData?'consent':null;
     if(loc){m.textContent=t('err')[loc];m.className='msg bad';return}
-    b.disabled=true;try{D=await api({method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({profile:prof})});EDIT=false;render();window.scrollTo({top:0,behavior:'smooth'})}
+    b.disabled=true;try{D=await api({method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({profile:prof})});EDIT=false;PICK=null;render();window.scrollTo({top:0,behavior:'smooth'})}
     catch(e){m.textContent=t('err')[e.code]||t('err').server;m.className='msg bad'}finally{b.disabled=false}}}
 
 function statusCard(){
@@ -167,10 +178,18 @@ function home(){const p=D.profile,a=ageOf(p.dob),ini=((p.first||'')[0]||'')+((p.
     <div class="actions" style="margin-top:.9rem"><button class="btn" id="ed" type="button">${t('edit')}</button><button class="btn danger" id="dl" type="button">${t('del')}</button></div>
     <p class="note" style="margin-top:.8rem">${t('privacy')}</p></section>`}
 
-function render(){applyLang();if(!D)return;const v=$('#v');
+function picker(){const cl=D.clubs||[];
+  return `<div><h1>${t('pickH')}</h1><p class="sub">${t('pickP')}</p></div>
+  <div class="globe" id="gl"></div>
+  ${cl.map(c=>`<section class="card club"><span class="flag" aria-hidden="true">${FLAG[c.country]||'🥋'}</span><div style="flex:1;min-width:0"><b>${esc(c.name)}</b><small>${esc(cityOf(c))}</small><div class="tags">${(c.discs||[]).map(d=>`<span>${esc(dn(d))}</span>`).join('')}</div></div><button class="btn gold" type="button" data-pick="${esc(c.id)}">${t('mine')}</button></section>`).join('')}
+  <p class="note">${t('soon')}</p>`}
+function render(){applyLang();if(!D)return;const v=$('#v');if(GL){GL.destroy();GL=null}
+  if((!D.profile||EDIT)&&!PICK){v.innerHTML=picker();const pick=id=>{PICK=id;render();window.scrollTo({top:0,behavior:'smooth'})};
+    try{GL=PITGlobe.mount($('#gl'),{clubs:(D.clubs||[]).map(c=>({...c,city:cityOf(c)})),focus:(D.profile&&D.profile.club)||null,onPick:c=>pick(c.id),label:t('pickH')})}catch(e){$('#gl').hidden=true}
+    v.querySelectorAll('[data-pick]').forEach(b=>b.onclick=()=>pick(b.dataset.pick));return}
   if(!D.profile||EDIT){v.innerHTML=form();bindForm();return}
   v.innerHTML=home();
-  $('#ed').onclick=()=>{EDIT=true;render();window.scrollTo({top:0})};
+  $('#ed').onclick=()=>{EDIT=true;PICK=D.profile.club;render();window.scrollTo({top:0})};
   $('#dl').onclick=async e=>{const b=e.currentTarget;if(!b.dataset.sure){b.dataset.sure=1;b.textContent=t('delSure');return}b.disabled=true;try{await api({method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({delete:true})});location.replace('/login?next=%2Fmy%2F')}catch(err){b.disabled=false}}}
 applyLang();
 api().then(j=>{D=j;render()}).catch(e=>{if(e.message!=='auth')$('#v').innerHTML='<p class="msg bad">'+esc(t('err').server)+'</p>'});
