@@ -52,8 +52,14 @@ function mail(code, l) {
   const html = `<!doctype html><html><body style="margin:0;background:#f4f1ea;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#15171b">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f1ea;padding:32px 12px"><tr><td align="center">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:460px;background:#ffffff;border:1px solid #e3ded2;border-radius:14px;overflow:hidden">
-<tr><td style="background:#111418;padding:22px 28px">
-<img src="https://app.pitrating.com/brand/mail-logo.png" width="180" height="68" alt="PIT RATING" style="display:block;border:0;color:#e8c35a;font-weight:800;font-size:18px;letter-spacing:2px"><div style="color:#9a9aa2;font-size:11px;letter-spacing:2px;text-transform:uppercase;margin-top:6px">${t.club}</div></td></tr>
+<tr><td style="background:#111418;padding:24px 28px">
+<table role="presentation" cellpadding="0" cellspacing="0"><tr>
+<td style="padding-right:14px;vertical-align:middle"><img src="https://app.pitrating.com/brand/mail-mark.png" width="34" height="42" alt="" style="display:block;border:0"></td>
+<td style="vertical-align:middle;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif">
+<div style="color:#f4f1ea;font-size:26px;line-height:26px;font-weight:800;letter-spacing:1px">PIT</div>
+<div style="color:#e8c35a;font-size:11px;line-height:16px;font-weight:700;letter-spacing:5px;margin-top:3px">RATING</div></td>
+</tr></table>
+<div style="color:#8b8b93;font-size:11px;letter-spacing:2px;text-transform:uppercase;margin-top:14px">${t.club}</div></td></tr>
 <tr><td style="padding:28px">
 <div style="font-size:15px;font-weight:700;margin:0 0 14px">${t.h}</div>
 <div style="font-family:SFMono-Regular,Menlo,Consolas,monospace;font-size:38px;font-weight:700;letter-spacing:10px;color:#15171b;background:#f8f6f1;border:1px solid #e3ded2;border-radius:10px;padding:16px 0;text-align:center">${code}</div>

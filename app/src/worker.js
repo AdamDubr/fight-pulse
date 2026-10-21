@@ -194,7 +194,10 @@ function invite(to, role, name) {
   const html = `<!doctype html><html><body style="margin:0;background:#f4f1ea;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#15171b">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="padding:32px 12px"><tr><td align="center">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:460px;background:#fff;border:1px solid #e3ded2;border-radius:14px;overflow:hidden">
-<tr><td style="background:#111418;padding:22px 28px"><img src="https://app.pitrating.com/brand/mail-logo.png" width="180" height="68" alt="PIT RATING" style="display:block;border:0;color:#e8c35a;font-weight:800;font-size:18px"></td></tr>
+<tr><td style="background:#111418;padding:24px 28px"><table role="presentation" cellpadding="0" cellspacing="0"><tr>
+<td style="padding-right:14px;vertical-align:middle"><img src="https://app.pitrating.com/brand/mail-mark.png" width="34" height="42" alt="" style="display:block;border:0"></td>
+<td style="vertical-align:middle"><div style="color:#f4f1ea;font-size:26px;line-height:26px;font-weight:800;letter-spacing:1px">PIT</div><div style="color:#e8c35a;font-size:11px;line-height:16px;font-weight:700;letter-spacing:5px;margin-top:3px">RATING</div></td>
+</tr></table></td></tr>
 <tr><td style="padding:28px"><div style="font-size:17px;font-weight:700;margin:0 0 12px">${name ? name.replace(/[<>&"]/g, '') + ', в' : 'В'}ас добавили в систему клуба</div>
 <p style="font-size:14px;line-height:1.5;margin:0 0 18px">Роль: <b>${rn}</b>. Вход — по коду, который придёт на этот e-mail. Пароль не нужен.</p>
 <a href="https://app.pitrating.com/login" style="display:inline-block;background:#e8c35a;color:#141414;text-decoration:none;font-weight:800;padding:12px 22px;border-radius:10px">Войти в PIT RATING</a>
