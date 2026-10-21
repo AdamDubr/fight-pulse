@@ -3594,11 +3594,25 @@ const saveSched=()=>{if(REAL){pitSaveSched();return}try{localStorage.setItem('fp
 function pitSched(){const R=window.PIT_REAL||{},sc=R.schedule||{};
   if(Array.isArray(sc.coaches)&&sc.coaches.length)SCH_CO.splice(0,SCH_CO.length,...sc.coaches.map(c=>({k:c.k,n:c.n})));
   return{classes:(sc.classes||[]).map(c=>({id:c.id,dow:c.dow||[],time:c.time,disc:c.disc,coach:c.coach||(SCH_CO[0]&&SCH_CO[0].k),dur:c.dur||null,cap:c.cap||null})),
-    events:Object.values(R.events||{}).filter(e=>e&&e.date).map(e=>({d:e.date,name:e.title||e.name||'Событие'})).sort((a,b)=>a.d.localeCompare(b.d))}}
+    events:Object.entries(R.events||{}).filter(([,e])=>e&&e.date).map(([id,e])=>({id,d:e.date,name:e.title||e.name||'Событие'})).sort((a,b)=>a.d.localeCompare(b.d))}}
 async function pitSaveSched(){const R=window.PIT_REAL||(window.PIT_REAL={});
   const data={...(R.schedule||{}),classes:SCHED.classes.map(c=>({id:c.id||('c'+Date.now().toString(36)+Math.random().toString(36).slice(2,5)),dow:c.dow,time:c.time,disc:c.disc,coach:c.coach,dur:c.dur||60,cap:c.cap||null})),coaches:SCH_CO.map(c=>({k:c.k,n:c.n})),updatedAt:new Date().toISOString()};
   R.schedule=data;
+  // события зала ⇄ CRM «События»
+  R.events=R.events||{};const keep=new Set();
+  for(const e of SCHED.events){if(!e.id){e.id='ev'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);R.events[e.id]={title:e.name,date:e.d,end:e.d};
+      fetch('/api/write',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({op:'set',col:'events',id:e.id,data:{title:e.name,type:'Другое',place:'',date:e.d,end:e.d,price:0,cap:null,desc:'',people:[],by:'arena'}})}).catch(()=>{})}
+    keep.add(e.id)}
+  for(const id of Object.keys(R.events))if(!keep.has(id)){delete R.events[id];fetch('/api/write',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({op:'delete',col:'events',id})}).catch(()=>{})}
   try{const r=await fetch('/api/write',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({op:'set',col:'club',id:'schedule',data})});if(!r.ok)throw 0}catch(e){try{toast('Расписание не сохранилось в CRM — нет связи')}catch(_){}}}
+function pitVisited(a,k){const R=window.PIT_REAL;if(!R||!a.mid)return false;const v=(R.visits||{})[dAdd(-7*k)];return !!(v&&Array.isArray(v.ids)&&v.ids.includes(a.mid))}
+async function pitMarkVisit(a){const R=window.PIT_REAL;if(!R||!a||!a.mid||pitVisited(a,0))return;const d=dAdd(0);
+  R.visits=R.visits||{};const v=R.visits[d]||(R.visits[d]={date:d,ids:[],t:{}});v.ids=[...(v.ids||[]),a.mid];
+  const post=b=>fetch('/api/write',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(b)});
+  try{const r=await post({op:'push',col:'visits',id:d,field:'ids',value:a.mid,base:{date:d,ids:[],t:{}}});if(!r.ok)throw 0;
+    const m=(R.membersAll||[]).find(x=>x.id===a.mid);if(m&&m.left!=null&&m.left>0){m.left--;await post({op:'update',col:'members',id:a.mid,data:{left:m.left}})}
+    await post({op:'push',col:'audit',id:d,field:'items',value:{ts:new Date().toISOString(),by:'Arena',text:'Посещение: '+a.name+' (Arena)',mid:a.mid},base:{date:d,items:[]}})}
+  catch(e){v.ids=v.ids.filter(x=>x!==a.mid);try{toast('Не записалось в CRM — нет связи')}catch(_){}}}
 function pitSig(list){return list.map(m=>[m.id,m.name,m.disc,m.kind,m.end,m.frozen?1:0,m.consentPublic].join('|')).sort().join('\n')}
 function pitLive(){if(!REAL)return;const R=window.PIT_REAL;let since=R.since||0,busy=false,pend=false;
   const mem=new Map((R.membersAll||[]).map(m=>[m.id,m]));const sig0=pitSig(R.members||[]);
@@ -3609,13 +3623,15 @@ function pitLive(){if(!REAL)return;const R=window.PIT_REAL;let since=R.since||0,
   train.on&&train.on('state',()=>{if(pend&&train.state!=='running'&&fight.state==='idle')location.reload()});
   async function poll(){if(busy||document.hidden)return;busy=true;
     try{const r=await fetch('/api/sync?since='+since,{cache:'no-store'});if(r.status===401){location.reload();return}if(!r.ok)return;const j=await r.json();
-      let sch=false,mch=false;
+      let sch=false,mch=false,vch=false;
       for(const d of j.docs||[]){
         if(d.c==='club'&&d.i==='schedule'){R.schedule=d.d||{};sch=true}
         else if(d.c==='events'){R.events=R.events||{};if(d.d)R.events[d.i]=d.d;else delete R.events[d.i];sch=true}
-        else if(d.c==='members'){if(d.d)mem.set(d.i,{id:d.i,...d.d});else mem.delete(d.i);mch=true}}
+        else if(d.c==='members'){if(d.d)mem.set(d.i,{id:d.i,...d.d});else mem.delete(d.i);mch=true;const x=(R.membersAll||[]).find(z=>z.id===d.i);if(x&&d.d)x.left=d.d.left??null}
+        else if(d.c==='visits'){R.visits=R.visits||{};if(d.d)R.visits[d.i]=d.d;else delete R.visits[d.i];vch=true}}
       since=j.since||since;
-      if(sch){SCHED=pitSched();try{if(ui.view==='coach')renderAdm()}catch(e){}}
+      if(sch)SCHED=pitSched();
+      if(sch||vch){try{if(ui.view==='coach')renderAdm()}catch(e){}}
       if(mch&&pitSig(active())!==sig0)tryReload();
       if(j.more)setTimeout(poll,50)}
     catch(e){}finally{busy=false}}
@@ -3638,16 +3654,16 @@ function renderAdm(){const co=$('.coach'),B=$('#admBody');
 // ---- мобильная сводка монитора: только смотреть, без выбора и назначений ----
 // ---- инфографика загрузки: сегодня против прошлых таких же дней недели (DEMO-история) ----
 const ATT={manual:new Set()};const igR=(id,k)=>{const x=Math.sin(id*12.9898+k*78.233)*43758.5453;return x-Math.floor(x)};
-function monIG(host){if(!host)return;if(REAL){host.innerHTML='';host.hidden=true;return}if(typeof groupsInit==='function')groupsInit();const wd=new Date().toLocaleDateString('ru-RU',{weekday:'long'}),wdP={'понедельник':'понедельники','вторник':'вторники','среда':'среды','четверг':'четверги','пятница':'пятницы','суббота':'субботы','воскресенье':'воскресенья'}[wd]||'такие же дни';
-  const rows=ATHLETES.map(a=>{const m=metrics.get(a.id),st=metrics.status(m),sens=st==='live'||st==='stale',man=ATT.manual.has(a.id),here=sens||man||(!a.absent&&st!=='none'),
-      p=.62+.33*a.fit,hist=[7,6,5,4,3,2,1].map(k=>a.absent&&k<=2?false:igR(a.id,k+10)<p),C=CAB[a.id],sub=dLeft(C.sub.end)<0,inj=C.med.inj.some(t=>dLeft(t.until)>=0);
+function monIG(host){if(!host)return;if(typeof groupsInit==='function')groupsInit();const wd=new Date().toLocaleDateString('ru-RU',{weekday:'long'}),wdP={'понедельник':'понедельники','вторник':'вторники','среда':'среды','четверг':'четверги','пятница':'пятницы','суббота':'субботы','воскресенье':'воскресенья'}[wd]||'такие же дни';
+  const rows=ATHLETES.map(a=>{const m=metrics.get(a.id),st=metrics.status(m),sens=st==='live'||st==='stale',man=ATT.manual.has(a.id),here=REAL?(sens||man||pitVisited(a,0)):(sens||man||(!a.absent&&st!=='none')),
+      p=.62+.33*a.fit,hist=[7,6,5,4,3,2,1].map(k=>REAL?pitVisited(a,k):a.absent&&k<=2?false:igR(a.id,k+10)<p),C=CAB[a.id],sub=dLeft(C.sub.end)<0,inj=C.med.inj.some(t=>dLeft(t.until)>=0);
       let miss=0;for(let k=hist.length-1;k>=0&&!hist[k];k--)miss++;
       const all=[...hist,here],rate=Math.round(all.filter(Boolean).length/all.length*100);
       return{a,here,sens,man,hist,miss:here?0:miss+1,rate,why:sub?'абонемент истёк':inj?'травма / ограничения':'причина не указана'}});
   const n=rows.length,here=rows.filter(r=>r.here).length,pct=Math.round(here/n*100),
     past=[4,3,2,1].map(k=>rows.filter(r=>r.hist[7-k]).length),avgP=past.reduce((q,v)=>q+v,0)/4,d=avgP?Math.round((here/avgP-1)*100):0,
-    G=(typeof GROUPS!=='undefined'&&GROUPS?GROUPS:[]).map(g=>({n:g.name,t:g.ids.length,h:g.ids.filter(id=>rows.find(r=>r.a.id===id)?.here).length})).filter(g=>g.t);
-  if(!host.querySelector('.ig')){host.innerHTML=`<div class="ig"><div class="ig-h"><span class="label">Посещаемость · сегодня, ${wd}</span><span class="tag">датчик на связи = пришёл</span></div>
+    G=(!REAL&&typeof GROUPS!=='undefined'&&GROUPS?GROUPS:[]).map(g=>({n:g.name,t:g.ids.length,h:g.ids.filter(id=>rows.find(r=>r.a.id===id)?.here).length})).filter(g=>g.t);
+  if(!host.querySelector('.ig')){host.innerHTML=`<div class="ig"><div class="ig-h"><span class="label">Посещаемость · сегодня, ${wd}</span><span class="tag">${REAL?'отметки CRM и Arena · датчик на связи':'датчик на связи = пришёл'}</span></div>
      <div class="ig-top"><div class="ig-ring"><svg viewBox="0 0 120 120"><circle class="bg" cx="60" cy="60" r="50"/><circle class="ig-arc" cx="60" cy="60" r="50" stroke-dasharray="314.16" stroke-dashoffset="314.16"/></svg>
        <div class="ig-rv"><b class="num" data-k="here">0</b><small>из ${n} бойцов<br>пришли</small></div></div>
       <div class="ig-cmp"><div class="ig-kv"><div><small>НЕ ПРИШЛИ</small><b class="num" data-k="abs" style="color:#ff4562">0</b><em>из записанных</em></div><div><small>К ПРОШЛЫМ</small><b class="num" data-k="d">0%</b><em>${wdP} · в среднем <span data-k="avg">0</span></em></div></div>
@@ -3656,13 +3672,13 @@ function monIG(host){if(!host)return;if(REAL){host.innerHTML='';host.hidden=true
      ${G.length?`<div class="ig-zh"><span class="label">По группам</span></div><div class="ig-grp">${G.map((g,ix)=>`<div><span>${esc(g.n)}</span><div class="ig-bar"><i data-g="${ix}"></i></div><em class="num" data-gn="${ix}">0/${g.t}</em></div>`).join('')}</div>`:''}
      <div class="ig-zh"><span class="label">Посещаемость бойцов · последние 8 ${wdP} <i class="ig-dot on"></i> был <i class="ig-dot"></i> пропуск</span></div>
      <div class="ig-list">${rows.map(r=>`<div class="ig-row ig-at" data-id="${r.a.id}"><span>${esc(r.a.name)}</span><div class="ig-dots">${r.hist.map(()=>'<i class="ig-dot"></i>').join('')}<i class="ig-dot td"></i></div><em class="num">—</em></div>`).join('')}</div></div>`;
-    host.querySelector('.ig').addEventListener('click',e=>{const b=e.target.closest('[data-chk]');if(!b)return;const id=+b.dataset.chk;ATT.manual.add(id);toast(`${byId.get(id).name} отмечен вручную: пришёл без датчика`);monIG(host)})}
+    host.querySelector('.ig').addEventListener('click',e=>{const b=e.target.closest('[data-chk]');if(!b)return;const id=+b.dataset.chk;ATT.manual.add(id);if(REAL)pitMarkVisit(byId.get(id));toast(`${byId.get(id).name} отмечен: пришёл${REAL?' · записано в CRM':' без датчика'}`);monIG(host)})}
   const st=host.querySelector('.ig'),set=(k,v)=>{const e=st.querySelector(`[data-k="${k}"]`);if(e)e.textContent=v};
   requestAnimationFrame(()=>{const arc=st.querySelector('.ig-arc'),c=pct>=85?'#2fd27a':pct>=70?'#ffc93c':'#ff4562';arc.style.stroke=c;arc.closest('.ig-ring').style.setProperty('--igc',c);arc.style.strokeDashoffset=314.16*(1-pct/100);
     set('here',here);set('abs',n-here);set('avg',String(Math.round(avgP*10)/10).replace('.',','));const de=st.querySelector('[data-k="d"]');de.textContent=(d>0?'+':'')+d+'%';de.style.color=d>=0?'#2fd27a':'#ff4562';
     const all=[...past,here],mx=Math.max(...all),mn=Math.min(...all)-2,rg=Math.max(1,mx-mn);
     st.querySelectorAll('[data-dk]').forEach(e=>{const k=+e.dataset.dk,v=k?past[4-k]:here;e.style.height=(18+(v-mn)/rg*70)+'%';if(!k)e.style.setProperty('--c',c);st.querySelector(`[data-dv="${k}"]`).textContent=v});
-    const ab=rows.filter(r=>!r.here),al=st.querySelector('[data-k="absl"]'),ak=ab.map(r=>r.a.id+':'+r.miss).join(',');if(al.dataset.key!==ak){al.dataset.key=ak;al.innerHTML=ab.map(r=>`<div class="ig-ab"><div><b>${esc(r.a.name)}</b> ${u18Badge(r.a)}<small>${r.why} · пропуск ${r.miss} ${r.miss%10>=2&&r.miss%10<=4&&(r.miss<10||r.miss>20)?'раза':'раз'} подряд</small></div><button class="btn" data-chk="${r.a.id}">ПРИШЁЛ</button></div>`).join('')||'<div class="muted small">Сегодня пришли все записанные</div>'}
+    const ab=rows.filter(r=>!r.here).sort((x,y)=>REAL?(y.rate-x.rate)||x.a.name.localeCompare(y.a.name,'ru'):0),al=st.querySelector('[data-k="absl"]'),ak=ab.map(r=>r.a.id+':'+r.miss).join(',');if(al.dataset.key!==ak){al.dataset.key=ak;al.innerHTML=ab.map(r=>`<div class="ig-ab"><div><b>${esc(r.a.name)}</b> ${u18Badge(r.a)}<small>${REAL?(r.why==='абонемент истёк'?'абонемент истёк · ':'')+(r.hist.some(Boolean)?`пропуск ${r.miss} ${r.miss%10>=2&&r.miss%10<=4&&(r.miss<10||r.miss>20)?'раза':'раз'} подряд`:'ещё не отмечался'):`${r.why} · пропуск ${r.miss} ${r.miss%10>=2&&r.miss%10<=4&&(r.miss<10||r.miss>20)?'раза':'раз'} подряд`}</small></div><button class="btn" data-chk="${r.a.id}">ПРИШЁЛ</button></div>`).join('')||'<div class="muted small">Сегодня пришли все записанные</div>'}
     G.forEach((g,ix)=>{const e=st.querySelector(`[data-g="${ix}"]`);if(e){e.style.width=(g.h/g.t*100)+'%';e.style.background=g.h===g.t?'#2fd27a':'#ffc93c'}const t=st.querySelector(`[data-gn="${ix}"]`);if(t)t.textContent=g.h+'/'+g.t});
     rows.slice().sort((x,y)=>x.rate-y.rate).forEach((r,ix)=>{const e=st.querySelector(`.ig-row[data-id="${r.a.id}"]`);if(!e)return;e.style.order=ix;
       const ds=e.querySelectorAll('.ig-dot');r.hist.forEach((v,k)=>{ds[k].classList.toggle('on',v);ds[k].style.transitionDelay=(k*60)+'ms'});ds[ds.length-1].classList.toggle('on',r.here);ds[ds.length-1].classList.toggle('no',!r.here);

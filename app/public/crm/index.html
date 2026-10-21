@@ -272,6 +272,7 @@ function vToday(){
   const need=[...exp,...soon].sort((a,b)=>String(a.m.end).localeCompare(String(b.m.end)));
   return`<div class="head"><div><h1>Сегодня</h1><p class="sub">${esc(dn)}</p></div>
     <button class="btn gold w-only" data-act="new">+ Новый боец</button></div>
+  ${(()=>{const n=(S.leads||[]).filter(pitPending).length;return n?`<button class="card" data-pitgo="1" style="display:flex;align-items:center;justify-content:space-between;gap:.8rem;width:100%;text-align:left;cursor:pointer;border-color:var(--gold);font:inherit;color:inherit"><span><b>${n} ${n===1?'регистрация':n<5?'регистрации':'регистраций'} в My PIT ждут одобрения</b><small style="display:block;color:var(--muted);font-size:.8rem">Бойцы зарегистрировались сами. Подтвердите или привяжите к карточке.</small></span><span class="pill gold">Открыть</span></button>`:''})()}
   ${le||`<div class="kpis">
     <button class="kpi" data-goflt="active"><b>${act.length-exp.length}</b><span>активных абонементов</span></button>
     <button class="kpi ok" data-goflt="today"><b>${ids.size}</b><span>пришли сегодня</span></button>
@@ -518,7 +519,7 @@ function toast(t){let e=$('#toastEl');if(!e){e=document.createElement('div');e.i
 async function write(fn,ok){if(!DB){toast('База недоступна в этом окне');return false}
   try{await fn();if(ok){toast(ok);audit(ok)}return true}catch(e){if(e&&e.code==='invalid_argument'&&!S.canWriteChecked){S.canWrite=false;render();toast('У вас доступ только для просмотра')}else toast('Не сохранилось: '+(e&&e.message||'ошибка базы'));return false}}
 async function markVisit(id){const m=S.members.find(x=>x.id===id);if(!m)return;const d=today(),cur=(S.visits[d]||{}).ids||[];if(cur.includes(id))return;
-  const okV=await write(()=>DB.doc('visits/'+d).set({date:d,ids:[...cur,id],t:{...((S.visits[d]||{}).t||{}),[id]:nowHM()}}));if(!okV)return;
+  const okV=await write(async()=>{if(window.PIT&&PIT.push){await PIT.push('visits',d,'ids',id,{date:d,ids:[],t:{}},2000);await DB.doc('visits/'+d).update({t:{...((S.visits[d]||{}).t||{}),[id]:nowHM()}})}else await DB.doc('visits/'+d).set({date:d,ids:[...cur,id],t:{...((S.visits[d]||{}).t||{}),[id]:nowHM()}})});if(!okV)return;
   audit('Посещение: '+m.name,{mid:id});
   if(m.left!=null&&m.left>0)await write(()=>DB.doc('members/'+id).update({left:m.left-1}));
   if(frozenNow(m))toast(m.name+': абонемент заморожен — проверьте');
@@ -561,6 +562,7 @@ function bindSched(v){
   const cf=$('#cof',v);if(cf)cf.addEventListener('submit',e=>{e.preventDefault();const n=$('#co_n',v).value.trim();if(!n)return;saveSch({coaches:[...SCH().coaches,{k:'co'+Date.now().toString(36),n}]},'Тренер добавлен: '+n)});
 }
 function bindView(v){
+  const pg=v.querySelector('[data-pitgo]');if(pg)pg.addEventListener('click',()=>{S.tab='leads';S.lflt='open';render();scrollTo(0,0)});
   v.querySelectorAll('[data-open]').forEach(b=>{const go=e=>{if(e.target.closest('[data-visit]'))return;S.open=b.dataset.open;S.drMode='view';renderDrawer()};b.addEventListener('click',go);b.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();go(e)}})});
   v.querySelectorAll('[data-visit]').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation();markVisit(b.dataset.visit)}));
   v.querySelectorAll('[data-goflt]').forEach(b=>b.addEventListener('click',()=>{S.tab='members';S.flt=b.dataset.goflt;render();scrollTo(0,0)}));
@@ -673,6 +675,7 @@ function awayList(){const n=SET().retDays,ref=TRACK0>today()?today():TRACK0;
   return S.members.filter(m=>m.kind!=='staff'&&!frozenNow(m)&&!['exp','none'].includes(status(m).k)).map(m=>{const ls=lastSeen(m),base=[ls,m.start,ref].filter(Boolean).sort().pop();return{m,ls,days:-daysLeft(base)}}).filter(x=>x.days>=n).sort((a,b)=>b.days-a.days)}
 
 /* ---------- заявки и пробные ---------- */
+const pitPending=x=>!!(x&&x.pit&&!x.approved&&!x.rejected&&(x.status||'new')==='new');
 const LSTAT=[['new','Новая','info'],['booked','Записан на пробное','warn'],['done','Пробное прошёл','gold'],['bought','Купил абонемент','ok'],['lost','Отказ','bad']];
 const LSRC=['PIT · регистрация','Instagram','Google / карты','Рекомендация','Мимо проходил','Сайт','Другое'];
 const LLOST=['Дорого','Не подошло расписание','Далеко','Не понравилось','Не пришёл на пробное','Другое'];
@@ -685,7 +688,7 @@ function vLeads(){const L=S.leads.slice().sort((a,b)=>String(b.ts).localeCompare
    <button class="btn gold w-only" data-act="leadnew">+ Заявка</button></div>
   <div class="kpis"><div class="kpi"><b>${c('new')}</b><span>новые заявки</span></div><div class="kpi warn"><b>${c('booked')}</b><span>записаны на пробное</span></div><div class="kpi gold"><b>${c('done')}</b><span>были на пробном, думают</span></div><div class="kpi ok"><b>${c('bought')}</b><span>купили абонемент</span></div><div class="kpi"><b>${conv}%</b><span>конверсия за 30 дней</span></div></div>
   <div class="chips">${[['open','В работе'],['all','Все'],...LSTAT.map(x=>[x[0],x[1]])].map(([k,t])=>`<button class="chip" data-lflt="${k}" aria-pressed="${f===k}">${t}</button>`).join('')}</div>
-  <section class="card" style="padding:.6rem"><div class="list">${R.map(x=>{const st=lst(x.status);return`<button class="row" data-lead="${x.id}" style="grid-template-columns:minmax(0,1fr) auto"><span class="nm">${esc(x.name)}<small>${esc(x.disc||'—')} · ${x.kind==='ind'?'индивидуальное':'группа'} · ${esc(x.source||'')}${x.trialDate?' · пробное '+fmtD(x.trialDate):''}</small></span><span class="pill ${st[2]}">${st[1]}</span></button>`}).join('')||'<div class="empty">Заявок нет. Добавьте первую через «+ Заявка» — например, звонок или сообщение в Instagram.</div>'}</div></section>`}
+  <section class="card" style="padding:.6rem"><div class="list">${R.map(x=>{const st=pitPending(x)?['p','Ждёт одобрения','gold']:lst(x.status);return`<button class="row" data-lead="${x.id}" style="grid-template-columns:minmax(0,1fr) auto"><span class="nm">${esc(x.name)}<small>${esc(x.disc||'—')} · ${x.kind==='ind'?'индивидуальное':'группа'} · ${esc(x.source||'')}${x.trialDate?' · пробное '+fmtD(x.trialDate):''}${x.match&&pitPending(x)?' · похоже на '+esc(x.match.name):''}</small></span><span class="pill ${st[2]}">${st[1]}</span></button>`}).join('')||'<div class="empty">Заявок нет. Добавьте первую через «+ Заявка» — например, звонок или сообщение в Instagram.</div>'}</div></section>`}
 function leadDrawer(){const host=$('#ovHost'),x=S.ov.id==='new'?{status:'new',kind:'group',disc:'MMA',source:'Instagram'}:S.leads.find(l=>l.id===S.ov.id);if(!x){ovClose();return}
   const s=SET(),price=x.kind==='ind'?s.trialInd:s.trialGroup,st=lst(x.status),isNew=S.ov.id==='new';
   const form=`<form class="card form" id="lf"><label class="f">Имя и фамилия<input type="text" id="l_n" value="${esc(x.name||'')}" required></label>
@@ -705,6 +708,13 @@ function leadDrawer(){const host=$('#ovHost'),x=S.ov.id==='new'?{status:'new',ki
     if(['new','booked','done'].includes(x.status))act+=`<section class="card"><h2>Отказ</h2><div class="acts">${LLOST.map(r=>`<button class="btn sm" type="button" data-llost="${esc(r)}">${esc(r)}</button>`).join('')}</div></section>`;
     if(x.status==='bought'&&x.mid)act=`<section class="card"><h2>Стал бойцом</h2><button class="btn" type="button" data-lmember="${x.mid}">Открыть карточку бойца</button></section>`;
     if(x.status==='lost')act=`<section class="card"><h2>Отказ: ${esc(x.lostReason||'')}</h2><button class="btn sm" type="button" data-lmove="new">Вернуть в работу</button></section>`;
+    if(pitPending(x)){const opts=S.members.slice().sort((a,b)=>String(a.name).localeCompare(String(b.name),'ru')).map(m=>`<option value="${esc(m.id)}" ${x.match&&x.match.id===m.id?'selected':''}>${esc(m.name)}${m.phone?' · '+esc(m.phone):''}</option>`).join('');
+      act=`<section class="card" style="border-color:var(--gold)"><h2>Регистрация в My PIT · ждёт одобрения</h2>
+        <p class="note" style="margin:0 0 .7rem">${esc(x.email||'')} · ${esc(x.phone||'')} · ${esc(x.age||'')} лет · ${esc(x.disc||'')}${x.note?'<br>'+esc(x.note):''}</p>
+        ${x.match?`<p style="margin:0 0 .7rem">Похоже, это боец клуба: <b>${esc(x.match.name)}</b> (совпал e-mail или телефон).</p><div class="acts" style="margin-bottom:.7rem"><button class="btn gold" type="button" data-papp="link" data-mid="${esc(x.match.id)}">Подтвердить и привязать к ${esc(x.match.name)}</button></div>`:''}
+        <div class="acts"><button class="btn ${x.match?'':'gold'}" type="button" data-papp="new">Одобрить как новую заявку</button></div>
+        <form class="form" id="plink" style="margin-top:.7rem"><label class="f">Это уже наш боец — привязать к карточке<select id="pl_m"><option value="">— выберите бойца —</option>${opts}</select></label><div class="acts" style="align-self:end"><button class="btn" type="submit">Привязать</button></div></form>
+        <div class="acts" style="margin-top:.7rem"><button class="btn sm danger" type="button" data-papp="reject">Отклонить</button></div></section>`}
   }
   host.innerHTML=ovShell(isNew?'Новая заявка':x.name,isNew?'':`<span class="pill ${st[2]}">${st[1]}</span>`,act+form+(isNew?'':`<p class="note">Заявка от ${fmtD(String(x.ts).slice(0,10))}${x.trialPaid?` · пробное оплачено ${lira(x.trialPaid)}`:''}</p>`));
   ovBindClose(host);
@@ -714,6 +724,12 @@ function leadDrawer(){const host=$('#ovHost'),x=S.ov.id==='new'?{status:'new',ki
     const ref=isNew?DB.collection('leads').doc():DB.doc('leads/'+x.id);
     if(await write(()=>ref.set(d),isNew?'Заявка: '+name:'Заявка сохранена')){S.ov={type:'lead',id:ref.id};renderOv()}});
   const up=(patch,msg)=>write(()=>DB.doc('leads/'+x.id).update(patch),msg+': '+x.name);
+  const apv={approved:true,approvedAt:today(),approvedBy:ME||null};
+  const linkTo=mid=>{const m=S.members.find(z=>z.id===mid);if(!m)return;up({...apv,status:'bought',mid,boughtAt:today(),match:{id:mid,name:m.name}},'Привязан к карточке '+m.name)};
+  host.querySelectorAll('[data-papp]').forEach(b=>b.addEventListener('click',()=>{const k=b.dataset.papp;
+    if(k==='link')linkTo(b.dataset.mid);else if(k==='new')up(apv,'Заявка одобрена');
+    else if(k==='reject'){if(!b.dataset.sure){b.dataset.sure=1;b.textContent='Точно отклонить?';return}up({approved:false,rejected:true,status:'lost',lostReason:'Отклонена клубом'},'Заявка отклонена')}}));
+  const pl=$('#plink',host);if(pl)pl.addEventListener('submit',e=>{e.preventDefault();const mid=$('#pl_m',host).value;if(!mid){toast('Выберите бойца');return}linkTo(mid)});
   const lb=$('#lbook',host);if(lb)lb.addEventListener('submit',e=>{e.preventDefault();up({status:'booked',trialDate:$('#lb_d',host).value},'Записан на пробное '+fmtD($('#lb_d',host).value))});
   const ld=$('#ldone',host);if(ld)ld.addEventListener('submit',async e=>{e.preventDefault();const method=$('#ld_m',host).value;
     if(await write(()=>DB.collection('payments').doc().set({kind:'trial',lid:x.id,name:x.name,sum:price,date:today(),method,what:'Пробное · '+(x.kind==='ind'?'индивидуальное':'группа'),src:'pit'})))up({status:'done',trialPaid:price,trialDone:today()},'Пробное оплачено '+lira(price))});

@@ -50,7 +50,7 @@ async function view(env, email) {
   if (!f.mid && f.lead) {
     // админ оформил абонемент по заявке — привяжем аккаунт к карточке бойца
     const l = await getDoc(env, 'leads', f.lead);
-    if (l && l.mid) { f.mid = l.mid; await env.DB.prepare('UPDATE fighters SET mid=? WHERE email=?').bind(l.mid, email).run() }
+    if (l && l.mid && (l.approved || l.status === 'bought')) { f.mid = l.mid; await env.DB.prepare('UPDATE fighters SET mid=? WHERE email=?').bind(l.mid, email).run() }
   }
   if (f.mid) {
     const m = await getDoc(env, 'members', f.mid);
@@ -63,7 +63,7 @@ async function view(env, email) {
   }
   if (f.lead) {
     const l = await getDoc(env, 'leads', f.lead);
-    if (l) out.lead = { status: l.status || 'new', trialDate: l.trialDate || null };
+    if (l) out.lead = { status: l.rejected ? 'rejected' : (!l.approved && (l.status || 'new') === 'new') ? 'pending' : (l.status || 'new'), trialDate: l.trialDate || null };
   }
   return out;
 }
@@ -101,17 +101,16 @@ export async function myRoutes(req, env, path, email) {
     parent, parentConsent: minor ? true : null, lang: clean(p.lang, 2) || 'ru', updatedAt: now(), createdAt: cur ? JSON.parse(cur.data).createdAt || now() : now(),
   };
   const t = Date.now(), stmts = [];
+  // Любая регистрация проходит одобрение администратора клуба. Совпадение с бойцом CRM — только подсказка админу.
   let mid = cur?.mid || null, lead = cur?.lead || null;
   if (!mid && !lead) {
     const hit = await findMember(env, email, phone);
-    if (hit) mid = hit.id;
-    else {
-      lead = 'pit' + (await sha(email)).slice(0, 18);
-      stmts.push(putDoc(env, 'leads', lead, {
-        name: last + ' ' + first, phone, email, disc, kind, age: String(age), source: 'PIT · регистрация', status: 'new', by: 'PIT',
-        note: (minor ? `U18 · родитель: ${parent.name}, ${parent.phone}. ` : '') + (profile.note || ''), ts: now(), pit: true,
-      }, 'pit:' + email));
-    }
+    lead = 'pit' + (await sha(email)).slice(0, 18);
+    stmts.push(putDoc(env, 'leads', lead, {
+      name: last + ' ' + first, phone, email, disc, kind, age: String(age), source: 'PIT · регистрация', status: 'new', by: 'PIT',
+      note: (minor ? `U18 · родитель: ${parent.name}, ${parent.phone}. ` : '') + (profile.note || ''), ts: now(), pit: true, approved: false,
+      match: hit ? { id: hit.id, name: hit.m.name } : null,
+    }, 'pit:' + email));
   } else if (lead) {
     // заявка ещё открыта — обновим данные в ней
     const l = await getDoc(env, 'leads', lead);

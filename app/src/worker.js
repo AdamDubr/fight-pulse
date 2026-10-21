@@ -221,16 +221,18 @@ async function arenaReal(req, env) {
   const mx = await env.DB.prepare('SELECT COALESCE(MAX(seq),0) AS s FROM docs').first();
   const sch = await env.DB.prepare("SELECT data FROM docs WHERE col='club' AND id='schedule' AND deleted=0").first();
   const ev = await env.DB.prepare("SELECT id,data FROM docs WHERE col='events' AND deleted=0").all();
+  const vs = await env.DB.prepare("SELECT id,data FROM docs WHERE col='visits' AND deleted=0 AND id>=?").bind(new Date(Date.now() - 70 * 864e5).toISOString().slice(0, 10)).all();
+  const visits = {}; for (const x of vs.results || []) { try { const v = JSON.parse(x.data); visits[x.id] = { date: v.date || x.id, ids: v.ids || [] } } catch (e) { } }
   const events = {}; for (const x of ev.results || []) { try { const e = JSON.parse(x.data); events[x.id] = { title: e.title, date: e.date, end: e.end || null } } catch (e) { } }
   const today = new Date().toISOString().slice(0, 10);
   const age = d => { if (!/^\d{4}-\d{2}-\d{2}$/.test(d || '')) return null; const b = new Date(d), n = new Date(); let a = n.getFullYear() - b.getFullYear(); if (n < new Date(n.getFullYear(), b.getMonth(), b.getDate())) a--; return a > 3 && a < 90 ? a : null };
   const all = (r.results || []).map(x => { let m = {}; try { m = JSON.parse(x.data) } catch (e) { } return { id: x.id, m } });
-  const membersAll = all.map(({ id, m }) => ({ id, name: m.name, disc: m.disc, kind: m.kind, end: m.end || '', frozen: !!m.frozen, consentPublic: m.consentPublic || null }));
+  const membersAll = all.map(({ id, m }) => ({ id, name: m.name, disc: m.disc, kind: m.kind, end: m.end || '', frozen: !!m.frozen, consentPublic: m.consentPublic || null, left: m.left ?? null }));
   const members = all
     .filter(({ m }) => m && m.name && !m.frozen && (m.kind === 'staff' || !m.end || m.end >= today))
     .map(({ id, m }) => ({ id, name: m.name, first: m.first || m.name, disc: m.disc || 'MMA', kind: m.kind || 'group', age: age(m.dob), consentPublic: m.consentPublic || null, end: m.end || '', start: m.start || '', plan: m.plan || '', left: m.left ?? null }))
     .sort((a, b) => a.name.localeCompare(b.name, 'ru'));
-  const inj = '<script>window.PIT_REAL=' + JSON.stringify({ club: env.CLUB || 'mowgli', since: mx ? mx.s : 0, members, membersAll, schedule: sch ? JSON.parse(sch.data) : null, events }).replace(/</g, '\\u003c') + '</script>';
+  const inj = '<script>window.PIT_REAL=' + JSON.stringify({ club: env.CLUB || 'mowgli', since: mx ? mx.s : 0, members, membersAll, schedule: sch ? JSON.parse(sch.data) : null, events, visits }).replace(/</g, '\\u003c') + '</script>';
   const html = (await res.text()).replace('<meta charset="utf-8">', '<meta charset="utf-8">' + inj);
   return new Response(html, { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' } });
 }

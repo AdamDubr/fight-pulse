@@ -76,7 +76,7 @@ ru:{loading:'Загрузка…',out:'Выйти',regH:'Регистрация 
  u18H:'Боец младше 18 лет',u18P:'Нужен родитель или законный представитель.',pName:'Имя родителя',pPhone:'Телефон родителя',pOk:'Я — родитель / законный представитель и даю согласие на занятия и обработку данных',
  consH:'Согласия',cData:'Согласен на обработку моих данных клубом и PIT RATING',cDataS:'Обязательно. Имя, контакты, дата рождения, посещения и показатели тренировок.',cPhoto:'Фото и видео с тренировок',cPhotoS:'Клуб может использовать в своих соцсетях.',cPub:'Показывать моё имя и пульс на экранах зала и в рейтинге',cPubS:'Можно выключить в любой момент.',cMsg:'Сообщения от клуба',cMsgS:'Расписание, напоминания, акции.',
  send:'Зарегистрироваться',save:'Сохранить',cancel:'Отмена',edit:'Изменить анкету',del:'Удалить мои данные',delSure:'Точно удалить? Нажмите ещё раз',
- hi:'Привет',st_member:'Боец клуба',st_new:'Заявка отправлена',st_booked:'Записан на пробное',st_done:'Пробное пройдено',st_bought:'Абонемент оформлен',st_lost:'Заявка закрыта',
+ hi:'Привет',st_pending:'Ждёт подтверждения клуба',st_rejected:'Клуб отклонил заявку',pendingP:'Администратор клуба проверит анкету и подтвердит. После этого здесь появятся ваш абонемент и посещения.',rejectedP:'Если это ошибка — свяжитесь с администратором клуба.',st_member:'Боец клуба',st_new:'Заявка отправлена',st_booked:'Записан на пробное',st_done:'Пробное пройдено',st_bought:'Абонемент оформлен',st_lost:'Заявка закрыта',
  newP:'Клуб получил вашу заявку. Администратор свяжется с вами, чтобы выбрать время пробного занятия.',bookedP:d=>`Пробное занятие: ${d}. Возьмите форму, воду и полотенце.`,doneP:'Спасибо, что пришли! Администратор поможет выбрать абонемент.',lostP:'Если передумали — напишите администратору клуба.',
  sub:'Абонемент',until:'до',left:'осталось занятий',vMonth:'посещений в этом месяце',vTotal:'всего посещений',frozen:'заморожен',noEnd:'без срока',
  soonH:'Скоро в My PIT',soonP:'Пульс и нагрузка с тренировок, рейтинг PIT, турниры и прогресс — появятся, когда клуб подключит датчики.',
@@ -86,7 +86,7 @@ en:{loading:'Loading…',out:'Sign out',regH:'Fighter sign-up',regP:'Two minutes
  u18H:'Fighter under 18',u18P:'A parent or legal guardian is required.',pName:'Parent name',pPhone:'Parent phone',pOk:'I am the parent / legal guardian and consent to training and data processing',
  consH:'Consents',cData:'I agree to the club and PIT RATING processing my data',cDataS:'Required. Name, contacts, date of birth, visits and training metrics.',cPhoto:'Photos and videos from training',cPhotoS:'The club may post them on its social media.',cPub:'Show my name and heart rate on gym screens and in the rating',cPubS:'You can turn it off at any time.',cMsg:'Messages from the club',cMsgS:'Schedule, reminders, offers.',
  send:'Sign up',save:'Save',cancel:'Cancel',edit:'Edit profile',del:'Delete my data',delSure:'Sure? Tap again to delete',
- hi:'Hi',st_member:'Club member',st_new:'Request sent',st_booked:'Trial booked',st_done:'Trial done',st_bought:'Membership active',st_lost:'Request closed',
+ hi:'Hi',st_pending:'Waiting for club approval',st_rejected:'The club declined',pendingP:'The club admin will review and approve your profile. Then your membership and visits will appear here.',rejectedP:'If this is a mistake, contact the club admin.',st_member:'Club member',st_new:'Request sent',st_booked:'Trial booked',st_done:'Trial done',st_bought:'Membership active',st_lost:'Request closed',
  newP:'The club has your request. An admin will contact you to pick a trial time.',bookedP:d=>`Trial class: ${d}. Bring gear, water and a towel.`,doneP:'Thanks for coming! The admin will help you choose a membership.',lostP:'Changed your mind? Message the club admin.',
  sub:'Membership',until:'until',left:'sessions left',vMonth:'visits this month',vTotal:'total visits',frozen:'frozen',noEnd:'no end date',
  soonH:'Coming to My PIT',soonP:'Heart rate and load from training, PIT rating, tournaments and progress — once your club connects sensors.',
@@ -96,7 +96,7 @@ tr:{loading:'Yükleniyor…',out:'Çıkış',regH:'Sporcu kaydı',regP:'İki dak
  u18H:'18 yaş altı sporcu',u18P:'Veli veya yasal temsilci gerekli.',pName:'Veli adı',pPhone:'Veli telefonu',pOk:'Veli / yasal temsilciyim; antrenmana ve veri işlemeye onay veriyorum',
  consH:'Onaylar',cData:'Verilerimin kulüp ve PIT RATING tarafından işlenmesini kabul ediyorum',cDataS:'Zorunlu. Ad, iletişim, doğum tarihi, katılım ve antrenman verileri.',cPhoto:'Antrenman foto ve videoları',cPhotoS:'Kulüp sosyal medyasında kullanabilir.',cPub:'Adım ve nabzım salon ekranlarında ve sıralamada görünsün',cPubS:'İstediğiniz zaman kapatabilirsiniz.',cMsg:'Kulüpten mesajlar',cMsgS:'Program, hatırlatmalar, kampanyalar.',
  send:'Kayıt ol',save:'Kaydet',cancel:'İptal',edit:'Profili düzenle',del:'Verilerimi sil',delSure:'Emin misiniz? Silmek için tekrar dokunun',
- hi:'Merhaba',st_member:'Kulüp sporcusu',st_new:'Başvuru gönderildi',st_booked:'Deneme dersi ayarlandı',st_done:'Deneme dersi tamamlandı',st_bought:'Üyelik aktif',st_lost:'Başvuru kapandı',
+ hi:'Merhaba',st_pending:'Kulüp onayı bekleniyor',st_rejected:'Kulüp başvuruyu reddetti',pendingP:'Kulüp yöneticisi profilinizi inceleyip onaylayacak. Ardından üyeliğiniz ve katılımlarınız burada görünecek.',rejectedP:'Bir hata olduğunu düşünüyorsanız kulüp yöneticisiyle iletişime geçin.',st_member:'Kulüp sporcusu',st_new:'Başvuru gönderildi',st_booked:'Deneme dersi ayarlandı',st_done:'Deneme dersi tamamlandı',st_bought:'Üyelik aktif',st_lost:'Başvuru kapandı',
  newP:'Kulüp başvurunuzu aldı. Yönetici deneme dersi saati için sizinle iletişime geçecek.',bookedP:d=>`Deneme dersi: ${d}. Kıyafet, su ve havlu getirin.`,doneP:'Geldiğiniz için teşekkürler! Yönetici üyelik seçiminde yardımcı olacak.',lostP:'Fikrinizi değiştirdiyseniz kulüp yöneticisine yazın.',
  sub:'Üyelik',until:'bitiş',left:'kalan ders',vMonth:'bu ay katılım',vTotal:'toplam katılım',frozen:'donduruldu',noEnd:'süresiz',
  soonH:'Yakında My PIT’te',soonP:'Antrenman nabzı ve yükü, PIT sıralaması, turnuvalar ve gelişim — kulübünüz sensörleri bağladığında.',
@@ -155,8 +155,8 @@ function statusCard(){
       <p style="margin:.6rem 0 0;font-weight:700">${esc(s.plan||'—')}${s.frozen?` · <span class="pill info">${t('frozen')}</span>`:''}</p>
       <div class="kv"><div><b>${s.end?fd(s.end).replace(/\s\d{4}.*$/,''):'∞'}</b><span>${s.end?t('until'):t('noEnd')}</span></div>
       <div><b>${s.left??'—'}</b><span>${t('left')}</span></div><div><b>${s.visits?.month??0}</b><span>${t('vMonth')}</span></div></div></section>`}
-  const st=D.lead?.status||'new',cls={new:'gold',booked:'warn',done:'info',bought:'ok',lost:'bad'}[st]||'gold';
-  const p={new:t('newP'),booked:T[L].bookedP(fd(D.lead?.trialDate)),done:t('doneP'),bought:'',lost:t('lostP')}[st]||t('newP');
+  const st=D.lead?.status||'pending',cls={pending:'gold',new:'gold',booked:'warn',done:'info',bought:'ok',lost:'bad',rejected:'bad'}[st]||'gold';
+  const p={pending:t('pendingP'),rejected:t('rejectedP'),new:t('newP'),booked:T[L].bookedP(fd(D.lead?.trialDate)),done:t('doneP'),bought:'',lost:t('lostP')}[st]||t('newP');
   return `<section class="card"><span class="pill ${cls}">● ${t('st_'+st)||t('st_new')}</span><p style="margin:.7rem 0 0">${p}</p></section>`}
 
 function home(){const p=D.profile,a=ageOf(p.dob),ini=((p.first||'')[0]||'')+((p.last||'')[0]||'');
