@@ -228,7 +228,7 @@ async function arenaReal(req, env) {
   const membersAll = all.map(({ id, m }) => ({ id, name: m.name, disc: m.disc, kind: m.kind, end: m.end || '', frozen: !!m.frozen, consentPublic: m.consentPublic || null }));
   const members = all
     .filter(({ m }) => m && m.name && !m.frozen && (m.kind === 'staff' || !m.end || m.end >= today))
-    .map(({ id, m }) => ({ id, name: m.name, first: m.first || String(m.name).split(/\s+/).slice(-1)[0], disc: m.disc || 'MMA', kind: m.kind || 'group', age: age(m.dob), consentPublic: m.consentPublic || null, end: m.end || '', start: m.start || '', plan: m.plan || '', left: m.left ?? null }))
+    .map(({ id, m }) => ({ id, name: m.name, first: m.first || m.name, disc: m.disc || 'MMA', kind: m.kind || 'group', age: age(m.dob), consentPublic: m.consentPublic || null, end: m.end || '', start: m.start || '', plan: m.plan || '', left: m.left ?? null }))
     .sort((a, b) => a.name.localeCompare(b.name, 'ru'));
   const inj = '<script>window.PIT_REAL=' + JSON.stringify({ club: env.CLUB || 'mowgli', since: mx ? mx.s : 0, members, membersAll, schedule: sch ? JSON.parse(sch.data) : null, events }).replace(/</g, '\\u003c') + '</script>';
   const html = (await res.text()).replace('<meta charset="utf-8">', '<meta charset="utf-8">' + inj);
