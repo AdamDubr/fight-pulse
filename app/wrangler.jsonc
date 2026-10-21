@@ -11,7 +11,7 @@
   // OWNER_EMAILS — секрет (Settings → Variables and Secrets), не хранится в репозитории
   "vars": {
     "ACCESS_TEAM": "royal-bar-2529",
-    "ACCESS_AUD": "REPLACE_WITH_ACCESS_AUD",
+    "ACCESS_AUD": "fd58d569705a55f34ebd544206d97d099f76df2cbf4b16ed872ec465ab7285e6",
     "CLUB": "mowgli"
   },
   "routes": [ { "pattern": "app.pitrating.com", "custom_domain": true } ],
