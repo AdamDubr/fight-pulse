@@ -105,13 +105,14 @@ function apply(){document.documentElement.lang=L;document.querySelectorAll('[dat
 document.querySelectorAll('.lang button').forEach(b=>b.onclick=()=>{L=b.dataset.l;try{localStorage.setItem('pit.lang',L)}catch(e){}apply()});apply();
 const msg=(t,c)=>{const m=$('#msg');m.textContent=t||'';m.className='msg '+(c||'')};
 let EMAIL='',timer=null;
-try{const e=localStorage.getItem('pit.email');if(e)$('#em').value=e}catch(e){}
+// e-mail не подставляем: на общих устройствах (планшет зала, телефон тренера) легко войти не в тот аккаунт
+try{localStorage.removeItem('pit.email')}catch(e){}
 async function post(u,b){const r=await fetch(u,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(b),credentials:'same-origin'});let j={};try{j=await r.json()}catch(e){}return{ok:r.ok,status:r.status,j}}
 function err(j){const t=T[L];if(j.error==='wait')return t.wait(j.wait);if(j.error==='bad_code')return t.bad+(j.left!=null?' · '+t.left(j.left):'');return t[j.error]||t[{bad_email:'email'}[j.error]]||t.mail}
 function cool(s){const b=$('#again');clearInterval(timer);let n=s;b.disabled=true;b.textContent=T[L].wait(n);timer=setInterval(()=>{n--;if(n<=0){clearInterval(timer);b.disabled=false;b.textContent=T[L].again}else b.textContent=T[L].wait(n)},1000)}
 async function send(){msg('');const e=$('#em').value.trim().toLowerCase();if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e)){msg(T[L].email,'bad');return false}
   $('#b1').disabled=true;try{const r=await post('/auth/start',{email:e,lang:L,purpose:FIGHTER?'fighter':'staff'});if(!r.ok&&r.j.error!=='wait'){msg(err(r.j),'bad');return false}
-  EMAIL=e;try{localStorage.setItem('pit.email',e)}catch(x){}$('#to').textContent=e;$('#f1').hidden=true;$('#f2').hidden=false;msg(T[L].sent,'ok');cool(r.j.wait||45);setTimeout(()=>$('#cd').focus(),50);return true}
+  EMAIL=e;$('#to').textContent=e;$('#f1').hidden=true;$('#f2').hidden=false;msg(T[L].sent,'ok');cool(r.j.wait||45);setTimeout(()=>$('#cd').focus(),50);return true}
   catch(x){msg(T[L].net,'bad');return false}finally{$('#b1').disabled=false}}
 $('#f1').onsubmit=e=>{e.preventDefault();send()};
 $('#again').onclick=()=>{$('#em').value=EMAIL;send()};
