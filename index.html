@@ -5772,10 +5772,10 @@ const ALIAS={name:['ad soyad','adı soyadı','adi soyadi','ad-soyad','isim soyis
  first:['ad','adı','adi','first name','firstname','имя'],last:['soyad','soyadı','soyadi','last name','lastname','surname','фамилия'],
  phone:['telefon','tel','gsm','cep','cep telefonu','phone','mobile','phone number','телефон','мобильный'],email:['e-posta','eposta','e-mail','email','mail','почта'],
  dob:['doğum tarihi','dogum tarihi','doğum','birth','birthday','date of birth','дата рождения','др'],sex:['cinsiyet','gender','sex','пол'],
- pkg:['paket','paket adı','abonelik','abonelik türü','üyelik','uyelik','üyelik tipi','membership','plan','package','абонемент','тариф','пакет'],
+ pkg:['hizmet','paket','paket adı','abonelik','abonelik türü','üyelik','uyelik','üyelik tipi','membership','plan','package','абонемент','тариф','пакет'],
  start:['başlangıç','baslangic','başlangıç tarihi','start','start date','начало','дата начала'],end:['bitiş','bitis','bitiş tarihi','end','end date','expiry','expires','окончание','дата окончания','действует до'],
- left:['kalan ders','kalan seans','kalan','remaining','sessions left','осталось','осталось занятий'],price:['ücret','ucret','fiyat','tutar','price','amount','цена','стоимость','сумма'],
- paid:['ödenen','odenen','paid','оплачено'],debt:['borç','borc','kalan borç','kalan borc','balance','debt','долг'],card:['kart','kart no','kart numarası','card','rfid','карта'],
+ left:['seans (kontör)','seans kontör','seans','kontör','kalan ders','kalan seans','remaining','sessions left','осталось','осталось занятий'],price:['ücret','ucret','fiyat','tutar','price','amount','цена','стоимость','сумма'],
+ paid:['ödenen','odenen','paid','оплачено'],debt:['bakiye','borç','borc','kalan borç','kalan borc','balance','debt','долг'],card:['kart','kart no','kart numarası','card','rfid','карта'],
  note:['not','açıklama','aciklama','notes','note','комментарий','заметка'],status:['durum','status','статус']};
 const norm=s=>String(s??'').toLocaleLowerCase('tr').replace(/ı/g,'i').replace(/i̇/g,'i').replace(/[._:*#№]/g,' ').replace(/\s+/g,' ').trim();
 const TRL={'а':'a','б':'b','в':'v','г':'g','д':'d','е':'e','ё':'e','ж':'zh','з':'z','и':'i','й':'y','к':'k','л':'l','м':'m','н':'n','о':'o','п':'p','р':'r','с':'s','т':'t','у':'u','ф':'f','х':'h','ц':'ts','ч':'ch','ш':'sh','щ':'sch','ъ':'','ы':'y','ь':'','э':'e','ю':'yu','я':'ya','ş':'s','ç':'c','ğ':'g','ı':'i','ö':'o','ü':'u','â':'a','î':'i','û':'u'};
@@ -5840,8 +5840,8 @@ async function readFile(f){const ext=(f.name.split('.').pop()||'').toLowerCase()
   if(ext==='html'||ext==='htm'){const doc=new DOMParser().parseFromString(decodeText(buf),'text/html');const t=doc.querySelector('table');if(!t)throw new Error('В файле нет таблицы');
     return toTable(f.name,[...t.rows].map(r=>[...r.cells].map(c=>c.textContent.trim())))}
   return toTable(f.name,parseDelim(decodeText(buf)))}
-function guess(h){const n=norm(h);if(!n)return'skip';for(const k in ALIAS)if(ALIAS[k].includes(n))return k;
-  for(const k of ['debt','paid','left','phone','email','dob','start','end','pkg','price','card','sex','status','name'])if(ALIAS[k].some(a=>a.length>3&&n.includes(a)))return k;return'skip'}
+function guess(h){const n=norm(h);if(!n)return'skip';if(/^(kalan gün|kalan gun|vade|son geliş|son gelis|işlem|islem)$/.test(n))return'skip';for(const k in ALIAS)if(ALIAS[k].some(a=>norm(a)===n))return k;
+  for(const k of ['debt','paid','left','phone','email','dob','start','end','pkg','price','card','sex','status','name'])if(ALIAS[k].some(a=>a.length>3&&n.includes(norm(a))))return k;return'skip'}
 function autoMap(){const m={},used=new Set();IMP.raw.headers.forEach((h,i)=>{let g=guess(h);if(g!=='skip'&&used.has(g))g='skip';if(/^(sıra|sira|no|#|№|id)$/.test(norm(h)))g='skip';m[i]=g;if(g!=='skip')used.add(g)});
   IMP.map=m;const allTxt=IMP.raw.rows.slice(0,30).flat().join(' ');
   IMP.cur=/₺|\bTL\b|TRY/.test(allTxt)||IMP.src==='maksisoft'?'TRY':/€|EUR/.test(allTxt)?'EUR':/₽|RUB|руб/.test(allTxt)?'RUB':/\$|USD/.test(allTxt)?'USD':'TRY'}
@@ -5884,7 +5884,7 @@ function records(){const R=IMP.raw,M=IMP.map,col=k=>{const e=Object.entries(M).f
     if(rec.dob){const age=Math.floor((TODAY-new Date(rec.dob))/(365.25*DAY));rec.age=age;if(age<18)iss('warn','U18 — нужно согласие представителя')}
     const key=lat(name)+'|'+rec.pkg+'|'+rec.start;
     if(seenKey.has(key)){rec.dupOf=seenKey.get(key);iss('err','повтор строки '+(seenKey.get(key)+1))}else seenKey.set(key,ix);
-    if(ph&&!rec.dupOf&&seenPh.has(ph)){rec.issues.push('тот же телефон, что в строке '+(seenPh.get(ph)+1)+' — объединим как второй абонемент');rec.sameAs=seenPh.get(ph)}else if(ph)seenPh.set(ph,ix);
+    const pk=ph+'|'+lat(name);if(ph&&!rec.dupOf&&seenPh.has(pk)){rec.issues.push('тот же человек, что в строке '+(seenPh.get(pk)+1)+' — второй абонемент');rec.sameAs=seenPh.get(pk)}else if(ph){const fam=[...seenPh.keys()].find(k=>k.startsWith(ph+'|'));if(fam)rec.issues.push('общий телефон со строкой '+(seenPh.get(fam)+1)+' — семья, заведём отдельно');seenPh.set(pk,ix)}
     // совпадение с бойцами, уже заведёнными в PIT
     const ln=lat(name).split(' ');const hit=ATHLETES.find(a=>{const f=lat(CAB[a.id].person.fio).split(' ');if(f[0]!==ln[0])return false;
       const s1=f[1]||'',s2=ln[1]||'';return !s1||!s2||s1===s2||(s2.length<=2&&s1.startsWith(s2))});
