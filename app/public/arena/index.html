@@ -2135,6 +2135,7 @@ html.light .a-stage [style*="color:"],html.light body.m-on .m-holo3d .mh-ov [sty
     <div class="roundpill" id="roundPill"><span id="rpText">ТРЕНИРОВКА</span><span class="ph" id="rpPhase">ИДЁТ</span><span class="num" id="rpTime">00:00</span></div>
     <label class="role-sw" id="roleSw"><span>ВХОД</span><select id="roleSel" aria-label="Вход как (демо)"><option value="admin">АДМИН</option><option value="coach">ТРЕНЕР</option><option value="fighter">БОЕЦ</option></select></label>
     <span class="clock num" id="clock">00:00</span>
+    <a class="iconbtn" id="toHome" href="/" hidden title="Главное меню PIT" aria-label="Главное меню PIT" style="text-decoration:none">⌂</a><a class="iconbtn" id="toCrm" href="/crm/" hidden title="PIT CRM" aria-label="Перейти в PIT CRM" style="text-decoration:none;font-weight:800;letter-spacing:.06em">CRM</a>
     <button class="iconbtn" id="mobBtn" title="Мобильная версия спортсмена" aria-label="Мобильная версия спортсмена">▯</button>
     <button class="iconbtn" id="fsBtn" title="Полноэкранный режим" aria-label="Полноэкранный режим">⛶</button>
   </header>
@@ -5520,7 +5521,7 @@ $('#roleSel').addEventListener('change',e=>applyRole(e.target.value));
 setTimeout(async()=>{applyRole();
   /* вход PIT: если открыто внутри app.pitrating.com с сессией — без демо-логина, роль из системы клуба */
   try{const r=await fetch('/api/me',{cache:'no-store'});if(r.ok){const me=await r.json();const map={owner:'admin',admin:'admin',trainer:'coach'};
-    if(map[me.role]){document.getElementById('fpGate')?.remove();enterRole(map[me.role]);return}}}catch(e){}
+    if(map[me.role]){document.getElementById('fpGate')?.remove();['toHome','toCrm'].forEach(i=>{const e=document.getElementById(i);if(e)e.hidden=false});enterRole(map[me.role]);return}}}catch(e){}
   gateShow()},0);
 $('#fsBtn').addEventListener('click',()=>{const d=document.documentElement;(document.fullscreenElement?document.exitFullscreen():d.requestFullscreen?.())?.catch?.(()=>{})});
 document.addEventListener('click',()=>{try{navigator.wakeLock?.request('screen').catch(()=>{})}catch(e){}},{once:true});

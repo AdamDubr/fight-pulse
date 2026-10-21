@@ -168,7 +168,9 @@ input::-webkit-date-and-time-value{text-align:left}
   .top .wrap{gap:.5rem .6rem;padding-block:.55rem}
   .brand{flex:1 1 0;order:1}.brand b{font-size:.92rem}
   .state{order:2;width:auto;max-width:9rem;overflow:hidden;text-overflow:ellipsis;text-align:right;font-size:.66rem}
-  #thm{order:3;flex:none}#home{order:3;flex:none}
+  #thm{order:3;flex:none}#home{order:3;flex:none}#toArena{order:3;flex:none}
+}
+@media (max-width:430px){.top .state{display:none}
   .tabs{order:4}
 }
 .cashbal{display:grid;grid-template-columns:minmax(0,1.2fr) 1fr 1fr;gap:.8rem;align-items:center}
@@ -196,7 +198,7 @@ html[data-role=trainer] #ldone,html[data-role=trainer] [data-dr=askdel]{display:
     <button role="tab" data-tab="rep" aria-selected="false">Отчёты</button>
     <button role="tab" data-tab="plans" aria-selected="false">Настройки</button>
   </nav>
-  <a class="btn sm" id="home" href="/" aria-label="Главное меню PIT" title="Главное меню">⌂</a><button class="btn sm" id="thm" type="button" aria-label="Тёмная тема">☾</button>
+  <a class="btn sm" id="home" href="/" aria-label="Главное меню PIT" title="Главное меню">⌂</a><a class="btn sm" id="toArena" href="/arena/" aria-label="Перейти в Зал · Arena" title="Зал · Arena">Arena</a><button class="btn sm" id="thm" type="button" aria-label="Тёмная тема">☾</button>
   <span class="state" id="st">Подключение…</span>
 </div></header>
 
