@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#0e1014">
+<title>PIT RATING · Вход</title>
+<link rel="icon" href="/brand/favicon-32.png">
+<link rel="apple-touch-icon" href="/brand/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;800&family=Montserrat:wght@500;600;700&family=JetBrains+Mono:wght@600&display=swap">
+<style>
+:root{--bg:#0e1014;--panel:#15181d;--line:#262a31;--fg:#f4f1ea;--muted:#9a9aa2;--gold:#e8c35a;--gold-d:#9a7419;--bad:#ff6b7d;--ok:#3ddc84;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;overflow-x:clip}
+body{background:radial-gradient(1200px 600px at 50% -10%,#1b1f26 0%,var(--bg) 60%);color:var(--fg);font:15px/1.45 'Montserrat',system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:max(24px,env(safe-area-inset-top)) 16px max(24px,env(safe-area-inset-bottom))}
+/* ЭКГ на фоне */
+.ecg{position:fixed;left:0;right:0;top:50%;height:160px;transform:translateY(-50%);pointer-events:none;opacity:.22}
+.ecg path{fill:none;stroke:var(--gold);stroke-width:2;stroke-dasharray:1400;stroke-dashoffset:1400;animation:run 3.2s linear infinite;filter:drop-shadow(0 0 6px var(--gold))}
+@keyframes run{to{stroke-dashoffset:-1400}}
+.card{position:relative;width:min(400px,100%);background:color-mix(in srgb,var(--panel) 92%,transparent);border:1px solid var(--line);border-radius:18px;padding:28px 24px 22px;box-shadow:0 30px 80px rgba(0,0,0,.45);backdrop-filter:blur(6px);animation:in .5s ease both}
+@keyframes in{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.logo{display:flex;flex-direction:column;align-items:center;gap:10px;margin-bottom:22px}
+.mark{width:54px;height:66px}
+.mark path{fill:var(--gold);animation:glow 3.2s ease-in-out infinite}
+.mark path:nth-child(1){opacity:1}.mark path:nth-child(2){opacity:.6;animation-delay:.15s}.mark path:nth-child(3){opacity:.3;animation-delay:.3s}
+@keyframes glow{0%,100%{filter:none}12%{filter:drop-shadow(0 0 10px var(--gold))}}
+.word{font-family:'Unbounded',system-ui,sans-serif;text-align:center;line-height:1}
+.word b{display:block;font-weight:800;font-size:30px;letter-spacing:.02em}
+.word span{display:block;font-weight:400;font-size:12.5px;letter-spacing:.62em;margin-top:6px;padding-left:.62em;color:var(--muted)}
+.sub{color:var(--muted);text-align:center;font-size:12px;letter-spacing:.08em;text-transform:uppercase;margin-top:2px}
+h1{font-size:17px;margin:0 0 4px;font-weight:700}
+p.hint{color:var(--muted);margin:0 0 16px;font-size:13.5px}
+label{display:block;font-size:12px;font-weight:700;color:var(--muted);margin:0 0 6px;letter-spacing:.04em}
+input{width:100%;font:inherit;font-size:16px;color:var(--fg);background:#0f1216;border:1px solid var(--line);border-radius:10px;padding:13px 14px;outline:none;transition:border-color .15s}
+input:focus{border-color:var(--gold)}
+input.code{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:28px;letter-spacing:.5em;text-align:center;padding:12px 0 12px .5em}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:12px 0 0;font-size:13px;color:var(--muted)}
+.row label{display:flex;align-items:center;gap:8px;margin:0;font-weight:600;letter-spacing:0;cursor:pointer}
+.row input[type=checkbox]{width:18px;height:18px;accent-color:var(--gold);padding:0}
+button.go{position:relative;overflow:hidden;width:100%;margin-top:18px;border:0;border-radius:10px;padding:14px;font:inherit;font-weight:800;font-size:15px;letter-spacing:.04em;color:#141414;background:var(--gold);cursor:pointer}
+button.go::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.45) 50%,transparent 70%);transform:translateX(-100%);animation:shine 3.2s ease-in-out infinite}
+@keyframes shine{40%,100%{transform:translateX(100%)}}
+button.go[disabled]{opacity:.55;cursor:default}
+button.link{background:none;border:0;color:var(--gold);font:inherit;font-size:13px;font-weight:700;cursor:pointer;padding:0}
+button.link[disabled]{color:var(--muted);cursor:default}
+.msg{min-height:20px;margin-top:12px;font-size:13px;text-align:center}
+.msg.bad{color:var(--bad)}.msg.ok{color:var(--ok)}
+.foot{margin-top:18px;color:var(--muted);font-size:11.5px;text-align:center;letter-spacing:.04em}
+.foot a{color:var(--muted)}
+.lang{position:fixed;top:max(14px,env(safe-area-inset-top));right:16px;display:flex;gap:4px}
+.lang button{background:none;border:1px solid var(--line);color:var(--muted);border-radius:8px;padding:4px 8px;font:inherit;font-size:11px;font-weight:700;cursor:pointer}
+.lang button[aria-pressed=true]{color:var(--fg);border-color:var(--gold)}
+[hidden]{display:none!important}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+<svg class="ecg" viewBox="0 0 1400 160" preserveAspectRatio="none" aria-hidden="true"><path d="M0 80 H420 L450 80 L465 60 L480 100 L500 10 L520 150 L540 80 L600 80 L620 70 L640 80 H1400"/></svg>
+<div class="lang" role="group" aria-label="Language"><button data-l="ru">RU</button><button data-l="en">EN</button><button data-l="tr">TR</button></div>
+<main class="card">
+  <div class="logo">
+    <svg class="mark" viewBox="0 0 100 124" aria-hidden="true"><path d="M8 44L50 12 92 44V62L50 30 8 62Z"/><path d="M8 74L50 42 92 74V92L50 60 8 92Z"/><path d="M8 104L50 72 92 104V122L50 90 8 122Z"/></svg>
+    <div class="word"><b>PIT</b><span>RATING</span></div>
+    <div class="sub" data-t="tag"></div>
+  </div>
+
+  <form id="f1" autocomplete="on">
+    <h1 data-t="h1"></h1>
+    <p class="hint" data-t="p1"></p>
+    <label for="em">E-mail</label>
+    <input id="em" type="email" name="email" autocomplete="email" inputmode="email" required placeholder="name@example.com">
+    <button class="go" type="submit" id="b1" data-t="send"></button>
+  </form>
+
+  <form id="f2" hidden autocomplete="off">
+    <h1 data-t="h2"></h1>
+    <p class="hint"><span data-t="p2"></span> <b id="to"></b></p>
+    <label for="cd" data-t="codeL"></label>
+    <input id="cd" class="code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" required placeholder="••••••">
+    <div class="row"><label><input type="checkbox" id="rm"> <span data-t="remember"></span></label><button class="link" type="button" id="again" data-t="again"></button></div>
+    <button class="go" type="submit" id="b2" data-t="enter"></button>
+    <div class="row" style="justify-content:center"><button class="link" type="button" id="back" data-t="other"></button></div>
+  </form>
+  <div class="msg" id="msg" role="status" aria-live="polite"></div>
+</main>
+<div class="foot">Performance Index of Training · <a href="https://pitrating.com">pitrating.com</a></div>
+<script>
+"use strict";
+const T={
+ ru:{tag:'Система клуба',h1:'Вход',p1:'Введите рабочий e-mail — пришлём код для входа.',send:'Получить код',h2:'Введите код',p2:'Код отправлен на',codeL:'Код из письма',remember:'Запомнить на 30 дней',again:'Отправить ещё раз',enter:'Войти',other:'Другой e-mail',sent:'Если адрес есть в клубе, код уже в почте. Проверьте «Спам».',bad:'Неверный код',left:n=>`осталось попыток: ${n}`,expired:'Код устарел — запросите новый',tries:'Слишком много попыток — запросите новый код',wait:s=>`Повторно — через ${s} с`,rate:'Слишком много запросов. Попробуйте позже.',mail:'Не удалось отправить письмо. Попробуйте ещё раз.',email:'Проверьте e-mail',net:'Нет связи. Проверьте интернет.'},
+ en:{tag:'Club system',h1:'Sign in',p1:'Enter your work e-mail — we will send you a sign-in code.',send:'Get code',h2:'Enter the code',p2:'Code sent to',codeL:'Code from the e-mail',remember:'Remember me for 30 days',again:'Send again',enter:'Sign in',other:'Use another e-mail',sent:'If this address belongs to a club, the code is in your inbox. Check Spam.',bad:'Wrong code',left:n=>`${n} attempts left`,expired:'Code expired — request a new one',tries:'Too many attempts — request a new code',wait:s=>`Resend in ${s}s`,rate:'Too many requests. Try again later.',mail:'Could not send the e-mail. Please try again.',email:'Check the e-mail',net:'No connection. Check your internet.'},
+ tr:{tag:'Kulüp sistemi',h1:'Giriş',p1:'İş e-postanızı girin — giriş kodu gönderelim.',send:'Kod al',h2:'Kodu girin',p2:'Kod gönderildi:',codeL:'E-postadaki kod',remember:'30 gün hatırla',again:'Tekrar gönder',enter:'Giriş',other:'Başka e-posta',sent:'Adres kulüpte kayıtlıysa kod e-postanızda. Spam klasörünü kontrol edin.',bad:'Yanlış kod',left:n=>`kalan deneme: ${n}`,expired:'Kodun süresi doldu — yenisini isteyin',tries:'Çok fazla deneme — yeni kod isteyin',wait:s=>`${s} sn sonra tekrar`,rate:'Çok fazla istek. Daha sonra deneyin.',mail:'E-posta gönderilemedi. Tekrar deneyin.',email:'E-postayı kontrol edin',net:'Bağlantı yok. İnterneti kontrol edin.'}};
+const $=s=>document.querySelector(s);
+let L=(()=>{try{const s=localStorage.getItem('pit.lang');if(T[s])return s}catch(e){}const n=(navigator.language||'en').slice(0,2);return T[n]?n:'en'})();
+function apply(){document.documentElement.lang=L;document.querySelectorAll('[data-t]').forEach(e=>{const v=T[L][e.dataset.t];if(typeof v==='string')e.textContent=v});document.querySelectorAll('.lang button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.l===L)));document.title='PIT RATING · '+T[L].h1}
+document.querySelectorAll('.lang button').forEach(b=>b.onclick=()=>{L=b.dataset.l;try{localStorage.setItem('pit.lang',L)}catch(e){}apply()});apply();
+const msg=(t,c)=>{const m=$('#msg');m.textContent=t||'';m.className='msg '+(c||'')};
+let EMAIL='',timer=null;
+try{const e=localStorage.getItem('pit.email');if(e)$('#em').value=e}catch(e){}
+async function post(u,b){const r=await fetch(u,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(b),credentials:'same-origin'});let j={};try{j=await r.json()}catch(e){}return{ok:r.ok,status:r.status,j}}
+function err(j){const t=T[L];if(j.error==='wait')return t.wait(j.wait);if(j.error==='bad_code')return t.bad+(j.left!=null?' · '+t.left(j.left):'');return t[j.error]||t[{bad_email:'email'}[j.error]]||t.mail}
+function cool(s){const b=$('#again');clearInterval(timer);let n=s;b.disabled=true;b.textContent=T[L].wait(n);timer=setInterval(()=>{n--;if(n<=0){clearInterval(timer);b.disabled=false;b.textContent=T[L].again}else b.textContent=T[L].wait(n)},1000)}
+async function send(){msg('');const e=$('#em').value.trim().toLowerCase();if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e)){msg(T[L].email,'bad');return false}
+  $('#b1').disabled=true;try{const r=await post('/auth/start',{email:e,lang:L});if(!r.ok&&r.j.error!=='wait'){msg(err(r.j),'bad');return false}
+  EMAIL=e;try{localStorage.setItem('pit.email',e)}catch(x){}$('#to').textContent=e;$('#f1').hidden=true;$('#f2').hidden=false;msg(T[L].sent,'ok');cool(r.j.wait||45);setTimeout(()=>$('#cd').focus(),50);return true}
+  catch(x){msg(T[L].net,'bad');return false}finally{$('#b1').disabled=false}}
+$('#f1').onsubmit=e=>{e.preventDefault();send()};
+$('#again').onclick=()=>{$('#em').value=EMAIL;send()};
+$('#back').onclick=()=>{$('#f2').hidden=true;$('#f1').hidden=false;msg('');$('#em').focus()};
+$('#cd').addEventListener('input',e=>{e.target.value=e.target.value.replace(/\D/g,'').slice(0,6);if(e.target.value.length===6)$('#f2').requestSubmit()});
+$('#f2').onsubmit=async e=>{e.preventDefault();const c=$('#cd').value;if(c.length!==6)return;$('#b2').disabled=true;msg('');
+  try{const r=await post('/auth/verify',{email:EMAIL,code:c,remember:$('#rm').checked});if(r.ok){msg('✓','ok');const n=new URLSearchParams(location.search).get('next');location.replace(n&&n.startsWith('/')&&!n.startsWith('//')?n:'/');return}
+  msg(err(r.j),'bad');$('#cd').value='';$('#cd').focus()}catch(x){msg(T[L].net,'bad')}finally{$('#b2').disabled=false}};
+</script>
+</body>
+</html>

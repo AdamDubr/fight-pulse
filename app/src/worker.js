@@ -1,5 +1,6 @@
 // PIT RATING — app.pitrating.com
-// Вход: Cloudflare Access (код на e-mail). Роли: owner | admin | trainer.
+// Вход: собственный (код на e-mail → сессия), на переходный период также Cloudflare Access. Роли: owner | admin | trainer.
+import { authRoutes, sessionEmail, sessionsOf, revokeAll } from './auth.js';
 // Данные: D1 (документы коллекций), файлы: R2.
 
 const ROLES = { owner: 3, admin: 2, trainer: 1 };
@@ -41,7 +42,7 @@ async function verifyAccess(req, env) {
 
 async function whoami(req, env) {
   // локальная проверка: .dev.vars (не публикуется) — DEV=1, DEV_EMAIL=…
-  const email = env.DEV === '1' && env.DEV_EMAIL ? String(req.headers.get('x-dev-email') || env.DEV_EMAIL).toLowerCase() : await verifyAccess(req, env);
+  const email = env.DEV === '1' && env.DEV_EMAIL ? String(req.headers.get('x-dev-email') || env.DEV_EMAIL).toLowerCase() : ((await sessionEmail(req, env)) || (await verifyAccess(req, env)));
   if (!email) return null;
   const owners = String(env.OWNER_EMAILS || '').toLowerCase().split(/[,\s]+/).filter(Boolean);
   if (owners.includes(email)) {
@@ -126,14 +127,17 @@ async function api(req, env, me, path) {
     if (req.method === 'GET') {
       const r = await env.DB.prepare('SELECT email,role,name,added_at FROM users ORDER BY role,email').all();
       const owners = String(env.OWNER_EMAILS || '').toLowerCase().split(/[,\s]+/).filter(Boolean);
-      return json({ owners, users: r.results || [] });
+      const lg = await env.DB.prepare("SELECT at,email,event FROM logins WHERE event IN ('login','logout','bad_code') ORDER BY at DESC LIMIT 30").all().catch(() => ({ results: [] }));
+      return json({ owners, users: r.results || [], sessions: await sessionsOf(env).catch(() => []), logins: lg.results || [] });
     }
     if (req.method === 'POST') {
       const b = await req.json().catch(() => ({}));
       const email = String(b.email || '').trim().toLowerCase();
       if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return json({ error: 'bad_email' }, 400);
+      if (b.revoke) { await revokeAll(env, email); return json({ ok: true }) }
       if (b.remove) {
         await env.DB.prepare('DELETE FROM users WHERE email=?').bind(email).run();
+        await revokeAll(env, email);
         return json({ ok: true });
       }
       const role = String(b.role || '');
@@ -141,7 +145,11 @@ async function api(req, env, me, path) {
       if (role === 'admin' && me.role !== 'owner') return json({ error: 'owner_only' }, 403);
       await env.DB.prepare('INSERT INTO users(email,role,name,added_by,added_at) VALUES(?,?,?,?,?) ON CONFLICT(email) DO UPDATE SET role=excluded.role,name=excluded.name')
         .bind(email, role, String(b.name || '').slice(0, 80) || null, me.email, now()).run();
-      return json({ ok: true });
+      let invited = false;
+      if (b.invite !== false && env.EMAIL) {
+        try { await env.EMAIL.send(invite(email, role, String(b.name || ''))); invited = true } catch (e) { }
+      }
+      return json({ ok: true, invited });
     }
   }
 
@@ -181,19 +189,43 @@ async function api(req, env, me, path) {
   return json({ error: 'not_found' }, 404);
 }
 
+function invite(to, role, name) {
+  const rn = { admin: 'администратор', trainer: 'тренер' }[role] || role;
+  const html = `<!doctype html><html><body style="margin:0;background:#f4f1ea;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#15171b">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="padding:32px 12px"><tr><td align="center">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:460px;background:#fff;border:1px solid #e3ded2;border-radius:14px;overflow:hidden">
+<tr><td style="background:#111418;padding:22px 28px"><img src="https://app.pitrating.com/brand/mail-logo.png" width="180" height="68" alt="PIT RATING" style="display:block;border:0;color:#e8c35a;font-weight:800;font-size:18px"></td></tr>
+<tr><td style="padding:28px"><div style="font-size:17px;font-weight:700;margin:0 0 12px">${name ? name.replace(/[<>&"]/g, '') + ', в' : 'В'}ас добавили в систему клуба</div>
+<p style="font-size:14px;line-height:1.5;margin:0 0 18px">Роль: <b>${rn}</b>. Вход — по коду, который придёт на этот e-mail. Пароль не нужен.</p>
+<a href="https://app.pitrating.com/login" style="display:inline-block;background:#e8c35a;color:#141414;text-decoration:none;font-weight:800;padding:12px 22px;border-radius:10px">Войти в PIT RATING</a>
+<p style="font-size:12px;color:#8b877d;margin:18px 0 0">Если вы не ждали это письмо — просто проигнорируйте его.</p></td></tr>
+<tr><td style="padding:14px 28px;border-top:1px solid #efeae0;font-size:11px;color:#8b877d">PIT RATING · Performance Index of Training · pitrating.com</td></tr></table></td></tr></table></body></html>`;
+  return { to, from: { email: 'noreply@pitrating.com', name: 'PIT RATING' }, subject: 'Доступ к системе клуба · PIT RATING', html, text: `Вас добавили в систему клуба PIT RATING (роль: ${rn}). Вход: https://app.pitrating.com/login — по коду на этот e-mail.` };
+}
+
 const NO_ACCESS = (email) => new Response(`<!doctype html><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>PIT RATING</title>
 <body style="font-family:-apple-system,system-ui,sans-serif;background:#f4f1ea;color:#15171b;display:grid;place-items:center;min-height:100vh;margin:0;padding:16px">
 <div style="max-width:420px;text-align:center"><h1 style="font-size:22px">Нет доступа</h1>
 <p>${email ? `Адрес <b>${email.replace(/[<>&"]/g, '')}</b> пока не добавлен в клуб.` : 'Не удалось подтвердить вход.'} Попросите администратора клуба добавить вас в разделе «Доступ».</p>
-<p><a href="/cdn-cgi/access/logout">Выйти и войти с другим e-mail</a></p></div></body>`, { status: 403, headers: { 'content-type': 'text/html; charset=utf-8' } });
+<p><a href="/auth/logout">Выйти и войти с другим e-mail</a></p></div></body>`, { status: 403, headers: { 'content-type': 'text/html; charset=utf-8' } });
 
 export default {
   async fetch(req, env) {
     const url = new URL(req.url), path = url.pathname;
+    // открыто без входа: страница входа, логотипы, методы входа
+    if (path === '/login' || path === '/login.html' || path.startsWith('/brand/')) return env.ASSETS.fetch(req);
+    if (path.startsWith('/auth/')) {
+      try { const r = await authRoutes(req, env, path); if (r) return r } catch (e) { return json({ error: 'server' }, 500) }
+      return json({ error: 'not_found' }, 404);
+    }
     const me = await whoami(req, env);
-    if (!me || !me.role) {
+    if (!me) {
       if (path.startsWith('/api/')) return json({ error: 'unauthorized' }, 401);
-      return NO_ACCESS(me?.email);
+      return new Response(null, { status: 302, headers: { location: '/login' + (path !== '/' ? '?next=' + encodeURIComponent(path + url.search) : '') } });
+    }
+    if (!me.role) {
+      if (path.startsWith('/api/')) return json({ error: 'unauthorized' }, 401);
+      return NO_ACCESS(me.email);
     }
     if (path.startsWith('/api/')) {
       try { return await api(req, env, me, path); }

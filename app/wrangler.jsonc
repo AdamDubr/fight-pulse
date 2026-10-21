@@ -8,6 +8,8 @@
     { "binding": "DB", "database_name": "pit", "database_id": "e8d2b2d3-9dbe-4c46-b86c-596e6bda29f3", "migrations_dir": "migrations" }
   ],
   // Фото бойцов и чеки — приватное хранилище R2 (публичный доступ выключен)
+  // Письма с кодами входа и приглашения — Cloudflare Email Sending (noreply@pitrating.com)
+  "send_email": [ { "name": "EMAIL" } ],
   "r2_buckets": [ { "binding": "FILES", "bucket_name": "pit-files" } ],
   // OWNER_EMAILS — секрет (Settings → Variables and Secrets), не хранится в репозитории
   "vars": {

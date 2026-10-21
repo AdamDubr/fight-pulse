@@ -43,7 +43,7 @@ input,select{font:inherit;font-size:16px;background:var(--panel-2);border:1px so
   <div class="brand"><svg viewBox="0 0 100 124" aria-hidden="true"><path d="M8 44L50 12 92 44V62L50 30 8 62Z" fill="var(--gold)"/><path d="M8 74L50 42 92 74V92L50 60 8 92Z" fill="var(--gold)" opacity=".7"/><path d="M8 104L50 72 92 104V122L50 90 8 122Z" fill="var(--gold)" opacity=".45"/></svg>
     <div><b>PIT RATING</b><small>Mowgli Fight Club</small></div></div>
   <button class="btn sm" id="thm" type="button" aria-label="Тёмная тема">☾</button>
-  <a class="btn sm" href="/cdn-cgi/access/logout">Выйти</a>
+  <a class="btn sm" href="/auth/logout">Выйти</a>
 </div></header>
 <main><div class="wrap" id="v"><p class="note">Загрузка…</p></div></main>
 <script>
@@ -67,12 +67,18 @@ async function main(){
     <form id="uf" autocomplete="off"><input type="email" id="ue" placeholder="e-mail сотрудника" required><input type="text" id="un" placeholder="Имя" maxlength="80">
     <select id="ur"><option value="trainer">Тренер — без кассы</option>${ME.role==='owner'?'<option value="admin">Администратор — всё, кроме доступа владельца</option>':''}</select>
     <button class="btn gold" type="submit">Добавить</button></form>
-    <p class="note" style="margin:.7rem 0 0">Сотрудник открывает app.pitrating.com, вводит этот e-mail и код из письма. Пароли не нужны.</p></section>`:''}`;
-  if(mgr){loadUsers();$('#uf').onsubmit=async e=>{e.preventDefault();try{await api('/api/users',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email:$('#ue').value,name:$('#un').value,role:$('#ur').value})});toast('Доступ добавлен');$('#uf').reset();loadUsers()}catch(err){toast('Не сохранилось: '+err.message)}}}
+    <p class="note" style="margin:.7rem 0 0">Сотруднику сразу уйдёт письмо-приглашение. Вход — app.pitrating.com, e-mail и код из письма. Пароли не нужны.</p></section>
+  <section class="card"><h2>Активные входы</h2><div id="sl"><p class="note">Загрузка…</p></div></section>`:''}`;
+  if(mgr){loadUsers();$('#uf').onsubmit=async e=>{e.preventDefault();try{const j=await api('/api/users',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email:$('#ue').value,name:$('#un').value,role:$('#ur').value})});toast(j.invited?'Доступ добавлен, приглашение отправлено':'Доступ добавлен');$('#uf').reset();loadUsers()}catch(err){toast('Не сохранилось: '+err.message)}}}
 }
 async function loadUsers(){const j=await api('/api/users');
   $('#ul').innerHTML=j.owners.map(e=>`<div class="row"><div>${esc(e)}<small>Владелец · задаётся в настройках системы</small></div><span></span><span></span></div>`).join('')+
    (j.users.map(u=>`<div class="row"><div>${esc(u.name||u.email)}<small>${esc(u.email)} · ${RN[u.role]||u.role}</small></div><span></span>${(ME.role==='owner'||u.role==='trainer')&&u.email!==ME.email?`<button class="btn sm danger" data-rm="${esc(u.email)}">Убрать</button>`:'<span></span>'}</div>`).join('')||'<p class="note">Сотрудников пока нет.</p>');
+  const dt=t=>new Date(t).toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}),dev=u=>/iPhone|iPad/.test(u)?'iPhone/iPad':/Android/.test(u)?'Android':/Mac/.test(u)?'Mac':/Windows/.test(u)?'Windows':'браузер';
+  const S={};(j.sessions||[]).forEach(x=>{(S[x.email]=S[x.email]||[]).push(x)});
+  $('#sl').innerHTML=(Object.entries(S).map(([e,a])=>`<div class="row"><div>${esc(e)}<small>${a.length} устр. · ${a.map(x=>dev(x.ua)+' '+dt(x.last)).join(' · ')}</small></div><span></span><button class="btn sm danger" data-rv="${esc(e)}">Выйти везде</button></div>`).join('')||'<p class="note">Сейчас никто не вошёл через новый вход.</p>')+
+   ((j.logins||[]).length?`<h2 style="margin-top:1rem">Последние события</h2>`+j.logins.slice(0,12).map(l=>`<div class="row"><div>${esc(l.email)}<small>${dt(l.at)} · ${({login:'вошёл',logout:'вышел',bad_code:'неверный код'})[l.event]||l.event}</small></div><span></span><span></span></div>`).join(''):'');
+  document.querySelectorAll('[data-rv]').forEach(b=>b.onclick=async()=>{if(!b.dataset.sure){b.dataset.sure=1;b.textContent='Точно?';return}await api('/api/users',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email:b.dataset.rv,revoke:true})});toast('Сессии завершены');loadUsers()});
   document.querySelectorAll('[data-rm]').forEach(b=>b.onclick=async()=>{if(!b.dataset.sure){b.dataset.sure=1;b.textContent='Точно?';return}await api('/api/users',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email:b.dataset.rm,remove:true})});toast('Доступ убран');loadUsers()})}
 main().catch(e=>{$('#v').innerHTML='<p>Не удалось загрузить: '+esc(e.message)+'</p>'});
 </script>
