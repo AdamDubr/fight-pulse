@@ -531,7 +531,7 @@ function csvSave(name,rows){const csv='﻿'+rows.map(r=>r.map(x=>{x=String(x??''
 /* ===== Расписание групп: общий источник для CRM, экранов зала (Arena) и записи бойцов ===== */
 const SDAYS=['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
 const SDISC=['MMA','BJJ','Бокс','Муай-тай','Кикбоксинг','Борьба','Функционал','Капоэйра','Дети · MMA'];
-const SCO0=[{k:'mowgli',n:'Джалял «MOWGLI»'},{k:'adam',n:'Адам'},{k:'andrey',n:'Андрей'}];
+const SCO0=[{k:'mowgli',n:'Джалял «MOWGLI»'}];
 const SCH=()=>{const d=S.sched||{};return{classes:Array.isArray(d.classes)?d.classes:[],coaches:Array.isArray(d.coaches)&&d.coaches.length?d.coaches:SCO0}};
 const saveSch=(x,msg)=>write(()=>DB.doc('club/schedule').set({...SCH(),...x,updatedAt:new Date().toISOString()}),msg);
 function vSched(){const {classes,coaches}=SCH(),co=k=>coaches.find(c=>c.k===k)?.n||'—';

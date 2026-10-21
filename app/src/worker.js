@@ -48,7 +48,7 @@ async function whoami(req, env) {
   const owners = String(env.OWNER_EMAILS || '').toLowerCase().split(/[,\s]+/).filter(Boolean);
   if (owners.includes(email)) {
     const u = await env.DB.prepare('SELECT name FROM users WHERE email=?').bind(email).first();
-    return { email, role: 'owner', name: u?.name || 'Владелец' };
+    return { email, role: 'owner', name: u?.name || env.OWNER_NAME || 'Владелец' };
   }
   const u = await env.DB.prepare('SELECT role,name FROM users WHERE email=?').bind(email).first();
   if (!u || !ROLES[u.role]) return { email, role: null, name: null };

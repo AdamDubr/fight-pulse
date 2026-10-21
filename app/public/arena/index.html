@@ -2524,7 +2524,7 @@ function pitRoster(){
   const hrMaxOf=age=>Math.round(208-.7*age); // Tanaka et al., 2001
   const out=[];const adam=ATHLETES_DEMO.find(a=>a.id===1);
   const ms=PIT_REAL.members||[];const hasAdam=ms.some(m=>/^адам\b/i.test(m.first||m.name||''));
-  if(adam&&!hasAdam)out.push({...adam,sensor:'—',sim:{id:'НЕТ ДАТЧИКА·1',int:.6,rec:.012,bat:100},public:true,absent:false});
+  if(adam&&!hasAdam)out.push({...adam,name:'Адам AI',nick:'Адам AI',sensor:'—',sim:{id:'НЕТ ДАТЧИКА·1',int:.6,rec:.012,bat:100},public:true,absent:false});
   ms.forEach(m=>{const id=out.length+1,age=m.age||25;
     out.push({id,mid:m.id,fit:.6,nick:m.first||m.name,name:m.name,disc:m.disc||'MMA',age,kg:m.kg||null,sex:m.sex||'m',hrMax:m.hrMax||hrMaxOf(age),hrRest:60,sensor:'—',
       sim:{id:'НЕТ ДАТЧИКА·'+id,int:.6,rec:.012,bat:100},coach:m.kind==='staff',public:m.consentPublic==='yes'||m.consentPublic===true,absent:false,end:m.end||'',start:m.start||'',plan:m.plan||'',left:m.left??null,dob:m.dob||''})});
@@ -3551,7 +3551,7 @@ function schedInit(){if(SCHED)return;try{SCHED=JSON.parse(localStorage.getItem((
     events:[{d:dAdd(9),name:'Открытый турнир Анталии · MMA'},{d:dAdd(23),name:'Клубные спарринги'},{d:dAdd(44),name:'Чемпионат региона · BJJ'}]}
   SCHED.classes.forEach(c=>{if(!c.coach)c.coach=SCH_DEFC[c.disc]||'mowgli'})}
 /* тренеры клуба и кто по умолчанию ведёт направление (DEMO) */
-const SCH_CO=[{k:'mowgli',n:'Джалял «MOWGLI»'},{k:'adam',n:'Адам'},{k:'andrey',n:'Андрей'}],SCH_DEFC={'MMA':'mowgli','BJJ':'mowgli','Борьба':'mowgli','Муай-тай':'adam','Бокс':'andrey','Функционал':'andrey'};
+const SCH_CO=REAL?[{k:'mowgli',n:'Джалял «MOWGLI»'}]:[{k:'mowgli',n:'Джалял «MOWGLI»'},{k:'adam',n:'Адам'},{k:'andrey',n:'Андрей'}],SCH_DEFC=REAL?{}:{'MMA':'mowgli','BJJ':'mowgli','Борьба':'mowgli','Муай-тай':'adam','Бокс':'andrey','Функционал':'andrey'};
 const SCH_COL={'BJJ':'#7c8cff','MMA':'#ff4562','Бокс':'#e8a33a','Муай-тай':'#f97316','Борьба':'#2dd4bf','Функционал':'#4ade80'};
 const SCH_ME='mowgli',SCH_UI={all:false,open:null,co:'all'};
 /* чьи занятия показывать: тренер — свои/все; админ — выбранный тренер или все */
