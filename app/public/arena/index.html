@@ -1,3 +1,4 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8">
 <meta name="robots" content="noindex,nofollow">
 <title>MOWGLI FIGHT CLUB · PIT RATING</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 124 124'%3E%3Cg transform='translate(12 0)'%3E%3Cpath d='M8 44L50 12 92 44V62L50 30 8 62Z' fill='%23e8c35a'/%3E%3Cpath d='M8 74L50 42 92 74V92L50 60 8 92Z' fill='%23e8c35a' fill-opacity='0.75'/%3E%3Cpath d='M8 104L50 72 92 104V122L50 90 8 122Z' fill='%23e8c35a' fill-opacity='0.5'/%3E%3C/g%3E%3C/svg%3E">
@@ -5516,7 +5517,11 @@ function applyRole(r){if(r)ROLE.v=r;try{localStorage.setItem('fp.role',ROLE.v)}c
   if(v==='coach'&&cab.sec==='sub')cab.sec='card';
   if(!MOB.on)setView(ui.view);if(ui.view==='coach')renderAdm()}
 $('#roleSel').addEventListener('change',e=>applyRole(e.target.value));
-setTimeout(()=>{applyRole();gateShow()},0);
+setTimeout(async()=>{applyRole();
+  /* вход PIT: если открыто внутри app.pitrating.com с сессией — без демо-логина, роль из системы клуба */
+  try{const r=await fetch('/api/me',{cache:'no-store'});if(r.ok){const me=await r.json();const map={owner:'admin',admin:'admin',trainer:'coach'};
+    if(map[me.role]){document.getElementById('fpGate')?.remove();enterRole(map[me.role]);return}}}catch(e){}
+  gateShow()},0);
 $('#fsBtn').addEventListener('click',()=>{const d=document.documentElement;(document.fullscreenElement?document.exitFullscreen():d.requestFullscreen?.())?.catch?.(()=>{})});
 document.addEventListener('click',()=>{try{navigator.wakeLock?.request('screen').catch(()=>{})}catch(e){}},{once:true});
 
