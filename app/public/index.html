@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>PIT RATING</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&display=swap">
+<style>
+:root{--bg:#f3f1ec;--panel:#fff;--panel-2:#f8f6f1;--line:#e3ded2;--line-2:#cfc8b8;--fg:#16161a;--muted:#5f5c55;--gold:#9a7419;--gold-bg:#f4e9c9;--bad:#b4233a;--ok:#17803d;color-scheme:light}
+:root.dk{--bg:#08080a;--panel:#111114;--panel-2:#17171b;--line:#232328;--line-2:#36363d;--fg:#f4f4f5;--muted:#a6a6ad;--gold:#e8c35a;--gold-bg:#2a2412;--bad:#ff5a6e;--ok:#3ddc84;color-scheme:dark}
+*{box-sizing:border-box}html,body{overflow-x:clip}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.45 'Montserrat',system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased}
+.top{position:sticky;top:0;padding-top:env(safe-area-inset-top,0px);background:var(--panel);border-bottom:1px solid var(--line);z-index:5}
+.wrap{max-width:900px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.top .wrap{display:flex;align-items:center;gap:.7rem;padding-block:.7rem}
+.brand{display:flex;align-items:center;gap:.6rem;flex:1;min-width:0}.brand svg{width:1.5rem;height:1.8rem;flex:none}
+.brand b{font-weight:800;letter-spacing:.06em;white-space:nowrap}.brand small{display:block;color:var(--muted);font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;font-weight:700}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.35rem;border:1px solid var(--line-2);background:var(--panel);border-radius:.5rem;padding:.5rem .85rem;font:inherit;font-weight:700;font-size:.82rem;cursor:pointer;color:inherit;text-decoration:none;white-space:nowrap}
+.btn.gold{background:var(--gold);border-color:var(--gold);color:#141414}.btn.sm{padding:.3rem .55rem;font-size:.76rem}.btn.danger{color:var(--bad);border-color:var(--bad)}
+main .wrap{padding-block:1.4rem 3rem;display:flex;flex-direction:column;gap:1.1rem}
+h1{font-size:1.5rem;margin:0;font-weight:800}h2{font-size:.78rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 .7rem}
+.sub{color:var(--muted);margin:.2rem 0 0;font-size:.9rem}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));gap:.9rem}
+.tile{display:flex;flex-direction:column;gap:.4rem;padding:1.1rem;border:1px solid var(--line);border-radius:.8rem;background:var(--panel);color:inherit;text-decoration:none;min-height:9rem}
+.tile:hover{border-color:var(--gold)}.tile b{font-size:1.15rem;font-weight:800}.tile span{color:var(--muted);font-size:.86rem}
+.tile i{font-style:normal;font-size:1.6rem;line-height:1}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:.8rem;padding:1rem}
+.pill{display:inline-block;padding:.1rem .5rem;border-radius:2rem;font-size:.72rem;font-weight:700;background:var(--gold-bg);color:var(--gold)}
+.row{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:.6rem;align-items:center;padding:.55rem 0;border-top:1px solid var(--line)}.row:first-of-type{border-top:0}
+.row div{min-width:0;overflow-wrap:anywhere}.row small{display:block;color:var(--muted);font-size:.76rem}
+form{display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) auto;gap:.6rem;margin-top:.8rem}
+@media (max-width:640px){form{grid-template-columns:1fr}}
+input,select{font:inherit;font-size:16px;background:var(--panel-2);border:1px solid var(--line-2);border-radius:.5rem;padding:.5rem .65rem;color:inherit;width:100%;min-width:0}
+.note{color:var(--muted);font-size:.8rem}
+.toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 1.2rem);transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:.6rem 1rem;border-radius:.6rem;font-weight:700;font-size:.86rem;max-width:calc(100% - 32px)}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <div class="brand"><svg viewBox="0 0 100 124" aria-hidden="true"><path d="M8 44L50 12 92 44V62L50 30 8 62Z" fill="var(--gold)"/><path d="M8 74L50 42 92 74V92L50 60 8 92Z" fill="var(--gold)" opacity=".7"/><path d="M8 104L50 72 92 104V122L50 90 8 122Z" fill="var(--gold)" opacity=".45"/></svg>
+    <div><b>PIT RATING</b><small>Mowgli Fight Club</small></div></div>
+  <button class="btn sm" id="thm" type="button" aria-label="Тёмная тема">☾</button>
+  <a class="btn sm" href="/cdn-cgi/access/logout">Выйти</a>
+</div></header>
+<main><div class="wrap" id="v"><p class="note">Загрузка…</p></div></main>
+<script>
+"use strict";
+const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const RN={owner:'Владелец',admin:'Администратор',trainer:'Тренер'};
+function toast(t){let e=$('#toast');if(!e){e=document.createElement('div');e.id='toast';e.className='toast';e.setAttribute('role','status');document.body.appendChild(e)}e.textContent=t;e.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>e.hidden=true,2600)}
+function thm(d){document.documentElement.classList.toggle('dk',d);$('#thm').textContent=d?'☀':'☾';try{localStorage.setItem('mowgli.theme',d?'dark':'light')}catch(e){}}
+let DK=false;try{DK=localStorage.getItem('mowgli.theme')==='dark'}catch(e){}thm(DK);$('#thm').onclick=()=>{DK=!DK;thm(DK)};
+async function api(p,o){const r=await fetch(p,{cache:'no-store',...o});const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.error||r.status);return j}
+let ME=null;
+async function main(){
+  ME=await api('/api/me');
+  const fin=ME.role!=='trainer',mgr=ME.role==='owner'||ME.role==='admin';
+  $('#v').innerHTML=`<div><h1>Здравствуйте${ME.name&&ME.name!==ME.email?', '+esc(ME.name):''}</h1><p class="sub">${esc(ME.email)} · <span class="pill">${RN[ME.role]||ME.role}</span></p></div>
+  <div class="tiles">
+    <a class="tile" href="/crm/"><i>▤</i><b>PIT CRM</b><span>${fin?'Бойцы, посещения, заявки, касса, события, отчёты.':'Бойцы, посещения, заявки, события. Касса — у администратора.'}</span></a>
+    <a class="tile" href="/arena/?k=MOWGLI26"><i>◉</i><b>Зал · Arena</b><span>Экраны зала, бой, лига, кабинет тренера. Сейчас — демо с симулятором пульса, реальные данные появятся с датчиками.</span></a>
+  </div>
+  ${mgr?`<section class="card"><h2>Доступ</h2><div id="ul"><p class="note">Загрузка…</p></div>
+    <form id="uf" autocomplete="off"><input type="email" id="ue" placeholder="e-mail сотрудника" required><input type="text" id="un" placeholder="Имя" maxlength="80">
+    <select id="ur"><option value="trainer">Тренер — без кассы</option>${ME.role==='owner'?'<option value="admin">Администратор — всё, кроме доступа владельца</option>':''}</select>
+    <button class="btn gold" type="submit">Добавить</button></form>
+    <p class="note" style="margin:.7rem 0 0">Сотрудник открывает app.pitrating.com, вводит этот e-mail и код из письма. Пароли не нужны.</p></section>`:''}`;
+  if(mgr){loadUsers();$('#uf').onsubmit=async e=>{e.preventDefault();try{await api('/api/users',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email:$('#ue').value,name:$('#un').value,role:$('#ur').value})});toast('Доступ добавлен');$('#uf').reset();loadUsers()}catch(err){toast('Не сохранилось: '+err.message)}}}
+}
+async function loadUsers(){const j=await api('/api/users');
+  $('#ul').innerHTML=j.owners.map(e=>`<div class="row"><div>${esc(e)}<small>Владелец · задаётся в настройках системы</small></div><span></span><span></span></div>`).join('')+
+   (j.users.map(u=>`<div class="row"><div>${esc(u.name||u.email)}<small>${esc(u.email)} · ${RN[u.role]||u.role}</small></div><span></span>${(ME.role==='owner'||u.role==='trainer')&&u.email!==ME.email?`<button class="btn sm danger" data-rm="${esc(u.email)}">Убрать</button>`:'<span></span>'}</div>`).join('')||'<p class="note">Сотрудников пока нет.</p>');
+  document.querySelectorAll('[data-rm]').forEach(b=>b.onclick=async()=>{if(!b.dataset.sure){b.dataset.sure=1;b.textContent='Точно?';return}await api('/api/users',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email:b.dataset.rm,remove:true})});toast('Доступ убран');loadUsers()})}
+main().catch(e=>{$('#v').innerHTML='<p>Не удалось загрузить: '+esc(e.message)+'</p>'});
+</script>
+</body>
+</html>

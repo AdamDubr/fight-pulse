@@ -1,0 +1,19 @@
+{
+  // PIT RATING — app.pitrating.com (CRM + Arena + доступ по ролям)
+  "name": "pit-app",
+  "main": "src/worker.js",
+  "compatibility_date": "2026-10-01",
+  "assets": { "directory": "./public", "binding": "ASSETS", "run_worker_first": true },
+  "d1_databases": [
+    { "binding": "DB", "database_name": "pit", "database_id": "e8d2b2d3-9dbe-4c46-b86c-596e6bda29f3", "migrations_dir": "migrations" }
+  ],
+  "r2_buckets": [ { "binding": "FILES", "bucket_name": "pit-files" } ],
+  // OWNER_EMAILS — секрет (Settings → Variables and Secrets), не хранится в репозитории
+  "vars": {
+    "ACCESS_TEAM": "pitrating",
+    "ACCESS_AUD": "REPLACE_WITH_ACCESS_AUD",
+    "CLUB": "mowgli"
+  },
+  "routes": [ { "pattern": "app.pitrating.com", "custom_domain": true } ],
+  "observability": { "enabled": true }
+}
