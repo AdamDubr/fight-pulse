@@ -77,7 +77,7 @@ textarea{min-height:4.5rem;resize:vertical}
 </div></header>
 <main><div class="wrap" id="v"><div class="ld" data-t="loading">Загрузка…</div></div></main>
 <div class="foot">PIT RATING · Performance Index of Training · <a href="https://pitrating.com">pitrating.com</a></div>
-<script src="/vendor/d3-array.min.js"></script><script src="/vendor/d3-geo.min.js"></script><script src="/my/globe.js"></script>
+<script src="/vendor/d3-array.min.js"></script><script src="/vendor/d3-geo.min.js"></script><script src="/my/globe.js"></script><script src="/vendor/pit-feed.js"></script>
 <script>
 "use strict";
 const T={
@@ -117,7 +117,7 @@ let L=(()=>{try{const s=localStorage.getItem('pit.lang');if(T[s])return s}catch(
 const t=k=>T[L][k],dn=d=>(DISC_T[L]||{})[d]||d;
 const fd=d=>{if(!d)return'—';const x=new Date(d+(d.length===10?'T12:00:00':''));return isNaN(x)?d:x.toLocaleDateString({ru:'ru-RU',en:'en-GB',tr:'tr-TR'}[L],{day:'numeric',month:'long',year:'numeric'})};
 const ageOf=d=>{if(!/^\d{4}-\d{2}-\d{2}$/.test(d||''))return null;const b=new Date(d+'T12:00:00'),n=new Date();let a=n.getFullYear()-b.getFullYear();if(n<new Date(n.getFullYear(),b.getMonth(),b.getDate()))a--;return a};
-let D=null,EDIT=false,PICK=null,GL=null;
+let D=null,EDIT=false,PICK=null,GL=null,FD=null;
 const FLAG={TR:'🇹🇷'},cityOf=c=>L==='ru'?c.city:(c.cityEn||c.city);
 function applyLang(){document.documentElement.lang=L;document.querySelectorAll('[data-t]').forEach(e=>{const v=T[L][e.dataset.t];if(typeof v==='string')e.textContent=v});document.querySelectorAll('.lang button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.l===L)))}
 document.querySelectorAll('.lang button').forEach(b=>b.onclick=()=>{L=b.dataset.l;try{localStorage.setItem('pit.lang',L)}catch(e){}applyLang();render()});
@@ -183,13 +183,14 @@ function picker(){const cl=D.clubs||[];
   <div class="globe" id="gl"></div>
   ${cl.map(c=>`<section class="card club"><span class="flag" aria-hidden="true">${FLAG[c.country]||'🥋'}</span><div style="flex:1;min-width:0"><b>${esc(c.name)}</b><small>${esc(cityOf(c))}</small><div class="tags">${(c.discs||[]).map(d=>`<span>${esc(dn(d))}</span>`).join('')}</div></div><button class="btn gold" type="button" data-pick="${esc(c.id)}">${t('mine')}</button></section>`).join('')}
   <p class="note">${t('soon')}</p>`}
-function render(){applyLang();if(!D)return;const v=$('#v');if(GL){GL.destroy();GL=null}
+function render(){applyLang();if(!D)return;const v=$('#v');if(GL){GL.destroy();GL=null}if(FD){FD.destroy();FD=null}
   const who=`<p class="note" style="margin:0">${t('as')} <b style="color:var(--fg)">${esc(D.email)}</b> · <a href="/auth/logout?next=/my/" style="color:var(--gold)">${t('notYou')}</a></p>`;
   if((!D.profile||EDIT)&&!PICK){v.innerHTML=who+picker();const pick=id=>{PICK=id;render();window.scrollTo({top:0,behavior:'smooth'})};
     try{GL=PITGlobe.mount($('#gl'),{clubs:(D.clubs||[]).map(c=>({...c,city:cityOf(c)})),focus:(D.profile&&D.profile.club)||null,onPick:c=>pick(c.id),label:t('pickH')})}catch(e){$('#gl').hidden=true}
     v.querySelectorAll('[data-pick]').forEach(b=>b.onclick=()=>pick(b.dataset.pick));return}
   if(!D.profile||EDIT){v.innerHTML=who+form();bindForm();return}
-  v.innerHTML=who+home();
+  v.innerHTML=who+home()+`<section><h2 style="margin:.4rem 0 .7rem">PIT World</h2><div id="feed"></div></section>`;
+  try{FD=PITFeed.mount($('#feed'),{lang:L})}catch(e){}
   $('#ed').onclick=()=>{EDIT=true;PICK=D.profile.club;render();window.scrollTo({top:0})};
   $('#dl').onclick=async e=>{const b=e.currentTarget;if(!b.dataset.sure){b.dataset.sure=1;b.textContent=t('delSure');return}b.disabled=true;try{await api({method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({delete:true})});location.replace('/login?next=%2Fmy%2F')}catch(err){b.disabled=false}}}
 applyLang();

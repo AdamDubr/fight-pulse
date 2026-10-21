@@ -2,6 +2,7 @@
 // Вход: собственный (код на e-mail → сессия), на переходный период также Cloudflare Access. Роли: owner | admin | trainer.
 import { authRoutes, sessionEmail, sessionsOf, revokeAll } from './auth.js';
 import { myRoutes } from './my.js';
+import { worldRoutes } from './world.js';
 // Данные: D1 (документы коллекций), файлы: R2.
 
 const ROLES = { owner: 3, admin: 2, trainer: 1 };
@@ -129,7 +130,8 @@ async function api(req, env, me, path) {
       const r = await env.DB.prepare('SELECT email,role,name,added_at FROM users ORDER BY role,email').all();
       const owners = String(env.OWNER_EMAILS || '').toLowerCase().split(/[,\s]+/).filter(Boolean);
       const lg = await env.DB.prepare("SELECT at,email,event FROM logins WHERE event IN ('login','logout','bad_code') ORDER BY at DESC LIMIT 30").all().catch(() => ({ results: [] }));
-      return json({ owners, users: r.results || [], sessions: await sessionsOf(env).catch(() => []), logins: lg.results || [] });
+      const staff = new Set([...owners, ...(r.results || []).map(u => u.email)]);   // бойцы My PIT здесь не показываются
+      return json({ owners, users: r.results || [], sessions: (await sessionsOf(env).catch(() => [])).filter(x => staff.has(x.email)), logins: (lg.results || []).filter(x => staff.has(x.email)) });
     }
     if (req.method === 'POST') {
       const b = await req.json().catch(() => ({}));
@@ -245,6 +247,12 @@ export default {
     if (path.startsWith('/auth/')) {
       try { const r = await authRoutes(req, env, path); if (r) return r } catch (e) { return json({ error: 'server' }, 500) }
       return json({ error: 'not_found' }, 404);
+    }
+    // My PIT World — лента: сотрудники и бойцы (у бойца — только вход по коду)
+    if (path === '/api/world' || path.startsWith('/api/world/')) {
+      const w = await whoami(req, env);
+      if (!w) return json({ error: 'unauthorized' }, 401);
+      try { return await worldRoutes(req, env, path, { email: w.email, staff: w.role || null }) } catch (e) { return json({ error: 'server', message: String(e && e.message || e) }, 500) }
     }
     // My PIT — кабинет бойца: нужен только вход по коду, роль сотрудника не нужна
     if (path === '/my' || path.startsWith('/my/') || path === '/api/my') {
