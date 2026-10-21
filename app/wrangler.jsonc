@@ -10,7 +10,7 @@
   // Фото и чеки: R2 подключим позже — "r2_buckets": [ { "binding": "FILES", "bucket_name": "pit-files" } ],
   // OWNER_EMAILS — секрет (Settings → Variables and Secrets), не хранится в репозитории
   "vars": {
-    "ACCESS_TEAM": "pitrating",
+    "ACCESS_TEAM": "royal-bar-2529",
     "ACCESS_AUD": "REPLACE_WITH_ACCESS_AUD",
     "CLUB": "mowgli"
   },
