@@ -109,6 +109,7 @@ async function api(req, env, me, path) {
 
   // Файлы (фото, чеки) → R2
   if (path === '/api/upload' && req.method === 'POST') {
+    if (!env.FILES) return json({ error: 'files_off' }, 503);
     const type = (req.headers.get('content-type') || 'application/octet-stream').split(';')[0];
     if (!/^(image\/(jpeg|png|webp|heic|heif|gif)|application\/pdf)$/.test(type)) return json({ error: 'unsupported_type' }, 415);
     const buf = await req.arrayBuffer();
@@ -201,6 +202,7 @@ export default {
     if (path.startsWith('/_blob/')) {
       const id = path.slice(7);
       if (!/^[a-f0-9]{32}$/.test(id)) return new Response('Not found', { status: 404 });
+      if (!env.FILES) return new Response('Not found', { status: 404 });
       const o = await env.FILES.get(id);
       if (!o) return new Response('Not found', { status: 404 });
       return new Response(o.body, { headers: { 'content-type': o.httpMetadata?.contentType || 'application/octet-stream', 'cache-control': 'private, max-age=3600' } });

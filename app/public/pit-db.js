@@ -90,7 +90,7 @@
       const type = (opts && opts.type) || file.type || 'application/octet-stream';
       const r = await fetch('/api/upload', { method: 'POST', headers: { 'content-type': type }, body: file });
       const j = await r.json().catch(() => ({}));
-      if (!r.ok) throw Object.assign(new Error(j.error || 'upload'), { code: j.error === 'too_large' ? 'too_large' : j.error === 'unsupported_type' ? 'unsupported_type' : 'upload' });
+      if (!r.ok) throw Object.assign(new Error(j.error === 'files_off' ? 'Загрузка файлов включится позже' : (j.error || 'upload')), { code: j.error === 'too_large' ? 'too_large' : j.error === 'unsupported_type' ? 'unsupported_type' : 'upload' });
       return { id: j.id };
     }
   };
