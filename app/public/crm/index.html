@@ -1188,7 +1188,9 @@ $('#bell').addEventListener('click',e=>{e.stopPropagation();if($('.ntf'))closeNt
 document.addEventListener('click',e=>{const p=$('.ntf');if(p&&!p.contains(e.target)&&e.target.id!=='bell')closeNtf()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeNtf()});
 
-document.querySelectorAll('.tabs button').forEach(b=>b.addEventListener('click',()=>{S.tab=b.dataset.tab;try{localStorage.setItem('mowgli.tab',S.tab)}catch(e){}render();scrollTo(0,0)}));
+document.querySelectorAll('.tabs button').forEach(b=>b.addEventListener('click',()=>{S.tab=b.dataset.tab;
+  // каждая вкладка открывается с начальной страницы: без открытой группы, формы, фильтров и поиска
+  Object.assign(S,{grp:null,schEdit:null,evEdit:null,expOpen:false,cashMode:undefined,shopMode:undefined,q:'',flt:'all',ciq:'',shq:'',lflt:undefined,month:null,open:null,ov:null});$('#ovHost').innerHTML='';try{localStorage.setItem('mowgli.tab',S.tab)}catch(e){}render();scrollTo(0,0)}));
 try{let t=localStorage.getItem('mowgli.tab');if(t==='fin'||t==='shop')t='cash';if(['today','members','leads','pv','cash','events','sched','rep','plans'].includes(t))S.tab=t}catch(e){}
 function setThm(d){document.documentElement.classList.toggle("dk",d);const b=$("#thm");b.textContent=d?"☀":"☾";b.setAttribute("aria-label",d?"Светлая тема":"Тёмная тема");try{localStorage.setItem("mowgli.theme",d?"dark":"light")}catch(e){}}
 let DK=false;try{DK=localStorage.getItem("mowgli.theme")==="dark"}catch(e){}setThm(DK);$("#thm").addEventListener("click",()=>{DK=!DK;setThm(DK)});
