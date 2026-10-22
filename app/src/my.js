@@ -10,7 +10,7 @@ const sha = async s => [...new Uint8Array(await crypto.subtle.digest('SHA-256', 
 const digits = p => String(p || '').replace(/\D/g, '');
 const samePhone = (a, b) => { a = digits(a); b = digits(b); return a.length >= 9 && b.length >= 9 && a.slice(-10) === b.slice(-10) };
 const DISCS = ['MMA', 'Бокс', 'BJJ', 'Кикбоксинг', 'Капоэйра'];
-export const CLUBS = { mowgli: { id: 'mowgli', name: 'Mowgli Fight Club', city: 'Анталья', cityEn: 'Antalya', country: 'TR', lat: 36.8969, lon: 30.7133, logo: '/brand/clubs/mowgli.png', discs: ['MMA', 'BJJ', 'Бокс', 'Кикбоксинг', 'Капоэйра'] } };
+export const CLUBS = { mowgli: { id: 'mowgli', name: 'Mowgli Fight Club', city: 'Анталья', cityEn: 'Antalya', country: 'TR', lat: 36.8381506, lon: 30.5904377, addr: 'Sarısu, 131. Sk., 07130 Konyaaltı/Antalya, Türkiye', placeId: 'ChIJZUYTFaCVwxQRSgx4mbk5waQ', hours: 'Пн–Сб 09:00–22:00', logo: '/brand/clubs/mowgli.png', discs: ['MMA', 'BJJ', 'Бокс', 'Кикбоксинг', 'Капоэйра'] } };
 const LEVELS = ['club', 'city', 'regional', 'national', 'international', 'pro'];
 const KINDS = ['comp', 'title', 'club', 'link'];
 
@@ -122,6 +122,7 @@ function trialMail(to, name, clubName, t, lang) {
 <table role="presentation" cellpadding="0" cellspacing="0" style="font-size:15px;margin:0 0 18px">${rows.map(r => `<tr><td style="color:#8b877d;padding:3px 16px 3px 0">${r[0]}</td><td style="font-weight:700;padding:3px 0">${esc(r[1])}</td></tr>`).join('')}</table>
 <p style="font-size:14px;line-height:1.5;margin:0 0 18px">${L.bring}</p>
 <a href="https://app.pitrating.com/my/" style="display:inline-block;background:#e8c35a;color:#141414;text-decoration:none;font-weight:800;padding:12px 22px;border-radius:10px">${L.btn}</a>
+<p style="font-size:13px;margin:16px 0 0">📍 ${esc(CLUBS.mowgli.addr)}<br><a href="https://www.google.com/maps/dir/?api=1&destination=${CLUBS.mowgli.lat},${CLUBS.mowgli.lon}&destination_place_id=${CLUBS.mowgli.placeId}" style="color:#9a7419">Google Maps</a> · <a href="https://maps.apple.com/?daddr=${CLUBS.mowgli.lat},${CLUBS.mowgli.lon}&q=Mowgli%20Fight%20Club" style="color:#9a7419">Apple Maps</a></p>
 <p style="font-size:12px;color:#8b877d;margin:18px 0 0">${L.chg}</p></td></tr>
 <tr><td style="padding:14px 28px;border-top:1px solid #efeae0;font-size:11px;color:#8b877d">PIT RATING · pitrating.com</td></tr></table></td></tr></table></body></html>`;
   return { to, from: { email: 'noreply@pitrating.com', name: clubName }, subject: L.subj(ds, t.time, clubName), html, text: `${L.hi(name)} ${L.h}: ${rows.map(r => r[0] + ': ' + r[1]).join(', ')}. My PIT: https://app.pitrating.com/my/` };
