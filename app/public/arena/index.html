@@ -4555,12 +4555,13 @@ const PHOTO_DEMO={1:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYE
 function cabReal(a){const b=cabDemo(a);
   return{...b,person:{...b.person,fio:a.name,dob:a.dob||'',phone:'',city:'',emName:'',emPhone:'',photo:null},
     sub:{plan:a.plan||'—',start:a.start||'',end:a.end||'',limit:a.left??null,used:0,frozen:false,price:0,pays:[]},
-    bio:{...b.bio,fat:null,bp:'—'},med:{consent:true,certUntil:null,contra:[],inj:[]},tasks:[]}}
+    bio:{...b.bio,fat:null,bp:'—'},med:{consent:true,certUntil:null,contra:[],inj:[]},tasks:[],
+    nut:{...b.nut,mode:'Поддержание',kcal:NUTKCAL['Поддержание'],plan:NUTPLANS['Поддержание'],cut:null,upd:null,week:undefined,meals:mealsDemo('Поддержание',a.id)}}}  // режим питания и весогонку назначает только тренер; по умолчанию — без курса
 let CAB={};ATHLETES.forEach(a=>CAB[a.id]=REAL?cabReal(a):cabDemo(a));
-try{const s=localStorage.getItem((REAL?'fp.cab.v3.real':'fp.cab.v3'));if(s){const o=JSON.parse(s);for(const k in o)if(CAB[k])CAB[k]=Object.assign(CAB[k],o[k])}}catch(e){}
+try{const s=localStorage.getItem((REAL?'fp.cab.v4.real':'fp.cab.v3'));if(s){const o=JSON.parse(s);for(const k in o)if(CAB[k])CAB[k]=Object.assign(CAB[k],o[k])}}catch(e){}
 ATHLETES.forEach(a=>{if(!U18(a))return;const n=CAB[a.id].nut;if(n&&n.mode==='Весогонка'){n.mode='Поддержание';n.cut=null}});
 for(const k in PHOTO_DEMO)if(CAB[k]&&!CAB[k].person.photo&&(!REAL||(+k===1&&!(byId.get(1)||{mid:1}).mid))){CAB[k].person.photo=PHOTO_DEMO[k];CAB[k].person.photoChk={w:1122,h:1402,res:true,bg:true,face:true,center:true}}
-const saveCab=()=>{try{localStorage.setItem((REAL?'fp.cab.v3.real':'fp.cab.v3'),JSON.stringify(CAB))}catch(e){toast('Не удалось сохранить: хранилище браузера заполнено')}};
+const saveCab=()=>{try{localStorage.setItem((REAL?'fp.cab.v4.real':'fp.cab.v3'),JSON.stringify(CAB))}catch(e){toast('Не удалось сохранить: хранилище браузера заполнено')}};
 /* ===== Подписки: тариф приложения FREE / PRO + услуги клуба и тренера (все цены — только USD) ===== */
 /* My PIT: регистрация бесплатная; PRO продаёт клуб с верификацией бойца, цену ставит клуб (не дороже $29/мес, $300/год). Здесь — цена клуба Mowgli (демо). */
 const FP_PRICE={m:29,y:300},FP_CAP={m:29,y:300};
