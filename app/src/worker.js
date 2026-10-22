@@ -104,6 +104,8 @@ async function api(req, env, me, path) {
       // дисциплины бойца меняют только владелец и администратор (тренер — нет)
       if (o.col === 'members' && (o.op === 'set' || o.op === 'update') && !(me.role === 'owner' || me.role === 'admin')) {
         const cur = await env.DB.prepare('SELECT data,deleted FROM docs WHERE col=? AND id=?').bind(o.col, o.id).first();
+        // нового бойца заводит только администратор (или боец сам — через My PIT и одобрение)
+        if (!cur || cur.deleted) return json({ error: 'forbidden', col: o.col, reason: 'new_member_admin_only' }, 403);
         if (cur && !cur.deleted) { const c = JSON.parse(cur.data); data = { ...data, disc: c.disc ?? null, discs: c.discs ?? null }; }
       }
       const s = o.op === 'delete' ? null : JSON.stringify(data);

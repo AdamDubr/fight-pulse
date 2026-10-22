@@ -195,6 +195,7 @@ input::-webkit-date-and-time-value{text-align:left}
 .gcard .acts{display:flex;gap:.4rem;margin-top:.3rem}
 .glogo{width:3.6rem;height:3.6rem;border-radius:50%;background:#16161a;padding:.35rem;box-sizing:border-box;flex:none}
 .gav{display:inline-flex;align-items:center}.gav i{display:inline-grid;place-items:center;width:1.75rem;height:1.75rem;border-radius:50%;color:#fff;font-style:normal;font-size:.62rem;font-weight:800;border:2px solid var(--panel);margin-left:-.45rem}.gav i:first-child{margin-left:0}.gav u{text-decoration:none;font-size:.7rem;color:var(--muted);margin-left:.3rem}
+html:not([data-role=trainer]) .trn-only{display:none!important}
 html[data-role=trainer] .fin-only,html[data-role=trainer] .adm-only{display:none!important}
 .cashbal{display:grid;grid-template-columns:minmax(0,1.2fr) 1fr 1fr;gap:.8rem;align-items:center}
 .cb{display:flex;flex-direction:column;gap:.1rem}.cb b{font-size:1.45rem;font-weight:600;line-height:1.1}.cb span{font-size:.74rem;color:var(--muted);font-weight:600}
@@ -316,7 +317,7 @@ function vToday(){
   const q=S.ciq.trim().toLocaleLowerCase('tr'),res=q?M.filter(m=>(m.name+' '+phoneDigits(m.phone)).toLocaleLowerCase('tr').includes(q)).slice(0,6):[];
   const need=[...exp,...soon].sort((a,b)=>String(a.m.end).localeCompare(String(b.m.end)));
   return`<div class="head"><div><h1>Сегодня</h1><p class="sub">${esc(dn)}</p></div>
-    <button class="btn gold w-only" data-act="new">+ Новый боец</button></div>
+    <button class="btn gold w-only adm-only" data-act="new">+ Новый боец</button></div>
   ${(()=>{const n=(S.leads||[]).filter(pitPending).length;return n?`<button class="card" data-pitgo="1" style="display:flex;align-items:center;justify-content:space-between;gap:.8rem;width:100%;text-align:left;cursor:pointer;border-color:var(--gold);font:inherit;color:inherit"><span><b>${n} ${n===1?'регистрация':n<5?'регистрации':'регистраций'} в My PIT ждут одобрения</b><small style="display:block;color:var(--muted);font-size:.8rem">Бойцы зарегистрировались сами. Подтвердите или привяжите к карточке.</small></span><span class="pill gold">Открыть</span></button>`:''})()}
   ${le||`<div class="kpis">
     <button class="kpi" data-goflt="active"><b>${act.length-exp.length}</b><span>активных абонементов</span></button>
@@ -349,7 +350,7 @@ function vMembers(){
   const le=loadingOrEmpty(),q=S.q.trim().toLocaleLowerCase('tr'),
     L=S.members.filter(fltFn(S.flt)).filter(m=>!q||(m.name+' '+phoneDigits(m.phone)+' '+(m.disc||'')).toLocaleLowerCase('tr').includes(q)).sort((a,b)=>a.name.localeCompare(b.name,'tr'));
   return`<div class="head"><div><h1>Бойцы · ${S.members.length}</h1><p class="sub">Клик по строке — карточка, продление, история посещений и оплат.</p></div>
-    <div class="acts"><button class="btn" data-act="csv">Скачать CSV</button><button class="btn gold w-only" data-act="new">+ Новый боец</button></div></div>
+    <div class="acts"><button class="btn" data-act="csv">Скачать CSV</button><button class="btn gold w-only adm-only" data-act="new">+ Новый боец</button></div></div>
   ${le||`<input type="search" id="mq" placeholder="Поиск: имя, телефон, дисциплина" value="${esc(S.q)}" autocomplete="off">
   <div class="chips">${FLT.map(([k,t])=>`<button class="chip" data-flt="${k}" aria-pressed="${S.flt===k}">${t}<i>${S.members.filter(fltFn(k)).length}</i></button>`).join('')}</div>
   <section class="card" style="padding:.6rem">
@@ -658,7 +659,7 @@ function bindView(v){
   v.querySelectorAll('[data-goflt]').forEach(b=>b.addEventListener('click',()=>{S.tab='members';S.flt=b.dataset.goflt;render();scrollTo(0,0)}));
   v.querySelectorAll('[data-gotab]').forEach(b=>b.addEventListener('click',()=>{S.tab=b.dataset.gotab;render();scrollTo(0,0)}));
   v.querySelectorAll('[data-flt]').forEach(b=>b.addEventListener('click',()=>{S.flt=b.dataset.flt;render()}));
-  v.querySelectorAll('[data-act="new"]').forEach(b=>b.addEventListener('click',()=>{S.open='new';renderDrawer()}));
+  v.querySelectorAll('[data-act="new"]').forEach(b=>b.addEventListener('click',()=>{if(!canAdm()){toast('Нового бойца заводит администратор');return}S.open='new';renderDrawer()}));
   const sq=(id,k)=>{const i=$(id,v);if(i)i.addEventListener('input',()=>{S[k]=i.value;render();const j=$(id);j.focus();j.setSelectionRange(j.value.length,j.value.length)})};sq('#mq','q');sq('#ciq','ciq');
   const fm=$('#fm',v);if(fm)fm.addEventListener('change',()=>{S.month=fm.value;render()});
   v.querySelectorAll('[data-price]').forEach(i=>i.addEventListener('change',async()=>{const v2=Math.max(0,Math.round(+i.value||0)),L=tariffs().map(t=>t.key===i.dataset.price?{...t,price:v2}:t);await write(()=>DB.doc('club/tariffs').set({list:L}),'Цена сохранена')}));
@@ -804,17 +805,17 @@ function leadDrawer(){const host=$('#ovHost'),x=S.ov.id==='new'?{status:'new',ki
     if(x.status==='new')act=`<form class="card form" id="lbook"><h2 class="full">Записать на пробное</h2><label class="f">Дата пробного<input type="date" id="lb_d" value="${addDays(today(),1)}"></label><div class="acts" style="align-self:end"><button class="btn gold" type="submit">Записать</button></div></form>`;
     if(x.status==='booked')act=`<section class="card"><h2>Пробное ${fmtD(x.trialDate)} · ${lira(price)}</h2><form class="form" id="ldone"><label class="f">Способ оплаты<select id="ld_m">${methodOpts('cash')}</select></label><div class="acts" style="align-self:end"><button class="btn gold" type="submit">Пришёл и оплатил</button></div></form>
       <div class="acts" style="margin-top:.6rem"><button class="btn sm" type="button" data-lmove="new">Перенести</button><button class="btn sm danger" type="button" data-lnoshow="1">Не пришёл</button></div></section>`;
-    if(x.status==='done')act=`<section class="card"><h2>Решение после пробного</h2><div class="acts"><button class="btn gold" type="button" data-lbuy="1">Купил абонемент → завести бойца</button></div></section>`;
+    if(x.status==='done')act=`<section class="card"><h2>Решение после пробного</h2><div class="acts"><button class="btn gold adm-only" type="button" data-lbuy="1">Купил абонемент → завести бойца</button></div></section>`;
     if(['new','booked','done'].includes(x.status))act+=`<section class="card"><h2>Отказ</h2><div class="acts">${LLOST.map(r=>`<button class="btn sm" type="button" data-llost="${esc(r)}">${esc(r)}</button>`).join('')}</div></section>`;
     if(x.status==='bought'&&x.mid)act=`<section class="card"><h2>Стал бойцом</h2><button class="btn" type="button" data-lmember="${x.mid}">Открыть карточку бойца</button></section>`;
     if(x.status==='lost')act=`<section class="card"><h2>Отказ: ${esc(x.lostReason||'')}</h2><button class="btn sm" type="button" data-lmove="new">Вернуть в работу</button></section>`;
     if(pitPending(x)){const opts=S.members.slice().sort((a,b)=>String(a.name).localeCompare(String(b.name),'ru')).map(m=>`<option value="${esc(m.id)}" ${x.match&&x.match.id===m.id?'selected':''}>${esc(m.name)}${m.phone?' · '+esc(m.phone):''}</option>`).join('');
-      act=`<section class="card" style="border-color:var(--gold)"><h2>Регистрация в My PIT · ждёт одобрения</h2>
+      act=`<section class="card" style="border-color:var(--gold)"><h2>Регистрация в My PIT · ждёт одобрения</h2><p class="note trn-only" style="margin:0 0 .6rem">Одобряет и заводит бойца администратор клуба.</p>
         <p class="note" style="margin:0 0 .7rem">${esc(x.email||'')} · ${esc(x.phone||'')} · ${esc(x.age||'')} лет · ${esc(x.disc||'')}${x.note?'<br>'+esc(x.note):''}</p>
-        ${x.match?`<p style="margin:0 0 .7rem">Похоже, это боец клуба: <b>${esc(x.match.name)}</b> (совпал e-mail или телефон).</p><div class="acts" style="margin-bottom:.7rem"><button class="btn gold" type="button" data-papp="link" data-mid="${esc(x.match.id)}">Подтвердить и привязать к ${esc(x.match.name)}</button></div>`:''}
-        <div class="acts"><button class="btn ${x.match?'':'gold'}" type="button" data-papp="new">Одобрить как новую заявку</button></div>
-        <form class="form" id="plink" style="margin-top:.7rem"><label class="f">Это уже наш боец — привязать к карточке<select id="pl_m"><option value="">— выберите бойца —</option>${opts}</select></label><div class="acts" style="align-self:end"><button class="btn" type="submit">Привязать</button></div></form>
-        <div class="acts" style="margin-top:.7rem"><button class="btn sm danger" type="button" data-papp="reject">Отклонить</button></div></section>`}
+        ${x.match?`<p style="margin:0 0 .7rem">Похоже, это боец клуба: <b>${esc(x.match.name)}</b> (совпал e-mail или телефон).</p><div class="acts" style="margin-bottom:.7rem"><button class="btn gold adm-only" type="button" data-papp="link" data-mid="${esc(x.match.id)}">Подтвердить и привязать к ${esc(x.match.name)}</button></div>`:''}
+        <div class="acts"><button class="btn adm-only ${x.match?'':'gold'}" type="button" data-papp="new">Одобрить как новую заявку</button></div>
+        <form class="form adm-only" id="plink" style="margin-top:.7rem"><label class="f">Это уже наш боец — привязать к карточке<select id="pl_m"><option value="">— выберите бойца —</option>${opts}</select></label><div class="acts" style="align-self:end"><button class="btn" type="submit">Привязать</button></div></form>
+        <div class="acts" style="margin-top:.7rem"><button class="btn sm danger adm-only" type="button" data-papp="reject">Отклонить</button></div></section>`}
   }
   host.innerHTML=ovShell(isNew?'Новая заявка':x.name,isNew?'':`<span class="pill ${st[2]}">${st[1]}</span>`,act+form+(isNew?'':`<p class="note">Заявка от ${fmtD(String(x.ts).slice(0,10))}${x.trialPaid?` · пробное оплачено ${lira(x.trialPaid)}`:''}</p>`));
   ovBindClose(host);
@@ -965,7 +966,7 @@ function saleDrawer(){const host=$('#ovHost'),k=S.ov.kind||'sub',SV=services(),c
   const m0=S.members.find(x=>x.id===S.ov.mid),t0=tf(m0?.plan&&m0.plan!=='staff'?m0.plan:'grp12')||tariffs()[0],st0=subFrom(m0);
   const body=k==='sub'?`<form class="card form" id="sf">
       <label class="f full">Боец<select id="sa_m" required><option value="">— выберите —</option>${memOpts(S.ov.mid)}</select></label>
-      <p class="note full" style="margin:0">Нет в списке? <button class="btn sm" type="button" data-sanew="1">+ Новый боец</button></p>
+      <p class="note full" style="margin:0">Нет в списке? <button class="btn sm adm-only" type="button" data-sanew="1">+ Новый боец</button></p>
       <label class="f full">Абонемент<select id="sa_p">${planOptions(t0.key)}</select></label>
       <label class="f">Начало<input type="date" id="sa_s" value="${st0}"></label><label class="f">Окончание<input type="date" id="sa_e" value="${addMonth(st0)}"></label>
       <label class="f">Сумма, ₺<input type="number" id="sa_sum" min="0" step="50" value="${t0.price}"></label><label class="f">Оплата<select id="sa_pm">${methodOpts('cash')}</select></label>
