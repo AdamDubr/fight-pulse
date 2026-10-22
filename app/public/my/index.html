@@ -259,7 +259,7 @@ function alertOk(m){let e=document.getElementById('slmsg');if(!e){e=document.cre
 function statusCard(){
   if(D.member){const s=D.member;
     return `<section class="card"><div style="display:flex;justify-content:space-between;align-items:center;gap:.6rem;flex-wrap:wrap"><h2 style="margin:0">${t('sub')}</h2><span class="pill ok">● ${t('st_member')}</span></div>
-      <p style="margin:.6rem 0 0;font-weight:700">${esc(s.plan||'—')}${s.frozen?` · <span class="pill info">${t('frozen')}</span>`:''}</p>
+      <p style="margin:.6rem 0 0;font-weight:700">${esc(s.plan||'—')}${s.frozen?` · <span class="pill info">${t('frozen')}</span>`:''}</p>${(s.subs||[]).map(u=>`<p style="margin:.35rem 0 0;font-weight:700">+ ${esc(u.plan||'—')}${u.disc?' · '+esc(dn(u.disc)):''}${u.end?` <span class="note" style="font-weight:400">· ${fd(u.end)}</span>`:''}</p>`).join('')}
       <div class="kv"><div><b>${s.end?fd(s.end).replace(/\s\d{4}.*$/,''):'∞'}</b><span>${s.end?t('until'):t('noEnd')}</span></div>
       <div><b>${s.left??'—'}</b><span>${t('left')}</span></div><div><b>${s.visits?.month??0}</b><span>${t('vMonth')}</span></div></div></section>`}
   const st=D.lead?.status||'pending',cls={pending:'gold',new:'gold',booked:'warn',done:'info',bought:'ok',lost:'bad',rejected:'bad'}[st]||'gold';
@@ -336,11 +336,12 @@ function home(){const p=D.profile,a=ageOf(p.dob),ini=((p.first||'')[0]||'')+((p.
   ${trialCard()}
   ${slotPicker()}
   ${statusCard()}
+  ${D.access?'':'<!--'}<a class="card" href="/world/" style="display:flex;align-items:center;gap:.8rem;text-decoration:none;color:inherit;border-color:color-mix(in srgb,var(--gold) 55%,transparent)"><span style="font-size:1.6rem" aria-hidden="true">✦</span><span style="flex:1"><b style="font-family:Unbounded,sans-serif">My PIT World</b><small style="display:block;color:var(--muted)">${t('worldP')}</small></span><span style="color:var(--gold);font-weight:800">→</span></a>${D.access?'':'-->'}
   ${clubsSec()}
   ${sec('comp',t('compH'),t('compN'))}
   ${sec('title',t('titleH'))}
   ${sec('link',t('linkH'),t('ln_n'))}
-  ${D.access?'':'<!--'}<a class="card" href="/world/" style="display:flex;align-items:center;gap:.8rem;text-decoration:none;color:inherit;border-color:color-mix(in srgb,var(--gold) 55%,transparent)"><span style="font-size:1.6rem" aria-hidden="true">✦</span><span style="flex:1"><b style="font-family:Unbounded,sans-serif">My PIT World</b><small style="display:block;color:var(--muted)">${t('worldP')}</small></span><span style="color:var(--gold);font-weight:800">→</span></a>${D.access?'':'-->'}
+
   <section class="card"><h2>${t('profH')}</h2><p style="margin:0">${esc(p.last)} ${esc(p.first)}<br><span class="note">${esc(D.email)} · ${esc(p.phone)} · ${fd(p.dob)}${p.city?' · '+esc(p.city):''}</span></p>
     <div class="actions" style="margin-top:.9rem"><button class="btn" id="ed" type="button">${t('edit')}</button><button class="btn danger" id="dl" type="button">${t('del')}</button></div>
     <p class="note" style="margin-top:.8rem">${t('privacy')}</p></section>`}
