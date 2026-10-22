@@ -611,7 +611,9 @@ function vSched(){const {classes,coaches}=SCH(),co=k=>coaches.find(c=>c.k===k)?.
     <label class="f">Мест в группе<input type="number" id="s_cap" min="1" max="200" value="${e.cap?esc(String(e.cap)):''}" placeholder="${esc(String(SET().groupCap||''))}"></label>
     <div class="f" style="justify-content:flex-end;flex-direction:row;gap:.5rem;align-items:flex-end"><button class="btn gold" type="submit">${E?'Сохранить изменения':'+ Добавить группу'}</button>${E?'<button class="btn" type="button" data-scx>Отмена</button>':''}</div></form>`})()}</section>
   <section class="card"><h2 style="margin:0 0 .7rem;font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)">Тренеры</h2>
-   <div class="chips">${coaches.map(c=>`<span class="chip" style="cursor:default">${esc(c.n)}${classes.some(x=>x.coach===c.k)?'':` <button type="button" class="w-only adm-only" data-codel="${esc(c.k)}" aria-label="Убрать тренера" style="border:0;background:none;color:var(--bad);cursor:pointer;font-weight:800">×</button>`}</span>`).join('')}</div>
+   <p class="note" style="margin:-.3rem 0 .7rem">Фото, направления и регалии тренеров видят бойцы клуба в My PIT → «Клуб».</p>
+   <div class="gcards">${coaches.map(c=>S.coEdit===c.k?coachForm(c):`<div class="gcard" style="cursor:default">${c.photo?`<img class="glogo" src="/_blob/${esc(c.photo)}" alt="" style="object-fit:cover;padding:0">`:`<span class="glogo" style="display:grid;place-items:center;color:#e8c35a;font-weight:800">${esc(ini(c.n))}</span>`}<b>${esc(c.n)}</b><small>${esc((c.discs||[]).join(', ')||'направления не указаны')}</small>${(c.titles||[]).length?`<small>🏅 ${esc(c.titles[0])}${c.titles.length>1?' · +'+(c.titles.length-1):''}</small>`:''}
+     <span class="acts adm-only"><button class="btn sm w-only" type="button" data-coed="${esc(c.k)}">Изменить</button>${classes.some(x=>x.coach===c.k)?'':`<button class="btn sm danger w-only" type="button" data-codel="${esc(c.k)}">Убрать</button>`}</span></div>`).join('')}</div>
    <form id="cof" class="w-only adm-only" style="display:flex;gap:.5rem;margin-top:.7rem;flex-wrap:wrap"><input type="text" id="co_n" placeholder="Имя тренера" maxlength="40" style="flex:1;min-width:10rem"><button class="btn" type="submit">+ Тренер</button></form></section>`}
 
 /* ===== Группы: составы бойцов (как в демо Arena) ===== */
@@ -740,7 +742,24 @@ const trialsOf=c=>trialsUp().filter(x=>x.trialClass===c.id);
 function trialsHTML(){const T=trialsUp(),co=SCH().coaches;
   return`<section class="card"><h2 style="margin:0 0 .7rem;font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)">Пробные занятия · ${T.length}</h2>
    <div class="list">${T.map(x=>{const c=SCH().classes.find(z=>z.id===x.trialClass);return`<button class="row" type="button" data-trial="${esc(x.id)}" style="grid-template-columns:minmax(0,1fr) auto"><span class="nm">${esc(x.name)}<small>${fmtD(x.trialDate)}${c?' · '+esc(c.time)+' · '+esc(c.disc)+' · '+esc(co.find(k=>k.k===c.coach)?.n||''):x.trialTime?' · '+esc(x.trialTime):' · группа не выбрана'}${x.phone?' · '+esc(x.phone):''}</small></span><span class="pill warn">${x.trialDate===today()?'сегодня':'пробное'}</span></button>`}).join('')||'<div class="empty">Записей на пробное нет. Запись — в «Заявках»: «Записать на пробное» с выбором группы.</div>'}</div></section>`}
+
+/* ===== Профиль тренера: фото, направления, регалии, опыт — для My PIT «Клуб» ===== */
+function coachForm(c){return`<form class="card form" id="coedf" style="grid-column:1/-1;border-color:var(--gold)"><h2 class="full" style="margin:0">Тренер: ${esc(c.n)}</h2>
+  <label class="f">Имя (как увидят бойцы)<input type="text" id="ce_n" maxlength="60" value="${esc(c.n)}" required></label>
+  <label class="f">Фото<input type="file" id="ce_ph" accept="image/*"></label>
+  <div class="f" style="grid-column:1/-1"><span style="font-size:.74rem;font-weight:700;color:var(--muted)">Направления</span><div class="chips">${DISCS.map(d=>`<label class="chip" style="display:inline-flex;gap:.3rem;align-items:center"><input type="checkbox" name="ce_d" value="${esc(d)}" ${(c.discs||[]).includes(d)?'checked':''}> ${esc(d)}</label>`).join('')}</div></div>
+  <label class="f full">Регалии и звания — каждое с новой строки<textarea id="ce_t" rows="4" maxlength="1500" placeholder="Мастер спорта по боксу&#10;Чёрный пояс BJJ, 2 дан">${esc((c.titles||[]).join('\n'))}</textarea></label>
+  <label class="f full">Где выступал / опыт — каждое с новой строки<textarea id="ce_x" rows="4" maxlength="1500" placeholder="Чемпион Турции по ММА 2019&#10;ACA, 8 боёв">${esc((c.exp||[]).join('\n'))}</textarea></label>
+  <label class="f full">Коротко о себе<input type="text" id="ce_b" maxlength="200" value="${esc(c.bio||'')}" placeholder="Тренер с 2012 года, специализация — ударная техника"></label>
+  <div class="acts full"><button class="btn gold" type="submit">Сохранить</button><button class="btn" type="button" data-cex>Отмена</button></div></form>`}
+function bindCoach(v){v.querySelectorAll('[data-coed]').forEach(b=>b.addEventListener('click',()=>{S.coEdit=b.dataset.coed;render()}));
+  const x=$('[data-cex]',v);if(x)x.addEventListener('click',()=>{S.coEdit=null;render()});
+  const f=$('#coedf',v);if(!f)return;f.addEventListener('submit',async e=>{e.preventDefault();const k=S.coEdit,lines=id=>$(id,v).value.split('\n').map(z=>z.trim()).filter(Boolean).slice(0,15);
+    const o={n:$('#ce_n',v).value.trim(),discs:[...v.querySelectorAll('input[name=ce_d]:checked')].map(i=>i.value),titles:lines('#ce_t'),exp:lines('#ce_x'),bio:$('#ce_b',v).value.trim()};if(!o.n){toast('Укажите имя');return}
+    const file=$('#ce_ph',v).files[0];if(file){if(!ASSETS){toast('Загрузка фото доступна администратору клуба');return}try{const r=await ASSETS.upload(file,file.type?undefined:{type:'image/jpeg'});o.photo=r.id}catch(err){toast('Фото не загрузилось');return}}
+    S.coEdit=null;saveSch({coaches:SCH().coaches.map(c=>c.k===k?{...c,...o}:c)},'Тренер обновлён: '+o.n)})}
 function bindSched(v){
+  bindCoach(v);
   v.querySelectorAll('[data-trial]').forEach(b=>b.addEventListener('click',()=>{S.tab='leads';render();S.ov={type:'lead',id:b.dataset.trial};renderOv()}));
   if(S.grp&&SCH().classes.some(c=>c.id===S.grp)){bindGroup(v);return}
   v.querySelectorAll('[data-gopen]').forEach(x=>{const go=e=>{if(e.target.closest('button'))return;S.grp=x.dataset.gopen;render();scrollTo(0,0)};x.addEventListener('click',go);x.addEventListener('keydown',e=>{if(e.key==='Enter')go(e)})});

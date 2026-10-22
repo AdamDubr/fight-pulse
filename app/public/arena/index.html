@@ -3660,7 +3660,7 @@ function pitSched(){const R=window.PIT_REAL||{},sc=R.schedule||{};
   return{classes:(sc.classes||[]).map(c=>({id:c.id,dow:(c.dow||[]).map(x=>x%7),time:c.time,disc:c.disc,coach:c.coach||(SCH_CO[0]&&SCH_CO[0].k),dur:c.dur||null,cap:c.cap||null})),
     events:Object.entries(R.events||{}).filter(([,e])=>e&&e.date).map(([id,e])=>({id,d:e.date,name:e.title||e.name||'Событие'})).sort((a,b)=>a.d.localeCompare(b.d))}}
 async function pitSaveSched(){const R=window.PIT_REAL||(window.PIT_REAL={});if(REAL&&!R.schEdit){toast('Расписание меняет администратор в CRM');return}
-  const data={...(R.schedule||{}),classes:SCHED.classes.map(c=>({ids:(((R.schedule||{}).classes||[]).find(o=>o.id&&o.id===c.id)||{}).ids||c.ids||[],id:c.id||('c'+Date.now().toString(36)+Math.random().toString(36).slice(2,5)),dow:(c.dow||[]).map(x=>x===0?7:x),time:c.time,disc:c.disc,coach:c.coach,dur:c.dur||60,cap:c.cap||null})),coaches:SCH_CO.map(c=>({k:c.k,n:c.n})),updatedAt:new Date().toISOString()};
+  const data={...(R.schedule||{}),classes:SCHED.classes.map(c=>({ids:(((R.schedule||{}).classes||[]).find(o=>o.id&&o.id===c.id)||{}).ids||c.ids||[],id:c.id||('c'+Date.now().toString(36)+Math.random().toString(36).slice(2,5)),dow:(c.dow||[]).map(x=>x===0?7:x),time:c.time,disc:c.disc,coach:c.coach,dur:c.dur||60,cap:c.cap||null})),coaches:SCH_CO.map(c=>({...(((R.schedule||{}).coaches||[]).find(o=>o.k===c.k)||{}),k:c.k,n:c.n})),updatedAt:new Date().toISOString()};
   R.schedule=data;
   // события зала ⇄ CRM «События»
   R.events=R.events||{};const keep=new Set();

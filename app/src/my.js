@@ -56,11 +56,25 @@ async function trialSlots(env, days = 14) {
   for (let i = 0; i < days; i++) {
     const d = new Date(Date.parse(td + 'T12:00:00Z') + i * 864e5), ds = d.toISOString().slice(0, 10), dw = d.getUTCDay() || 7;
     for (const c of cls) { if (!(c.dow || []).includes(dw)) continue; if (ds === td && String(c.time) <= hhmm) continue;
-      const k = co.find(z => z.k === c.coach); out.push({ cls: c.id, date: ds, time: c.time, disc: c.disc, dur: c.dur || 60, coach: k ? k.n : null }) }
+      const k = co.find(z => z.k === c.coach); out.push({ cls: c.id, date: ds, time: c.time, disc: c.disc, dur: c.dur || 60, coach: k ? k.n : null, ck: c.coach || null, cph: k && k.photo ? '/api/my/cphoto/' + k.photo : null }) }
   }
   return out.sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));
 }
 
+
+// «Мой клуб» для членов клуба: тренеры с фото и регалиями, честная статистика клуба (без выдуманного рейтинга)
+async function clubInfo(env, club) {
+  const sc = (await getDoc(env, 'club', 'schedule')) || {}, cls = sc.classes || [];
+  const coaches = (sc.coaches || []).map(c => ({ n: c.n, photo: c.photo ? '/api/my/cphoto/' + c.photo : null, discs: c.discs && c.discs.length ? c.discs : [...new Set(cls.filter(x => x.coach === c.k).map(x => x.disc))], titles: c.titles || [], exp: c.exp || [], bio: c.bio || '', groups: cls.filter(x => x.coach === c.k).length }));
+  const td = new Date().toISOString().slice(0, 10);
+  const ms = await env.DB.prepare("SELECT data FROM docs WHERE col='members' AND deleted=0").all();
+  let active = 0; for (const x of ms.results || []) { try { const m = JSON.parse(x.data); if (m.kind !== 'staff' && !m.frozen && (!m.end || m.end >= td)) active++ } catch (e) { } }
+  const ver = await env.DB.prepare('SELECT COUNT(*) AS n FROM fighters WHERE club=? AND verified=1 AND mid IS NOT NULL').bind(club).first();
+  const it = await env.DB.prepare("SELECT i.data FROM fighter_items i JOIN fighters f ON f.email=i.email WHERE f.club=? AND i.status='ok' AND i.kind='comp'").bind(club).all();
+  const med = { g: 0, s: 0, b: 0 }, comps = (it.results || []).length;
+  for (const x of it.results || []) { try { const d = JSON.parse(x.data); if (d.rtype !== 'bout') { if (d.pos === '1') med.g++; else if (d.pos === '2') med.s++; else if (d.pos === '3') med.b++ } } catch (e) { } }
+  return { ...(CLUBS[club] || {}), coaches, stats: { active, verified: ver ? ver.n : 0, comps, med, groups: cls.length } };
+}
 // полная анкета члена клуба: фото, вес, город (+ родитель для U18 уже обязателен при регистрации)
 function fullMissing(p, photo) { const m = []; if (!photo) m.push('photo'); if (!p.weight) m.push('weight'); if (!p.city) m.push('city'); return m }
 // пробное занятие: дата, время, группа, тренер — из заявки и расписания клуба
@@ -145,7 +159,7 @@ async function view(env, email) {
   out.missing = fullMissing(profile, out.photo);
   out.submitted = profile.submittedAt || null;
   out.access = !!(f.mid && f.verified);
-  if (out.access) out.schedule = await trialSlots(env, 7);
+  if (out.access) { out.schedule = await trialSlots(env, 14); out.clubInfo = await clubInfo(env, f.club) }
   if (lead) out.lead = { status: lead.rejected ? 'rejected' : (!lead.approved && (lead.status || 'new') === 'new') ? 'pending' : (lead.status || 'new'), trialDate: lead.trialDate || null };
   const it = await env.DB.prepare('SELECT * FROM fighter_items WHERE email=? ORDER BY created DESC').bind(email).all();
   out.items = (it.results || []).map(itemOut);
@@ -183,6 +197,14 @@ export async function myRoutes(req, env, path, email, staff) {
     const own = await env.DB.prepare('SELECT 1 AS x FROM files WHERE id=? AND by=?').bind(pm[1], email).first();
     if (!own && !staff) return new Response('Not found', { status: 404 });
     const o = env.FILES ? await env.FILES.get(pm[1]) : null;
+    if (!o) return new Response('Not found', { status: 404 });
+    return new Response(o.body, { headers: { 'content-type': o.httpMetadata?.contentType || 'image/jpeg', 'cache-control': 'private, max-age=86400' } });
+  }
+  const cp = path.match(/^\/api\/my\/cphoto\/([a-f0-9]{32})$/);
+  if (cp && req.method === 'GET') {
+    const sc = (await getDoc(env, 'club', 'schedule')) || {};
+    if (!(sc.coaches || []).some(c => c.photo === cp[1]) || !env.FILES) return new Response('Not found', { status: 404 });
+    const o = await env.FILES.get(cp[1]);
     if (!o) return new Response('Not found', { status: 404 });
     return new Response(o.body, { headers: { 'content-type': o.httpMetadata?.contentType || 'image/jpeg', 'cache-control': 'private, max-age=86400' } });
   }
