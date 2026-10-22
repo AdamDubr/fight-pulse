@@ -188,6 +188,13 @@ input::-webkit-date-and-time-value{text-align:left}
 .pv-t{width:100%;border-collapse:collapse;font-size:.86rem}.pv-t th{text-align:left;color:var(--muted);font-size:.72rem;font-weight:700;padding:.3rem}.pv-t td{border-top:1px solid var(--line);padding:.4rem .3rem;vertical-align:middle;overflow-wrap:anywhere}
 .pv-it{border-top:1px solid var(--line);padding:.6rem 0;display:flex;gap:.6rem;align-items:flex-start;flex-wrap:wrap}.pv-ih{flex:1;min-width:12rem;display:flex;flex-direction:column;gap:.15rem}.pv-ih small{color:var(--muted);font-size:.78rem}.pv-ih em{font-size:.84rem;color:var(--muted)}.pv-ih a{color:var(--gold);font-weight:700;font-size:.82rem}
 .pv-f{display:flex;gap:.5rem;margin-top:.8rem;flex-wrap:wrap}.pv-f input{flex:1;min-width:12rem}
+.gcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,14rem),1fr));gap:.7rem}
+.gcard{display:flex;flex-direction:column;align-items:center;gap:.35rem;text-align:center;padding:.9rem .6rem .7rem;border:1px solid var(--line);border-radius:.7rem;background:var(--panel-2);cursor:pointer;min-width:0}
+.gcard:hover,.gcard:focus-visible{border-color:var(--gold)}
+.gcard b{font-size:.92rem}.gcard small{color:var(--muted);font-size:.74rem}
+.gcard .acts{display:flex;gap:.4rem;margin-top:.3rem}
+.glogo{width:3.6rem;height:3.6rem;border-radius:50%;background:#16161a;padding:.35rem;box-sizing:border-box;flex:none}
+.gav{display:inline-flex;align-items:center}.gav i{display:inline-grid;place-items:center;width:1.75rem;height:1.75rem;border-radius:50%;color:#fff;font-style:normal;font-size:.62rem;font-weight:800;border:2px solid var(--panel);margin-left:-.45rem}.gav i:first-child{margin-left:0}.gav u{text-decoration:none;font-size:.7rem;color:var(--muted);margin-left:.3rem}
 html[data-role=trainer] .fin-only,html[data-role=trainer] .adm-only{display:none!important}
 .cashbal{display:grid;grid-template-columns:minmax(0,1.2fr) 1fr 1fr;gap:.8rem;align-items:center}
 .cb{display:flex;flex-direction:column;gap:.1rem}.cb b{font-size:1.45rem;font-weight:600;line-height:1.1}.cb span{font-size:.74rem;color:var(--muted);font-weight:600}
@@ -414,6 +421,7 @@ function renderDrawer(){
       pays=S.payments.filter(p=>p.mid===m.id).sort((a,b)=>String(b.date).localeCompare(String(a.date))),wa=phoneDigits(m.phone),pm=m.parent&&m.parent.mid?S.members.find(x=>x.id===m.parent.mid):null,kids=S.members.filter(x=>x.parent&&x.parent.mid===m.id),dia=S.diary.filter(d=>d.mid===m.id).sort((a,b)=>String(b.ts).localeCompare(String(a.ts)));
     body=`<div class="acts w-only">${todayIds().has(m.id)?'<span class="pill ok">✓ отмечен сегодня</span>':`<button class="btn gold" data-visit="${m.id}">Пришёл сегодня</button>`}
         ${m.kind!=='staff'?`<button class="btn" data-dr="renew">Продлить</button><button class="btn" data-dr="change">Сменить абонемент</button>`:''}<button class="btn" data-dr="edit">Изменить</button></div>
+      ${m&&m.kind!=='staff'&&memGroups(m).length?`<section class="card"><h2>Группы</h2><div class="chips">${memGroups(m).map(c=>`<span class="chip" style="cursor:default">${esc(c.disc)} · ${esc(c.time)} · ${(c.dow||[]).map(d=>SDAYS[d-1]).join('/')}</span>`).join('')}</div></section>`:''}
       ${pitBlock(m)}
       <section class="card"><h2>Абонемент</h2><dl class="kv">
         <dt>Тариф</dt><dd>${esc(t?.name||m.pkg||'—')}${m.price!=null&&m.kind!=='staff'?` · <span class="num">${lira(m.price)}</span>`:''}</dd>
@@ -554,13 +562,17 @@ const SCO0=[{k:'mowgli',n:'Джалял «MOWGLI»'}];
 const SCH=()=>{const d=S.sched||{};return{classes:Array.isArray(d.classes)?d.classes:[],coaches:Array.isArray(d.coaches)&&d.coaches.length?d.coaches:SCO0}};
 const saveSch=(x,msg)=>write(()=>DB.doc('club/schedule').set({...SCH(),...x,updatedAt:new Date().toISOString()}),msg);
 function vSched(){const {classes,coaches}=SCH(),co=k=>coaches.find(c=>c.k===k)?.n||'—';
+  const G=S.grp&&classes.find(c=>c.id===S.grp);if(G)return vGroup(G,co);
   const byDay=SDAYS.map((d,i)=>({d,i:i+1,list:classes.filter(c=>(c.dow||[]).includes(i+1)).sort((a,b)=>String(a.time).localeCompare(String(b.time)))}));
   return`<div class="head"><div><h1>Расписание</h1><p class="sub">Группы клуба по дням недели. Это расписание видят экраны зала (Arena) и бойцы при записи.</p></div></div>
   <section class="card"><h2 style="margin:0 0 .7rem;font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)">Неделя</h2>
    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,11rem),1fr));gap:.6rem">${byDay.map(x=>`<div style="border:1px solid var(--line);border-radius:.6rem;padding:.6rem;min-width:0"><b style="font-size:.82rem">${x.d}</b>
     ${x.list.map(c=>`<div style="display:flex;gap:.4rem;align-items:baseline;margin-top:.45rem;font-size:.84rem"><b class="num">${esc(c.time)}</b><span style="min-width:0">${esc(c.disc)}<small style="display:block;color:var(--muted);font-size:.72rem">${esc(co(c.coach))}${c.dur?' · '+c.dur+' мин':''}</small></span></div>`).join('')||'<div style="color:var(--muted);font-size:.78rem;margin-top:.4rem">—</div>'}</div>`).join('')}</div></section>
   <section class="card"><h2 style="margin:0 0 .7rem;font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)">Группы · ${classes.length}</h2>
-   <div class="list">${classes.slice().sort((a,b)=>String(a.time).localeCompare(String(b.time))).map(c=>`<div class="row" style="grid-template-columns:minmax(0,1fr) auto;cursor:default"><span class="nm">${esc(c.disc)} · ${esc(c.time)}<small>${(c.dow||[]).map(d=>SDAYS[d-1]).join(', ')} · ${esc(co(c.coach))}${c.dur?' · '+c.dur+' мин':''}${c.cap?' · до '+c.cap+' чел.':''}</small></span><span class="acts adm-only" style="gap:.4rem"><button class="btn sm w-only" type="button" data-sed="${esc(c.id)}">Изменить</button><button class="btn sm danger w-only" type="button" data-sdel="${esc(c.id)}">Удалить</button></span></div>`).join('')||'<div class="empty">Групп пока нет. Добавьте первую ниже.</div>'}</div>
+   <div class="gcards">${classes.slice().sort((a,b)=>String(a.time).localeCompare(String(b.time))).map(c=>{const ids=gIds(c),cap=c.cap||SET().groupCap||0,full=cap&&ids.length>=cap;
+     return`<div class="gcard" role="button" tabindex="0" data-gopen="${esc(c.id)}"><img class="glogo" src="${gLogo(c.disc)}" alt=""><b>${esc(c.disc)} · ${esc(c.time)}</b><small>${(c.dow||[]).map(d=>SDAYS[d-1]).join(', ')} · ${esc(co(c.coach))}${c.dur?' · '+c.dur+' мин':''}</small>
+      <span class="pill ${full?'warn':ids.length?'ok':'info'}">${ids.length}${cap?' / '+cap:''} ${plural(ids.length,'боец','бойца','бойцов')}</span>${gAv(ids)}
+      <span class="acts adm-only"><button class="btn sm w-only" type="button" data-sed="${esc(c.id)}">Изменить</button><button class="btn sm danger w-only" type="button" data-sdel="${esc(c.id)}">Удалить</button></span></div>`}).join('')||'<div class="empty">Групп пока нет. Добавьте первую ниже.</div>'}</div>
    ${(()=>{const E=S.schEdit?classes.find(c=>c.id===S.schEdit):null,e=E||{dow:[],time:'19:00',dur:60,disc:'MMA',coach:coaches[0]&&coaches[0].k,cap:null};
    return `<form class="card form w-only adm-only" id="schf" style="margin-top:.8rem;background:var(--panel-2)${E?';border-color:var(--gold)':''}">
     ${E?`<h2 class="full" style="margin:0">Изменить группу: ${esc(E.disc)} · ${esc(E.time)}</h2>`:''}
@@ -574,7 +586,48 @@ function vSched(){const {classes,coaches}=SCH(),co=k=>coaches.find(c=>c.k===k)?.
   <section class="card"><h2 style="margin:0 0 .7rem;font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)">Тренеры</h2>
    <div class="chips">${coaches.map(c=>`<span class="chip" style="cursor:default">${esc(c.n)}${classes.some(x=>x.coach===c.k)?'':` <button type="button" class="w-only adm-only" data-codel="${esc(c.k)}" aria-label="Убрать тренера" style="border:0;background:none;color:var(--bad);cursor:pointer;font-weight:800">×</button>`}</span>`).join('')}</div>
    <form id="cof" class="w-only adm-only" style="display:flex;gap:.5rem;margin-top:.7rem;flex-wrap:wrap"><input type="text" id="co_n" placeholder="Имя тренера" maxlength="40" style="flex:1;min-width:10rem"><button class="btn" type="submit">+ Тренер</button></form></section>`}
+
+/* ===== Группы: составы бойцов (как в демо Arena) ===== */
+const GSVG=i2=>`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f3d98b"/><stop offset=".5" stop-color="#e8c35a"/><stop offset="1" stop-color="#8a6a20"/></linearGradient><radialGradient id="b" cx=".5" cy=".38" r=".85"><stop offset="0" stop-color="#2b2b2b"/><stop offset="1" stop-color="#0c0c0c"/></radialGradient></defs><circle cx="60" cy="60" r="57" fill="url(#b)"/><circle cx="60" cy="60" r="55.5" fill="none" stroke="url(#g)" stroke-width="2.6"/><circle cx="60" cy="60" r="49" fill="none" stroke="#e8c35a3d" stroke-width="1.2"/>${i2}</svg>`;
+const GLOGOS={
+ 'MMA':GSVG(`<polygon points="91.4,47 73,28.6 47,28.6 28.6,47 28.6,73 47,91.4 73,91.4 91.4,73" fill="none" stroke="url(#g)" stroke-width="4" stroke-linejoin="round"/><text x="60" y="68" text-anchor="middle" font-family="Arial Black,Arial" font-size="21" font-weight="900" letter-spacing="1" fill="url(#g)">MMA</text>`),
+ 'Бокс':GSVG(`<g transform="translate(60,56)"><path d="M-21,-2 q0,-20 16,-20 h11 q18,0 18,18 v8 q0,12 -10,16 h-25 q-10,-4 -10,-14 z" fill="url(#g)"/><path d="M-21,-5 q-11,1 -11,9 q0,8 11,9" fill="none" stroke="url(#g)" stroke-width="7" stroke-linecap="round"/><rect x="-13" y="22" width="33" height="10" rx="3" fill="#141414" stroke="url(#g)" stroke-width="2"/><path d="M-5,-20 v13 M6,-20 v13 M17,-18 v11" stroke="#00000066" stroke-width="3" stroke-linecap="round"/></g>`),
+ 'BJJ':GSVG(`<text x="60" y="42" text-anchor="middle" font-family="Arial Black,Arial" font-size="17" font-weight="900" fill="url(#g)">BJJ</text><rect x="20" y="50" width="80" height="15" rx="3" fill="#121212" stroke="url(#g)" stroke-width="2.5"/><rect x="77" y="50" width="13" height="15" fill="url(#g)"/><path d="M52,62 l-11,25 l10,-4 l5,-14 z" fill="#121212" stroke="url(#g)" stroke-width="2"/><path d="M62,62 l9,25 l-10,-4 l-5,-14 z" fill="#121212" stroke="url(#g)" stroke-width="2"/><circle cx="57" cy="59" r="7" fill="#121212" stroke="url(#g)" stroke-width="2.5"/>`),
+ 'Муай-тай':GSVG(`<ellipse cx="60" cy="52" rx="27" ry="19" fill="none" stroke="url(#g)" stroke-width="7"/><path d="M60,70 q-7,14 -15,21 M60,70 q7,14 15,21" stroke="url(#g)" stroke-width="5" fill="none" stroke-linecap="round"/><circle cx="60" cy="71" r="6.5" fill="url(#g)"/><path d="M60,33 q5,-9 0,-14 q-5,5 0,14" fill="url(#g)"/>`),
+ 'Функционал':GSVG(`<path d="M45,45 q-3,-23 15,-23 q18,0 15,23" fill="none" stroke="url(#g)" stroke-width="8" stroke-linecap="round"/><circle cx="60" cy="68" r="25" fill="url(#b)" stroke="url(#g)" stroke-width="4"/><path d="M47,60 q13,-9 26,0" fill="none" stroke="#e8c35a55" stroke-width="3" stroke-linecap="round"/>`)};
+const GURI={};function gLogo(name){if(GURI[name])return GURI[name];
+  const svg=GLOGOS[name]||GSVG(`<path d="M60,22 l28,10 v23 q0,27 -28,39 q-28,-12 -28,-39 v-23 z" fill="none" stroke="url(#g)" stroke-width="3.5" stroke-linejoin="round"/><text x="60" y="72" text-anchor="middle" font-family="Arial Black,Arial" font-size="34" font-weight="900" fill="url(#g)">${(name[0]||'★').toUpperCase()}</text>`);
+  return GURI[name]='data:image/svg+xml;utf8,'+encodeURIComponent(svg)}
+
+const canAdm=()=>['owner','admin'].includes((window.PIT_ME||{}).role);
+const gIds=c=>(Array.isArray(c.ids)?c.ids:[]).filter(id=>S.members.some(m=>m.id===id));
+const ini=n=>String(n||'?').trim().split(/\s+/).slice(0,2).map(w=>w[0]).join('').toUpperCase();
+const avc=id=>{let h=0;for(const ch of String(id))h=(h*31+ch.charCodeAt(0))>>>0;return`hsl(${h%360} 45% 42%)`};
+const gAv=ids=>`<span class="gav">${ids.slice(0,6).map(id=>{const m=S.members.find(x=>x.id===id);return`<i style="background:${avc(id)}" title="${esc(m?.name)}">${esc(ini(m?.name))}</i>`}).join('')}${ids.length>6?`<u>+${ids.length-6}</u>`:''}</span>`;
+function plural(n,a,b,c){n=Math.abs(n)%100;const k=n%10;return n>10&&n<20?c:k>1&&k<5?b:k===1?a:c}
+const memGroups=m=>SCH().classes.filter(c=>(c.ids||[]).includes(m.id));
+function vGroup(c,co){const ids=gIds(c),cap=c.cap||SET().groupCap||0,inG=new Set(ids);
+  const cand=S.members.filter(m=>m.kind!=='staff'&&!inG.has(m.id)&&!['exp','none'].includes(status(m).k)).sort((a,b)=>((b.disc===c.disc)-(a.disc===c.disc))||a.name.localeCompare(b.name,'ru'));
+  return`<button class="btn sm" data-gback style="margin-bottom:.7rem;width:auto;display:inline-flex">‹ Все группы</button>
+  <div class="head"><div style="display:flex;gap:.9rem;align-items:center"><img class="glogo" src="${gLogo(c.disc)}" alt="" style="width:4.2rem;height:4.2rem"><div><h1>${esc(c.disc)} · ${esc(c.time)}</h1><p class="sub">${(c.dow||[]).map(d=>SDAYS[d-1]).join(', ')} · ${esc(co(c.coach))}${c.dur?' · '+c.dur+' мин':''}</p></div></div>
+   <span class="pill ${cap&&ids.length>=cap?'warn':'ok'}" style="font-size:.8rem">${ids.length}${cap?' / '+cap:''} ${plural(ids.length,'боец','бойца','бойцов')}</span></div>
+  <section class="card"><h2>Состав группы</h2><div class="list">${ids.map(id=>{const m=S.members.find(x=>x.id===id),st=status(m);
+    return`<div class="row" style="grid-template-columns:auto minmax(0,1fr) auto auto"><span class="gav"><i style="background:${avc(id)}">${esc(ini(m.name))}</i></span><button class="nm" data-open="${esc(id)}" style="background:none;border:0;padding:0;text-align:left;font:inherit;color:inherit;cursor:pointer">${esc(m.name)}<small>${esc(m.disc||'')} · ${esc(tf(m.plan)?.name||'—')}${m.end?' · до '+fmtD(m.end):''}</small></button><span class="pill ${st.c}">${esc(st.t)}</span><button class="btn sm danger w-only adm-only" type="button" data-grm="${esc(id)}" aria-label="Убрать из группы">✕</button></div>`}).join('')||'<div class="empty">В группе пока никого. Добавьте бойцов ниже.</div>'}</div></section>
+  <section class="card w-only adm-only"><h2>Добавить бойцов</h2>
+   <input type="search" id="gq" placeholder="Поиск по имени" style="width:100%;margin-bottom:.6rem">
+   <div class="list" id="gcand" style="max-height:24rem;overflow:auto">${cand.map(m=>`<label class="row gc" data-n="${esc(m.name.toLowerCase())}" style="grid-template-columns:auto minmax(0,1fr) auto;cursor:pointer"><input type="checkbox" value="${esc(m.id)}"><span class="nm">${esc(m.name)}<small>${esc(m.disc||'')} · ${esc(tf(m.plan)?.name||'—')}</small></span>${m.disc===c.disc?'<span class="pill gold">'+esc(c.disc)+'</span>':''}</label>`).join('')||'<div class="empty">Все активные бойцы уже в группе.</div>'}</div>
+   <div style="display:flex;gap:.6rem;align-items:center;margin-top:.7rem;flex-wrap:wrap"><button class="btn gold" type="button" data-gadd>+ Добавить выбранных</button><span class="note" id="gsel"></span></div></section>`}
+function bindGroup(v){const c=SCH().classes.find(x=>x.id===S.grp);if(!c)return;const cap=c.cap||SET().groupCap||0;
+  const put=(ids,msg)=>saveSch({classes:SCH().classes.map(x=>x.id===c.id?{...x,ids}:x)},msg);
+  const bk=$('[data-gback]',v);if(bk)bk.addEventListener('click',()=>{S.grp=null;render();scrollTo(0,0)});
+  v.querySelectorAll('[data-grm]').forEach(b=>b.addEventListener('click',()=>{const m=S.members.find(x=>x.id===b.dataset.grm);put(gIds(c).filter(id=>id!==b.dataset.grm),`Убран из группы ${c.disc} ${c.time}: ${m?.name||''}`)}));
+  const q=$('#gq',v);if(q)q.addEventListener('input',()=>{const t=q.value.trim().toLowerCase();v.querySelectorAll('.gc').forEach(r=>r.style.display=!t||r.dataset.n.includes(t)?'':'none')});
+  const sel=()=>[...v.querySelectorAll('#gcand input:checked')].map(i=>i.value);
+  v.querySelectorAll('#gcand input').forEach(i=>i.addEventListener('change',()=>{const n=sel().length,tot=gIds(c).length+n;$('#gsel',v).textContent=n?`Выбрано: ${n}${cap&&tot>cap?` · будет ${tot} при лимите ${cap}`:''}`:''}));
+  const ad=$('[data-gadd]',v);if(ad)ad.addEventListener('click',()=>{const add=sel();if(!add.length){toast('Отметьте бойцов');return}put([...gIds(c),...add],`В группу ${c.disc} ${c.time} добавлено: ${add.length}`)})}
 function bindSched(v){
+  if(S.grp&&SCH().classes.some(c=>c.id===S.grp)){bindGroup(v);return}
+  v.querySelectorAll('[data-gopen]').forEach(x=>{const go=e=>{if(e.target.closest('button'))return;S.grp=x.dataset.gopen;render();scrollTo(0,0)};x.addEventListener('click',go);x.addEventListener('keydown',e=>{if(e.key==='Enter')go(e)})});
   const f=$('#schf',v);if(f)f.addEventListener('submit',e=>{e.preventDefault();const dow=[...f.querySelectorAll('input[name=sd]:checked')].map(x=>+x.value);if(!dow.length){toast('Отметьте дни');return}
     const c={id:S.schEdit||('c'+Date.now().toString(36)),dow,time:$('#s_t',v).value,dur:Math.max(15,+$('#s_dur',v).value||60),disc:$('#s_d',v).value,coach:$('#s_c',v).value,cap:$('#s_cap',v).value?Math.max(1,+$('#s_cap',v).value):null};
     if(S.schEdit){const id=S.schEdit;S.schEdit=null;saveSch({classes:SCH().classes.map(x=>x.id===id?{...x,...c}:x)},'Группа изменена: '+c.disc+' '+c.time)}

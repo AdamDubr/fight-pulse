@@ -2143,7 +2143,7 @@ html.light .a-stage .st-word{filter:blur(3px)!important}
 html.light .a-stage [style*="color:"],html.light body.m-on .m-holo3d .mh-ov [style*="color:"]{filter:brightness(1.6) saturate(1.2)}
 .demo,.top #demoBadge{display:none!important}
 body.real .tabs [data-view=league],body.real .tabs [data-view=card],body.real .tabs [data-view=world]{display:none!important}
-body.real #admTabs [data-adm=league],body.real #admTabs [data-adm=fin],body.real #admTabs [data-adm=imp],body.real #admTabs [data-adm=groups]{display:none!important}
+body.real #admTabs [data-adm=league],body.real #admTabs [data-adm=fin],body.real #admTabs [data-adm=imp]{display:none!important}
 body.world-only #mNav,body.world-only #mAva,body.world-only #mTPill{display:none!important}
 body.world-only main{padding-bottom:env(safe-area-inset-bottom,0px)!important}
 .m-wback{margin-left:auto;display:inline-flex;align-items:center;padding:.4rem .7rem;border-radius:.5rem;border:1px solid currentColor;font-weight:800;font-size:.8rem;text-decoration:none;color:inherit;white-space:nowrap}
@@ -3657,7 +3657,7 @@ function pitSched(){const R=window.PIT_REAL||{},sc=R.schedule||{};
   return{classes:(sc.classes||[]).map(c=>({id:c.id,dow:c.dow||[],time:c.time,disc:c.disc,coach:c.coach||(SCH_CO[0]&&SCH_CO[0].k),dur:c.dur||null,cap:c.cap||null})),
     events:Object.entries(R.events||{}).filter(([,e])=>e&&e.date).map(([id,e])=>({id,d:e.date,name:e.title||e.name||'Событие'})).sort((a,b)=>a.d.localeCompare(b.d))}}
 async function pitSaveSched(){const R=window.PIT_REAL||(window.PIT_REAL={});if(REAL&&!R.schEdit){toast('Расписание меняет администратор в CRM');return}
-  const data={...(R.schedule||{}),classes:SCHED.classes.map(c=>({id:c.id||('c'+Date.now().toString(36)+Math.random().toString(36).slice(2,5)),dow:c.dow,time:c.time,disc:c.disc,coach:c.coach,dur:c.dur||60,cap:c.cap||null})),coaches:SCH_CO.map(c=>({k:c.k,n:c.n})),updatedAt:new Date().toISOString()};
+  const data={...(R.schedule||{}),classes:SCHED.classes.map(c=>({ids:(((R.schedule||{}).classes||[]).find(o=>o.id&&o.id===c.id)||{}).ids||c.ids||[],id:c.id||('c'+Date.now().toString(36)+Math.random().toString(36).slice(2,5)),dow:c.dow,time:c.time,disc:c.disc,coach:c.coach,dur:c.dur||60,cap:c.cap||null})),coaches:SCH_CO.map(c=>({k:c.k,n:c.n})),updatedAt:new Date().toISOString()};
   R.schedule=data;
   // события зала ⇄ CRM «События»
   R.events=R.events||{};const keep=new Set();
@@ -3818,31 +3818,33 @@ const GURI={};function gLogo(name){if(GURI[name])return GURI[name];
   const svg=GLOGOS[name]||GSVG(`<path d="M60,22 l28,10 v23 q0,27 -28,39 q-28,-12 -28,-39 v-23 z" fill="none" stroke="url(#g)" stroke-width="3.5" stroke-linejoin="round"/><text x="60" y="72" text-anchor="middle" font-family="Arial Black,Arial" font-size="34" font-weight="900" fill="url(#g)">${(name[0]||'★').toUpperCase()}</text>`);
   return GURI[name]='data:image/svg+xml;utf8,'+encodeURIComponent(svg)}
 let GROUPS=null;
-function groupsInit(){if(GROUPS)return;try{GROUPS=JSON.parse(localStorage.getItem((REAL?'fp.groups.v1.real':'fp.groups.v1')))}catch(e){}
+function groupsInit(){if(REAL){const cl=((window.PIT_REAL||{}).schedule||{}).classes||[],m2a=new Map(ATHLETES.filter(a=>a.mid).map(a=>[a.mid,a.id]));
+  GROUPS=cl.slice().sort((x,y)=>String(x.time).localeCompare(String(y.time))).map(c=>({id:c.id,name:c.disc+' · '+c.time,disc:c.disc,ids:(c.ids||[]).map(x=>m2a.get(x)).filter(Boolean),real:true}));return}
+  if(GROUPS)return;try{GROUPS=JSON.parse(localStorage.getItem((REAL?'fp.groups.v1.real':'fp.groups.v1')))}catch(e){}
   if(!GROUPS)GROUPS=[{id:1,name:'Сборная клуба',ids:[1,2,4,7,12,14,17]},{id:2,name:'Утренняя группа',ids:[3,5,6,8,10,13,19]},{id:3,name:'Молодёжка',ids:[11,12,15,16,20]}]}
 const saveGroups=()=>{try{localStorage.setItem((REAL?'fp.groups.v1.real':'fp.groups.v1'),JSON.stringify(GROUPS))}catch(e){}};
 function admGroups(B){groupsInit();
-  const auto=[...new Set(ATHLETES.map(a=>a.disc))].filter(d=>d!=='Борьба').map(d=>({id:'d:'+d,name:d,ids:ATHLETES.filter(a=>a.disc===d&&!a.coach).map(a=>a.id),auto:true}));
+  const auto=REAL?[]:[...new Set(ATHLETES.map(a=>a.disc))].filter(d=>d!=='Борьба').map(d=>({id:'d:'+d,name:d,ids:ATHLETES.filter(a=>a.disc===d&&!a.coach).map(a=>a.id),auto:true}));
   const all=[...GROUPS,...auto];
   const open=all.find(x=>String(x.id)===String(ADM.grp));
   if(open){admGroupDetail(B,open);return}
   B.innerHTML=`<div class="ph-title"><span class="label">Группы занимающихся</span><span class="muted small">клик — страница группы: задания и состав</span></div>
    <div class="grp-cards">${all.map(x=>{const R=Math.round(x.ids.reduce((q,i2)=>q+fpRating(i2),0)/Math.max(1,x.ids.length)),ti=RTIERS.find(t=>R>=t[0]);
     return`<div class="grp-c" role="button" tabindex="0" data-g="${x.id}" style="--tc:${ti[2]}">
-     <img class="gi2" src="${gLogo(x.name)}" alt=""><b>${esc(x.name)}</b>
+     <img class="gi2" src="${gLogo(x.disc||x.name)}" alt=""><b>${esc(x.name)}</b>
      <span class="gr num">${PITM} PIT ${R}</span><em>${ti[1]}</em>
      <span class="gn">${x.ids.length} ${plural(x.ids.length,'боец','бойца','бойцов')}</span>
      <span class="gav">${x.ids.slice(0,6).map(i2=>`<img src="${CAB[i2]&&CAB[i2].person.photo||avatar(i2)}" alt="">`).join('')}${x.ids.length>6?`<u>+${x.ids.length-6}</u>`:''}</span>
-     ${x.auto?'':`<button class="iconbtn gdel" data-gd="${x.id}">✕</button>`}</div>`}).join('')}</div>
-   <div class="label" style="margin:.9rem 0 .3rem">Новая группа</div>
+     ${x.auto||x.real?'':`<button class="iconbtn gdel" data-gd="${x.id}">✕</button>`}</div>`}).join('')}</div>
+   ${REAL?`<div class="muted small" style="margin-top:.6rem">${all.length?'':'Групп пока нет. '}Группы и их состав ведёт администратор в CRM → «Расписание».</div>`:`<div class="label" style="margin:.9rem 0 .3rem">Новая группа</div>
    <div style="display:flex;gap:.5rem;align-items:end;flex-wrap:wrap">
     <label class="fe" style="min-width:14rem"><span>Название</span><input id="ngN" placeholder="Например: Подготовка к турниру"></label>
     <span style="display:flex;gap:.6rem;flex-wrap:wrap">${ATHLETES.map(a2=>`<label style="display:flex;gap:3px;font-size:.72rem;align-items:center"><input type="checkbox" class="ngA" value="${a2.id}">${esc(a2.name)}</label>`).join('')}</span>
     <button class="btn primary" id="ngB">+ СОЗДАТЬ</button></div>
-   <div class="muted small" style="margin-top:.6rem">Автогруппы по дисциплинам создаются сами. Составы — в этом браузере (демо).</div>`;
+   <div class="muted small" style="margin-top:.6rem">Автогруппы по дисциплинам создаются сами. Составы — в этом браузере (демо).</div>`}`;
   B.querySelectorAll('[data-g]').forEach(x=>x.addEventListener('click',e=>{if(e.target.dataset.gd)return;ADM.grp=x.dataset.g;admGroups(B)}));
   B.querySelectorAll('[data-gd]').forEach(x=>x.onclick=e=>{e.stopPropagation();GROUPS=GROUPS.filter(g2=>String(g2.id)!==String(x.dataset.gd));saveGroups();admGroups(B)});
-  $('#ngB').onclick=()=>{const nm=$('#ngN').value.trim(),ids=[...B.querySelectorAll('.ngA:checked')].map(i=>+i.value);
+  const ngB=$('#ngB');if(ngB)ngB.onclick=()=>{const nm=$('#ngN').value.trim(),ids=[...B.querySelectorAll('.ngA:checked')].map(i=>+i.value);
     if(!nm||!ids.length){toast('Название и хотя бы один боец');return}
     GROUPS.push({id:Date.now(),name:nm,ids});saveGroups();admGroups(B);toast('Группа создана')}}
 // ---- страница группы: задания группе с прогрессом и состав ----
@@ -3855,7 +3857,7 @@ function admGroupDetail(B,g){
     seen[k].n++;if(t.status==='done')seen[k].done++})});
   gt.sort((x,y)=>y.created.localeCompare(x.created));
   B.innerHTML=`<button class="m-back" id="gBack">‹ Все группы</button>
-   <div class="fdk-top"><img class="gi2" src="${gLogo(g.name)}" alt="">
+   <div class="fdk-top"><img class="gi2" src="${gLogo(g.disc||g.name)}" alt="">
     <div><span class="fdk-nm">${esc(g.name)}</span> <span class="rt-badge" style="--tc:${ti[2]}">${PITM} PIT <b>${R}</b> · ${ti[1]}</span>
      <div class="muted small">${g.ids.length} ${plural(g.ids.length,'боец','бойца','бойцов')} · средний рейтинг группы (расчёт)</div></div></div>
    <div class="asg"><span class="asg-l">ЗАДАНИЕ ГРУППЕ</span><input id="grT" placeholder="Например: сгонка — взвешивание каждое утро, отчёт тренеру"><input type="date" id="grD" value="${dAdd(7)}"><button class="btn primary" id="grB">НАЗНАЧИТЬ ${g.ids.length} БОЙЦАМ</button></div>
