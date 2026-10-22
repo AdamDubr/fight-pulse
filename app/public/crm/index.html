@@ -1,4 +1,5 @@
-<!doctype html><html><head><meta charset=utf8><link rel="manifest" href="/manifest.webmanifest"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="PIT"><meta name="apple-mobile-web-app-status-bar-style" content="default"><link rel="apple-touch-icon" href="/brand/apple-touch-icon.png"><link rel="icon" href="/brand/favicon-32.png" sizes="32x32"><script src="/vendor/pit-install.js" defer></script><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:0}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html><head><meta charset=utf8><link rel="manifest" href="/manifest.webmanifest"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="PIT"><meta name="apple-mobile-web-app-status-bar-style" content="default"><link rel="apple-touch-icon" href="/brand/apple-touch-icon.png"><link rel="icon" href="/brand/favicon-32.png" sizes="32x32"><script src="/vendor/pit-install.js" defer></script><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:0}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}.kpis.fin6{grid-template-columns:repeat(3,minmax(0,1fr))}@media (max-width:700px){.kpis.fin6{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style></head><body>
 <title>PIT CRM · Mowgli</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1285,6 +1286,31 @@ function stackBars(rows,keys,cols){const mx=Math.max(1,...rows.map(r=>keys.reduc
    ${tick.map(t=>{const y=H-t/mx*(H-10);return`<line x1="${pl}" x2="${W}" y1="${y}" y2="${y}" stroke="var(--line)" stroke-width="1"/><text x="${pl-6}" y="${y+4}" text-anchor="end" font-size="11" fill="var(--muted)" font-family="var(--mono)">${t>=1000?Math.round(t/1000)+'k':t}</text>`}).join('')}
    ${rows.map((r,i)=>{let y=H;const x=pl+i*step+(step-bw)/2;const segs=keys.map((k,j)=>{const h=(r.v[k]||0)/mx*(H-10);y-=h;return h>0?`<rect x="${x}" y="${y}" width="${bw}" height="${h}" fill="${cols[j]}"><title>${KINDS[k]||k}: ${lira(r.v[k])}</title></rect>`:''}).join('');
      return segs+`<text x="${x+bw/2}" y="${H+16}" text-anchor="middle" font-size="11" fill="var(--muted)">${r.l}</text>`}).join('')}</svg>`}
+/* Финансы клуба с начала работы — только реальные данные CRM (оплаты, долги, абонементы) */
+function finBlock(){const P=S.payments,cur=monthKeys(1)[0],sum=a=>a.reduce((x,p)=>x+(+p.sum||0),0);
+  const d0=P.map(p=>String(p.date||'')).filter(Boolean).sort()[0]||TRACK0,all=sum(P),cash=sum(P.filter(p=>accOf(p.method)==='cash')),bank=sum(P.filter(p=>accOf(p.method)==='bank')),mon=sum(P.filter(p=>String(p.date).startsWith(cur)));
+  const fm=S.members.filter(m=>m.kind!=='staff'),act=fm.filter(m=>!['exp','none'].includes(status(m).k)),soon=act.filter(m=>m.end&&daysLeft(m.end)>=0&&daysLeft(m.end)<=7).length;
+  const dueM=fm.filter(m=>m.due&&+m.due.sum>0),dueS=dueM.reduce((a,m)=>a+(+m.due.sum||0),0),late=dueM.filter(m=>m.due.date&&daysLeft(m.due.date)<0);
+  const K=[['sub','Абонементы','#e8c35a'],['service','Услуги и пробные','#7ab8ff'],['shop','Товары','#3ddc84'],['event','События','#b48cff']],kk=p=>{const k=payKind(p);return k==='trial'?'service':k};
+  const rows=K.map(([k,l,c])=>({k,l,c,a:sum(P.filter(p=>kk(p)===k)),m:sum(P.filter(p=>kk(p)===k&&String(p.date).startsWith(cur)))}));
+  const R0=54,C=2*Math.PI*R0;let off=0;const arcs=all?rows.filter(r=>r.a>0).map(r=>{const L=r.a/all*C,o=`<circle r="${R0}" cx="70" cy="70" fill="none" stroke="${r.c}" stroke-width="20" stroke-dasharray="${L} ${C-L}" stroke-dashoffset="${-off}" transform="rotate(-90 70 70)"/>`;off+=L;return o}).join(''):`<circle r="${R0}" cx="70" cy="70" fill="none" stroke="var(--line)" stroke-width="20"/>`;
+  const tile=(t,v,sub,c)=>`<div class="kpi" style="border-left:3px solid ${c}"><span style="font-size:.7rem;letter-spacing:.12em;text-transform:uppercase">${t}</span><b style="color:${c}">${v}</b><span>${sub}</span></div>`;
+  return`<section class="card"><h2>Финансы клуба · с начала работы (${fmtD(d0)})</h2>
+   <div class="kpis fin6">
+    ${tile('Всего поступлений',lira(all),fmtD(d0)+' — сегодня','var(--ok)')}
+    ${tile('Касса · наличные',lira(cash),'поступления наличными','var(--ok)')}
+    ${tile('Безнал · карта, перевод, онлайн',lira(bank),'поступления на счёт','var(--info)')}
+    ${tile('Доход · '+MONTHS[+cur.slice(5)-1],lira(mon),'текущий месяц','var(--gold)')}
+    ${tile('Активных абонементов',act.length+' / '+fm.length,'заканчиваются ≤ 7 дн: '+soon,'var(--muted)')}
+    ${tile('Не оплачено',lira(dueS),dueM.length+' чел.'+(late.length?' · просрочено: '+late.length:''),dueS?'var(--bad)':'var(--ok)')}
+   </div>
+   <h2 style="margin-top:1.2rem">Поступления по услугам</h2>
+   <div style="display:flex;flex-wrap:wrap;gap:1.2rem;align-items:center">
+    <svg viewBox="0 0 140 140" width="170" height="170" role="img" aria-label="Поступления по услугам">${arcs}<text x="70" y="68" text-anchor="middle" font-size="13" font-weight="800" fill="currentColor">${esc(lira(all))}</text><text x="70" y="84" text-anchor="middle" font-size="7" letter-spacing="1.2" fill="var(--muted)">ВСЕ УСЛУГИ</text></svg>
+    <table class="tbl" style="flex:1;min-width:16rem"><thead><tr><th>Услуга</th><th class="r">Всего</th><th class="r">${MONTHS[+cur.slice(5)-1]}</th><th class="r">Доля</th></tr></thead><tbody>
+     ${rows.map(r=>`<tr><td><i style="display:inline-block;width:.7rem;height:.7rem;border-radius:.15rem;background:${r.c};margin-right:.4rem"></i>${r.l}</td><td class="r num">${lira(r.a)}</td><td class="r num">${lira(r.m)}</td><td class="r num">${all?Math.round(r.a/all*100):0}%</td></tr>`).join('')}
+    </tbody></table></div>
+   <p class="note" style="margin:.6rem 0 0">Считается по оплатам, внесённым в PIT CRM. Долги — бойцы с отметкой «не оплатил».</p></section>`}
 function vReports(){const mk=monthKeys(6),kinds=['sub','trial','shop','event'],cols=['var(--gold)','var(--info)','var(--ok)','var(--violet)'];
   const rows=mk.map(k=>{const v={};S.payments.filter(p=>String(p.date).startsWith(k)).forEach(p=>{let t=payKind(p);if(t==='service')t='trial';v[t]=(v[t]||0)+(+p.sum||0)});return{l:MONTHS[+k.slice(5)-1].slice(0,3),k,v}});
   const cur=mk[mk.length-1],inc=S.payments.filter(p=>String(p.date).startsWith(cur)).reduce((a,p)=>a+(+p.sum||0),0),exp=S.expenses.filter(x=>String(x.date).startsWith(cur)&&!isOwner(x)).reduce((a,x)=>a+(+x.sum||0),0);
@@ -1303,6 +1329,7 @@ function vReports(){const mk=monthKeys(6),kinds=['sub','trial','shop','event'],c
   const AU=Object.entries(S.audit).sort((a,b)=>b[0].localeCompare(a[0])).flatMap(([,v])=>(v.items||[]).slice().reverse()).slice(0,120);
   return`<div class="head"><div><h1>Отчёты</h1><p class="sub">Аналитика клуба по данным PIT CRM. Посещаемость считается с ${fmtD(TRACK0)} — со дня перехода на PIT.</p></div></div>
   <div class="kpis"><div class="kpi gold"><b>${lira(inc)}</b><span>доход за ${MONTHS[+cur.slice(5)-1]}</span></div><div class="kpi ${inc-exp>=0?'ok':'bad'}"><b>${lira(inc-exp)}</b><span>прибыль за месяц</span></div><div class="kpi"><b>${lira(mrr)}</b><span>в месяц по ${act.length} активным абонементам</span></div><div class="kpi"><b>${lira(arpu)}</b><span>средний абонемент</span></div><div class="kpi ${retain==null?'':retain>=70?'ok':'warn'}"><b>${retain==null?'—':retain+'%'}</b><span>продлили из закончившихся за 30 дн.</span></div></div>
+  ${finBlock()}
   <div class="grid2"><section class="card"><h2>Доходы по месяцам</h2>${stackBars(rows,kinds,cols)}<div class="chips" style="margin-top:.4rem">${kinds.map((k,i)=>`<span class="note" style="display:inline-flex;gap:.3rem;align-items:center"><i style="width:.7rem;height:.7rem;border-radius:.15rem;background:${cols[i]};display:inline-block"></i>${KINDS[k]}</span>`).join('')}</div></section>
    <section class="card"><h2>Пробные → абонемент · 30 дней</h2><div class="bars">${fn.map(([t,v])=>bar(t,v,Math.max(1,fn[0][1]),'var(--info)')).join('')}</div>
     <h2 style="margin-top:1rem">Отказы после заявки</h2><div class="bars">${LLOST.map(r=>[r,L.filter(x=>x.status==='lost'&&x.lostReason===r).length]).filter(x=>x[1]).map(([t,v],i,a)=>bar(t,v,Math.max(...a.map(z=>z[1])),'var(--bad)')).join('')||'<div class="note">Отказов нет</div>'}</div></section></div>

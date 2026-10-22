@@ -312,7 +312,7 @@ export default {
       if (f && f.mid && f.verified) { const x = await env.DB.prepare('SELECT data,pending FROM fighters WHERE email=?').bind(me.email).first(); let d = {}, pd = null; try { d = JSON.parse(x.data); pd = x.pending ? JSON.parse(x.pending) : null } catch (e) { }
         const K = ['nick', 'weight', 'stance', 'city', 'belt', 'rec', 'med', 'titles', 'bio', 'disc'], pick = o => { const r = {}; for (const k of K) if (o && o[k] != null) r[k] = o[k]; return r };
         return arenaReal(req, env, { fighterArena: true, mid: f.mid, meCard: { ...pick(d), pending: pd ? pick(pd) : null } }) }
-      if (!me.role) return new Response(null, { status: 302, headers: { location: '/my/' } });
+      return new Response(null, { status: 302, headers: { location: '/my/' } });   // режим бойца без привязанной карточки — обратно в My PIT, не в пульт клуба
     }
     if (!me.role) {
       if (path.startsWith('/api/')) return json({ error: 'unauthorized' }, 401);
