@@ -242,7 +242,8 @@ const DEF_TARIFFS=[
  {key:'ind10m',name:'Индивидуальные MMA/BJJ · 10 сеансов',price:15000,sessions:10,kind:'ind',disc:['MMA','BJJ']},
  {key:'ind10b',name:'Индивидуальные Бокс/Кикбоксинг · 10 сеансов',price:12000,sessions:10,kind:'ind',disc:['Бокс','Кикбоксинг']},
  {key:'ind8',name:'Индивидуальные · 8 сеансов',price:10000,sessions:8,kind:'ind',disc:['Бокс','Кикбоксинг']},
- {key:'staff',name:'Безлимит · без оплаты',price:0,sessions:null,kind:'staff',disc:[]}];
+ {key:'free',name:'Безлимит · все дисциплины, без оплаты',price:0,sessions:null,kind:'group',disc:['MMA','BJJ','Бокс','Муай-тай','Кикбоксинг','Борьба','Функционал','Капоэйра']},
+ {key:'staff',name:'Сотрудник / тренер · без оплаты',price:0,sessions:null,kind:'staff',disc:[]}];
 const DISCS=['MMA','Дети · MMA','BJJ','Бокс','Муай-тай','Кикбоксинг','Борьба','Функционал','Капоэйра'];
 /* несколько дисциплин у бойца: discs — список, disc — строка «MMA, BJJ» для показа и совместимости */
 const discsOf=m=>Array.isArray(m&&m.discs)&&m.discs.length?m.discs:String(m&&m.disc||'').split(/\s*[,+]\s*/).filter(d=>d&&d!=='—');
@@ -260,7 +261,8 @@ const addMonth=s=>{const d=new Date(s+'T12:00:00');const day=d.getDate();d.setMo
 const fmtD=s=>s?s.slice(8,10)+'.'+s.slice(5,7)+'.'+s.slice(0,4):'—';
 const daysLeft=s=>s?Math.round((new Date(s+'T12:00:00')-new Date(today()+'T12:00:00'))/864e5):null;
 const lira=n=>(n==null?'—':Math.round(n).toLocaleString('ru-RU')+' ₺');
-const tariffs=()=>S.tariffs||DEF_TARIFFS;
+// «Безлимит для бойца» есть всегда; тариф staff — только для сотрудников (боец с ним выпадает из групп)
+const tariffs=()=>{const L=(S.tariffs||DEF_TARIFFS).map(t=>t.key==='staff'&&/^Безлимит/.test(t.name)?{...t,name:'Сотрудник / тренер · без оплаты'}:t);if(!L.some(t=>t.key==='free'))L.splice(Math.max(0,L.findIndex(t=>t.key==='staff')),0,DEF_TARIFFS.find(t=>t.key==='free'));return L};
 const tf=k=>tariffs().find(t=>t.key===k);
 const MONTHS=['январь','февраль','март','апрель','май','июнь','июль','август','сентябрь','октябрь','ноябрь','декабрь'];
 const phoneDigits=p=>String(p||'').replace(/\D/g,'').replace(/^0/,'');
@@ -270,6 +272,7 @@ function status(m){
   if(m.kind==='staff')return{k:'staff',t:'Безлимит',c:'info'};
   if(frozenNow(m))return{k:'frozen',t:'Заморожен до '+fmtD(m.freeze.end),c:'info'};
   const d=daysLeft(m.end);
+  if(d==null&&m.plan==='free')return{k:'ok',t:'Безлимит',c:'ok'};
   if(d==null)return{k:'none',t:'Нет абонемента',c:'bad'};
   if(d<0)return{k:'exp',t:'Истёк',c:'bad'};
   if(m.left!=null&&m.left<=0)return{k:'exp',t:'Занятия кончились',c:'bad'};
@@ -622,7 +625,8 @@ const GURI={};function gLogo(name){if(GURI[name])return GURI[name];
 
 const canAdm=()=>['owner','admin'].includes((window.PIT_ME||{}).role);
 // состав группы = активные бойцы с этой дисциплиной в карточке (единственный источник — карточка бойца)
-const inGroup=(m,c)=>{if(!m||m.kind==='staff')return false;const cd=String(c.disc||''),kids=m.kind==='kids';if(cd==='Все группы')return true;
+const isKid=m=>m.kind==='kids'||(m.dob?ageOf(m.dob)<18:false)||!!(m.parent&&(m.parent.name||m.parent.mid));
+const inGroup=(m,c)=>{if(!m||m.kind==='staff')return false;const cd=String(c.disc||''),kids=isKid(m);if(cd==='Все группы')return true;
   const L=discsOf(m),k=/^Дети/i.test(cd),base=cd.replace(/^Дети\s*·\s*/i,'');return k?L.includes(cd)||kids&&L.includes(base):!kids&&L.includes(cd)};
 const gIds=c=>S.members.filter(m=>inGroup(m,c)&&!['exp','none'].includes(status(m).k)).sort((a,b)=>a.name.localeCompare(b.name,'ru')).map(m=>m.id);
 const ini=n=>String(n||'?').trim().split(/\s+/).slice(0,2).map(w=>w[0]).join('').toUpperCase();
@@ -1201,7 +1205,9 @@ render();
   try{const u=await claude.use('user');USER=u;if(u){try{ME=await u.id()}catch(e){}const w=await u.can('data.write');if(w===false)S.canWrite=false}}catch(e){}
   let tm=null;const rr=()=>{clearTimeout(tm);tm=setTimeout(renderBg,60)};
   const err=e=>{$('#st').textContent='Нет связи с базой';console.warn(e)};
-  db.collection('members').onSnapshot(s=>{S.members=s.docs.map(d=>{const x={id:d.id,...d.data()};if(x.first&&x.last)x.name=x.first+' '+x.last;return x});S.ready.m=true;$('#st').textContent='Онлайн · бойцов: '+S.members.length;rr()},err);
+  db.collection('members').onSnapshot(s=>{S.members=s.docs.map(d=>{const x={id:d.id,...d.data()};if(x.first&&x.last)x.name=x.first+' '+x.last;
+    // несовершеннолетний с тарифом сотрудника — это боец на бесплатном безлимите
+    if(x.kind==='staff'&&((x.dob&&ageOf(x.dob)<18)||(x.parent&&(x.parent.name||x.parent.mid)))){x.kind='group';if(x.plan==='staff')x.plan='free'}return x});S.ready.m=true;$('#st').textContent='Онлайн · бойцов: '+S.members.length;rr()},err);
   db.collection('payments').onSnapshot(s=>{S.payments=s.docs.map(d=>({id:d.id,...d.data()}));S.ready.p=true;rr()},err);
   db.collection('leads').onSnapshot(s=>{S.leads=s.docs.map(d=>({id:d.id,...d.data()}));rr()},err);
   db.collection('products').onSnapshot(s=>{S.products=s.docs.map(d=>({id:d.id,...d.data()}));rr()},err);

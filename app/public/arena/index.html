@@ -2587,7 +2587,7 @@ function pitRoster(){
   const ms=PIT_REAL.members||[];const hasAdam=ms.some(m=>/^адам\b/i.test(m.first||m.name||''));
   if(adam&&!hasAdam)out.push({...adam,name:'Адам AI',nick:'Адам AI',sensor:'—',sim:{id:'НЕТ ДАТЧИКА·1',int:.6,rec:.012,bat:100},public:true,absent:false});
   ms.forEach(m=>{const id=out.length+1,age=m.age||25,dl=(Array.isArray(m.discs)&&m.discs.length?m.discs:String(m.disc||'MMA').split(/\s*[,+]\s*/)).filter(d=>d&&d!=='—');
-    out.push({id,mid:m.id,fit:.6,nick:m.first||m.name,name:m.name,disc:dl[0]||'MMA',discs:dl.length?dl:['MMA'],kids:m.kind==='kids',age,kg:m.kg||null,sex:m.sex||'m',hrMax:m.hrMax||hrMaxOf(age),hrRest:60,sensor:'—',
+    out.push({id,mid:m.id,fit:.6,nick:m.first||m.name,name:m.name,disc:dl[0]||'MMA',discs:dl.length?dl:['MMA'],kids:m.kind==='kids'||!!m.kidish,age,kg:m.kg||null,sex:m.sex||'m',hrMax:m.hrMax||hrMaxOf(age),hrRest:60,sensor:'—',
       sim:{id:'НЕТ ДАТЧИКА·'+id,int:.6,rec:.012,bat:100},coach:m.kind==='staff',public:m.consentPublic==='yes'||m.consentPublic===true,absent:false,end:m.end||'',start:m.start||'',plan:m.plan||'',left:m.left??null,dob:m.dob||''})});
   return out}
 const ATHLETES=REAL?pitRoster():WORLD?ATHLETES_DEMO.map(a=>a.id===1?{...a,name:'Адам AI',nick:'Адам AI'}:a):ATHLETES_DEMO;
