@@ -244,6 +244,8 @@ async function arenaReal(req, env, opt = {}) {
   for (const x of tl.results || []) { try { const l = JSON.parse(x.data); if (l.status === 'booked' && l.trialDate && l.trialDate >= td0) trials[x.id] = { d: l.trialDate, cls: l.trialClass || null, t: l.trialTime || null, disc: l.trialDisc || null, n: String(l.name || '').trim().split(/\s+/)[0] || 'Гость' } } catch (e) { } }
   const vs = await env.DB.prepare("SELECT id,data FROM docs WHERE col='visits' AND deleted=0 AND id>=?").bind(clubDay(-70)).all();
   const visits = {}; for (const x of vs.results || []) { try { const v = JSON.parse(x.data); visits[x.id] = { date: v.date || x.id, ids: v.ids || [] } } catch (e) { } }
+  // число посещений за всё время (для «тренировок» на карточке бойца)
+  const vt = {}; try { const va = await env.DB.prepare("SELECT data FROM docs WHERE col='visits' AND deleted=0").all(); for (const x of va.results || []) { try { for (const id of (JSON.parse(x.data).ids || [])) vt[id] = (vt[id] || 0) + 1 } catch (e) { } } } catch (e) { }
   const events = {}; for (const x of ev.results || []) { try { const e = JSON.parse(x.data); events[x.id] = { title: e.title, date: e.date, end: e.end || null } } catch (e) { } }
   const today = clubDay();
   // PIT PRO от клуба (Mowgli): все бойцы клуба с привязанным входом — ✓ Verified
@@ -262,20 +264,20 @@ async function arenaReal(req, env, opt = {}) {
   const membersAll = all.map(({ id, m }) => ({ id, name: m.name, disc: m.disc, kind: m.kind, end: m.end || '', frozen: !!m.frozen, consentPublic: m.consentPublic || null, left: m.left ?? null }));
   const members = all
     .filter(({ m }) => m && m.name && !m.frozen && (m.kind === 'staff' || !m.end || m.end >= today))
-    .map(({ id, m }) => ({ id, name: m.name, first: m.first || m.name, kidish: m.kind === 'kids' || (age(m.dob) != null && age(m.dob) < 18) || !!(m.parent && (m.parent.name || m.parent.mid)), disc: m.disc || 'MMA', discs: Array.isArray(m.discs) ? m.discs : null, kind: m.kind || 'group', age: age(m.dob), consentPublic: m.consentPublic || null, end: m.end || '', start: m.start || '', plan: m.plan || '', left: m.left ?? null }))
+    .map(({ id, m }) => ({ id, vt: vt[id] || 0, name: m.name, first: m.first || m.name, kidish: m.kind === 'kids' || (age(m.dob) != null && age(m.dob) < 18) || !!(m.parent && (m.parent.name || m.parent.mid)), disc: m.disc || 'MMA', discs: Array.isArray(m.discs) ? m.discs : null, kind: m.kind || 'group', age: age(m.dob), consentPublic: m.consentPublic || null, end: m.end || '', start: m.start || '', plan: m.plan || '', left: m.left ?? null }))
     .sort((a, b) => a.name.localeCompare(b.name, 'ru'));
   // боец в зале: остальные — только имя (с согласием на показ) или анонимно; без абонементов, дат рождения и оплат
   // карточка клуба для карты My PIT World: только публичное (адрес, направления, тренеры, счётчики)
   const worldClub = () => { const C = CLUBS[env.CLUB || 'mowgli'] || {}, sc = sch ? JSON.parse(sch.data) : {}; return { name: C.name, city: C.city, cityEn: C.cityEn, country: C.country, addr: C.addr, lat: C.lat, lon: C.lon, placeId: C.placeId, logo: C.logo, discs: C.discs || [], active: members.filter(m => m.kind !== 'staff').length, verified: ver.length, groups: (sc.classes || []).length, coaches: (sc.coaches || []).map(c => c.n).filter(Boolean) } };
   // открытая карточка бойца клуба: имя (у детей — только имя), направление; без абонементов, дат рождения и оплат
-  const fMembers = () => members.map(m => m.id === opt.mid ? { ...m, consentPublic: 'yes' } : { id: m.id, name: m.kidish ? m.first : m.name, first: m.first, kidish: m.kidish, disc: m.disc, discs: m.discs, kind: m.kind, age: null, consentPublic: 'yes', end: '', start: '', plan: '', left: null });
+  const fMembers = () => members.map(m => m.id === opt.mid ? { ...m, consentPublic: 'yes' } : { id: m.id, vt: m.vt, name: m.kidish ? m.first : m.name, first: m.first, kidish: m.kidish, disc: m.disc, discs: m.discs, kind: m.kind, age: null, consentPublic: 'yes', end: '', start: '', plan: '', left: null });
   const inj = '<script>window.PIT_REAL=' + JSON.stringify(opt.fighterArena
     ? { club: env.CLUB || 'mowgli', fighterArena: true, me: opt.mid, lang: opt.lang || 'ru', meCard: opt.meCard || null, back: '/my/', role: null, schEdit: false, since: 0, members: fMembers(), membersAll: [], ver, cards, schedule: sch ? JSON.parse(sch.data) : null, events, visits: visits[today] ? { [today]: { date: today, ids: visits[today].ids } } : {}, trials: {} }
     : opt.fighter
     ? { club: env.CLUB || 'mowgli', worldOnly: true, fighter: true, me: opt.me || null, back: '/my/', since: 0, members: [], membersAll: [], schedule: sch ? JSON.parse(sch.data) : null, events, visits: {}, clubCard: worldClub() }
     : { club: env.CLUB || 'mowgli', ...(opt.world ? { worldOnly: true, back: '/', clubCard: worldClub() } : {}), role: opt.role || null, schEdit: opt.role === 'owner' || opt.role === 'admin', since: mx ? mx.s : 0, members, membersAll, ver, cards, schedule: sch ? JSON.parse(sch.data) : null, events, visits, trials }).replace(/</g, '\\u003c') + '</script>';
   // пульт и зал бойца: не показывать стартовую раскладку, пока не применена роль (без мелькания)
-  const veil = opt.world ? '' : '<style>html:not(.ready) body{opacity:0}html.ready body{transition:opacity .15s}</style><script>setTimeout(function(){document.documentElement.classList.add("ready")},2500)</script>';
+  const veil = '<style>html:not(.ready) body{opacity:0}html.ready body{transition:opacity .15s}</style><script>setTimeout(function(){document.documentElement.classList.add("ready")},2500)</script>';
   const html = (await res.text()).replace('<meta charset="utf-8">', '<meta charset="utf-8">' + inj + veil);
   return new Response(html, { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' } });
 }

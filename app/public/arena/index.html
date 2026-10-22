@@ -2635,7 +2635,10 @@ const RFD=[
 ['Бокс','Boxing','Boks'],['БОКС','BOXING','BOKS'],['Кикбоксинг','Kickboxing','Kickboks'],['КИКБОКСИНГ','KICKBOXING','KICKBOKS'],['Капоэйра','Capoeira','Capoeira'],['Дети','Kids','Çocuk'],
 ['Закрыть','Close','Kapat'],['Карточка бойца','Fighter card','Sporcu kartı'],['Разделы бойца','Fighter sections','Sporcu bölümleri'],['Шкала пульсовых зон','Heart-rate zone scale','Nabız bölgesi ölçeği'],['График пульса за 60 секунд','Heart-rate chart, 60 seconds','60 saniyelik nabız grafiği'],['График пульса за тренировку','Training heart-rate chart','Antrenman nabız grafiği'],['Пульс двух бойцов','Heart rate of two fighters','İki sporcunun nabzı'],['Полноэкранный режим','Full screen','Tam ekran'],['Включить тёмную тему','Dark theme','Koyu tema'],['Включить светлую тему','Light theme','Açık tema'],['Главное меню PIT','PIT main menu','PIT ana menü'],['например 77','e.g. 77','ör. 77'],['Например: ушиб ребра','E.g. bruised rib','Ör. kaburga zedelenmesi'],['Без спаррингов в партере','No ground sparring','Yerde sparring yok'],['Вес за 12 недель','Weight over 12 weeks','12 haftalık kilo'],
 ['По одному в строке: аллергии, хронические состояния, лекарства, что важно знать тренеру','One per line: allergies, chronic conditions, medicines, what the coach should know','Satır başına bir: alerjiler, kronik durumlar, ilaçlar, antrenörün bilmesi gerekenler'],
-['My PIT World — сообщество бойцов','My PIT World — fighter community','My PIT World — sporcu topluluğu'],['Мобильная версия спортсмена','Athlete mobile app','Sporcu mobil uygulaması'],['Экраны зала: ARENA, все участники, бой','Gym screens: ARENA, all fighters, fight','Salon ekranları: ARENA, tüm sporcular, maç'],['Интервал смены','Switch interval','Geçiş aralığı'],['Вход как (демо)','Sign in as','Giriş'],['ВСЕ УЧАСТНИКИ','ALL FIGHTERS','TÜM SPORCULAR'],['лет','y.o.','yaş'],['ЛЕТ','Y.O.','YAŞ'],['КГ','KG','KG'],['Анталья','Antalya','Antalya'],['Боец','Fighter','Sporcu'],['Тренер','Coach','Antrenör']];
+['My PIT World — сообщество бойцов','My PIT World — fighter community','My PIT World — sporcu topluluğu'],['Мобильная версия спортсмена','Athlete mobile app','Sporcu mobil uygulaması'],['Экраны зала: ARENA, все участники, бой','Gym screens: ARENA, all fighters, fight','Salon ekranları: ARENA, tüm sporcular, maç'],['Интервал смены','Switch interval','Geçiş aralığı'],['Вход как (демо)','Sign in as','Giriş'],['ВСЕ УЧАСТНИКИ','ALL FIGHTERS','TÜM SPORCULAR'],['Удерживайте картинку пальцем → «Сохранить в Фото» / «Поделиться»','Press and hold the image → “Save to Photos” / “Share”','Görsele basılı tutun → “Fotoğraflara Kaydet” / “Paylaş”'],['Нажмите «Поделиться» → «Сохранить изображения» или выберите WhatsApp, Telegram…','Tap “Share” → “Save images” or pick an app…','“Paylaş”a dokunun → “Görselleri kaydet” ya da bir uygulama seçin…'],
+['Если ничего не происходит — откройте страницу в Safari или Chrome: встроенные браузеры мессенджеров иногда блокируют сохранение.','If nothing happens, open the page in Safari or Chrome: in-app browsers of messengers sometimes block saving.','Bir şey olmazsa sayfayı Safari veya Chrome’da açın: mesajlaşma uygulamalarının iç tarayıcıları kaydetmeyi bazen engeller.'],
+['СКАЧАТЬ','DOWNLOAD','İNDİR'],['ОТКРЫТЬ','OPEN','AÇ'],['ЗАКРЫТЬ','CLOSE','KAPAT'],['ПОДЕЛИТЬСЯ ↗','SHARE ↗','PAYLAŞ ↗'],['ПОДЕЛИТЬСЯ','SHARE','PAYLAŞ'],['страницы','pages','sayfa'],['формат экрана телефона','phone screen format','telefon ekranı formatı'],['Готовлю изображение…','Preparing the image…','Görsel hazırlanıyor…'],['Не удалось подготовить картинку','Could not prepare the image','Görsel hazırlanamadı'],['Удерживайте картинку, чтобы сохранить','Press and hold the image to save it','Kaydetmek için görsele basılı tutun'],['PIT RATING — карточка бойца','PIT RATING — fighter card','PIT RATING — sporcu kartı'],
+['лет','y.o.','yaş'],['ЛЕТ','Y.O.','YAŞ'],['КГ','KG','KG'],['Анталья','Antalya','Antalya'],['Боец','Fighter','Sporcu'],['Тренер','Coach','Antrenör']];
 
 const RFI=UI_LANG==='tr'?2:1,RFM=new Map(RFD.map(r=>[r[0].toLowerCase(),r[RFI]])),i18Up=v=>UI_LANG==='tr'?v.toLocaleUpperCase('tr'):v.toUpperCase();
 function i18Seg(s){const k=s.trim();if(!k)return s;const lead=s.match(/^\s*/)[0],tail=s.match(/\s*$/)[0],TR=UI_LANG==='tr';let v=RFM.get(k.toLowerCase()),m;
@@ -2655,7 +2658,7 @@ function i18Seg(s){const k=s.trim();if(!k)return s;const lead=s.match(/^\s*/)[0]
     else if(m=k.match(/^В ЗОНЕ (Z\d)$/i))v=RFM.get('в зоне')+' '+m[1];
     else if(m=k.match(/^Р(\d*)—?$/))v='R'+m[1]+(k.endsWith('—')?'—':'');
     else if(m=k.match(/^([✓●#\d\s]+)(.*[А-яЁё].*)$/)){const r2=i18Seg(m[2]);if(r2!=null)return lead+m[1]+r2.trim()+tail}
-    else if(/^[«"]?[А-ЯЁ][А-ЯЁа-яё«»"'.\-]*( [«"]?[А-ЯЁ][А-ЯЁа-яё«»"'.\-]*){0,2}$/.test(k))v=i18Name(k);
+    else if(/^[«"]?[А-ЯЁ][а-яё«»"'.\-]+( [«"]?[А-ЯЁ][а-яё«»"'.\-]+){0,2}$/.test(k))v=i18Name(k);
   }
   if(v==null)return null;if(k===k.toUpperCase()&&/[А-ЯЁ]/.test(k))v=i18Up(v);return lead+v+tail}
 function i18Name(s){return rnTr(s)}
@@ -2699,7 +2702,7 @@ function pitRoster(){
   const out=[];const ms=PIT_REAL.members||[];const VER=new Set(PIT_REAL.ver||[]);
   ms.forEach(m=>{const id=out.length+1,ageK=!!m.age,age=m.age||25,dl=(Array.isArray(m.discs)&&m.discs.length?m.discs:String(m.disc||'MMA').split(/\s*[,+]\s*/)).filter(d=>d&&d!=='—');
     out.push({id,mid:m.id,fit:.6,nick:I18N_ON?rnTr(m.first||m.name):(m.first||m.name),name:I18N_ON?rnTr(m.name):m.name,disc:dl[0]||'MMA',discs:dl.length?dl:['MMA'],kids:m.kind==='kids'||!!m.kidish,age,kg:m.kg||null,sex:m.sex||'m',ageK,hrMax:m.hrMax||hrMaxOf(age),hrRest:60,sensor:'—',
-      sim:{id:'НЕТ ДАТЧИКА·'+id,int:.6,rec:.012,bat:100},coach:m.kind==='staff',ver:VER.has(m.id),public:m.consentPublic==='yes'||m.consentPublic===true,absent:false,end:m.end||'',start:m.start||'',plan:m.plan||'',left:m.left??null,dob:m.dob||''})});
+      sim:{id:'НЕТ ДАТЧИКА·'+id,int:.6,rec:.012,bat:100},coach:m.kind==='staff',vt:m.vt||0,ver:VER.has(m.id),public:m.consentPublic==='yes'||m.consentPublic===true,absent:false,end:m.end||'',start:m.start||'',plan:m.plan||'',left:m.left??null,dob:m.dob||''})});
   return out}
 const ATHLETES=REAL?pitRoster():WORLD?ATHLETES_DEMO.map(a=>a.id===1?{...a,name:'Адам AI',nick:'Адам AI'}:a):ATHLETES_DEMO;
 const byId=new Map(ATHLETES.map(a=>[a.id,a]));
@@ -4342,7 +4345,7 @@ const fmtK=v=>v>=10000?(v/1000).toFixed(v>=100000?0:1).replace('.',',')+' тыс
 const MEDAL=(c,n,l)=>`<div class="md" title="${l}"><svg viewBox="0 0 40 52" aria-hidden="true"><path d="M10 0h8l4 14h-8zM22 0h8l-4 14h-8z" fill="#555"/><circle cx="20" cy="33" r="15" fill="${c}"/><circle cx="20" cy="33" r="10.5" fill="none" stroke="rgba(0,0,0,.35)" stroke-width="1.5"/></svg><b class="num">${n}</b><small>${l}</small></div>`;
 const BELT_ICO=`<svg viewBox="0 0 64 28" aria-hidden="true"><rect x="0" y="9" width="64" height="10" rx="2" fill="#4a4a4a"/><rect x="18" y="2" width="28" height="24" rx="5" fill="url(#gbm)"/><circle cx="32" cy="14" r="6" fill="#111" opacity=".5"/><defs><linearGradient id="gbm" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff"/><stop offset=".5" stop-color="#9a9a9a"/><stop offset="1" stop-color="#e6e6e6"/></linearGradient></defs></svg>`;
 function cardStats(id){const P=PROF[id],m=metrics.get(id),s=strikes.get(id);
-  return{n:P.hist.n+1,h:P.hist.h+(m.active/3600),kcal:P.hist.kcal+m.kcal,maxHr:Math.max(P.hist.maxHr,m.max||0),spd:Math.max(P.hist.spd,s.best||0),str:P.hist.str+s.n,today:m.kcal}}
+  return{n:REAL?((byId.get(id)||{}).vt||0):P.hist.n+1,h:P.hist.h+(m.active/3600),kcal:P.hist.kcal+m.kcal,maxHr:Math.max(P.hist.maxHr,m.max||0),spd:Math.max(P.hist.spd,s.best||0),str:P.hist.str+s.n,today:m.kcal}}
 /* ---- PIT RATING (Performance Index of Training): клубный рейтинг в весовой категории (РАСЧЁТ, единый стандарт клуба).
    Очки 0–1000: объём тренировок, восстановление HRR, выносливость, средний TRIMP, дисциплина (задания), серия недель, рекорд (Pro).
    Ранг — место среди бойцов клуба той же весовой категории. Классы (утв. 20.10.2026, шкала уровня подготовки по мировой практике): F1 BEGINNER · F2 NOVICE · F3 INTERMEDIATE · F4 ADVANCED · F5 ELITE · F6 PRO · F7 WORLD CLASS, шаг ~143. Боевой опыт отдельно: N/C/B/A-class, U18 — IMMAF A/B/C, BJJ — пояс. */
@@ -4443,7 +4446,7 @@ function renderCard(){
     :lock('Рекорд, пояса, титулы и медали — в подписке Pro')}
    <div class="fc-stats" id="fcStats"></div>
    <footer class="fc-foot"><span>${esc(P.stance!=='—'?P.stance:'')}</span><span>${esc(P.city)}</span><span class="fc-brand" lang="en">${PITM}PIT RATING · pitrating.com</span></footer>`;
-  renderCardStats();renderEdit();fitNL()}
+  renderCardStats();renderEdit();fitNL();if(REAL&&typeof SHC!=='undefined'&&!CB_BUSY){delete SHC['card:'+cardId];const el=$('#fCard');if(el&&el.offsetParent)reprep('card:'+cardId,cardBuild(cardId),1200)}}
 function fitNL(){const nl=$('#fCard .fc-nl');if(!nl||!nl.clientWidth)return;const h=nl.querySelector('.fc-name');h.style.fontSize='';let fs=parseFloat(getComputedStyle(h).fontSize),g=0;while(nl.scrollWidth>nl.clientWidth+1&&fs>18&&g++<40){fs-=1.5;h.style.fontSize=fs+'px'}}
 function renderCardStats(){const el=$('#fcStats');if(!el)return;const S=cardStats(cardId);
   el.innerHTML=`<div><b class="num">${S.n}</b><small>ТРЕНИРОВОК</small></div><div><b class="num">${Math.round(S.h)}</b><small>ЧАСОВ</small></div><div><b class="num">${fmtK(S.kcal)}</b><small>ККАЛ ВСЕГО</small></div>
@@ -4757,7 +4760,7 @@ const ROLE={v:'admin'};try{const r=localStorage.getItem('fp.role');if(['admin','
 async function cardCanvas(){const el=$('#fCard');let tmp=null,mark=null;
   if(!el.offsetParent){mark=document.createComment('fc');el.before(mark);tmp=document.createElement('div');tmp.style.cssText='position:fixed;left:-10000px;top:0;width:400px';document.body.appendChild(tmp);tmp.appendChild(el);renderCard()}
   const fr=el.querySelector('.fc-frame'),ob=el.style.background;el.style.background='#101010';if(fr)fr.style.display='none';
-  try{return await html2canvas(el,{backgroundColor:isL()?'#f4f1e9':'#0a0a0a',scale:2,useCORS:true,logging:false})}
+  try{return await html2canvas(el,{backgroundColor:isL()?'#f4f1e9':'#0a0a0a',scale:Math.max(2,Math.min(3,1080/Math.max(1,el.offsetWidth))),useCORS:true,logging:false})}
   finally{el.style.background=ob;if(fr)fr.style.display='';if(tmp){mark.replaceWith(el);tmp.remove()}}}
 const toJpeg=cv=>new Promise(r=>cv.toBlob(b=>r(b),'image/jpeg',.92));
 // «Поделиться»: длинная картинка режется на страницы формата экрана телефона (9:16), разрез — по «тихой» полосе фона, а не по тексту
@@ -4802,7 +4805,7 @@ async function shareImg(c,name,title){name=name.replace(/\.png$/i,'.jpg');const 
   m.innerHTML=`<div class="shm-box">${n>1?`<p style="margin:0 0 .4rem"><b>${n} страницы</b> · формат экрана телефона</p>`:''}<div class="shm-pages">${urls.map((u,i)=>`<figure><img src="${u}" alt="${esc(title)} ${i+1}/${n}">${n>1?`<a class="btn sm" href="${u}" download="${pageName(name,i,n)}">СКАЧАТЬ ${i+1}/${n}</a>`:''}</figure>`).join('')}</div>
    <p>${can?'Нажмите «Поделиться» → «Сохранить изображения» или выберите WhatsApp, Telegram…':'Удерживайте картинку пальцем → «Сохранить в Фото» / «Поделиться»'}</p>
    <div class="shm-row">${can?`<button class="btn primary" id="shmS">ПОДЕЛИТЬСЯ${n>1?' · '+n+' стр.':''} ↗</button>`:''}${n===1?`<a class="btn${can?'':' primary'}" id="shmD" href="${urls[0]}" download="${name}">СКАЧАТЬ</a><a class="btn" href="${urls[0]}" target="_blank" rel="noopener">ОТКРЫТЬ</a>`:''}<button class="btn" id="shmX">ЗАКРЫТЬ</button></div>
-   <p class="muted small">Если ничего не происходит — откройте демо в Safari или Chrome: встроенные браузеры мессенджеров иногда блокируют сохранение.</p></div>`;m.hidden=false;
+   <p class="muted small">Если ничего не происходит — откройте страницу в Safari или Chrome: встроенные браузеры мессенджеров иногда блокируют сохранение.</p></div>`;m.hidden=false;
   $('#shmX').onclick=()=>{m.hidden=true};m.onclick=e=>{if(e.target===m)m.hidden=true};
   const sb=$('#shmS');if(sb)sb.onclick=()=>{navigator.share({files,title}).catch(e=>{if(e&&e.name!=='AbortError')toast('Удерживайте картинку, чтобы сохранить')})}}
 // картинка готовится заранее — тогда нажатие сразу открывает системное «Поделиться» (жест не теряется)
@@ -4876,7 +4879,9 @@ function nutShareBlocks(a,C){const n=C.nut,b=C.bio,cut=n.cut,w=b.w[b.w.length-1]
 async function nutSharePages(a,C){const n=C.nut,b=C.bio,cut=n.cut;
   const blocks=await snapBlocks(nutShareBlocks(a,C),box=>{const cv=box.querySelector('#shCutCv');if(cv&&cut)lineChart(cv,b.w.map(x=>x.v),{c:NUTC['Весогонка'],dec:1,goal:cut.goal})});
   return composePages(blocks,{title:`Питание · ${a.name}`,sub:`${n.mode} · ${n.kcal} ккал/день · меню на неделю и покупки · ${fmtD(n.upd)}`})}
-const cardBuild=id=>async()=>{const pc=cardId;cardId=id;try{return await cardCanvas()}finally{cardId=pc}};
+// снимки карточки строго по очереди: параллельные сборки путали активного бойца (cardId) и снимали не ту карточку
+let CBQ=Promise.resolve(),CB_BUSY=0;
+const cardBuild=id=>()=>{const run=async()=>{CB_BUSY++;const pc=cardId;cardId=id;const el=$('#fCard');if(el&&el.offsetParent&&pc!==id)renderCard();try{return await cardCanvas()}finally{cardId=pc;if(el&&el.offsetParent&&pc!==id)renderCard();CB_BUSY--}};const p=CBQ.then(run,run);CBQ=p.catch(()=>{});return p};
 function prepCard(id){return prepShot('card:'+id,cardBuild(id))}
 /* Открытая карточка бойца (клиентский режим): просмотр и «Поделиться» */
 function openCardModal(id){const a2=byId.get(id);if(!a2)return;let M=$('#cardModal');
@@ -5993,7 +5998,7 @@ setTimeout(async()=>{applyRole();if(REAL)try{applyCards()}catch(e){}try{i18Start
   if(WORLD){document.body.classList.add('world-only');if(window.PIT_REAL){document.body.classList.add('world-real');document.documentElement.lang=WL_LANG}document.getElementById('fpGate')?.remove();$('#roleGate').hidden=true;
     const h=document.getElementById('toHome');if(h){h.hidden=false;h.href=PIT_REAL.back||'/';h.title=PIT_REAL.fighter?'My PIT':'Главное меню PIT'}
     if(!PIT_REAL.fighter){const c=document.getElementById('toCrm');if(c)c.hidden=false}
-    applyRole('admin');setView('world');MOB.tab='world';MOB.sub=null;const wb=document.getElementById('mWBack');if(wb){wb.hidden=false;wb.href=PIT_REAL.back||'/';wb.textContent=PIT_REAL.fighter?'← My PIT':'← PIT'}if(MOB.on)renderMobile();return}
+    applyRole('admin');setView('world');MOB.tab='world';MOB.sub=null;const wb=document.getElementById('mWBack');if(wb){wb.hidden=false;wb.href=PIT_REAL.back||'/';wb.textContent=PIT_REAL.fighter?'← My PIT':'← PIT'}if(MOB.on)renderMobile();requestAnimationFrame(()=>document.documentElement.classList.add('ready'));return}
   /* Зал бойца: член клуба с PRO / ✓ Verified — Arena в роли бойца со своей карточкой */
   if(REAL&&PIT_REAL.fighterArena){document.getElementById('fpGate')?.remove();$('#roleGate').hidden=true;document.body.classList.add('rf');
     const mine=ATHLETES.find(a=>a.mid===PIT_REAL.me);MOB.me=mine?mine.id:1;if(mine){mine.public=true;if(PROF[mine.id])PROF[mine.id].pro=true;try{rfInit()}catch(e){}}try{localStorage.setItem('fp.me.real',MOB.me)}catch(e){}
