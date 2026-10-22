@@ -1,7 +1,7 @@
 // PIT RATING — app.pitrating.com
 // Вход: собственный (код на e-mail → сессия), на переходный период также Cloudflare Access. Роли: owner | admin | trainer.
 import { authRoutes, sessionEmail, sessionsOf, revokeAll } from './auth.js';
-import { myRoutes, reviewRoutes, notifyTrial } from './my.js';
+import { myRoutes, reviewRoutes, notifyTrial, worldMe } from './my.js';
 import { worldRoutes } from './world.js';
 // Данные: D1 (документы коллекций), файлы: R2.
 
@@ -249,7 +249,7 @@ async function arenaReal(req, env, opt = {}) {
     .map(({ id, m }) => ({ id, name: m.name, first: m.first || m.name, kidish: m.kind === 'kids' || (age(m.dob) != null && age(m.dob) < 18) || !!(m.parent && (m.parent.name || m.parent.mid)), disc: m.disc || 'MMA', discs: Array.isArray(m.discs) ? m.discs : null, kind: m.kind || 'group', age: age(m.dob), consentPublic: m.consentPublic || null, end: m.end || '', start: m.start || '', plan: m.plan || '', left: m.left ?? null }))
     .sort((a, b) => a.name.localeCompare(b.name, 'ru'));
   const inj = '<script>window.PIT_REAL=' + JSON.stringify(opt.fighter
-    ? { club: env.CLUB || 'mowgli', worldOnly: true, fighter: true, back: '/my/', since: 0, members: [], membersAll: [], schedule: sch ? JSON.parse(sch.data) : null, events, visits: {} }
+    ? { club: env.CLUB || 'mowgli', worldOnly: true, fighter: true, me: opt.me || null, back: '/my/', since: 0, members: [], membersAll: [], schedule: sch ? JSON.parse(sch.data) : null, events, visits: {} }
     : { club: env.CLUB || 'mowgli', ...(opt.world ? { worldOnly: true, back: '/' } : {}), role: opt.role || null, schEdit: opt.role === 'owner' || opt.role === 'admin', since: mx ? mx.s : 0, members, membersAll, schedule: sch ? JSON.parse(sch.data) : null, events, visits, trials }).replace(/</g, '\\u003c') + '</script>';
   const html = (await res.text()).replace('<meta charset="utf-8">', '<meta charset="utf-8">' + inj);
   return new Response(html, { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' } });
@@ -269,7 +269,8 @@ export default {
         const f = await env.DB.prepare('SELECT mid,verified FROM fighters WHERE email=?').bind(w.email).first().catch(() => null);
         if (!f || !f.mid || !f.verified) return new Response(null, { status: 302, headers: { location: '/my/?locked=world' } });
       }
-      return arenaReal(req, env, { asset: true, world: true, fighter: !w.role });
+      let me = null; if (!w.role) { try { me = await worldMe(env, w.email) } catch (e) { me = null } }
+      return arenaReal(req, env, { asset: true, world: true, fighter: !w.role, me });
     }
     if (path.startsWith('/auth/')) {
       try { const r = await authRoutes(req, env, path); if (r) return r } catch (e) { return json({ error: 'server' }, 500) }

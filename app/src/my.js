@@ -131,6 +131,20 @@ const itemOut = r => { let d = {}; try { d = JSON.parse(r.data) } catch (e) { } 
 // поля анкеты, которые подтверждает клуб (согласия — личный выбор бойца, применяются сразу)
 const VERIFY_FIELDS = ['last', 'first', 'dob', 'phone', 'disc', 'kind', 'note', 'weight', 'stance', 'belt', 'city', 'photo', 'parent'];
 
+// анкета бойца для My PIT World: только подтверждённое клубом (без выдуманных рейтингов)
+export async function worldMe(env, email) {
+  await ensure(env);
+  const v = await view(env, email);
+  if (!v.profile || !v.access) return null;
+  const p = v.profile, ok = (v.items || []).filter(i => i.status === 'ok');
+  const comps = ok.filter(i => i.kind === 'comp').map(i => i.data).sort((a, b) => String(b.date).localeCompare(String(a.date)));
+  return {
+    name: [p.first, p.last].filter(Boolean).join(' '), photo: v.photo, disc: (v.member && v.member.disc) || p.disc, dob: p.dob || null, weight: p.weight || null, belt: p.belt || null, stance: p.stance || null, city: p.city || null,
+    club: v.club ? { name: v.club.name, logo: v.club.logo, city: v.club.city, cityEn: v.club.cityEn } : null, verAt: v.verAt || null,
+    clubs: ok.filter(i => i.kind === 'club').map(i => i.data), comps, titles: ok.filter(i => i.kind === 'title').map(i => i.data),
+    visits: v.member && v.member.visits ? v.member.visits : null,
+  };
+}
 async function view(env, email) {
   const f = await env.DB.prepare('SELECT * FROM fighters WHERE email=?').bind(email).first();
   const base = { email, clubs: Object.values(CLUBS), discs: DISCS, levels: LEVELS };

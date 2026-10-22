@@ -5180,6 +5180,28 @@ function wldTopHTML(){const L=ATHLETES.map(a=>({a,r:ratingOf(a.id)})).sort((x,y)
   return '<div class="wld-top">'+L.map((x,i)=>`<div><span>${i+1}. ${esc(display(x.a))} <small class="muted">${esc(x.a.disc)}</small></span><b style="color:${x.r.tc}">${PITM} ${x.r.R}</b></div>`).join('')+'</div><small class="muted">DEMO: пока один клуб — Mowgli Fight Club</small>'}
 /* My PIT одинаков для всех ролей: на узком экране — мобильная вёрстка, как у бойца */
 const wNarrow=()=>innerWidth<=760;
+
+// ===== My PIT World: настоящая анкета бойца (из My PIT, подтверждено клубом) =====
+const WME=(window.PIT_REAL||{}).me||null;
+function meRealHTML(){const m=WME,C=m.comps||[],T=m.titles||[],cl=m.clubs||[],age=(()=>{if(!m.dob)return null;const b=new Date(m.dob),n=new Date();let a=n.getFullYear()-b.getFullYear();if(n<new Date(n.getFullYear(),b.getMonth(),b.getDate()))a--;return a})();
+  const P=C.filter(c=>c.rtype!=='bout'),B=C.filter(c=>c.rtype==='bout'),g=P.filter(c=>c.pos==='1').length,sv=P.filter(c=>c.pos==='2').length,br=P.filter(c=>c.pos==='3').length,w=B.filter(c=>c.res==='W').length,l=B.filter(c=>c.res==='L').length,d=B.filter(c=>c.res==='D').length;
+  const res=c=>c.rtype==='bout'?({W:'Победа',L:'Поражение',D:'Ничья'})[c.res]+(c.method?' · '+esc(c.method):'')+(c.opp?' · vs '+esc(c.opp):''):c.pos==='part'?'Участие':['','🥇 1 место','🥈 2 место','🥉 3 место'][+c.pos];
+  const st=(n,l2)=>`<div style="flex:1 1 6.5rem;min-width:0;background:#ffffff08;border:1px solid var(--line-2);border-radius:.8rem;padding:.6rem .7rem"><b style="display:block;font-size:1.35rem;line-height:1.1">${n}</b><span style="font-size:.74rem;opacity:.7">${l2}</span></div>`;
+  return`<section class="wl-me" data-sec="me" style="display:block!important">
+   <div style="display:flex;gap:1rem;align-items:center;flex-wrap:wrap">${m.photo?`<img src="${esc(m.photo)}" alt="" style="width:5.2rem;height:5.2rem;border-radius:1.1rem;object-fit:cover;border:2px solid #e8c35a66">`:`<span style="width:5.2rem;height:5.2rem;border-radius:1.1rem;display:grid;place-items:center;background:#e8c35a22;color:#e8c35a;font-weight:900;font-size:1.6rem">${esc((m.name||'?').split(/\s+/).map(x=>x[0]).slice(0,2).join(''))}</span>`}
+    <div style="flex:1;min-width:12rem"><small style="letter-spacing:.14em;font-weight:800;color:#e8c35a">МОЯ АНКЕТА · MY PIT</small><b style="display:block;font-size:1.5rem;line-height:1.15;margin:.15rem 0">${esc(m.name)}</b>
+     <span style="display:inline-flex;align-items:center;gap:.4rem;font-size:.8rem;font-weight:800;color:#2fd27a;border:1px solid #2fd27a66;border-radius:2rem;padding:.15rem .6rem">✓ Verified${m.club?` · ${m.club.logo?`<img src="${esc(m.club.logo)}" alt="${esc(m.club.name)}" style="height:1rem">`:esc(m.club.name)}`:''}</span>
+     <div style="opacity:.75;margin-top:.35rem;font-size:.88rem">${[m.disc,age!=null?age+' лет':'',m.weight?m.weight+' кг':'',m.belt,m.city].filter(Boolean).map(esc).join(' · ')}</div></div>
+    <a href="/my/" class="btn" style="text-decoration:none">Изменить анкету</a></div>
+   <div style="display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.9rem">${`<div style="flex:1 1 9rem;min-width:0;background:#ffffff08;border:1px solid var(--line-2);border-radius:.8rem;padding:.6rem .7rem"><b style="display:flex;gap:.45rem;font-size:1.15rem;line-height:1.2;white-space:nowrap"><span>🥇${g}</span><span>🥈${sv}</span><span>🥉${br}</span></b><span style="font-size:.74rem;opacity:.7">медали</span></div>`}${st(`${w}-${l}-${d}`,'бои W-L-D')}${st(C.length,'соревнований')}${st(T.length,'титулов')}${m.visits?st(m.visits.total??0,'тренировок в клубе'):''}</div>
+   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,17rem),1fr));gap:.8rem;margin-top:.9rem">
+    <div><small style="letter-spacing:.12em;font-weight:800;opacity:.7">КЛУБЫ</small><div style="display:grid;gap:.4rem;margin-top:.4rem">
+     ${m.club?`<div style="display:flex;gap:.6rem;align-items:center;padding:.5rem .6rem;border:1px solid #e8c35a55;border-radius:.7rem">${m.club.logo?`<img src="${esc(m.club.logo)}" alt="" style="height:1.6rem;max-width:4.5rem;object-fit:contain">`:''}<span style="min-width:0"><b>${esc(m.club.name)}</b><small style="display:block;opacity:.7">${esc(m.club.city||'')} · текущий клуб${m.verAt?' · с '+new Date(m.verAt).toLocaleDateString('ru-RU',{month:'short',year:'numeric'}):''}</small></span></div>`:''}
+     ${cl.map(c=>`<div style="display:flex;gap:.6rem;align-items:center;padding:.5rem .6rem;border:1px solid var(--line-2);border-radius:.7rem"><span style="min-width:0"><b>${esc(c.name)}</b><small style="display:block;opacity:.7">${esc(c.city||'')} · ${esc(c.from||'?')} — ${esc(c.to||'н.в.')}</small></span></div>`).join('')}</div></div>
+    <div><small style="letter-spacing:.12em;font-weight:800;opacity:.7">СОРЕВНОВАНИЯ</small><div style="display:grid;gap:.4rem;margin-top:.4rem">${C.length?C.slice(0,8).map(c=>`<div style="padding:.5rem .6rem;border:1px solid var(--line-2);border-radius:.7rem"><b style="display:block;overflow-wrap:anywhere">${esc(c.name)}</b><small style="opacity:.75">${esc(c.date||'')}${c.place?' · '+esc(c.place):''} · ${res(c)}</small></div>`).join(''):'<span style="opacity:.6;font-size:.88rem">Пока нет подтверждённых соревнований — добавьте их в My PIT, клуб проверит.</span>'}</div></div>
+    ${T.length?`<div><small style="letter-spacing:.12em;font-weight:800;opacity:.7">ТИТУЛЫ</small><div style="display:grid;gap:.4rem;margin-top:.4rem">${T.map(x=>`<div style="padding:.5rem .6rem;border:1px solid var(--line-2);border-radius:.7rem">🏆 <b>${esc(x.name)}</b>${x.year?` <small style="opacity:.7">· ${esc(x.year)}</small>`:''}</div>`).join('')}</div></div>`:''}
+   </div>
+   <p style="margin:.8rem 0 0;font-size:.78rem;opacity:.6">PIT-рейтинг бойца появится после первых турниров сезона. Здесь — только данные, подтверждённые клубом.</p></section>`}
 function renderWorld(){const B=$('#wldBody');B.dataset.m=wNarrow()?'1':'0';B.innerHTML=worldHTML(wNarrow());bindWorld(B)}
 addEventListener('resize',()=>{const B=$('#wldBody');if(B&&ui.view==='world'&&!MOB.on&&B.dataset.m!==(wNarrow()?'1':'0'))renderWorld()});
 const WLD={sub:new Set([21]),fav:new Set(['f:4','c:mowgli','e:ufc333']),get light(){return THEME.light}};
@@ -5570,7 +5592,7 @@ function worldHTML(m){const a=byId.get(cardId)||ATHLETES[0],rt=ratingOf(a.id);
     <div class="wl-figw"><img class="wl-fig" src="${WIMG.hero}" alt="">${teleHTML()}</div>
   </section>
   <nav class="wl-toc" aria-label="Разделы My PIT">${[['me','Твой PIT'],['rank','Рейтинги'],['cup','Кубок клубов'],['tour','Турниры'],['rew','Награды'],['reg','Регламент'],['ajp','AJP Tour'],['map','Карта']].map(([k,t])=>`<button type="button" data-go="${k}">${t}</button>`).join('')}</nav>
-  <section class="wl-me" data-sec="me">
+  ${WME?meRealHTML():`  <section class="wl-me" data-sec="me">
     <div class="wl-mecard"><img src="${CAB[a.id].person.photo||avatar(a.id)}" alt=""><div class="wl-mew"><small>ТВОЙ PIT</small><b>${esc(a.name)} <span class="m-ver">✓ Verified</span></b><span>Mowgli Fight Club · Анталья · <em class="rk-mine" data-go="rank">клуб #${clubRanks().me.r} мира</em></span></div>
       <div class="wl-pit"><span style="color:${rt.tc}">${PITM}</span><b style="color:${rt.tc}">${rt.R}</b><small>мир #${wr} · #${rt.rank} ${esc(rt.cat)}</small><small class="wl-pp">трен. ${pitParts(a.id).train} · турн. ${pitParts(a.id).tour}</small></div></div>
     <div class="wl-mestat"><div><b class="ok">${acc}</b><span>вызов принят</span></div><div><b>${pend}</b><span>на согласовании</span></div><div><b>${inc}</b><span>входящий ждёт</span></div></div>
@@ -5579,7 +5601,7 @@ function worldHTML(m){const a=byId.get(cardId)||ATHLETES[0],rt=ratingOf(a.id);
       ${WCH.map(c=>`<div class="w-chi ${c.ok?'ok':''}"><div class="w-cht"><span class="w-dir">${c.dir==='in'?'← входящий':'→ исходящий'}</span><b>${c.who}</b><span class="muted">${c.club}</span>${c.ok?'<span class="w-acc">ПРИНЯТ</span>':''}</div>
        <div class="w-chm">${c.disc} · ${c.kg} кг · ${PITM} ${c.pit}</div><div class="w-sts">${stp(c,'a','админ')}${stp(c,'c','тренер')}${stp(c,'f','боец')}</div><div class="w-det">${c.det}</div></div>`).join('')}
       <div class="w-note">Вызов принимает администратор клуба → согласует с тренером и бойцом → все дают онлайн-согласие → детали подтверждены.</div></details>
-  </section>
+  </section>`}
   ${pitRulesHTML(a)}
   <section><div class="wl-sh"><h3>Лента</h3><span class="w-demo">новости — автоматически из источников · фото и тексты авторов</span></div>
     <div class="wl-feed">
