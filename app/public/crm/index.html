@@ -765,6 +765,11 @@ const JALAL_SEED={full:'Миржалал Хасани (Mirjalal Hasani)',nick:'M
   exp:['Профессиональные бои 2016–2023 (полулёгкий вес)','Turkey Elite MMA, Strike FC, King of Warriors, WJF, UFA','SBC (Сербия), NFC (Казахстан), Spil FS'],
   links:['https://www.sherdog.com/fighter/Mirjalal-Hasani-334431','https://mmafederasyonu.org.tr/Mma-Data/sporcular/sporcu-Detay/mirjalal-hasani/1243','https://instagram.com/jalal_hasani_'],
   bio:'Профессиональный боец ММА, чемпион Турции, основатель Mowgli Fight Club. Ставит борьбу и партер — 3 победы удушающим треугольником в профи.'};
+const AKMURAD_SEED={n:'Акмурад Акиев',full:'Акмурад Акиев (Akmurad Akiyev)',nick:'',role:'Тренер по боксу и кикбоксингу',discs:['Бокс','Кикбоксинг'],height:'',weight:'',record:'',
+  titles:['Мастер спорта Туркменистана по боксу (2018)','Заслуженный тренер Туркменистана по кикбоксингу (2009)','Судья международной категории World Federation of Kickboxing — WFK (2005)'],
+  exp:['Тренер международного уровня по боксу и кикбоксингу','С 2026 года — тренер Mowgli Fight Club (Анталья)'],links:[],
+  bio:'Тренер международного уровня по боксу и кикбоксингу, заслуженный тренер Туркменистана. Ставит ударную технику — бокс и кикбоксинг.'};
+const COACH_SEEDS=[{re:/джал|mowgli|jalal/i,d:JALAL_SEED,src:'Sherdog, Федерация ММА Турции, Instagram'},{re:/акмур|akmur|акиев|akiy/i,d:AKMURAD_SEED,src:'документы тренера (сертификаты, удостоверение) и публикации Mowgli'}];
 function coachCard(c,classes){const G=classes.filter(x=>x.coach===c.k),nickOk=c.nick&&!String(c.n).toLowerCase().includes(String(c.nick).toLowerCase());
   const li=(L,ic)=>`<ul>${lines(L).map(x=>`<li><i>${ic}</i><span>${esc(x)}</span></li>`).join('')}</ul>`;
   return`<article class="card coach"><div class="cph">${c.photo?`<img src="/_blob/${esc(c.photo)}" alt="${esc(c.n)}">`:`<span class="ini">${esc(ini(c.n))}</span>`}</div>
@@ -782,10 +787,10 @@ function vCoaches(){const {classes,coaches}=SCH();
   return`${mviewBar()}<div class="head"><div><h1>Тренеры · ${coaches.length}</h1><p class="sub">Анкеты тренеров видят бойцы в My PIT → «Клуб» (кроме телефона и e-mail). Тренер привязывается к группам в «Расписании».</p></div></div>
    <div style="display:grid;gap:.8rem">${coaches.map(c=>S.coEdit===c.k?coachForm(c):coachCard(c,classes)).join('')}</div>
    <form id="cof" class="card w-only adm-only" style="display:flex;gap:.5rem;margin-top:.8rem;flex-wrap:wrap"><input type="text" id="co_n" placeholder="Имя нового тренера" maxlength="40" style="flex:1;min-width:10rem"><button class="btn" type="submit">+ Тренер</button></form>`}
-function coachForm(c){const isJ=/джал|mowgli|jalal/i.test(c.n+' '+(c.nick||''));
+function coachForm(c){const SD=COACH_SEEDS.find(x=>x.re.test(c.n+' '+(c.nick||'')+' '+(c.full||''))),isJ=!!SD;
   const ta=(id,lbl,val,ph)=>`<label class="f full">${lbl} — каждое с новой строки<textarea id="${id}" rows="4" maxlength="2000" placeholder="${ph}">${esc(lines(val).join('\n'))}</textarea></label>`;
   return`<form class="card form" id="coedf" style="border-color:var(--gold)"><h2 class="full" style="margin:0">Анкета тренера</h2>
-  ${isJ?`<div class="full" style="background:var(--gold-bg);border-radius:.6rem;padding:.6rem .8rem"><b>Есть данные из прошлых материалов</b> (Sherdog, Федерация ММА Турции, Instagram). <button class="btn sm gold" type="button" data-coseed>Подставить в анкету</button><small style="display:block;color:var(--muted);margin-top:.3rem">Поля заполнятся — проверьте и нажмите «Сохранить».</small></div>`:''}
+  ${isJ?`<div class="full" style="background:var(--gold-bg);border-radius:.6rem;padding:.6rem .8rem"><b>Есть собранные данные</b> (${SD?SD.src:''}). <button class="btn sm gold" type="button" data-coseed>Подставить в анкету</button><small style="display:block;color:var(--muted);margin-top:.3rem">Поля заполнятся — проверьте и нажмите «Сохранить».</small></div>`:''}
   <label class="f">Имя в приложении<input type="text" id="ce_n" maxlength="60" value="${esc(c.n)}" required></label>
   <label class="f">Полное имя<input type="text" id="ce_full" maxlength="80" value="${esc(c.full||'')}"></label>
   <label class="f">Прозвище<input type="text" id="ce_nick" maxlength="30" value="${esc(c.nick||'')}"></label>
@@ -805,7 +810,8 @@ function coachForm(c){const isJ=/джал|mowgli|jalal/i.test(c.n+' '+(c.nick||'
 function bindCoach(v){v.querySelectorAll('[data-mview]').forEach(b=>b.addEventListener('click',()=>{S.mview=b.dataset.mview;S.coEdit=null;render();scrollTo(0,0)}));
   v.querySelectorAll('[data-coed]').forEach(b=>b.addEventListener('click',()=>{S.coEdit=b.dataset.coed;render()}));
   const x=$('[data-cex]',v);if(x)x.addEventListener('click',()=>{S.coEdit=null;render()});
-  const sd=$('[data-coseed]',v);if(sd)sd.addEventListener('click',()=>{const J=JALAL_SEED,setv=(id,val)=>{const e=$(id,v);if(e&&!e.value)e.value=val};
+  const sd=$('[data-coseed]',v);if(sd)sd.addEventListener('click',()=>{const cc=SCH().coaches.find(z=>z.k===S.coEdit)||{},SD=COACH_SEEDS.find(x=>x.re.test((cc.n||'')+' '+(cc.nick||'')+' '+(cc.full||''))),J=SD?SD.d:JALAL_SEED,setv=(id,val)=>{const e=$(id,v);if(e&&!e.value)e.value=val};
+    {const ne=$('#ce_n',v);if(J.n&&ne&&/бокс|кик|box/i.test(ne.value))ne.value=J.n}
     setv('#ce_full',J.full);setv('#ce_nick',J.nick);setv('#ce_role',J.role);setv('#ce_h',J.height);setv('#ce_w',J.weight);setv('#ce_rec',J.record);setv('#ce_b',J.bio);
     const mrg=(id,L)=>{const e=$(id,v),cur=e.value.split('\n').map(z=>z.trim()).filter(Boolean);e.value=[...cur,...L.filter(x=>!cur.includes(x))].join('\n')};mrg('#ce_t',J.titles);mrg('#ce_x',J.exp);mrg('#ce_l',J.links);v.querySelectorAll('input[name=ce_d]').forEach(i=>{if(J.discs.includes(i.value))i.checked=true});DIRTY.view=true;toast('Данные подставлены — проверьте и сохраните')});
   v.querySelectorAll('[data-codel]').forEach(b=>b.addEventListener('click',()=>{if(!b.dataset.sure){b.dataset.sure=1;b.textContent='Точно?';return}saveSch({coaches:SCH().coaches.filter(c=>c.k!==b.dataset.codel)},'Тренер убран')}));
