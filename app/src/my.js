@@ -404,7 +404,7 @@ export async function myRoutes(req, env, path, email, staff) {
     const d = JSON.parse(cur.data), miss = fullMissing(d, d.photo ? 1 : 0);
     if (miss.length) return json({ error: 'incomplete', missing: miss }, 400);
     await env.DB.prepare('UPDATE fighters SET data=?,note=NULL,updated=? WHERE email=?').bind(JSON.stringify({ ...d, submittedAt: new Date().toISOString() }), t, email).run();
-    return json({ ok: true, ...(await view(env, email)) });
+    return json({ ok: true, ...(await view(env, email)), staff: staff || null });
   }
 
   if (path === '/api/my/trial') {
@@ -416,14 +416,14 @@ export async function myRoutes(req, env, path, email, staff) {
     if (b.cancel === true) {
       if (l.status !== 'booked') return json({ error: 'not_booked' }, 409);
       await env.DB.batch([putDoc(env, 'leads', cur.lead, { ...l, status: 'new', trialDate: null, trialClass: null, trialTime: null, trialDisc: null, trialBy: null, trialAt: at, touches: touch('Клиент отменил запись на пробное ' + (l.trialDate || '')) }, 'pit:' + email)]);
-      return json({ ok: true, ...(await view(env, email)) });
+      return json({ ok: true, ...(await view(env, email)), staff: staff || null });
     }
     const sl = (await trialSlots(env, 21)).find(z => z.cls === String(b.cls || '') && z.date === String(b.date || ''));
     if (!sl) return json({ error: 'slot' }, 400);
     const nl = { ...l, status: 'booked', trialDate: sl.date, trialClass: sl.cls, trialTime: sl.time, trialDisc: sl.disc, trialBy: 'client', trialAt: at, trialNotified: { at, to: email, ch: 'email' }, touches: touch(`Клиент сам выбрал пробное: ${sl.date} ${sl.time} · ${sl.disc}`) };
     await env.DB.batch([putDoc(env, 'leads', cur.lead, nl, 'pit:' + email)]);
     try { const tI = await trialInfo(env, nl); if (tI) await env.EMAIL.send(trialMail(email, String(l.name || '').trim().split(/\s+/)[0], CLUBS.mowgli.name, tI, await accLang(env, email, l))) } catch (e) { }
-    return json({ ok: true, ...(await view(env, email)) });
+    return json({ ok: true, ...(await view(env, email)), staff: staff || null });
   }
 
   if (path === '/api/my/photo') {
@@ -436,9 +436,9 @@ export async function myRoutes(req, env, path, email, staff) {
     const id = crypto.randomUUID().replace(/-/g, '');
     await env.FILES.put(id, buf, { httpMetadata: { contentType: type } });
     await env.DB.prepare('INSERT INTO files(id,type,size,by,at) VALUES(?,?,?,?,?)').bind(id, type, buf.byteLength, email, now()).run();
-    if (cur.verified) { const p = cur.pending ? JSON.parse(cur.pending) : {}; p.photo = id; await env.DB.prepare('UPDATE fighters SET pending=?,updated=? WHERE email=?').bind(JSON.stringify(p), t, email).run() }
+    if (cur.verified && !needsAnketa(cur)) { const p = cur.pending ? JSON.parse(cur.pending) : {}; p.photo = id; await env.DB.prepare('UPDATE fighters SET pending=?,updated=? WHERE email=?').bind(JSON.stringify(p), t, email).run() }
     else { const d = JSON.parse(cur.data); d.photo = id; await env.DB.prepare('UPDATE fighters SET data=?,updated=? WHERE email=?').bind(JSON.stringify(d), t, email).run() }
-    return json({ ok: true, ...(await view(env, email)) });
+    return json({ ok: true, ...(await view(env, email)), staff: staff || null });
   }
 
   if (path === '/api/my/item') {
@@ -456,12 +456,12 @@ export async function myRoutes(req, env, path, email, staff) {
       if ((n?.n || 0) >= 300) return json({ error: 'limit' }, 429);
       await env.DB.prepare("INSERT INTO fighter_items(id,email,kind,data,status,created,updated) VALUES(?,?,?,?,'pending',?,?)").bind('i' + t.toString(36) + crypto.randomUUID().slice(0, 6), email, b.kind, JSON.stringify(d), t, t).run();
     }
-    return json({ ok: true, ...(await view(env, email)) });
+    return json({ ok: true, ...(await view(env, email)), staff: staff || null });
   }
   if (path === '/api/my/item/del') {
     const b = await req.json().catch(() => ({}));
     await env.DB.prepare('DELETE FROM fighter_items WHERE id=? AND email=?').bind(String(b.id || ''), email).run();
-    return json({ ok: true, ...(await view(env, email)) });
+    return json({ ok: true, ...(await view(env, email)), staff: staff || null });
   }
   if (path !== '/api/my') return json({ error: 'not_found' }, 404);
   const b = await req.json().catch(() => ({}));
@@ -493,7 +493,7 @@ export async function myRoutes(req, env, path, email, staff) {
   const consents = { consentData: true, photoConsent: p.photoConsent === true, consentPublic: p.consentPublic === true, consentMsg: p.consentMsg === true, parentConsent: minor ? true : null, lang: (prev && ['ru', 'en', 'tr'].includes(prev.lang)) ? prev.lang : (['ru', 'en', 'tr'].includes(clean(p.lang, 2)) ? clean(p.lang, 2) : 'ru') };
   const stmts = [];
   let data, pending = cur && cur.pending ? JSON.parse(cur.pending) : null;
-  if (cur && cur.verified) {
+  if (cur && cur.verified && !needsAnketa(cur)) {
     // анкета уже подтверждена клубом: правки бойца ждут подтверждения, действует прежняя версия
     pending = { ...(pending || {}) };
     const nv = v => (v == null || v === '' ? null : v);
@@ -514,7 +514,7 @@ export async function myRoutes(req, env, path, email, staff) {
       match: hit ? { id: hit.id, name: hit.m.first && hit.m.last ? hit.m.first + ' ' + hit.m.last : hit.m.name } : null,
       reg: { first, last, dob, phone, email, parent }, lang: consents.lang,
     }, 'pit:' + email));
-  } else if (lead && !(cur && cur.verified)) {
+  } else if (lead && !(cur && cur.verified && !needsAnketa(cur))) {
     const l = await getDoc(env, 'leads', lead);
     if (l && (l.status || 'new') === 'new') stmts.push(putDoc(env, 'leads', lead, { ...l, name: first + ' ' + last, phone, disc, kind, age: String(age), reg: { first, last, dob, phone, email, parent } }, 'pit:' + email));
   }
@@ -522,7 +522,7 @@ export async function myRoutes(req, env, path, email, staff) {
     ON CONFLICT(email) DO UPDATE SET data=excluded.data,club=excluded.club,mid=excluded.mid,lead=excluded.lead,updated=excluded.updated,pending=excluded.pending`)
     .bind(email, JSON.stringify(data), club, mid, lead, cur?.created || t, t, pending ? JSON.stringify(pending) : null));
   await env.DB.batch(stmts);
-  return json({ ok: true, ...(await view(env, email)) });
+  return json({ ok: true, ...(await view(env, email)), staff: staff || null });
 }
 
 /* ===== Проверка анкет клубом (владелец и администратор) ===== */
