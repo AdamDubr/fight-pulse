@@ -1,7 +1,7 @@
 // PIT RATING — app.pitrating.com
 // Вход: собственный (код на e-mail → сессия), на переходный период также Cloudflare Access. Роли: owner | admin | trainer.
 import { authRoutes, sessionEmail, sessionsOf, revokeAll } from './auth.js';
-import { myRoutes, reviewRoutes } from './my.js';
+import { myRoutes, reviewRoutes, notifyTrial } from './my.js';
 import { worldRoutes } from './world.js';
 // Данные: D1 (документы коллекций), файлы: R2.
 
@@ -65,6 +65,7 @@ async function api(req, env, me, path) {
   const url = new URL(req.url);
   if (path === '/api/me') return json(me);
   if (path === '/api/review' || path.startsWith('/api/review/')) return reviewRoutes(req, env, path, me);
+  if (path === '/api/notify/trial' && req.method === 'POST') return notifyTrial(req, env, me);
 
   // Синхронизация: все изменения после seq
   if (path === '/api/sync' && req.method === 'GET') {

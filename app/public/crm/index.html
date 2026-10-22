@@ -648,6 +648,18 @@ function vGroup(c,co){const ids=gIds(c),cap=c.cap||SET().groupCap||0,inG=new Set
   <p class="note" style="margin:.2rem 0 0">Состав собирается автоматически: в группу попадают активные бойцы, у которых в карточке отмечена дисциплина «${esc(c.disc)}». Добавить или убрать бойца — изменить дисциплины в его карточке (администратор).</p>`}
 function bindGroup(v){const bk=$('[data-gback]',v);if(bk)bk.addEventListener('click',()=>{S.grp=null;render();scrollTo(0,0)})}
 
+
+/* ===== Уведомление клиента о пробном: письмо + карточка в My PIT; без e-mail — WhatsApp ===== */
+async function notifyTrialC(id){try{const r=await fetch('/api/notify/trial',{method:'POST',headers:{'content-type':'application/json'},credentials:'same-origin',body:JSON.stringify({id})});const j=await r.json();
+  if(j.sent){await write(()=>DB.doc('leads/'+id).update({trialNotified:{at:new Date().toISOString(),to:j.to,ch:'email'}}));toast('Клиенту отправлено письмо и показано в My PIT: '+j.to,5000)}
+  else toast(j.reason==='no_email'?'У клиента нет e-mail — сообщите в WhatsApp (кнопка в заявке)':'Письмо не отправлено — сообщите клиенту в WhatsApp',6000);
+  if(S.ov&&S.ov.id===id)renderOv()}catch(e){toast('Письмо не отправлено — сообщите клиенту в WhatsApp')}}
+function trialMsg(x){const c=SCH().classes.find(z=>z.id===x.trialClass),co=c&&SCH().coaches.find(k=>k.k===c.coach),d=new Date(x.trialDate+'T12:00:00'),dn=['вс','пн','вт','ср','чт','пт','сб'][d.getDay()];
+  return`Здравствуйте${x.name?', '+String(x.name).split(/\s+/)[0]:''}! Вы записаны на пробное занятие в Mowgli Fight Club: ${fmtD(x.trialDate)} (${dn})${c?' в '+c.time+', группа '+c.disc:x.trialTime?' в '+x.trialTime:''}${co?', тренер '+co.n:''}. Возьмите форму, воду и полотенце, приходите за 10 минут. До встречи!`}
+const waNum=p=>{let d=String(p||'').replace(/\D/g,'');if(d.startsWith('00'))d=d.slice(2);if(/^0\d{10}$/.test(d))d='90'+d.slice(1);else if(/^5\d{9}$/.test(d))d='90'+d;else if(/^8\d{10}$/.test(d))d='7'+d.slice(1);return d.length>=10?d:''};
+function trialNotifyHTML(x){const wa=waNum(x.phone),N=x.trialNotified;
+  return`<div class="acts" style="margin-top:.6rem;align-items:center">${N?`<span class="pill ok">✓ уведомлён ${N.ch==='email'?'по e-mail':'в WhatsApp'} ${fmtD(String(N.at).slice(0,10))}</span>`:'<span class="pill warn">клиент ещё не уведомлён</span>'}
+   <button class="btn sm" type="button" data-tnotify>${N?'Отправить ещё раз':'Уведомить по e-mail'}</button>${wa?`<a class="btn sm" data-twa href="https://wa.me/${wa}?text=${encodeURIComponent(trialMsg(x))}" target="_blank" rel="noopener">WhatsApp</a>`:''}</div>`}
 /* ===== Пробные занятия в расписании: заявка «записан на пробное» привязана к группе на дату ===== */
 const dowOf=d=>{const x=new Date(d+'T12:00:00').getDay();return x||7};
 
@@ -917,7 +929,7 @@ function leadDrawer(){const host=$('#ovHost'),x=S.ov.id==='new'?{status:'new',ki
   let act='',mid='',tail='';
   if(!isNew){
     if(x.status==='new')act=`<form class="card form" id="lbook"><h2 class="full">${/^s:Разов/.test(x.fmt||'')?'Записать на разовое занятие':'Записать на пробное'}</h2><label class="f">Дата пробного<input type="date" id="lb_d" value="${addDays(today(),1)}"></label><label class="f">Группа<select id="lb_c">${trialOpts(x,addDays(today(),1))}</select></label><div class="acts" style="align-self:end"><button class="btn gold" type="submit">Записать</button></div></form>`;
-    if(x.status==='booked')act=`<section class="card"><h2>Пробное ${fmtD(x.trialDate)} · ${lira(price)}</h2><form class="form" id="ldone"><label class="f">Способ оплаты<select id="ld_m">${methodOpts('cash')}</select></label><div class="acts" style="align-self:end"><button class="btn gold" type="submit">Пришёл и оплатил</button></div></form>
+    if(x.status==='booked')act=`<section class="card"><h2>Пробное ${fmtD(x.trialDate)}${x.trialTime?' · '+esc(x.trialTime):''}${x.trialDisc?' · '+esc(x.trialDisc):''} · ${lira(price)}</h2>${trialNotifyHTML(x)}<form class="form" id="ldone"><label class="f">Способ оплаты<select id="ld_m">${methodOpts('cash')}</select></label><div class="acts" style="align-self:end"><button class="btn gold" type="submit">Пришёл и оплатил</button></div></form>
       <div class="acts" style="margin-top:.6rem"><button class="btn sm" type="button" data-lmove="new">Перенести</button><button class="btn sm danger" type="button" data-lnoshow="1">Не пришёл</button></div></section>`;
     if(x.status==='done')act=`<section class="card"><h2>Решение после пробного</h2><div class="acts"><button class="btn gold adm-only" type="button" data-lbuy="1">Купил абонемент → завести бойца</button></div></section>`;
     if(x.status==='think')act=`<section class="card" style="border-color:var(--gold)"><h2>Думает${x.thinkReason?' · '+esc(x.thinkReason):''}</h2><p class="note" style="margin:0 0 .6rem">С ${fmtD(x.thinkAt||'')}. Напоминайте о клубе и отмечайте каждое касание ниже — по ним видно работу менеджера.</p>
@@ -968,12 +980,14 @@ function leadDrawer(){const host=$('#ovHost'),x=S.ov.id==='new'?{status:'new',ki
     const syncD=()=>{const c=SCH().classes.find(z=>z.id===lc.value);if(c&&!(c.dow||[]).includes(dowOf(ld.value||today()))){ld.value=nextDay(c,today());lc.innerHTML=trialOpts({...x,trialClass:c.id},ld.value)}};
     syncD();ld.addEventListener('change',()=>{const c=SCH().classes.find(z=>z.id===lc.value),ok=c&&(c.dow||[]).includes(dowOf(ld.value));lc.innerHTML=trialOpts({...x,trialClass:ok?c.id:null},ld.value);syncD()});lc.addEventListener('change',syncD);
     lb.addEventListener('submit',e=>{e.preventDefault();const d=ld.value,c=SCH().classes.find(z=>z.id===lc.value);if(!d){toast('Укажите дату');return}
-      up({status:'booked',trialDate:d,trialClass:c?c.id:null,trialTime:c?c.time:null,trialDisc:c?c.disc:null},'Записан на пробное '+fmtD(d)+(c?' · '+c.disc+' '+c.time:''))})}
+      up({status:'booked',trialDate:d,trialClass:c?c.id:null,trialTime:c?c.time:null,trialDisc:c?c.disc:null},'Записан на пробное '+fmtD(d)+(c?' · '+c.disc+' '+c.time:'')).then(ok=>{if(ok)notifyTrialC(x.id)})})}
   const ld=$('#ldone',host);if(ld)ld.addEventListener('submit',async e=>{e.preventDefault();const method=$('#ld_m',host).value;
     if(await write(()=>DB.collection('payments').doc().set({kind:'trial',lid:x.id,name:x.name,sum:price,date:today(),method,what:'Пробное · '+(x.kind==='ind'?'индивидуальное':'группа'),src:'pit'})))up({status:'done',trialPaid:price,trialDone:today()},'Пробное оплачено '+lira(price))});
   host.querySelectorAll('[data-lmove]').forEach(b=>b.addEventListener('click',()=>up({status:'new'},'Заявка возвращена в работу')));
   const ns=host.querySelector('[data-lnoshow]');if(ns)ns.addEventListener('click',()=>up({status:'lost',lostReason:'Не пришёл на пробное'},'Не пришёл на пробное'));
   bindSell(host,x,apv);
+  const tn=$('[data-tnotify]',host);if(tn)tn.addEventListener('click',()=>{tn.disabled=true;notifyTrialC(x.id)});
+  const twa=$('[data-twa]',host);if(twa)twa.addEventListener('click',()=>{write(()=>DB.doc('leads/'+x.id).update({trialNotified:{at:new Date().toISOString(),ch:'whatsapp'}}),'Пробное: сообщение в WhatsApp')});
   const tk=$('#lthink',host);if(tk)tk.addEventListener('submit',e=>{e.preventDefault();const r=$('#lk_r',host).value,d=$('#lk_d',host).value,t=$('#lk_t',host).value.trim();if(!d){toast('Укажите дату напоминания');return}
     const now=new Date().toISOString();up({status:'think',thinkReason:r,thinkAt:today(),nextAt:d,touches:[...(x.touches||[]),{at:now,by:ME||null,ch:'Решение',text:r+(t?' · '+t:''),next:d,kind:'think'}]},'Думает ('+r+'), напомнить '+fmtD(d))});
   const tf2=$('#ltouch',host);if(tf2){const save=(next)=>{const t={at:new Date().toISOString(),by:ME||null,ch:$('#lt_c',host).value,text:$('#lt_t',host).value.trim(),next:next||null};

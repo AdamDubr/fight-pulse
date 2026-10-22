@@ -46,6 +46,47 @@ async function getDoc(env, col, id) {
   const r = await env.DB.prepare('SELECT data,deleted FROM docs WHERE col=? AND id=?').bind(col, id).first();
   if (!r || r.deleted) return null; try { return JSON.parse(r.data) } catch (e) { return null }
 }
+
+// пробное занятие: дата, время, группа, тренер — из заявки и расписания клуба
+async function trialInfo(env, l) {
+  if (!l || l.status !== 'booked' || !l.trialDate) return null;
+  const sc = (await getDoc(env, 'club', 'schedule')) || {}, c = (sc.classes || []).find(z => z.id === l.trialClass) || null;
+  const co = c && (sc.coaches || []).find(k => k.k === c.coach);
+  return { date: l.trialDate, time: c ? c.time : (l.trialTime || null), disc: c ? c.disc : (l.trialDisc || null), dur: c ? (c.dur || 60) : null, coach: co ? co.n : null, fmt: l.fmtName || null };
+}
+async function leadByEmail(env, email) {
+  const r = await env.DB.prepare("SELECT id,data FROM docs WHERE col='leads' AND deleted=0 AND data LIKE ?").bind('%' + email.replace(/[%_]/g, '') + '%').all();
+  for (const x of r.results || []) { try { const l = JSON.parse(x.data); if (String(l.email || (l.reg && l.reg.email) || '').toLowerCase() === email && l.status === 'booked') return l } catch (e) { } }
+  return null;
+}
+const DOW_RU = ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб'];
+function trialMail(to, name, clubName, t) {
+  const d = new Date(t.date + 'T12:00:00'), ds = String(d.getDate()).padStart(2, '0') + '.' + String(d.getMonth() + 1).padStart(2, '0') + '.' + d.getFullYear() + ' (' + DOW_RU[d.getDay()] + ')';
+  const esc = v => String(v || '').replace(/[<>&"]/g, '');
+  const rows = [['Дата', ds], ['Время', t.time || 'уточнит администратор'], ['Группа', t.disc || ''], ['Тренер', t.coach || '']].filter(r => r[1]);
+  const html = `<!doctype html><html><body style="margin:0;background:#f4f1ea;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#15171b">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="padding:32px 12px"><tr><td align="center">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:460px;background:#fff;border:1px solid #e3ded2;border-radius:14px;overflow:hidden">
+<tr><td style="background:#111418;padding:24px 28px"><div style="color:#f4f1ea;font-size:22px;font-weight:800;letter-spacing:1px">${esc(clubName)}</div><div style="color:#e8c35a;font-size:11px;letter-spacing:2px;font-weight:700">ПРОБНОЕ ЗАНЯТИЕ</div></td></tr>
+<tr><td style="padding:28px"><div style="font-size:17px;font-weight:700;margin:0 0 14px">${name ? esc(name) + ', вы' : 'Вы'} записаны на пробное занятие</div>
+<table role="presentation" cellpadding="0" cellspacing="0" style="font-size:15px;margin:0 0 18px">${rows.map(r => `<tr><td style="color:#8b877d;padding:3px 16px 3px 0">${r[0]}</td><td style="font-weight:700;padding:3px 0">${esc(r[1])}</td></tr>`).join('')}</table>
+<p style="font-size:14px;line-height:1.5;margin:0 0 18px">Возьмите спортивную форму, воду и полотенце. Приходите за 10 минут до начала.</p>
+<a href="https://app.pitrating.com/my/" style="display:inline-block;background:#e8c35a;color:#141414;text-decoration:none;font-weight:800;padding:12px 22px;border-radius:10px">Открыть My PIT</a>
+<p style="font-size:12px;color:#8b877d;margin:18px 0 0">Если планы изменились — ответьте администратору клуба, мы перенесём занятие.</p></td></tr>
+<tr><td style="padding:14px 28px;border-top:1px solid #efeae0;font-size:11px;color:#8b877d">PIT RATING · pitrating.com</td></tr></table></td></tr></table></body></html>`;
+  return { to, from: { email: 'noreply@pitrating.com', name: clubName }, subject: `Пробное занятие ${ds}${t.time ? ' в ' + t.time : ''} — ${clubName}`, html, text: `Вы записаны на пробное занятие: ${rows.map(r => r[0] + ': ' + r[1]).join(', ')}. My PIT: https://app.pitrating.com/my/` };
+}
+// уведомить клиента о записи на пробное (письмо); вызывает CRM после записи
+export async function notifyTrial(req, env, me) {
+  if (!me || !['owner', 'admin', 'trainer'].includes(me.role)) return new Response(JSON.stringify({ error: 'forbidden' }), { status: 403, headers: { 'content-type': 'application/json' } });
+  const b = await req.json().catch(() => ({})), l = b.id ? await getDoc(env, 'leads', String(b.id)) : null;
+  const ok = o => new Response(JSON.stringify(o), { headers: { 'content-type': 'application/json' } });
+  if (!l) return ok({ sent: false, reason: 'not_found' });
+  const t = await trialInfo(env, l), to = String(l.email || (l.reg && l.reg.email) || '').trim().toLowerCase();
+  if (!t) return ok({ sent: false, reason: 'not_booked' });
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(to)) return ok({ sent: false, reason: 'no_email' });
+  try { await env.EMAIL.send(trialMail(to, String(l.name || '').trim().split(/\s+/)[0], CLUBS.mowgli.name, t)); return ok({ sent: true, to }) } catch (e) { return ok({ sent: false, reason: 'send_failed' }) }
+}
 async function findMember(env, email, phone) {
   const r = await env.DB.prepare("SELECT id,data FROM docs WHERE col='members' AND deleted=0").all();
   for (const x of r.results || []) {
@@ -84,6 +125,8 @@ async function view(env, email) {
       out.member = { name: m.first && m.last ? m.first + ' ' + m.last : m.name, plan: m.plan || null, start: m.start || null, end: m.end || null, left: m.left ?? null, frozen: !!m.frozen, disc: m.disc || null, visits: { total, month } };
     }
   }
+  const tl = lead && lead.status === 'booked' ? lead : (!f.mid ? await leadByEmail(env, email) : null);
+  out.trial = await trialInfo(env, tl);
   if (lead) out.lead = { status: lead.rejected ? 'rejected' : (!lead.approved && (lead.status || 'new') === 'new') ? 'pending' : (lead.status || 'new'), trialDate: lead.trialDate || null };
   const it = await env.DB.prepare('SELECT * FROM fighter_items WHERE email=? ORDER BY created DESC').bind(email).all();
   out.items = (it.results || []).map(itemOut);
