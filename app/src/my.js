@@ -75,6 +75,21 @@ async function clubInfo(env, club) {
   for (const x of it.results || []) { try { const d = JSON.parse(x.data); if (d.rtype !== 'bout') { if (d.pos === '1') med.g++; else if (d.pos === '2') med.s++; else if (d.pos === '3') med.b++ } } catch (e) { } }
   return { ...(CLUBS[club] || {}), coaches, stats: { active, verified: ver ? ver.n : 0, comps, med, groups: cls.length } };
 }
+
+// анкета My PIT → карточка бойца CRM (после проверки админом): всё, что заполнил боец
+function profileToMember(m, d, email) {
+  const upd = { ...m, last: d.last || m.last, first: d.first || m.first, dob: d.dob || m.dob, phone: d.phone || m.phone, email: m.email || email };
+  if (d.first && d.last) upd.name = `${d.first} ${d.last}`.trim();
+  for (const k of ['weight', 'city', 'belt', 'stance']) if (d[k]) upd[k] = d[k];
+  if (d.photo) upd.myPhoto = d.photo;
+  if (d.parent && d.parent.name) upd.parent = { ...(m.parent || {}), name: d.parent.name, phone: d.parent.phone };
+  if (d.consentData) upd.consentData = 'yes';
+  if (d.photoConsent != null) upd.photoConsent = d.photoConsent ? 'yes' : 'no';
+  if (d.consentMsg != null) upd.consentMsg = d.consentMsg ? 'yes' : 'no';
+  if (d.consentPublic != null) upd.consentPublic = d.consentPublic ? 'yes' : 'no';
+  upd.myPit = { email, at: new Date().toISOString() };
+  return upd;
+}
 // полная анкета члена клуба: фото, вес, город (+ родитель для U18 уже обязателен при регистрации)
 function fullMissing(p, photo) { const m = []; if (!photo) m.push('photo'); if (!p.weight) m.push('weight'); if (!p.city) m.push('city'); return m }
 // пробное занятие: дата, время, группа, тренер — из заявки и расписания клуба
@@ -163,7 +178,10 @@ async function view(env, email) {
   out.photo = photoUrl((out.pending && out.pending.photo) || profile.photo);
   let lead = null;
   if (f.lead) lead = await getDoc(env, 'leads', f.lead);
-  if (!f.mid && lead && lead.mid && (lead.approved || lead.status === 'bought')) { f.mid = lead.mid; await env.DB.prepare('UPDATE fighters SET mid=? WHERE email=?').bind(lead.mid, email).run() }
+  if (!f.mid && lead && lead.mid && (lead.approved || lead.status === 'bought')) {
+    f.mid = lead.mid; await env.DB.prepare('UPDATE fighters SET mid=? WHERE email=?').bind(lead.mid, email).run();
+    if (f.verified) { const m0 = await getDoc(env, 'members', f.mid); if (m0) await env.DB.batch([putDoc(env, 'members', f.mid, profileToMember(m0, profile, email), 'pit:' + email)]) }
+  }
   // одобрение регистрации даёт пробное; членство в клубе (✓ Verified) — после покупки абонемента и проверки полной анкеты в «Анкетах»
   if (f.mid) {
     const m = await getDoc(env, 'members', f.mid);
@@ -237,7 +255,6 @@ export async function myRoutes(req, env, path, email, staff) {
 
   if (path === '/api/my/submit') {
     if (!cur) return json({ error: 'profile' }, 403);
-    if (!cur.mid) return json({ error: 'no_member' }, 409);
     const d = JSON.parse(cur.data), miss = fullMissing(d, d.photo ? 1 : 0);
     if (miss.length) return json({ error: 'incomplete', missing: miss }, 400);
     await env.DB.prepare('UPDATE fighters SET data=?,note=NULL,updated=? WHERE email=?').bind(JSON.stringify({ ...d, submittedAt: new Date().toISOString() }), t, email).run();
@@ -395,7 +412,7 @@ export async function reviewRoutes(req, env, path, me) {
         photo: photoUrl((pend && pend.photo) || d.photo), items, pendingItems: items.filter(i => i.status === 'pending').length, updated: f.updated,
       };
     });
-    list.forEach(x => { x.full = !x.verified && !!x.mid && !!x.profile.submittedAt });
+    list.forEach(x => { x.full = !x.verified && !!x.profile.submittedAt });
     const todo = list.filter(x => (x.verified && x.pending) || x.pendingItems || x.full);
     return json({ todo, all: list, counts: { full: todo.filter(x => x.full).length, todo: todo.length, items: todo.reduce((a, x) => a + x.pendingItems, 0), verified: list.filter(x => x.verified).length } });
   }
@@ -423,10 +440,7 @@ export async function reviewRoutes(req, env, path, me) {
       if (f.mid) {
         const m = await getDoc(env, 'members', f.mid);
         if (m) {
-          const upd = { ...m, last: d.last, first: d.first, name: `${d.first} ${d.last}`.trim(), dob: d.dob || m.dob, phone: d.phone || m.phone, email: m.email || f.email };
-          if (d.parent && d.parent.name) upd.parent = { ...(m.parent || {}), name: d.parent.name, phone: d.parent.phone };
-          if (d.consentPublic != null) upd.consentPublic = d.consentPublic ? 'yes' : 'no';
-          st.push(putDoc(env, 'members', f.mid, upd, by));
+          st.push(putDoc(env, 'members', f.mid, profileToMember(m, d, f.email), by));
         }
       }
       await env.DB.batch(st);

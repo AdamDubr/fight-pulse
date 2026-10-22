@@ -459,6 +459,7 @@ function renderDrawer(){
     body=`<div class="acts w-only">${todayIds().has(m.id)?'<span class="pill ok">✓ отмечен сегодня</span>':`<button class="btn gold" data-visit="${m.id}">Пришёл сегодня</button>`}
         ${m.kind!=='staff'?`<button class="btn" data-dr="renew">Продлить</button><button class="btn" data-dr="change">Сменить абонемент</button>`:''}<button class="btn" data-dr="edit">Изменить</button></div>
       ${dueBlock(m)}
+      ${myPitData(m)}
       ${m&&m.kind!=='staff'&&memGroups(m).length?`<section class="card"><h2>Группы</h2><div class="chips">${memGroups(m).map(c=>`<span class="chip" style="cursor:default">${esc(c.disc)} · ${esc(c.time)} · ${(c.dow||[]).map(d=>SDAYS[d-1]).join('/')}</span>`).join('')}</div></section>`:''}
       ${pitBlock(m)}
       <section class="card"><h2>Абонемент</h2><dl class="kv">
@@ -737,6 +738,8 @@ function bindSell(host,x,apv){const f=$('#sellf',host);if(!f)return;const box=$(
     const subs=rows.slice(1).map(r=>({plan:r.plan,disc:r.disc,cls:r.cls,price:tf(r.plan)?.price??null,start:r.start,end:r.end,left:tf(r.plan)?.sessions??null}));
     const doc={name:[first,last].filter(Boolean).join(' '),first,last,phone:x.phone||rg.phone||'',email:x.email||rg.email||'',dob:rg.dob||'',parent:rg.parent||null,disc:dl.join(', '),discs:dl,plan:P.plan,kind:t?.kind||'group',price:t?.price??null,start:P.start,end:P.end,left:t?.sessions??null,cls:P.cls,...(subs.length?{subs}:{}),note:x.note||'',src:'pit',lead:x.id,createdAt:new Date().toISOString(),
       ...(method==='debt'&&total>0?{due:{sum:total,date:$('#sl_due',host).value||addDays(today(),3),since:today(),plan:P.plan,what:rows.length>1?'Абонементы ('+rows.length+')':'Абонемент',note:''}}:{})};
+    const PF=S.pv&&S.pv.all&&doc.email?S.pv.all.find(f=>f.email===String(doc.email).toLowerCase()):null;
+    if(PF&&PF.verified){const d=PF.profile||{};for(const k of ['weight','city','belt','stance','dob'])if(d[k])doc[k]=d[k];if(d.photo)doc.myPhoto=d.photo;if(d.parent&&d.parent.name)doc.parent={...(doc.parent||{}),name:d.parent.name,phone:d.parent.phone};if(d.consentPublic!=null)doc.consentPublic=d.consentPublic?'yes':'no';doc.myPit={email:PF.email,at:new Date().toISOString()}}
     if(!await write(()=>DB.doc('members/'+id).set(doc)))return;
     if(method!=='debt')for(const r of rows)if(r.sum>0)await write(()=>DB.collection('payments').doc().set({kind:'sub',mid:id,name:doc.name,sum:r.sum,date:today(),ts:new Date().toISOString(),plan:r.plan,method,what:'Абонемент · '+(tf(r.plan)?.name||r.plan)+' · '+r.disc,src:'pit'}));
     await write(()=>DB.doc('leads/'+x.id).update({...(x.pit?apv:{}),status:'bought',mid:id,boughtAt:today()}),`Продано: ${doc.name} · ${rows.map(r=>(tf(r.plan)?.name||r.plan)+' ('+r.disc+')').join(' + ')}${method==='debt'?' · не оплачено':''}`);
@@ -1361,8 +1364,8 @@ function vPv(){const P=S.pv;if(!P)return `<div class="head"><div><h1>Анкет�
   ${regs.length?`<button class="card" data-pitgo="1" style="display:flex;align-items:center;justify-content:space-between;gap:.8rem;width:100%;text-align:left;cursor:pointer;border-color:var(--gold);font:inherit;color:inherit"><span><b>${regs.length} новых регистраций ждут одобрения</b><small style="display:block;color:var(--muted);font-size:.8rem">Одобрение в «Заявках»: подтвердите и привяжите к карточке бойца.</small></span><span class="pill gold">Открыть</span></button>`:''}
   ${P.todo.map(x=>{const m=x.mid&&mn(x.mid),pk=x.pending?Object.keys(x.pending):[],pi=x.items.filter(i=>i.status==='pending');
     return `<section class="card pv" data-pve="${esc(x.email)}"><div class="pv-h">${x.photo?`<img src="${esc(x.photo)}" alt="">`:`<span class="pv-a">${esc((x.profile.first||'?')[0])}</span>`}<div><b>${esc(x.name)}</b><small>${esc(x.email)}${m?' · карточка: '+esc(m.name):' · <span class="bad">не привязан к карточке</span>'}</small></div>${x.verified?'<span class="pill ok">✓ Verified</span>':'<span class="pill warn">не подтверждён</span>'}</div>
-      ${x.full?`<h3>Полная анкета · член клуба${m?' ('+esc(m.name)+')':''}</h3><table class="pv-t"><tbody>${['photo','first','last','dob','phone','city','weight','belt','stance','parent'].filter(k=>x.profile[k]!=null&&x.profile[k]!=='').map(k=>`<tr><td>${esc(PVF[k]||k)}</td><td><b>${pvVal(k,x.profile[k])}</b></td></tr>`).join('')}</tbody></table>
-        <div class="acts w-only adm-only"><button class="btn sm gold" data-pvp="ok">✓ Подтвердить и добавить в клуб</button><button class="btn sm danger" data-pvp="no">Вернуть на доработку</button></div>`:''}
+      ${x.full?`<h3>Полная анкета${m?' · карточка: '+esc(m.name):' · абонемента ещё нет — данные перенесутся в карточку при продаже'}</h3><table class="pv-t"><tbody>${['photo','first','last','dob','phone','city','weight','belt','stance','parent'].filter(k=>x.profile[k]!=null&&x.profile[k]!=='').map(k=>`<tr><td>${esc(PVF[k]||k)}</td><td><b>${pvVal(k,x.profile[k])}</b></td></tr>`).join('')}</tbody></table>
+        <div class="acts w-only adm-only"><button class="btn sm gold" data-pvp="ok">✓ ${m?'Подтвердить и внести в карточку бойца':'Подтвердить анкету'}</button><button class="btn sm danger" data-pvp="no">Вернуть на доработку</button></div>`:''}
       ${pk.length?`<h3>Изменения анкеты</h3><table class="pv-t"><thead><tr><th>Поле</th><th>Было</th><th>Стало</th></tr></thead><tbody>${pk.map(k=>`<tr><td>${esc(PVF[k]||k)}</td><td>${pvVal(k,x.profile[k])}</td><td><b>${pvVal(k,x.pending[k])}</b></td></tr>`).join('')}</tbody></table>
         <div class="acts w-only"><button class="btn sm gold" data-pvp="ok">✓ Подтвердить изменения</button><button class="btn sm danger" data-pvp="no">Отклонить изменения</button></div>`:''}
       ${pi.length?`<h3>Достижения на проверке · ${pi.length}</h3>${pi.map(pvItem).join('')}`:''}
@@ -1417,6 +1420,13 @@ function bindSubs(host,m){if(!m)return;const nb=$('[data-subnew]',host);
       if(!await write(()=>DB.doc('members/'+m.id).update(patch)))return;
       if(method!=='debt'&&sum>0)await write(()=>DB.collection('payments').doc().set({kind:'sub',mid:m.id,name:m.name,sum,date:today(),ts:new Date().toISOString(),plan,method,what:'Абонемент · '+(t?.name||plan)+' · '+disc,src:'pit'}),`Добавлен абонемент: ${m.name} · ${t?.name||plan} · ${disc}`);
       renderDrawer()})})}
+
+/* ===== Данные полной анкеты My PIT в карточке бойца (после проверки админом) ===== */
+const STN={orthodox:'Ортодокс',southpaw:'Левша',switch:'Свитч'};
+function myPitData(m){if(!m||m.kind==='staff'||!(m.myPhoto||m.weight||m.city||m.belt||m.stance))return'';
+  const row=(k,v)=>v?`<dt>${k}</dt><dd>${esc(v)}</dd>`:'';
+  return`<section class="card"><h2>Анкета бойца · My PIT</h2><div style="display:flex;gap:1rem;align-items:flex-start;flex-wrap:wrap">${m.myPhoto?`<img src="/api/my/photo/${esc(m.myPhoto)}" alt="" style="width:7rem;height:7rem;border-radius:1rem;object-fit:cover;flex:none">`:''}
+   <dl class="kv" style="flex:1;min-width:12rem;margin:0">${row('Вес / категория',m.weight?m.weight+(/кг|kg/i.test(m.weight)?'':' кг'):'')}${row('Город',m.city)}${row('Пояс / ранг',m.belt)}${row('Стойка',STN[m.stance]||m.stance)}${m.myPit?`<dt>Проверено</dt><dd>${fmtD(String(m.myPit.at).slice(0,10))} · ${esc(m.myPit.email||'')}</dd>`:''}</dl></div></section>`}
 /* ===== Не оплатил: долг с обещанной датой (напоминание в колокольчике) ===== */
 function dueBlock(m){if(!m||m.kind==='staff')return'';const D=m.due,td=today();
   if(!D)return`<details class="card w-only duef" style="padding:.6rem 1rem"><summary style="cursor:pointer;font-weight:700;font-size:.86rem">💳 Отметить: не оплатил</summary>
