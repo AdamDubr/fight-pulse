@@ -46,6 +46,7 @@
         else { touchedC.forEach(emitCol); touchedD.forEach(k => { const i = k.indexOf('/'); emitDoc(k.slice(0, i), k.slice(i + 1)) }) }
         started = true;
       }
+      try { window.dispatchEvent(new Event('pit-sync-ok')) } catch (e) { }
     } catch (e) { errSubs.forEach(f => f(e)) }
     finally { busy = false }
   }

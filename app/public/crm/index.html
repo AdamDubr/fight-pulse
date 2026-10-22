@@ -717,9 +717,12 @@ function bindSell(host,x,apv){const f=$('#sellf',host);if(!f)return;const box=$(
     if(method!=='debt')for(const r of rows)if(r.sum>0)await write(()=>DB.collection('payments').doc().set({kind:'sub',mid:id,name:doc.name,sum:r.sum,date:today(),ts:new Date().toISOString(),plan:r.plan,method,what:'Абонемент · '+(tf(r.plan)?.name||r.plan)+' · '+r.disc,src:'pit'}));
     await write(()=>DB.doc('leads/'+x.id).update({...(x.pit?apv:{}),status:'bought',mid:id,boughtAt:today()}),`Продано: ${doc.name} · ${rows.map(r=>(tf(r.plan)?.name||r.plan)+' ('+r.disc+')').join(' + ')}${method==='debt'?' · не оплачено':''}`);
     ovClose();S.tab='members';render();S.open=id;S.drMode='view';renderDrawer()})}
-function trialOpts(x,d){const L=d?SCH().classes.filter(c=>(c.dow||[]).includes(dowOf(d))).sort((a,b)=>String(a.time).localeCompare(String(b.time))):[];
-  const want=discsOf(x),best=L.find(c=>want.includes(c.disc))||L[0];
-  return (L.length?L.map(c=>`<option value="${esc(c.id)}" ${best&&c.id===best.id?'selected':''}>${esc(c.time)} · ${esc(c.disc)}</option>`).join(''):'')+`<option value="" ${L.length?'':'selected'}>${L.length?'Без группы':'В этот день групп нет'}</option>`}
+function trialOpts(x,d){const all=SCH().classes.slice().sort((a,b)=>String(a.disc).localeCompare(String(b.disc),'ru')||String(a.time).localeCompare(String(b.time)));
+  const dw=d?dowOf(d):0,day=all.filter(c=>(c.dow||[]).includes(dw)),other=all.filter(c=>!(c.dow||[]).includes(dw));
+  const want=discsOf(x),pick=x.trialClass&&all.find(c=>c.id===x.trialClass)||day.find(c=>want.includes(c.disc))||all.find(c=>want.includes(c.disc))||day[0];
+  const o=c=>`<option value="${esc(c.id)}" ${pick&&c.id===pick.id?'selected':''}>${esc(c.disc)} · ${esc(c.time)} · ${(c.dow||[]).map(k=>SDAYS[k-1]).join('/')}</option>`;
+  return (day.length?`<optgroup label="В этот день">${day.map(o).join('')}</optgroup>`:'')+(other.length?`<optgroup label="Другие дни — дата подставится">${other.map(o).join('')}</optgroup>`:'')+`<option value="" ${pick?'':'selected'}>Без группы</option>`}
+const nextDay=(c,from)=>{for(let i=0;i<14;i++){const d=addDays(from,i);if((c.dow||[]).includes(dowOf(d)))return d}return from};
 const trialsUp=()=>(S.leads||[]).filter(x=>x.status==='booked'&&x.trialDate&&x.trialDate>=today()).sort((a,b)=>(a.trialDate+(a.trialTime||'')).localeCompare(b.trialDate+(b.trialTime||'')));
 const trialsOf=c=>trialsUp().filter(x=>x.trialClass===c.id);
 function trialsHTML(){const T=trialsUp(),co=SCH().coaches;
@@ -961,7 +964,9 @@ function leadDrawer(){const host=$('#ovHost'),x=S.ov.id==='new'?{status:'new',ki
     if(k==='link')linkTo(b.dataset.mid);else if(k==='new')up(apv,'Заявка одобрена');
     else if(k==='reject'){if(!b.dataset.sure){b.dataset.sure=1;b.textContent='Точно отклонить?';return}up({approved:false,rejected:true,status:'lost',lostReason:'Отклонена клубом'},'Заявка отклонена')}}));
   const pl=$('#plink',host);if(pl)pl.addEventListener('submit',e=>{e.preventDefault();const mid=$('#pl_m',host).value;if(!mid){toast('Выберите бойца');return}linkTo(mid)});
-  const lb=$('#lbook',host);if(lb){const ld=$('#lb_d',host),lc=$('#lb_c',host);ld.addEventListener('change',()=>{lc.innerHTML=trialOpts(x,ld.value)});
+  const lb=$('#lbook',host);if(lb){const ld=$('#lb_d',host),lc=$('#lb_c',host);
+    const syncD=()=>{const c=SCH().classes.find(z=>z.id===lc.value);if(c&&!(c.dow||[]).includes(dowOf(ld.value||today()))){ld.value=nextDay(c,today());lc.innerHTML=trialOpts({...x,trialClass:c.id},ld.value)}};
+    syncD();ld.addEventListener('change',()=>{const c=SCH().classes.find(z=>z.id===lc.value),ok=c&&(c.dow||[]).includes(dowOf(ld.value));lc.innerHTML=trialOpts({...x,trialClass:ok?c.id:null},ld.value);syncD()});lc.addEventListener('change',syncD);
     lb.addEventListener('submit',e=>{e.preventDefault();const d=ld.value,c=SCH().classes.find(z=>z.id===lc.value);if(!d){toast('Укажите дату');return}
       up({status:'booked',trialDate:d,trialClass:c?c.id:null,trialTime:c?c.time:null,trialDisc:c?c.disc:null},'Записан на пробное '+fmtD(d)+(c?' · '+c.disc+' '+c.time:''))})}
   const ld=$('#ldone',host);if(ld)ld.addEventListener('submit',async e=>{e.preventDefault();const method=$('#ld_m',host).value;
@@ -1436,7 +1441,8 @@ render();
   try{ASSETS=await claude.use('assets')}catch(e){ASSETS=null}
   try{const u=await claude.use('user');USER=u;if(u){try{ME=await u.id()}catch(e){}const w=await u.can('data.write');if(w===false)S.canWrite=false}}catch(e){}
   let tm=null;const rr=()=>{clearTimeout(tm);tm=setTimeout(renderBg,60)};
-  const err=e=>{$('#st').textContent='Нет связи с базой';console.warn(e)};
+  const err=e=>{$('#st').textContent='Нет связи с базой · переподключаюсь…';console.warn(e)};
+  addEventListener('pit-sync-ok',()=>{const st=$('#st');if(st&&/Нет связи|Подключение/.test(st.textContent))st.textContent='Онлайн · бойцов: '+S.members.length});
   db.collection('members').onSnapshot(s=>{S.members=s.docs.map(d=>{const x={id:d.id,...d.data()};if(x.first&&x.last)x.name=x.first+' '+x.last;
     // несовершеннолетний с тарифом сотрудника — это боец на бесплатном безлимите
     if(x.kind==='staff'&&((x.dob&&ageOf(x.dob)<18)||(x.parent&&(x.parent.name||x.parent.mid)))){x.kind='group';if(x.plan==='staff')x.plan='free'}return x});S.ready.m=true;$('#st').textContent='Онлайн · бойцов: '+S.members.length;rr()},err);
