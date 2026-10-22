@@ -234,7 +234,7 @@ async function arenaReal(req, env, opt = {}) {
   const membersAll = all.map(({ id, m }) => ({ id, name: m.name, disc: m.disc, kind: m.kind, end: m.end || '', frozen: !!m.frozen, consentPublic: m.consentPublic || null, left: m.left ?? null }));
   const members = all
     .filter(({ m }) => m && m.name && !m.frozen && (m.kind === 'staff' || !m.end || m.end >= today))
-    .map(({ id, m }) => ({ id, name: m.name, first: m.first || m.name, disc: m.disc || 'MMA', kind: m.kind || 'group', age: age(m.dob), consentPublic: m.consentPublic || null, end: m.end || '', start: m.start || '', plan: m.plan || '', left: m.left ?? null }))
+    .map(({ id, m }) => ({ id, name: m.name, first: m.first || m.name, disc: m.disc || 'MMA', discs: Array.isArray(m.discs) ? m.discs : null, kind: m.kind || 'group', age: age(m.dob), consentPublic: m.consentPublic || null, end: m.end || '', start: m.start || '', plan: m.plan || '', left: m.left ?? null }))
     .sort((a, b) => a.name.localeCompare(b.name, 'ru'));
   const inj = '<script>window.PIT_REAL=' + JSON.stringify(opt.fighter
     ? { club: env.CLUB || 'mowgli', worldOnly: true, fighter: true, back: '/my/', since: 0, members: [], membersAll: [], schedule: sch ? JSON.parse(sch.data) : null, events, visits: {} }

@@ -243,6 +243,12 @@ const DEF_TARIFFS=[
  {key:'ind8',name:'Индивидуальные · 8 сеансов',price:10000,sessions:8,kind:'ind',disc:['Бокс','Кикбоксинг']},
  {key:'staff',name:'Безлимит · без оплаты',price:0,sessions:null,kind:'staff',disc:[]}];
 const DISCS=['MMA','Бокс','BJJ','Кикбоксинг','Капоэйра'];
+/* несколько дисциплин у бойца: discs — список, disc — строка «MMA, BJJ» для показа и совместимости */
+const discsOf=m=>Array.isArray(m&&m.discs)&&m.discs.length?m.discs:String(m&&m.disc||'').split(/\s*[,+]\s*/).filter(d=>d&&d!=='—');
+const discPick=(id,m)=>{const cur=discsOf(m),all=[...new Set([...DISCS,...cur])];
+  return`<div class="chips dpick" id="${id}" role="group" aria-label="Дисциплины">${all.map(d=>`<label class="chip" style="display:inline-flex;gap:.3rem;align-items:center"><input type="checkbox" value="${esc(d)}" ${cur.includes(d)?'checked':''}> ${esc(d)}</label>`).join('')}</div><small style="color:var(--muted);font-size:.72rem">Можно выбрать несколько</small>`};
+const discGet=(id,host)=>[...$('#'+id,host).querySelectorAll('input:checked')].map(i=>i.value);
+const discSet=(id,host,list)=>$('#'+id,host).querySelectorAll('input').forEach(i=>i.checked=list.includes(i.value));
 const $=(s,r=document)=>r.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const pad=n=>String(n).padStart(2,'0');
@@ -513,7 +519,7 @@ function formHTML(m){return`<form class="card form" id="mf" autocomplete="off">
   <label class="f">Кем приходится<input type="text" id="f_pr" value="${esc(m.parent?.rel||'')}" placeholder="мать, отец, опекун"></label>
   <label class="f">Мобильный телефон родителя<input type="tel" id="f_pp" value="${esc(m.parent?.phone||'')}"></label>
   <h2 class="full" style="margin-top:.4rem">Абонемент</h2>
-  <label class="f">Дисциплина<select id="f_disc">${DISCS.map(d=>`<option ${d===m.disc?'selected':''}>${d}</option>`).join('')}<option value="—" ${m.disc==='—'?'selected':''}>—</option></select></label>
+  <div class="f" style="grid-column:1/-1"><span style="font-size:.74rem;font-weight:700;color:var(--muted)">Дисциплины</span>${discPick('f_disc',m)}</div>
   <label class="f full">Абонемент<select id="f_plan">${planOptions(m.plan)}</select></label>
   <label class="f">Начало<input type="date" id="f_start" value="${esc(m.start||today())}"></label>
   <label class="f">Окончание<input type="date" id="f_end" value="${esc(m.end||addMonth(m.start||today()))}"></label>
@@ -533,7 +539,7 @@ function changeCalc(m,plan){const c=credit(m),t=tf(plan),P=t?.price||0,start=tod
 function changeHTML(m){const first=tariffs().find(t=>t.key!==m.plan&&t.key!=='staff')||tariffs()[0];
   return`<form class="card form" id="cf"><h2 class="full">Смена абонемента · перерасчёт</h2>
   <label class="f full">Новый абонемент<select id="c_plan">${planOptions(first.key)}</select></label>
-  <label class="f">Дисциплина<select id="c_disc">${DISCS.map(d=>`<option ${d===m.disc?'selected':''}>${d}</option>`).join('')}<option value="—">—</option></select></label>
+  <div class="f" style="grid-column:1/-1"><span style="font-size:.74rem;font-weight:700;color:var(--muted)">Дисциплины</span>${discPick('c_disc',m)}</div>
   <label class="f">Способ доплаты<select id="c_m">${methodOpts('cash')}</select></label>
   <div class="full" id="c_calc"></div>
   <div class="acts full"><button class="btn gold" type="submit">Перевести на новый абонемент</button><button class="btn" type="button" data-dr="view">Отмена</button></div></form>`}
@@ -621,7 +627,7 @@ const gAv=ids=>`<span class="gav">${ids.slice(0,6).map(id=>{const m=S.members.fi
 function plural(n,a,b,c){n=Math.abs(n)%100;const k=n%10;return n>10&&n<20?c:k>1&&k<5?b:k===1?a:c}
 const memGroups=m=>SCH().classes.filter(c=>(c.ids||[]).includes(m.id));
 function vGroup(c,co){const ids=gIds(c),cap=c.cap||SET().groupCap||0,inG=new Set(ids);
-  const cand=S.members.filter(m=>m.kind!=='staff'&&!inG.has(m.id)&&!['exp','none'].includes(status(m).k)).sort((a,b)=>((b.disc===c.disc)-(a.disc===c.disc))||a.name.localeCompare(b.name,'ru'));
+  const cand=S.members.filter(m=>m.kind!=='staff'&&!inG.has(m.id)&&!['exp','none'].includes(status(m).k)).sort((a,b)=>(discsOf(b).includes(c.disc)-discsOf(a).includes(c.disc))||a.name.localeCompare(b.name,'ru'));
   return`<button class="btn sm" data-gback style="margin-bottom:.7rem;width:auto;display:inline-flex">‹ Все группы</button>
   <div class="head"><div style="display:flex;gap:.9rem;align-items:center"><img class="glogo" src="${gLogo(c.disc)}" alt="" style="width:4.2rem;height:4.2rem"><div><h1>${esc(c.disc)} · ${esc(c.time)}</h1><p class="sub">${(c.dow||[]).map(d=>SDAYS[d-1]).join(', ')} · ${esc(co(c.coach))}${c.dur?' · '+c.dur+' мин':''}</p></div></div>
    <span class="pill ${cap&&ids.length>=cap?'warn':'ok'}" style="font-size:.8rem">${ids.length}${cap?' / '+cap:''} ${plural(ids.length,'боец','бойца','бойцов')}</span></div>
@@ -629,7 +635,7 @@ function vGroup(c,co){const ids=gIds(c),cap=c.cap||SET().groupCap||0,inG=new Set
     return`<div class="row" style="grid-template-columns:auto minmax(0,1fr) auto auto"><span class="gav"><i style="background:${avc(id)}">${esc(ini(m.name))}</i></span><button class="nm" data-open="${esc(id)}" style="background:none;border:0;padding:0;text-align:left;font:inherit;color:inherit;cursor:pointer">${esc(m.name)}<small>${esc(m.disc||'')} · ${esc(tf(m.plan)?.name||'—')}${m.end?' · до '+fmtD(m.end):''}</small></button><span class="pill ${st.c}">${esc(st.t)}</span><button class="btn sm danger w-only adm-only" type="button" data-grm="${esc(id)}" aria-label="Убрать из группы">✕</button></div>`}).join('')||'<div class="empty">В группе пока никого. Добавьте бойцов ниже.</div>'}</div></section>
   <section class="card w-only adm-only"><h2>Добавить бойцов</h2>
    <input type="search" id="gq" placeholder="Поиск по имени" style="width:100%;margin-bottom:.6rem">
-   <div class="list" id="gcand" style="max-height:24rem;overflow:auto">${cand.map(m=>`<label class="row gc" data-n="${esc(m.name.toLowerCase())}" style="grid-template-columns:auto minmax(0,1fr) auto;cursor:pointer"><input type="checkbox" value="${esc(m.id)}"><span class="nm">${esc(m.name)}<small>${esc(m.disc||'')} · ${esc(tf(m.plan)?.name||'—')}</small></span>${m.disc===c.disc?'<span class="pill gold">'+esc(c.disc)+'</span>':''}</label>`).join('')||'<div class="empty">Все активные бойцы уже в группе.</div>'}</div>
+   <div class="list" id="gcand" style="max-height:24rem;overflow:auto">${cand.map(m=>`<label class="row gc" data-n="${esc(m.name.toLowerCase())}" style="grid-template-columns:auto minmax(0,1fr) auto;cursor:pointer"><input type="checkbox" value="${esc(m.id)}"><span class="nm">${esc(m.name)}<small>${esc(m.disc||'')} · ${esc(tf(m.plan)?.name||'—')}</small></span>${discsOf(m).includes(c.disc)?'<span class="pill gold">'+esc(c.disc)+'</span>':''}</label>`).join('')||'<div class="empty">Все активные бойцы уже в группе.</div>'}</div>
    <div style="display:flex;gap:.6rem;align-items:center;margin-top:.7rem;flex-wrap:wrap"><button class="btn gold" type="button" data-gadd>+ Добавить выбранных</button><span class="note" id="gsel"></span></div></section>`}
 function bindGroup(v){const c=SCH().classes.find(x=>x.id===S.grp);if(!c)return;const cap=c.cap||SET().groupCap||0;
   const put=(ids,msg)=>saveSch({classes:SCH().classes.map(x=>x.id===c.id?{...x,ids}:x)},msg);
@@ -684,7 +690,7 @@ function bindDrawer(host,m){
   const del=host.querySelector('[data-del]');if(del)del.addEventListener('click',async()=>{if(await write(()=>DB.doc('members/'+m.id).delete(),'Боец удалён')){S.open=null;host.innerHTML=''}});
   host.querySelectorAll('[data-visit]').forEach(b=>b.addEventListener('click',()=>markVisit(b.dataset.visit)));
   host.querySelectorAll('[data-copy]').forEach(b=>b.addEventListener('click',()=>{navigator.clipboard.writeText(b.dataset.copy).then(()=>toast('Телефон скопирован'),()=>toast(b.dataset.copy))}));
-  const fp=$('#f_plan',host);if(fp)fp.addEventListener('change',()=>{const t=tf(fp.value);if(t){$('#f_left',host).value=t.sessions??'';if(t.kind==='kids')$('#f_disc',host).value='MMA'}});
+  const fp=$('#f_plan',host);if(fp)fp.addEventListener('change',()=>{const t=tf(fp.value);if(t){$('#f_left',host).value=t.sessions??'';if(t.kind==='kids')discSet('f_disc',host,['MMA'])}});
   const rp=$('#r_plan',host);if(rp)rp.addEventListener('change',()=>{$('#r_sum',host).value=tf(rp.value)?.price??0});
   const rs=$('#r_start',host);if(rs)rs.addEventListener('change',()=>{$('#r_end',host).value=addMonth(rs.value)});
   const fs=$('#f_start',host);if(fs&&S.open==='new')fs.addEventListener('change',()=>{$('#f_end',host).value=addMonth(fs.value)});
@@ -697,7 +703,7 @@ function bindDrawer(host,m){
     const v=id=>$(id,host).value.trim();
     const dob=v('#f_dob'),emergency={name:v('#f_en'),rel:v('#f_er'),phone:v('#f_ep')},parent={...Object.fromEntries(Object.entries(m&&m.parent||{}).filter(([k])=>k!=='kimlik')),name:v('#f_pn'),rel:v('#f_pr'),phone:v('#f_pp'),mid:$('#f_pm',host).value||null};
     if(isMinor({kind:tf($('#f_plan',host).value)?.kind,dob})&&(!parent.name||!parent.phone)){toast('U18: укажите имя и телефон родителя');$('#f_pn',host).focus();return}
-    const doc={...base,name,last,first,email:v('#f_mail'),contractAt:v('#f_ctr')||null,consentData:$('#f_cd',host).value,photoConsent:$('#f_pc',host).value,consentMsg:$('#f_cm',host).value,consentPublic:$('#f_cpub',host).value,dob,emergency,parent,phone:$('#f_phone',host).value.trim(),disc:$('#f_disc',host).value,plan,kind:t?.kind||'group',price:t?.price??null,start:$('#f_start',host).value,end:t?.kind==='staff'?null:$('#f_end',host).value,left:lv===''?null:Math.max(0,+lv),note:$('#f_note',host).value.trim(),src:m?.src||'pit',createdAt:m?.createdAt||new Date().toISOString()};
+    const doc={...base,name,last,first,email:v('#f_mail'),contractAt:v('#f_ctr')||null,consentData:$('#f_cd',host).value,photoConsent:$('#f_pc',host).value,consentMsg:$('#f_cm',host).value,consentPublic:$('#f_cpub',host).value,dob,emergency,parent,phone:$('#f_phone',host).value.trim(),disc:discGet('f_disc',host).join(', ')||'—',discs:discGet('f_disc',host),plan,kind:t?.kind||'group',price:t?.price??null,start:$('#f_start',host).value,end:t?.kind==='staff'?null:$('#f_end',host).value,left:lv===''?null:Math.max(0,+lv),note:$('#f_note',host).value.trim(),src:m?.src||'pit',createdAt:m?.createdAt||new Date().toISOString()};
     // одновременная работа: пишем только изменённые поля; если их же успел поменять другой — предупреждаем
     let op=()=>DB.doc('members/'+id).set(doc);
     if(m&&S.open!=='new'){const nz=x=>{if(x==null||x==='')return null;if(Array.isArray(x))return x.length?x:null;if(typeof x==='object'){const o={};for(const k of Object.keys(x).sort()){const v=nz(x[k]);if(v!=null)o[k]=v}return Object.keys(o).length?o:null}return x},J=x=>JSON.stringify(nz(x)),cur=S.members.find(x=>x.id===m.id)||m;
@@ -712,10 +718,10 @@ function bindDrawer(host,m){
     if(ok&&pay&&t&&t.price>0)await write(()=>DB.collection('payments').doc().set({mid:id,name,sum:t.price,date:doc.start,plan,method:pay,src:'pit'}));
     if(ok&&S.prefillLead){const lid=S.prefillLead;S.prefillLead=null;S.prefill=null;await write(()=>DB.doc('leads/'+lid).update({status:'bought',mid:id,boughtAt:today()}),'Заявка закрыта: купил абонемент')}
     if(ok){S.open=id;S.drMode='view';renderDrawer()}});
-  const cf=$('#cf',host);if(cf){const cp=$('#c_plan',host),upd=()=>{$('#c_calc',host).innerHTML=changeCalcHTML(m,cp.value);const t=tf(cp.value);if(t&&t.kind==='kids')$('#c_disc',host).value='MMA'};cp.addEventListener('change',upd);upd();
-    cf.addEventListener('submit',async e=>{e.preventDefault();const plan=cp.value,x=changeCalc(m,plan),method=$('#c_m',host).value,disc=$('#c_disc',host).value;
+  const cf=$('#cf',host);if(cf){const cp=$('#c_plan',host),upd=()=>{$('#c_calc',host).innerHTML=changeCalcHTML(m,cp.value);const t=tf(cp.value);if(t&&t.kind==='kids')discSet('c_disc',host,['MMA'])};cp.addEventListener('change',upd);upd();
+    cf.addEventListener('submit',async e=>{e.preventDefault();const plan=cp.value,x=changeCalc(m,plan),method=$('#c_m',host).value,dl=discGet('c_disc',host),disc=dl.join(', ')||'—';
       const hist=Array.isArray(m.changes)?m.changes.slice():[];hist.push({date:x.start,from:m.plan,to:plan,credit:x.c.sum,remDays:x.c.rem,totalDays:x.c.total,pay:x.pay,extra:x.extra});
-      const ok=await write(()=>DB.doc('members/'+m.id).update({plan,kind:x.t?.kind||m.kind,disc,price:x.P,start:x.start,end:x.t?.kind==='staff'?null:x.end,left:x.t?.sessions??null,frozen:false,changes:hist}));
+      const ok=await write(()=>DB.doc('members/'+m.id).update({plan,kind:x.t?.kind||m.kind,disc,discs:dl,price:x.P,start:x.start,end:x.t?.kind==='staff'?null:x.end,left:x.t?.sessions??null,frozen:false,changes:hist}));
       if(ok)await write(()=>DB.collection('payments').doc().set({mid:m.id,name:m.name,sum:x.pay,credit:x.c.sum,date:today(),plan,from:m.plan,method:x.pay>0?method:null,what:'Смена абонемента',src:'pit'}),`Переведён: перенесено ${lira(x.c.sum)}${x.pay>0?', доплата '+lira(x.pay):''}`);
       if(ok){S.drMode='view';renderDrawer()}})}
   const rf=$('#rf',host);if(rf)rf.addEventListener('submit',async e=>{e.preventDefault();
@@ -794,7 +800,7 @@ function leadDrawer(){const host=$('#ovHost'),x=S.ov.id==='new'?{status:'new',ki
   const s=SET(),price=x.kind==='ind'?s.trialInd:s.trialGroup,st=lst(x.status),isNew=S.ov.id==='new';
   const form=`<form class="card form" id="lf"><label class="f">Имя и фамилия<input type="text" id="l_n" value="${esc(x.name||'')}" required></label>
     <label class="f">Телефон<input type="tel" id="l_p" value="${esc(x.phone||'')}"></label>
-    <label class="f">Дисциплина<select id="l_d">${DISCS.map(d=>`<option ${d===x.disc?'selected':''}>${d}</option>`).join('')}</select></label>
+    <div class="f" style="grid-column:1/-1"><span style="font-size:.74rem;font-weight:700;color:var(--muted)">Дисциплины</span>${discPick('l_d',x)}</div>
     <label class="f">Формат<select id="l_k"><option value="group" ${x.kind!=='ind'?'selected':''}>Группа — пробное ${lira(s.trialGroup)}</option><option value="ind" ${x.kind==='ind'?'selected':''}>Индивидуально — пробное ${lira(s.trialInd)}</option></select></label>
     <label class="f">Откуда узнал<select id="l_s">${LSRC.map(o=>`<option ${o===x.source?'selected':''}>${o}</option>`).join('')}</select></label>
     <label class="f">Возраст / ребёнок<input type="text" id="l_a" value="${esc(x.age||'')}" placeholder="взрослый, 9 лет…"></label>
@@ -820,7 +826,7 @@ function leadDrawer(){const host=$('#ovHost'),x=S.ov.id==='new'?{status:'new',ki
   host.innerHTML=ovShell(isNew?'Новая заявка':x.name,isNew?'':`<span class="pill ${st[2]}">${st[1]}</span>`,act+form+(isNew?'':`<p class="note">Заявка от ${fmtD(String(x.ts).slice(0,10))}${x.trialPaid?` · пробное оплачено ${lira(x.trialPaid)}`:''}</p>`));
   ovBindClose(host);
   const lf=$('#lf',host);lf.addEventListener('submit',async e=>{e.preventDefault();const name=$('#l_n',host).value.trim();if(!name){toast('Укажите имя');return}
-    const d={...(isNew?{}:Object.fromEntries(Object.entries(x).filter(([k])=>k!=='id'))),name,phone:$('#l_p',host).value.trim(),disc:$('#l_d',host).value,kind:$('#l_k',host).value,source:$('#l_s',host).value,age:$('#l_a',host).value.trim(),note:$('#l_note',host).value.trim()};
+    const d={...(isNew?{}:Object.fromEntries(Object.entries(x).filter(([k])=>k!=='id'))),name,phone:$('#l_p',host).value.trim(),disc:discGet('l_d',host).join(', ')||'MMA',discs:discGet('l_d',host),kind:$('#l_k',host).value,source:$('#l_s',host).value,age:$('#l_a',host).value.trim(),note:$('#l_note',host).value.trim()};
     if(isNew){d.status='new';d.ts=new Date().toISOString();d.by=ME||null}
     const ref=isNew?DB.collection('leads').doc():DB.doc('leads/'+x.id);
     if(await write(()=>ref.set(d),isNew?'Заявка: '+name:'Заявка сохранена')){S.ov={type:'lead',id:ref.id};renderOv()}});
@@ -837,7 +843,7 @@ function leadDrawer(){const host=$('#ovHost'),x=S.ov.id==='new'?{status:'new',ki
   host.querySelectorAll('[data-lmove]').forEach(b=>b.addEventListener('click',()=>up({status:'new'},'Заявка возвращена в работу')));
   const ns=host.querySelector('[data-lnoshow]');if(ns)ns.addEventListener('click',()=>up({status:'lost',lostReason:'Не пришёл на пробное'},'Не пришёл на пробное'));
   host.querySelectorAll('[data-llost]').forEach(b=>b.addEventListener('click',()=>up({status:'lost',lostReason:b.dataset.llost},'Отказ ('+b.dataset.llost+')')));
-  const by=host.querySelector('[data-lbuy]');if(by)by.addEventListener('click',()=>{const w=x.name.trim().split(/\s+/);S.prefill={last:w.length>1?w.pop():'',first:w.join(' ')||x.name,phone:x.phone,disc:x.disc,plan:x.kind==='ind'?(['Бокс','Кикбоксинг'].includes(x.disc)?'ind10b':'ind10m'):(/дет|\b([4-9]|1[0-7])\s*лет/i.test(x.age||'')&&x.disc==='MMA'?'kids12':'grp12')};S.prefillLead=x.id;S.ov=null;S.open='new';renderDrawer()});
+  const by=host.querySelector('[data-lbuy]');if(by)by.addEventListener('click',()=>{const w=x.name.trim().split(/\s+/);S.prefill={last:w.length>1?w.pop():'',first:w.join(' ')||x.name,phone:x.phone,disc:x.disc,discs:discsOf(x),plan:x.kind==='ind'?(discsOf(x).some(d=>['Бокс','Кикбоксинг'].includes(d))?'ind10b':'ind10m'):(/дет|\b([4-9]|1[0-7])\s*лет/i.test(x.age||'')&&discsOf(x).includes('MMA')?'kids12':'grp12')};S.prefillLead=x.id;S.ov=null;S.open='new';renderDrawer()});
   const lm=host.querySelector('[data-lmember]');if(lm)lm.addEventListener('click',()=>{S.ov=null;S.open=lm.dataset.lmember;S.drMode='view';renderDrawer()});
 }
 
