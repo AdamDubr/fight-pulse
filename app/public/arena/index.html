@@ -1541,7 +1541,8 @@ button.sc-c:focus-visible{outline:2px solid var(--sc);outline-offset:2px}
  .rf-bar{display:flex;align-items:center;gap:.8rem;flex-wrap:wrap}
  .c-ver{position:absolute;top:5px;right:5px;z-index:2;display:inline-flex;align-items:center;gap:2px;background:#e8c35a;color:#141414;border-radius:999px;padding:2px 5px 2px 4px;box-shadow:0 0 0 2px #0b0b0b,0 0 10px #e8c35a66;line-height:1}
  .c-ver .pitm{width:9px;height:11px}.c-ver b{font-size:10px;font-weight:900}
- #gridCards .card.away{opacity:.72}
+ #gridCards .card.away{border-color:var(--line)!important;box-shadow:none!important}#gridCards .card.away>:not(.c-ver){opacity:.42;filter:grayscale(.9)}
+ #gridCards .card.here{border-color:#3ddc84!important;box-shadow:0 0 0 1px #3ddc84,0 0 22px #3ddc8440!important}#gridCards .card.here .conn{color:#3ddc84!important;font-weight:800}
  .g-empty{margin:1rem;padding:1.4rem 1rem;border:1px dashed var(--line);border-radius:.8rem;text-align:center;color:#8a8a8a;font-size:.9rem}
  body.real #aRate,body.real .frate,body.real .m-rt,body.real .rtx{display:none!important}
  body.m-force-desk:not(.m-tv):is(:not([data-role=fighter]),.rf) .top .tabs{display:none!important}
@@ -2495,7 +2496,7 @@ body.real #srcSim,body.real .imp-banner,body.real .medf{display:none!important}
   </nav>
 <nav class="s-nav" id="sNav" aria-label="Разделы (персонал)">
     <button data-sv="arena"><svg viewBox="0 0 24 24"><path d="M2 13h4l2.5-6 4 12 3-9 2 3H22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Зал</button>
-    <button data-sv="grid"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/></svg>Участники</button>
+    <button data-sv="grid"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/></svg>Бойцы</button>
     <button data-sv="fight"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.5 7.5A4.5 4.5 0 0 1 11 3h2a4 4 0 0 1 4 4v1.2A3 3 0 0 1 19.5 11v3a6 6 0 0 1-6 6h-2.5A4.5 4.5 0 0 1 6.5 15.5zM9 13h6v-1.6H9z"/></svg>Бой</button>
     <button data-sv="card"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm4.5 4a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 17h8c-.4-1.9-2-3-4-3s-3.6 1.1-4 3zM14 9v2h5V9zm0 4v2h4v-2z"/></svg>Кабинет</button>
     <button data-sv="coach" class="s-co"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l9 4v6c0 5-3.8 9.3-9 10-5.2-.7-9-5-9-10V6zm-1.2 13.6 6-6-1.5-1.5-4.5 4.5-2.3-2.3L7 11.8z"/></svg><span class="s-col">Тренер</span></button>
@@ -3459,7 +3460,7 @@ addEventListener('keydown',e=>{if(ui.view!=='arena'||/INPUT|SELECT|TEXTAREA/.tes
 /* ---- overview ---- */
 const G=$('#gridCards');
 G.innerHTML=ATHLETES.map((a,i)=>`<button class="card" data-i="${i}">
-  <div class="c-head"><span class="n">${String(a.id).padStart(2,'0')}</span><span class="nick"></span><span class="disc">${a.disc.toUpperCase()}</span><img class="c-ava" alt="">${a.ver?`<span class="c-ver" title="✓ Verified · PIT PRO">${PITM}<b>✓</b></span>`:''}</div>
+  <div class="c-head"><span class="n">${String(a.id).padStart(2,'0')}</span><span class="nick"></span><span class="disc">${a.disc.toUpperCase()}</span><img class="c-ava" alt=""></div>${a.ver?`<span class="c-ver" title="✓ Verified · PIT PRO">${PITM}<b>✓</b></span>`:''}
   <div class="c-name"></div>
   <div class="c-bpm"><b>--</b><span>УД/МИН</span><span class="pc">--%</span></div>
   <div class="zrowc" style="display:flex;justify-content:space-between;align-items:center;gap:.5rem"><span class="zchip">Z0</span><span class="kc num"></span><span class="conn"></span></div>
@@ -3469,7 +3470,7 @@ G.innerHTML=ATHLETES.map((a,i)=>`<button class="card" data-i="${i}">
 </button>`).join('');
 G.style.setProperty('--gc',ATHLETES.length<=8?4:ATHLETES.length<=12?4:ATHLETES.length<=18?5:6);G.classList.toggle('dense',ATHLETES.length>12);
 const cards=[...G.children];cards.forEach(c=>c.addEventListener('click',()=>{if(ATHLETES[+c.dataset.i].public)select(+c.dataset.i,true)}));
-function renderGrid(){if(REAL)hallSync();cards.forEach((c,i)=>{if(REAL){c.style.order=ATHLETES[i].absent?1:0;c.classList.toggle('away',!!ATHLETES[i].absent)}const a=ATHLETES[i],m=metrics.get(a.id),st=metrics.status(m),z=m.hr?zoneOf(m.hr,a.hrMax):0,live=st==='live'||st==='stale';
+function renderGrid(){if(REAL)hallSync();cards.forEach((c,i)=>{if(REAL){c.style.order=ATHLETES[i].absent?1:0;c.classList.toggle('away',!!ATHLETES[i].absent);c.classList.toggle('here',!ATHLETES[i].absent)}const a=ATHLETES[i],m=metrics.get(a.id),st=metrics.status(m),z=m.hr?zoneOf(m.hr,a.hrMax):0,live=st==='live'||st==='stale';
   const av=$('.c-ava',c);if(av&&!av.dataset.s){av.dataset.s=1;av.src=(CAB[a.id]&&CAB[a.id].person.photo)||avatar(a.id)}
   c.style.setProperty('--zc',live?ZCOL[z]:ZCOL[0]);c.classList.toggle('lost',!live);c.classList.toggle('private',!a.public);
   $('.nick',c).textContent=display(a);const cn2=a.name===a.nick?'':(settings.nameMode==='nick'?a.name:a.nick);$('.c-name',c).innerHTML=(cn2?esc(cn2)+' · ':'')+rtBadge(a.id);
