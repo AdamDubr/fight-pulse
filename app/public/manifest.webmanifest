@@ -1,0 +1,23 @@
+{
+  "id": "/",
+  "name": "PIT RATING",
+  "short_name": "PIT",
+  "description": "PIT RATING — система клуба, экраны зала и кабинет бойца My PIT",
+  "lang": "ru",
+  "start_url": "/?src=app",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0d0f12",
+  "theme_color": "#0d0f12",
+  "categories": ["sports", "health", "fitness"],
+  "icons": [
+    { "src": "/brand/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/brand/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/brand/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "My PIT", "url": "/my/", "icons": [{ "src": "/brand/icon-192.png", "sizes": "192x192" }] },
+    { "name": "PIT CRM", "url": "/crm/", "icons": [{ "src": "/brand/icon-192.png", "sizes": "192x192" }] }
+  ]
+}

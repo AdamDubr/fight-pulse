@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ru">
 <head>
-<meta charset="utf-8">
+<meta charset="utf-8"><link rel="manifest" href="/manifest.webmanifest"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="PIT"><meta name="apple-mobile-web-app-status-bar-style" content="default"><link rel="apple-touch-icon" href="/brand/apple-touch-icon.png"><link rel="icon" href="/brand/favicon-32.png" sizes="32x32"><meta name="theme-color" content="#0d0f12"><script src="/vendor/pit-install.js" defer></script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex">
 <title>PIT RATING</title>
@@ -64,6 +64,7 @@ async function main(){
     <a class="tile" href="/arena/"><i>◉</i><b>Зал · Arena</b><span>Экраны зала и пульт тренера. Бойцы и расписание — из CRM, обновляются сами. Пульс — когда подключим датчики.</span></a>
     <a class="tile" href="/world/"><i>✦</i><b>My PIT World</b><span>Сообщество PIT для бойцов: новости, кэмпы, турниры, клубы. Бойцы открывают его из My PIT.</span></a>
   </div>
+  <button class="btn" type="button" onclick="window.PITInstall&&PITInstall.open()" style="align-self:flex-start">📲 Установить приложение на телефон</button>
   ${mgr?`<section class="card"><h2>Доступ</h2><div id="ul"><p class="note">Загрузка…</p></div>
     <form id="uf" autocomplete="off"><input type="email" id="ue" placeholder="e-mail сотрудника" required><input type="text" id="un" placeholder="Имя" maxlength="80">
     <select id="ur"><option value="trainer">Тренер — без кассы</option>${ME.role==='owner'?'<option value="admin">Администратор — всё, кроме доступа владельца</option>':''}</select>
