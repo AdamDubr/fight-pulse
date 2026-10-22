@@ -259,7 +259,7 @@ function alertOk(m){let e=document.getElementById('slmsg');if(!e){e=document.cre
 function statusCard(){
   if(D.member){const s=D.member;
     return `<section class="card"><div style="display:flex;justify-content:space-between;align-items:center;gap:.6rem;flex-wrap:wrap"><h2 style="margin:0">${t('sub')}</h2><span class="pill ok">● ${t('st_member')}</span></div>
-      <p style="margin:.6rem 0 0;font-weight:700">${esc(s.plan||'—')}${s.frozen?` · <span class="pill info">${t('frozen')}</span>`:''}</p>${(s.subs||[]).map(u=>`<p style="margin:.35rem 0 0;font-weight:700">+ ${esc(u.plan||'—')}${u.disc?' · '+esc(dn(u.disc)):''}${u.end?` <span class="note" style="font-weight:400">· ${fd(u.end)}</span>`:''}</p>`).join('')}
+      ${s.frozen?`<p style="margin:.6rem 0 0"><span class="pill info">${t('frozen')}</span></p>`:''}${(s.subs||[]).map(u=>`<p class="note" style="margin:.4rem 0 0">+ ${u.disc?esc(dn(u.disc)):''}${u.end?' · '+fd(u.end):''}</p>`).join('')}
       <div class="kv"><div><b>${s.end?fd(s.end).replace(/\s\d{4}.*$/,''):'∞'}</b><span>${s.end?t('until'):t('noEnd')}</span></div>
       <div><b>${s.left??'—'}</b><span>${t('left')}</span></div><div><b>${s.visits?.month??0}</b><span>${t('vMonth')}</span></div></div></section>`}
   const st=D.lead?.status||'pending',cls={pending:'gold',new:'gold',booked:'warn',done:'info',bought:'ok',lost:'bad',rejected:'bad'}[st]||'gold';
