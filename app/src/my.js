@@ -338,7 +338,13 @@ export async function myRoutes(req, env, path, email, staff) {
   const pm = path.match(/^\/api\/my\/photo\/([a-f0-9]{32})$/);
   if (pm && req.method === 'GET') {
     const own = await env.DB.prepare('SELECT 1 AS x FROM files WHERE id=? AND by=?').bind(pm[1], email).first();
-    if (!own && !staff) return new Response('Not found', { status: 404 });
+    let ok = !!own || !!staff;
+    if (!ok) {   // фото бойца с согласием на фото — видят верифицированные бойцы клуба
+      const me = await env.DB.prepare('SELECT verified,mid FROM fighters WHERE email=?').bind(email).first();
+      const ph = me && me.verified && me.mid ? await env.DB.prepare("SELECT data,mid FROM fighters WHERE json_extract(data,'$.photo')=? AND verified=1").bind(pm[1]).first() : null;
+      if (ph) { let d = {}; try { d = JSON.parse(ph.data) } catch (e) { } const m = ph.mid ? await getDoc(env, 'members', ph.mid) : null, pc = m && m.photoConsent; ok = pc === 'yes' || (pc !== 'no' && d.photoConsent === true) }
+    }
+    if (!ok) return new Response('Not found', { status: 404 });
     const o = env.FILES ? await env.FILES.get(pm[1]) : null;
     if (!o) return new Response('Not found', { status: 404 });
     return new Response(o.body, { headers: { 'content-type': o.httpMetadata?.contentType || 'image/jpeg', 'cache-control': 'private, max-age=86400' } });

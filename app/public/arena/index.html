@@ -4799,6 +4799,7 @@ function closeCardModal(){const M=$('#cardModal');if(!M||M.hidden)return;M.hidde
   const st=$('.fc-stage');if(st)st.prepend($('#fCard'));renderCard()}
 addEventListener('keydown',e=>{if(e.key==='Escape')closeCardModal()});
 function applyCards(){const CD=(window.PIT_REAL||{}).cards||{};ATHLETES.forEach(a=>{const c=a.mid&&CD[a.mid],P=PROF[a.id];if(!P)return;if(a.ver)P.pro=true;
+  if(c&&c.photo&&CAB[a.id]&&!CAB[a.id].person.photo)CAB[a.id].person.photo='/api/my/photo/'+c.photo;
   if(!c||(document.body.classList.contains('rf')&&a.id===MOB.me))return;if(c.nick)a.nick=c.nick;
   const kg=parseFloat(String(c.weight||'').replace(',','.'));if(kg>20)a.kg=kg;P.cls=wClass(a.disc,c.weight,a).t;P.stance=STN[c.stance]||'—';P.city=c.city||'';P.rank=BELTS[c.belt]?c.belt:'—';
   if(c.rec)P.rec={w:0,l:0,d:0,ko:0,sub:0,...c.rec};if(c.med)P.med={g:0,s:0,b:0,...c.med};if(Array.isArray(c.titles))P.titles=c.titles.slice(0,8)})}

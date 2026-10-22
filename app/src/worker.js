@@ -252,7 +252,10 @@ async function arenaReal(req, env, opt = {}) {
     const vr = (await env.DB.prepare('SELECT mid,data FROM fighters WHERE mid IS NOT NULL AND verified=1').all()).results || [];
     ver = [...new Set(vr.map(x => x.mid))];
     // открытая карточка бойца: только подтверждённые клубом поля (без контактов и дат рождения)
-    for (const x of vr) { let d = {}; try { d = JSON.parse(x.data) } catch (e) { } const c = {}; for (const k of ['nick', 'weight', 'stance', 'city', 'belt', 'rec', 'med', 'titles']) if (d[k] != null && d[k] !== '') c[k] = d[k]; cards[x.mid] = c }
+    for (const x of vr) { let d = {}; try { d = JSON.parse(x.data) } catch (e) { } const c = {}; for (const k of ['nick', 'weight', 'stance', 'city', 'belt', 'rec', 'med', 'titles']) if (d[k] != null && d[k] !== '') c[k] = d[k];
+      // фото — всем бойцам клуба, только если дано согласие на фото (в CRM или в анкете My PIT)
+      const mr = (r.results || []).find(z => z.id === x.mid); let pc = null; try { pc = mr ? JSON.parse(mr.data).photoConsent : null } catch (e) { } if (d.photo && (pc === 'yes' || (pc !== 'no' && d.photoConsent === true))) c.photo = d.photo;
+      cards[x.mid] = { ...c, ...(cards[x.mid] || {}) } }
   } catch (e) { }
   const age = d => { if (!/^\d{4}-\d{2}-\d{2}$/.test(d || '')) return null; const b = new Date(d), n = new Date(); let a = n.getFullYear() - b.getFullYear(); if (n < new Date(n.getFullYear(), b.getMonth(), b.getDate())) a--; return a > 3 && a < 90 ? a : null };
   const all = (r.results || []).map(x => { let m = {}; try { m = JSON.parse(x.data) } catch (e) { } if (m.first && m.last) m.name = m.first + ' ' + m.last; if (m.kind === 'staff' && ((age(m.dob) != null && age(m.dob) < 18) || (m.parent && (m.parent.name || m.parent.mid)))) { m.kind = 'group'; if (m.plan === 'staff') m.plan = 'free'; } return { id: x.id, m } });
