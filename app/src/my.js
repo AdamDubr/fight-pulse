@@ -10,6 +10,7 @@ const sha = async s => [...new Uint8Array(await crypto.subtle.digest('SHA-256', 
 const digits = p => String(p || '').replace(/\D/g, '');
 const samePhone = (a, b) => { a = digits(a); b = digits(b); return a.length >= 9 && b.length >= 9 && a.slice(-10) === b.slice(-10) };
 import { inbox, markRead, trTexts } from './msg.js';
+import { coachDict } from './coachtr.js';
 const DISCS = ['MMA', 'Бокс', 'BJJ', 'Кикбоксинг', 'Капоэйра'];
 export const CLUBS = { mowgli: { id: 'mowgli', name: 'Mowgli Fight Club', city: 'Анталья', cityEn: 'Antalya', country: 'TR', lat: 36.8381506, lon: 30.5904377, addr: 'Sarısu, 131. Sk., 07130 Konyaaltı/Antalya, Türkiye', placeId: 'ChIJZUYTFaCVwxQRSgx4mbk5waQ', hours: 'Пн–Сб 09:00–22:00', logo: '/brand/clubs/mowgli.png', discs: ['MMA', 'BJJ', 'Бокс', 'Кикбоксинг', 'Капоэйра'], proFree: true } };
 const LEVELS = ['club', 'city', 'regional', 'national', 'international', 'pro'];
@@ -66,7 +67,7 @@ async function trialSlots(env, days = 14) {
 // «Мой клуб» для членов клуба: тренеры с фото и регалиями, честная статистика клуба (без выдуманного рейтинга)
 async function clubInfo(env, club, lang) {
   const sc = (await getDoc(env, 'club', 'schedule')) || {}, cls = sc.classes || [];
-  const coaches = (sc.coaches || []).map(c => ({ n: c.n, photo: c.photo ? '/api/my/cphoto/' + c.photo : null, discs: c.discs && c.discs.length ? c.discs : [...new Set(cls.filter(x => x.coach === c.k).map(x => x.disc))], titles: c.titles || [], exp: c.exp || [], bio: c.bio || '', nick: c.nick || '', role: c.role || '', record: c.record || '', links: (c.links || []).filter(u => /^https?:\/\//.test(u)).slice(0, 5), groups: cls.filter(x => x.coach === c.k).length }));
+  const coaches = (sc.coaches || []).map(c => ({ i18n: c.i18n || null, n: c.n, photo: c.photo ? '/api/my/cphoto/' + c.photo : null, discs: c.discs && c.discs.length ? c.discs : [...new Set(cls.filter(x => x.coach === c.k).map(x => x.disc))], titles: c.titles || [], exp: c.exp || [], bio: c.bio || '', nick: c.nick || '', role: c.role || '', record: c.record || '', links: (c.links || []).filter(u => /^https?:\/\//.test(u)).slice(0, 5), groups: cls.filter(x => x.coach === c.k).length }));
   const td = new Date().toISOString().slice(0, 10);
   const ms = await env.DB.prepare("SELECT data FROM docs WHERE col='members' AND deleted=0").all();
   let active = 0; for (const x of ms.results || []) { try { const m = JSON.parse(x.data); if (m.kind !== 'staff' && !m.frozen && (!m.end || m.end >= td)) active++ } catch (e) { } }
@@ -84,8 +85,12 @@ async function trCoaches(env, coaches, lang) {
   const items = [];
   for (const c of coaches) {
     c.n = translit(c.n);
-    for (const k of ['role', 'bio', 'record']) if (c[k]) items.push([c, k, null]);
-    for (const k of ['titles', 'exp']) (c[k] || []).forEach((x, i) => items.push([c, k, i]));
+    // 1) перевод, вписанный в CRM; 2) готовый словарь; 3) автоперевод
+    const own = c.i18n && c.i18n[lang] || {};
+    for (const k of ['role', 'bio', 'record']) { if (own[k]) c[k] = own[k]; else if (c[k]) { const d = coachDict(c[k], lang); if (d) c[k] = d } }
+    for (const k of ['titles', 'exp']) { if (Array.isArray(own[k]) && own[k].length) c[k] = own[k]; else c[k] = (c[k] || []).map(x => coachDict(x, lang) || x) }
+    for (const k of ['role', 'bio', 'record']) if (c[k] && /[А-яЁё]/.test(c[k])) items.push([c, k, null]);
+    for (const k of ['titles', 'exp']) (c[k] || []).forEach((x, i) => { if (/[А-яЁё]/.test(x)) items.push([c, k, i]) });
   }
   const out = await trTexts(env, items.map(([c, k, i]) => i == null ? c[k] : c[k][i]), lang);
   items.forEach(([c, k, i], j) => { if (!out[j]) return; if (i == null) c[k] = out[j]; else c[k] = c[k].map((x, n) => n === i ? out[j] : x) });
@@ -231,7 +236,7 @@ export async function worldMe(env, email) {
     lang: ['ru', 'en', 'tr'].includes(p.lang) ? p.lang : 'ru',
   };
 }
-async function view(env, email) {
+async function view(env, email, uiLang) {
   const f = await env.DB.prepare('SELECT * FROM fighters WHERE email=?').bind(email).first();
   const base = { email, clubs: Object.values(CLUBS), discs: DISCS, levels: LEVELS };
   if (!f) return { ...base, profile: null };
@@ -270,7 +275,7 @@ async function view(env, email) {
   out.world = !!f.verified;
   try { out.inbox = await inbox(env, email, ['ru', 'en', 'tr'].includes(profile.lang) ? profile.lang : 'ru') } catch (e) { out.inbox = [] }
   out.approved = !!(lead && lead.approved && !lead.rejected) || !!f.mid;
-  if (out.access) { const lg = ['ru', 'en', 'tr'].includes(profile.lang) ? profile.lang : 'ru'; out.schedule = await trialSlots(env, 62); if (lg !== 'ru') out.schedule = out.schedule.map(x => x.coach ? { ...x, coach: translit(x.coach) } : x); out.clubInfo = await clubInfo(env, f.club, lg) }
+  if (out.access) { const lg = uiLang || (['ru', 'en', 'tr'].includes(profile.lang) ? profile.lang : 'ru'); out.schedule = await trialSlots(env, 62); if (lg !== 'ru') out.schedule = out.schedule.map(x => x.coach ? { ...x, coach: translit(x.coach) } : x); out.clubInfo = await clubInfo(env, f.club, lg) }
   if (lead) out.lead = { status: lead.rejected ? 'rejected' : (!lead.approved && (lead.status || 'new') === 'new') ? 'pending' : (lead.status || 'new'), trialDate: lead.trialDate || null };
   const it = await env.DB.prepare('SELECT * FROM fighter_items WHERE email=? ORDER BY created DESC').bind(email).all();
   out.items = (it.results || []).map(itemOut);
@@ -300,7 +305,7 @@ function validItem(kind, d) {
 export async function myRoutes(req, env, path, email, staff) {
   await ensure(env);
   const t = Date.now();
-  if (path === '/api/my' && req.method === 'GET') return json({ ...(await view(env, email)), staff: staff || null });
+  if (path === '/api/my' && req.method === 'GET') { const ul = new URL(req.url).searchParams.get('lang'); return json({ ...(await view(env, email, ['ru', 'en', 'tr'].includes(ul) ? ul : null)), staff: staff || null }) }
 
   // Зал бойца: кто сейчас в зале (отметки посещений за сегодня) — только для членов клуба с ✓ Verified
   if (path === '/api/my/hall' && req.method === 'GET') {

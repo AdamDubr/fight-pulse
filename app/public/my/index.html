@@ -184,8 +184,8 @@ const ageOf=d=>{if(!/^\d{4}-\d{2}-\d{2}$/.test(d||''))return null;const b=new Da
 let D=null,EDIT=false,PICK=null,GL=null,FD=null;
 const FLAG={TR:'🇹🇷'},cityOf=c=>L==='ru'?c.city:(c.cityEn||c.city);
 function applyLang(){document.documentElement.lang=L;document.querySelectorAll('[data-t]').forEach(e=>{const v=T[L][e.dataset.t];if(typeof v==='string')e.textContent=v});document.querySelectorAll('.lang button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.l===L)))}
-document.querySelectorAll('.lang button').forEach(b=>b.onclick=()=>{L=b.dataset.l;try{localStorage.setItem('pit.lang',L)}catch(e){}applyLang();render()});
-async function api(o){const r=await fetch('/api/my',{cache:'no-store',credentials:'same-origin',...o});if(r.status===401){location.replace('/login?next=%2Fmy%2F');throw new Error('auth')}const j=await r.json().catch(()=>({}));if(!r.ok)throw Object.assign(new Error(j.error||'server'),{code:j.error});return j}
+document.querySelectorAll('.lang button').forEach(b=>b.onclick=()=>{L=b.dataset.l;try{localStorage.setItem('pit.lang',L)}catch(e){}applyLang();render();if(D&&D.access)api().then(j=>{D=j;render()}).catch(()=>{})});
+async function api(o){const r=await fetch('/api/my'+((!o||!o.method||o.method==='GET')?'?lang='+L:''),{cache:'no-store',credentials:'same-origin',...o});if(r.status===401){location.replace('/login?next=%2Fmy%2F');throw new Error('auth')}const j=await r.json().catch(()=>({}));if(!r.ok)throw Object.assign(new Error(j.error||'server'),{code:j.error});return j}
 
 function form(){const p={...(D.profile||{}),...(D.pending||{})},clubs=D.clubs||[],discs=D.discs||[];const kind=p.kind||'group';
   return `<div><h1>${D.profile?t('editH'):t('regH')}</h1><p class="sub">${D.verified?t('editP'):D.profile&&!D.profile.consentData?t('invP'):t('regP')}</p></div>
@@ -478,7 +478,7 @@ function render(){applyLang();if(!D)return;const v=$('#v');document.body.classLi
   let seen=false;try{seen=!!localStorage.getItem('pit.thmHint')}catch(e){}
   if(!seen){b.classList.add('hint');setTimeout(()=>{b.classList.remove('hint');try{localStorage.setItem('pit.thmHint','1')}catch(e){}},5200)}})();
 applyLang();
-api().then(j=>{D=j;let sv=null;try{sv=localStorage.getItem('pit.lang')}catch(e){}if(!T[sv]&&D.profile&&T[D.profile.lang]&&D.profile.lang!==L){L=D.profile.lang}render()}).catch(e=>{if(e.message!=='auth')$('#v').innerHTML='<p class="msg bad">'+esc(t('err').server)+'</p>'});
+api().then(j=>{D=j;const L0=L;let sv=null;try{sv=localStorage.getItem('pit.lang')}catch(e){}if(!T[sv]&&D.profile&&T[D.profile.lang]&&D.profile.lang!==L){L=D.profile.lang}render();if(L!==L0&&D.access)api().then(j2=>{D=j2;render()}).catch(()=>{})}).catch(e=>{if(e.message!=='auth')$('#v').innerHTML='<p class="msg bad">'+esc(t('err').server)+'</p>'});
 </script>
 </body>
 </html>

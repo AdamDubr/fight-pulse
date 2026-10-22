@@ -1532,40 +1532,8 @@ button.sc-c:focus-visible{outline:2px solid var(--sc);outline-offset:2px}
  body.m-tv[data-role=fighter] #mobBtn{display:none!important}
  body.m-tv[data-role=fighter] main{padding-bottom:calc(60px + env(safe-area-inset-bottom,0px))!important;box-sizing:border-box}
  body[data-role=coach] .s-nav .s-fin{display:none}
- body.rf .s-nav .s-co,body.rf .s-nav .s-fin{display:none!important}
  body.m-force-desk.rf:not(.m-tv) .s-nav{grid-template-columns:repeat(5,1fr)}
- body.rf #toCrm,body.rf #roleSel,body.rf .protgl{display:none!important}
- body.rf .a-strip .ctrl{display:none!important}
- .chip.off{opacity:.35;filter:grayscale(1)}
- .cm{position:fixed;inset:0;z-index:9000;background:#000c;backdrop-filter:blur(6px);display:flex;align-items:flex-start;justify-content:center;overflow:auto;padding:max(16px,env(safe-area-inset-top)) 16px 24px}.cm[hidden]{display:none}
- .cm-box{position:relative;width:min(100%,460px);margin:auto 0}.cm-x{position:absolute;top:-6px;right:-6px;z-index:3;width:2.2rem;height:2.2rem;border-radius:50%;border:1px solid #e8c35a;background:#111;color:#e8c35a;font-size:1rem;cursor:pointer}
- body.real .s-nav .s-fin{display:none!important}
- body.world-real .wl [data-sec=ajp],body.world-real .wl [data-sec=map],body.world-real .wl [data-sec=rank],body.world-real .wl [data-sec=cup],body.world-real .wl [data-sec=tour],body.world-real .wl [data-sec=rew],body.world-real .wl [data-sec=reg],body.world-real .wl-cta,body.world-real .wl-toc,body.world-real .wl-figw{display:none!important}
- body:not(.world-real) .wl-soon{display:none}
- .rn{margin:1rem 0;padding:1.1rem;border:1px solid #e8c35a55;border-radius:1rem;background:#0b0d10}.rn-h{margin:0 0 .25rem;font-size:1.05rem;color:#f3f1ec}.rn-p{margin:0 0 .7rem;font-size:.84rem;opacity:.7;color:#f3f1ec}
- .rn-map{overflow-x:auto;-webkit-overflow-scrolling:touch}.rn-map svg{display:block;width:100%;min-width:560px;height:auto}.rn-land{stroke:#e8c35a;stroke-opacity:.3}
- .rn-ray{fill:none;stroke:#e8c35a;stroke-width:.32;stroke-dasharray:.9 .8;stroke-opacity:.75;animation:rnDash 2.4s linear infinite}@keyframes rnDash{to{stroke-dashoffset:-3.4}}
- .rn-dot{fill:#5aa9ff;transition:r .2s}.rn-hub{cursor:pointer;outline:none}.rn-hub:hover .rn-dot,.rn-hub:focus .rn-dot,.rn-hub.on .rn-dot{r:1.1;fill:#9fd0ff}.rn-home{cursor:pointer;outline:none}.rn-home.on circle:last-child{stroke:#fff;stroke-width:.35}
- @media (prefers-reduced-motion:reduce){.rn-ray{animation:none}}
- .rn-legend{display:flex;gap:1rem;flex-wrap:wrap;font-size:.74rem;color:#f3f1ecaa;margin:.5rem 0 .2rem}.rn-legend i{display:inline-block;width:.6rem;height:.6rem;border-radius:50%;margin-right:.35rem;vertical-align:middle}.rn-legend .g{background:#e8c35a}.rn-legend .b{background:#5aa9ff}.rn-legend .d{width:1.2rem;height:0;border-radius:0;border-top:2px dashed #e8c35a}
- .rn-info{margin-top:.8rem;color:#f3f1ec}.rn-hint{font-size:.84rem;opacity:.6}
- .rn-club{display:flex;gap:1rem;align-items:flex-start;flex-wrap:wrap;padding:1rem;border:1px solid #e8c35a77;border-radius:.9rem;background:#e8c35a12}.rn-club img{height:2.6rem;max-width:7rem;object-fit:contain}.rn-cw{flex:1;min-width:14rem;display:flex;flex-direction:column;gap:.35rem}.rn-cw small{color:#e8c35a;font-weight:800;letter-spacing:.08em;font-size:.7rem;text-transform:uppercase}.rn-cw>b{font-size:1.25rem}.rn-cw>span{font-size:.84rem;opacity:.75}
- .rn-tags{display:flex;flex-wrap:wrap;gap:.3rem}.rn-tags i{font-style:normal;font-size:.72rem;font-weight:800;padding:.15rem .55rem;border-radius:2rem;border:1px solid #e8c35a66}
- .rn-st{display:flex;gap:.5rem;flex-wrap:wrap}.rn-st div{flex:1 1 6rem;background:#ffffff08;border:1px solid #ffffff1a;border-radius:.7rem;padding:.5rem .6rem}.rn-st b{display:block;font-size:1.2rem}.rn-st small{color:#f3f1ecaa!important;font-weight:600;letter-spacing:0;text-transform:none;font-size:.72rem}
- .rn-cw .rn-co{color:#f3f1ecbb!important;text-transform:none;letter-spacing:0;font-weight:600}.rn-rt{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.2rem}.rn-rt a{font-size:.82rem;font-weight:800;color:#141414;background:#e8c35a;border-radius:.55rem;padding:.45rem .8rem;text-decoration:none}.rn-rt a+a{background:transparent;color:#e8c35a;border:1px solid #e8c35a}
- .rn-hubc{padding:1rem;border:1px solid #5aa9ff66;border-radius:.9rem;background:#5aa9ff10;display:flex;flex-direction:column;gap:.25rem}.rn-hubc small{color:#9fd0ff;font-weight:800;letter-spacing:.08em;font-size:.7rem;text-transform:uppercase}.rn-hubc b{font-size:1.15rem}.rn-hubc span{font-size:.84rem;opacity:.75}.rn-hubc p{margin:.35rem 0 0;font-size:.86rem}
- body.world-real .wl>:not(.wl-hero):not(.wl-me):not(.wl-soon):not(.rn){display:none!important}
  body.m-force-desk.real:not(.m-tv)[data-role=admin] .s-nav{grid-template-columns:repeat(6,1fr)}
- #gridCards .card{position:relative}
- .fe-auto{display:flex;flex-direction:column;gap:2px;padding:.55rem .7rem;border:1px dashed var(--line);border-radius:.5rem}.fe-auto b{font-size:.95rem}.fe-auto small{color:#8a8a8a;font-size:.72rem}
- .rf-flow{display:flex;align-items:center;flex-wrap:wrap;gap:.35rem;margin:.9rem 0 .5rem;font-size:.78rem;font-weight:700;letter-spacing:.04em}.rf-flow span{padding:.25rem .6rem;border-radius:999px;border:1px solid var(--line);color:#8a8a8a}.rf-flow span.cur{border-color:#e8c35a;color:#e8c35a}.rf-flow span.done{border-color:#3ddc84;color:#3ddc84}.rf-flow i{font-style:normal;color:#6d6d6d}
- .rf-bar{display:flex;align-items:center;gap:.8rem;flex-wrap:wrap}
- .c-ver{position:absolute;top:5px;right:5px;z-index:2;display:inline-flex;align-items:center;gap:2px;background:#e8c35a;color:#141414;border-radius:999px;padding:2px 5px 2px 4px;box-shadow:0 0 0 2px #0b0b0b,0 0 10px #e8c35a66;line-height:1}
- .c-ver .pitm{width:9px;height:11px}.c-ver b{font-size:10px;font-weight:900}
- #gridCards .card.away{border-color:var(--line)!important;box-shadow:none!important}#gridCards .card.away>:not(.c-ver){opacity:.42;filter:grayscale(.9)}
- #gridCards .card.here{border-color:#3ddc84!important;box-shadow:0 0 0 1px #3ddc84,0 0 22px #3ddc8440!important}#gridCards .card.here .conn{color:#3ddc84!important;font-weight:800}
- .g-empty{margin:1rem;padding:1.4rem 1rem;border:1px dashed var(--line);border-radius:.8rem;text-align:center;color:#8a8a8a;font-size:.9rem}
- body.real #aRate,body.real .frate,body.real .m-rt,body.real .rtx{display:none!important}
  body.m-force-desk:not(.m-tv):is(:not([data-role=fighter]),.rf) .top .tabs{display:none!important}
  body.m-force-desk:not(.m-tv):is(:not([data-role=fighter]),.rf) #mobBtn{display:none!important}
  body.m-force-desk:not(.m-tv):is(:not([data-role=fighter]),.rf) #app{padding-bottom:0}
@@ -2184,6 +2152,40 @@ body.world-only main{padding-bottom:env(safe-area-inset-bottom,0px)!important}
 .m-wback{margin-left:auto;display:inline-flex;align-items:center;padding:.4rem .7rem;border-radius:.5rem;border:1px solid currentColor;font-weight:800;font-size:.8rem;text-decoration:none;color:inherit;white-space:nowrap}
 body.world-only .top .tabs,body.world-only #roundPill,body.world-only #fightPill,body.world-only #roleSw,body.world-only #mobBtn,body.world-only #clock{display:none!important}
 body.real #srcSim,body.real .imp-banner,body.real .medf{display:none!important}
+/* клиентский режим, рабочий режим, My PIT World — для всех размеров экрана */
+body.world-real #fCard,body.world-real #fcShareRow,body.world-real #fcEdit{display:none!important}
+ body.rf .s-nav .s-co,body.rf .s-nav .s-fin{display:none!important}
+ body.rf #toCrm,body.rf #roleSel,body.rf .protgl{display:none!important}
+ body.rf .a-strip .ctrl{display:none!important}
+ .chip.off{opacity:.35;filter:grayscale(1)}
+ .cm{position:fixed;inset:0;z-index:9000;background:#000c;backdrop-filter:blur(6px);display:flex;align-items:flex-start;justify-content:center;overflow:auto;padding:max(16px,env(safe-area-inset-top)) 16px 24px}.cm[hidden]{display:none}
+ .cm-box{position:relative;width:min(100%,460px);margin:auto 0}.cm-x{position:absolute;top:-6px;right:-6px;z-index:3;width:2.2rem;height:2.2rem;border-radius:50%;border:1px solid #e8c35a;background:#111;color:#e8c35a;font-size:1rem;cursor:pointer}
+ body.real .s-nav .s-fin{display:none!important}
+ body.world-real .wl [data-sec=ajp],body.world-real .wl [data-sec=map],body.world-real .wl [data-sec=rank],body.world-real .wl [data-sec=cup],body.world-real .wl [data-sec=tour],body.world-real .wl [data-sec=rew],body.world-real .wl [data-sec=reg],body.world-real .wl-cta,body.world-real .wl-toc,body.world-real .wl-figw{display:none!important}
+ body:not(.world-real) .wl-soon{display:none}
+ .rn{margin:1rem 0;padding:1.1rem;border:1px solid #e8c35a55;border-radius:1rem;background:#0b0d10}.rn-h{margin:0 0 .25rem;font-size:1.05rem;color:#f3f1ec}.rn-p{margin:0 0 .7rem;font-size:.84rem;opacity:.7;color:#f3f1ec}
+ .rn-map{overflow-x:auto;-webkit-overflow-scrolling:touch}.rn-map svg{display:block;width:100%;min-width:560px;height:auto}.rn-land{stroke:#e8c35a;stroke-opacity:.3}
+ .rn-ray{fill:none;stroke:#e8c35a;stroke-width:.32;stroke-dasharray:.9 .8;stroke-opacity:.75;animation:rnDash 2.4s linear infinite}@keyframes rnDash{to{stroke-dashoffset:-3.4}}
+ .rn-dot{fill:#5aa9ff;transition:r .2s}.rn-hub{cursor:pointer;outline:none}.rn-hub:hover .rn-dot,.rn-hub:focus .rn-dot,.rn-hub.on .rn-dot{r:1.1;fill:#9fd0ff}.rn-home{cursor:pointer;outline:none}.rn-home.on circle:last-child{stroke:#fff;stroke-width:.35}
+ @media (prefers-reduced-motion:reduce){.rn-ray{animation:none}}
+ .rn-legend{display:flex;gap:1rem;flex-wrap:wrap;font-size:.74rem;color:#f3f1ecaa;margin:.5rem 0 .2rem}.rn-legend i{display:inline-block;width:.6rem;height:.6rem;border-radius:50%;margin-right:.35rem;vertical-align:middle}.rn-legend .g{background:#e8c35a}.rn-legend .b{background:#5aa9ff}.rn-legend .d{width:1.2rem;height:0;border-radius:0;border-top:2px dashed #e8c35a}
+ .rn-info{margin-top:.8rem;color:#f3f1ec}.rn-hint{font-size:.84rem;opacity:.6}
+ .rn-club{display:flex;gap:1rem;align-items:flex-start;flex-wrap:wrap;padding:1rem;border:1px solid #e8c35a77;border-radius:.9rem;background:#e8c35a12}.rn-logo{display:block;width:min(240px,75%);height:auto;object-fit:contain;margin:.25rem 0 .35rem}.rn-cw{flex:1;min-width:14rem;display:flex;flex-direction:column;gap:.35rem}.rn-cw small{color:#e8c35a;font-weight:800;letter-spacing:.08em;font-size:.7rem;text-transform:uppercase}.rn-cw>b{font-size:1.25rem}.rn-cw>span{font-size:.84rem;opacity:.75}
+ .rn-tags{display:flex;flex-wrap:wrap;gap:.3rem}.rn-tags i{font-style:normal;font-size:.72rem;font-weight:800;padding:.15rem .55rem;border-radius:2rem;border:1px solid #e8c35a66}
+ .rn-st{display:flex;gap:.5rem;flex-wrap:wrap}.rn-st div{flex:1 1 6rem;background:#ffffff08;border:1px solid #ffffff1a;border-radius:.7rem;padding:.5rem .6rem}.rn-st b{display:block;font-size:1.2rem}.rn-st small{color:#f3f1ecaa!important;font-weight:600;letter-spacing:0;text-transform:none;font-size:.72rem}
+ .rn-cw .rn-co{color:#f3f1ecbb!important;text-transform:none;letter-spacing:0;font-weight:600}.rn-rt{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.2rem}.rn-rt a{font-size:.82rem;font-weight:800;color:#141414;background:#e8c35a;border-radius:.55rem;padding:.45rem .8rem;text-decoration:none}.rn-rt a+a{background:transparent;color:#e8c35a;border:1px solid #e8c35a}
+ .rn-hubc{padding:1rem;border:1px solid #5aa9ff66;border-radius:.9rem;background:#5aa9ff10;display:flex;flex-direction:column;gap:.25rem}.rn-hubc small{color:#9fd0ff;font-weight:800;letter-spacing:.08em;font-size:.7rem;text-transform:uppercase}.rn-hubc b{font-size:1.15rem}.rn-hubc span{font-size:.84rem;opacity:.75}.rn-hubc p{margin:.35rem 0 0;font-size:.86rem}
+ body.world-real .wl>:not(.wl-hero):not(.wl-me):not(.wl-soon):not(.rn){display:none!important}
+ #gridCards .card{position:relative}
+ .fe-auto{display:flex;flex-direction:column;gap:2px;padding:.55rem .7rem;border:1px dashed var(--line);border-radius:.5rem}.fe-auto b{font-size:.95rem}.fe-auto small{color:#8a8a8a;font-size:.72rem}
+ .rf-flow{display:flex;align-items:center;flex-wrap:wrap;gap:.35rem;margin:.9rem 0 .5rem;font-size:.78rem;font-weight:700;letter-spacing:.04em}.rf-flow span{padding:.25rem .6rem;border-radius:999px;border:1px solid var(--line);color:#8a8a8a}.rf-flow span.cur{border-color:#e8c35a;color:#e8c35a}.rf-flow span.done{border-color:#3ddc84;color:#3ddc84}.rf-flow i{font-style:normal;color:#6d6d6d}
+ .rf-bar{display:flex;align-items:center;gap:.8rem;flex-wrap:wrap}
+ .c-ver{position:absolute;top:5px;right:5px;z-index:2;display:inline-flex;align-items:center;gap:2px;background:#e8c35a;color:#141414;border-radius:999px;padding:2px 5px 2px 4px;box-shadow:0 0 0 2px #0b0b0b,0 0 10px #e8c35a66;line-height:1}
+ .c-ver .pitm{width:9px;height:11px}.c-ver b{font-size:10px;font-weight:900}
+ #gridCards .card.away{border-color:var(--line)!important;box-shadow:none!important}#gridCards .card.away>:not(.c-ver){opacity:.42;filter:grayscale(.9)}
+ #gridCards .card.here{border-color:#3ddc84!important;box-shadow:0 0 0 1px #3ddc84,0 0 22px #3ddc8440!important}#gridCards .card.here .conn{color:#3ddc84!important;font-weight:800}
+ .g-empty{margin:1rem;padding:1.4rem 1rem;border:1px dashed var(--line);border-radius:.8rem;text-align:center;color:#8a8a8a;font-size:.9rem}
+ body.real #aRate,body.real .frate,body.real .m-rt,body.real .rtx{display:none!important}
 </style>
 
 <div id="roleGate" hidden></div>
@@ -2593,6 +2595,82 @@ const keytel=(hr,a)=>Math.max(0,a.sex==='f'
 /* Режим реального зала: в app.pitrating.com сервер подставляет бойцов из PIT CRM (window.PIT_REAL). Без него — демо с симулятором. */
 const WORLD=!!(window.PIT_REAL&&window.PIT_REAL.worldOnly);  // /world/ — сообщество PIT на демо-данных сети, без данных клуба
 const REAL=!!(window.PIT_REAL&&Array.isArray(window.PIT_REAL.members))&&!WORLD;
+/* ===== Язык интерфейса бойца (Зал и My PIT World): как в My PIT — выбор RU/EN/TR, иначе язык аккаунта ===== */
+const UI_LANG=(()=>{let l=null;try{l=localStorage.getItem('pit.lang')}catch(e){}if(['ru','en','tr'].includes(l))return l;const R=window.PIT_REAL||{};return R.lang||(R.me&&R.me.lang)||'ru'})();
+const I18N_ON=!!(window.PIT_REAL&&(PIT_REAL.fighterArena||PIT_REAL.worldOnly))&&UI_LANG!=='ru';
+const RFD=[
+['Зал','Gym','Salon'],['Бойцы','Fighters','Sporcular'],['Бой','Fight','Maç'],['Кабинет','Cabinet','Panel'],['Главная','Home','Ana sayfa'],['Тренировка','Training','Antrenman'],['Профиль','Profile','Profil'],['Задания','Tasks','Görevler'],['Питание','Nutrition','Beslenme'],
+['ВСЕ БОЙЦЫ','ALL FIGHTERS','TÜM SPORCULAR'],['БОЙ','FIGHT','MAÇ'],['БОЕЦ','FIGHTER','SPORCU'],['ВХОД','LOGIN','GİRİŞ'],['КАРТОЧКА','CARD','KART'],['ПРОФИЛЬ','PROFILE','PROFİL'],['ПРОФИЛЬ И ФОТО','PROFILE & PHOTO','PROFİL VE FOTOĞRAF'],['ЗДОРОВЬЕ','HEALTH','SAĞLIK'],['ПИТАНИЕ','NUTRITION','BESLENME'],['ЗАДАНИЯ','TASKS','GÖREVLER'],
+['ПУЛЬС','HEART RATE','NABIZ'],['ЗАПАС СИЛ','ENERGY RESERVE','ENERJİ REZERVİ'],['ККАЛ/МИН','KCAL/MIN','KCAL/DK'],['АКТИВНОСТЬ','ACTIVITY','AKTİVİTE'],['НАГРУЗКА','LOAD','YÜK'],['ГОТОВ','READY','HAZIR'],['НУЖЕН ОТДЫХ','NEEDS REST','DİNLENMELİ'],['РАСЧЁТ','CALC','HESAP'],['расчёт','calc','hesap'],['ИЗМЕРЕНО','MEASURED','ÖLÇÜLDÜ'],['ВВОД','INPUT','GİRİŞ'],['ДАТЧИК','SENSOR','SENSÖR'],['Датчик','Sensor','Sensör'],['ТЕСТ/ФОРМУЛА','TEST/FORMULA','TEST/FORMÜL'],
+['уд/мин','bpm','atım/dk'],['УД/МИН','BPM','ATIM/DK'],['уд/мин · нет данных','bpm · no data','atım/dk · veri yok'],['ккал','kcal','kcal'],['кг','kg','kg'],['см','cm','cm'],['м/с','m/s','m/s'],['/мин','/min','/dk'],['сейчас','now','şimdi'],
+['Покой','Rest','Dinlenme'],['Очень лёгкая','Very light','Çok hafif'],['Лёгкая','Light','Hafif'],['Умеренная','Moderate','Orta'],['Высокая','High','Yüksek'],['Максимальная','Maximum','Maksimum'],['Низкая','Low','Düşük'],['Очень высокая','Very high','Çok yüksek'],
+['НА СВЯЗИ','CONNECTED','BAĞLI'],['ЗАДЕРЖКА','DELAY','GECİKME'],['НЕТ СИГНАЛА','NO SIGNAL','SİNYAL YOK'],['НЕ ПРИШЁЛ','NOT HERE','GELMEDİ'],['НЕТ ДАТЧИКА','NO SENSOR','SENSÖR YOK'],['ОФЛАЙН','OFFLINE','ÇEVRİMDIŞI'],['НА ТРЕНИРОВКЕ','IN TRAINING','ANTRENMANDA'],['В ЗАЛЕ','IN THE GYM','SALONDA'],['НЕ В ЗАЛЕ','NOT IN THE GYM','SALONDA DEĞİL'],
+['НЕ НАЧАТА','NOT STARTED','BAŞLAMADI'],['ИДЁТ','IN PROGRESS','DEVAM EDİYOR'],['ПАУЗА','PAUSED','DURAKLATILDI'],['РАБОТА','WORK','ÇALIŞMA'],['ОТДЫХ','REST','DİNLENME'],['ГОТОВНОСТЬ','GET READY','HAZIRLIK'],['ЗАВЕРШЕНО','FINISHED','BİTTİ'],['ТРЕНИРОВКА','TRAINING','ANTRENMAN'],['РАЗОГРЕВ','WARM-UP','ISINMA'],
+['В ЗОНЕ','IN ZONE','BÖLGEDE'],['В цели Z4–Z5 · последние 5 мин','In target Z4–Z5 · last 5 min','Hedef Z4–Z5 · son 5 dk'],['Сожжено · тренировка','Burned · training','Yakılan · antrenman'],['Запас сил по ходу тренировки','Energy reserve during training','Antrenman boyunca enerji rezervi'],['КАЛИБРОВКА','CALIBRATION','KALİBRASYON'],['ПЕРВЫЕ 10 МИН','FIRST 10 MIN','İLK 10 DK'],
+['ЦВЕТ ТЕЛА — ИНТЕНСИВНОСТЬ СЕЙЧАС · КОЛЬЦО И ПОЗА — ЗАПАС СИЛ (РАСЧЁТ, НЕ МЕДИЦИНСКАЯ ОЦЕНКА)','BODY COLOUR — CURRENT INTENSITY · RING AND POSE — ENERGY RESERVE (CALCULATED, NOT A MEDICAL ASSESSMENT)','VÜCUT RENGİ — ANLIK YOĞUNLUK · HALKA VE DURUŞ — ENERJİ REZERVİ (HESAP, TIBBİ DEĞERLENDİRME DEĞİL)'],
+['Пульс · последние 60 с','Heart rate · last 60 s','Nabız · son 60 sn'],['Пульс за тренировку','Heart rate during training','Antrenman boyunca nabız'],['Пульс в бою','Heart rate in the fight','Maçta nabız'],['светлые полосы — отдых','light bands — rest','açık şeritler — dinlenme'],['По раундам','By round','Rauntlara göre'],
+['ЗАКРЕПИТЬ','PIN','SABİTLE'],['ЗАКРЕПЛЁН','PINNED','SABİTLENDİ'],['КРАСНЫЙ УГОЛ','RED CORNER','KIRMIZI KÖŞE'],['СИНИЙ УГОЛ','BLUE CORNER','MAVİ KÖŞE'],['УДАРЫ','STRIKES','VURUŞLAR'],['Удары','Strikes','Vuruşlar'],['СКОРОСТЬ','SPEED','HIZ'],['ТЕМП','PACE','TEMPO'],['СОЖЖЕНО ЗА БОЙ','BURNED IN FIGHT','MAÇTA YAKILAN'],['НАКАЛ БОЯ','FIGHT INTENSITY','MAÇ YOĞUNLUĞU'],['МАКС','MAX','MAKS'],['Макс','Max','Maks'],['Пик','Peak','Zirve'],['Средн.','Avg','Ort.'],['Восст.','Recov.','Topar.'],['Запас','Reserve','Rezerv'],['Р','R','R'],['Р1','R1','R1'],['Р2','R2','R2'],['Р3','R3','R3'],['МИН','MIN','DK'],
+['ПОБЕД','WINS','GALİBİYET'],['ПОРАЖ.','LOSSES','MAĞLUBİYET'],['НИЧЬИ','DRAWS','BERABERE'],['ТРЕНИРОВОК','TRAININGS','ANTRENMAN'],['ЧАСОВ','HOURS','SAAT'],['ККАЛ ВСЕГО','KCAL TOTAL','TOPLAM KCAL'],['ПУЛЬС МАКС','MAX HR','MAKS NABIZ'],['УДАР, М/С','STRIKE, M/S','VURUŞ, M/S'],['УДАРОВ','STRIKES','VURUŞ'],['Сегодня:','Today:','Bugün:'],
+['Титулы не указаны','No titles yet','Unvan yok'],['золото','gold','altın'],['серебро','silver','gümüş'],['бронза','bronze','bronz'],['появится после первых турниров сезона','will appear after the first tournaments of the season','sezonun ilk turnuvalarından sonra görünecek'],
+['Рекорд, пояса, титулы и медали — в подписке Pro','Record, belts, titles and medals — with Pro','Rekor, kuşaklar, unvanlar ve madalyalar — Pro’da'],['ПОДЕЛИТЬСЯ КАРТОЧКОЙ','SHARE CARD','KARTI PAYLAŞ'],['Регалии и рекорд заполняет сам спортсмен (Pro). Показ на экранах зала — только с его согласия.','Titles and record are filled in by the athlete (Pro). Shown on gym screens only with consent.','Unvanları ve rekoru sporcu kendisi doldurur (Pro). Salon ekranlarında yalnızca onayıyla gösterilir.'],
+['Личный кабинет','Personal cabinet','Kişisel panel'],['Псевдоним','Nickname','Takma ad'],['Вес, кг','Weight, kg','Kilo, kg'],['Весовая категория · определяется сама','Weight class · set automatically','Sıklet · otomatik belirlenir'],['Стойка','Stance','Duruş'],['Город','City','Şehir'],['Ортодокс','Orthodox','Ortodoks'],['Левша','Southpaw','Solak'],['Свитч','Switch','Switch'],
+['Рекорд: победы / поражения / ничьи','Record: wins / losses / draws','Rekor: galibiyet / mağlubiyet / beraberlik'],['Из побед: KO/TKO / сабмишн','Of wins: KO/TKO / submission','Galibiyetlerden: KO/TKO / submission'],['Пояс BJJ','BJJ belt','BJJ kuşağı'],['Медали: золото / серебро / бронза','Medals: gold / silver / bronze','Madalyalar: altın / gümüş / bronz'],['Пояса и титулы (по одному в строке)','Belts and titles (one per line)','Kuşaklar ve unvanlar (satır başına bir)'],['О себе','About me','Hakkımda'],
+['Белый','White','Beyaz'],['Синий','Blue','Mavi'],['Пурпурный','Purple','Mor'],['Коричневый','Brown','Kahverengi'],['Чёрный','Black','Siyah'],
+['Отправить','Send','Gönder'],['Модерация','Moderation','Moderasyon'],['Сохранено','Saved','Kaydedildi'],['ОТПРАВИТЬ','SEND','GÖNDER'],['ОТПРАВЛЯЮ…','SENDING…','GÖNDERİLİYOR…'],['ОТПРАВЛЕНО','SENT','GÖNDERİLDİ'],['СОХРАНЕНО ✓','SAVED ✓','KAYDEDİLDİ ✓'],
+['Есть изменения — отправьте их в клуб на проверку.','You have changes — send them to the club for review.','Değişiklikler var — kontrol için kulübe gönderin.'],['⏳ На модерации у клуба. После проверки изменения закрепятся на карточке.','⏳ Under club review. After approval the changes will appear on your card.','⏳ Kulüp incelemesinde. Onaydan sonra değişiklikler kartınıza işlenecek.'],['✓ Карточка сохранена и подтверждена клубом.','✓ Card saved and confirmed by the club.','✓ Kart kaydedildi ve kulüp tarafından onaylandı.'],
+['Отправлено на модерацию в клуб','Sent to the club for review','İnceleme için kulübe gönderildi'],['Не отправилось — проверьте связь и попробуйте ещё раз','Not sent — check your connection and try again','Gönderilemedi — bağlantınızı kontrol edip tekrar deneyin'],['сейчас не на тренировке','is not training now','şu anda antrenmanda değil'],
+['укажите вес — категория определится сама','enter your weight — the class is set automatically','kilonuzu girin — sıklet otomatik belirlenir'],['для этого вида спорта весовых категорий нет','this sport has no weight classes','bu sporda sıklet yok'],['U18 — по возрастной таблице','U18 — by age table','U18 — yaş tablosuna göre'],['категорию для юниоров уточнит тренер','the coach will set the junior class','genç sıkletini antrenör belirler'],
+['Фото профиля · стандарт','Profile photo · standard','Profil fotoğrafı · standart'],['3:4 · белый фон','3:4 · white background','3:4 · beyaz arka plan'],['Нет фото','No photo','Fotoğraf yok'],['Загрузите фото — проверим формат автоматически.','Upload a photo — we’ll check the format automatically.','Fotoğraf yükleyin — formatı otomatik kontrol ederiz.'],['ЗАГРУЗИТЬ ФОТО','UPLOAD PHOTO','FOTOĞRAF YÜKLE'],
+['Анфас, лицо в овале, плечи в кадре','Front view, face in the oval, shoulders in frame','Önden, yüz ovalde, omuzlar kadrajda'],['Ровный белый или светлый фон без теней','Plain white or light background without shadows','Gölgesiz düz beyaz veya açık arka plan'],['Без головного убора и тёмных очков, нейтральное выражение','No headwear or sunglasses, neutral expression','Şapka ve koyu gözlük olmadan, nötr ifade'],['Не меньше 600 × 800 px, без фильтров','At least 600 × 800 px, no filters','En az 600 × 800 px, filtresiz'],
+['Персональные данные','Personal data','Kişisel veriler'],['видит тренер клуба','visible to club coach','kulüp antrenörü görür'],['видит тренер','visible to coach','antrenör görür'],['передаётся тренеру','shared with coach','antrenörle paylaşılır'],['только спортсмен','athlete only','yalnızca sporcu'],['ФИО','Full name','Ad soyad'],['Дата рождения','Date of birth','Doğum tarihi'],['Телефон','Phone','Telefon'],['Экстренный контакт — кто','Emergency contact — who','Acil durum kişisi — kim'],['Экстренный контакт — телефон','Emergency contact — phone','Acil durum kişisi — telefon'],
+['Согласия','Consents','Onaylar'],['Обработка персональных данных (KVKK / GDPR)','Personal data processing (KVKK / GDPR)','Kişisel verilerin işlenmesi (KVKK / GDPR)'],['Показ имени и пульса на экранах зала','Show name and heart rate on gym screens','Adın ve nabzın salon ekranlarında gösterilmesi'],['Передача медданных тренеру (отдельное согласие)','Share medical data with coach (separate consent)','Tıbbi verilerin antrenörle paylaşılması (ayrı onay)'],['Удалить аккаунт и все данные можно по запросу; сроки хранения задаёт клуб.','You can delete your account and all data on request; the club sets retention periods.','Hesabınızı ve tüm verileri talep üzerine silebilirsiniz; saklama sürelerini kulüp belirler.'],
+['Биометрия','Biometrics','Biyometri'],['РОСТ','HEIGHT','BOY'],['ВЕС','WEIGHT','KİLO'],['ИМТ','BMI','VKİ'],['% ЖИРА','BODY FAT %','YAĞ %'],['ПУЛЬС ПОКОЯ','RESTING HR','DİNLENME NABZI'],['ДАВЛЕНИЕ','BLOOD PRESSURE','TANSİYON'],['Рост, см','Height, cm','Boy, cm'],['% жира','Body fat %','Yağ %'],['Давление','Blood pressure','Tansiyon'],['Вес сегодня, кг','Weight today, kg','Bugünkü kilo, kg'],
+['ИМТ у спортсменов с большой мышечной массой завышает оценку — ориентир, не диагноз.','BMI overestimates in athletes with high muscle mass — a guide, not a diagnosis.','VKİ kas kütlesi yüksek sporcularda yüksek çıkar — yol gösterir, teşhis değildir.'],['Допуск и ограничения','Clearance and restrictions','Sağlık izni ve kısıtlamalar'],['Медицинский допуск','Medical clearance','Sağlık raporu'],['справка не внесена — укажите дату ниже','no certificate yet — enter the date below','rapor girilmedi — tarihi aşağıya girin'],['Справка действует до','Certificate valid until','Rapor geçerlilik tarihi'],
+['Временные ограничения (травмы)','Temporary restrictions (injuries)','Geçici kısıtlamalar (sakatlıklar)'],['Нет активных ограничений','No active restrictions','Aktif kısıtlama yok'],['Что случилось','What happened','Ne oldu'],['Ограничение','Restriction','Kısıtlama'],['До','Until','Bitiş'],['+ ДОБАВИТЬ','+ ADD','+ EKLE'],['Противопоказания и важное','Contraindications and notes','Kontrendikasyonlar ve notlar'],
+['Система не ставит диагнозы. Ограничения задаёт врач или сам спортсмен; тренер видит их на экране тренера.','The system makes no diagnoses. Restrictions are set by a doctor or the athlete; the coach sees them on the coach screen.','Sistem teşhis koymaz. Kısıtlamaları doktor veya sporcu belirler; antrenör bunları antrenör ekranında görür.'],
+['План питания пока не назначен. Его составляет тренер — здесь появятся режим, меню и список покупок.','No nutrition plan yet. The coach makes it — the mode, menu and shopping list will appear here.','Henüz beslenme planı yok. Antrenör hazırlar — mod, menü ve alışveriş listesi burada görünecek.'],
+['Рекомендации и задания от тренера','Coach recommendations and tasks','Antrenörden öneriler ve görevler'],['Заданий нет','No tasks','Görev yok'],['открыто','open','açık'],
+['Полусредний','Welterweight','Yarı orta sıklet'],['Минимальный','Strawweight','Minimum sıklet'],['Наилегчайший','Flyweight','Sinek sıklet'],['Легчайший','Bantamweight','Horoz sıklet'],['Полулёгкий','Featherweight','Tüy sıklet'],['Лёгкий','Lightweight','Hafif sıklet'],['Средний','Middleweight','Orta sıklet'],['Полутяжёлый','Light heavyweight','Yarı ağır sıklet'],['Тяжёлый','Heavyweight','Ağır sıklet'],['Сверхтяжёлый','Super heavyweight','Süper ağır sıklet'],['1-й полусредний','Light welterweight','Hafif orta sıklet'],['1-й средний','Light middleweight','Hafif orta-ağır sıklet'],['Первый тяжёлый','Cruiserweight','Cruiser sıklet'],['Супертяжёлый','Super heavyweight','Süper ağır sıklet'],
+['Петух','Rooster','Rooster'],['Сверхлёгкий','Light feather','Light feather'],['Перо','Feather','Feather'],['Абсолютно тяжёлый','Ultra heavy','Ultra heavy'],
+['Бокс','Boxing','Boks'],['БОКС','BOXING','BOKS'],['Кикбоксинг','Kickboxing','Kickboks'],['КИКБОКСИНГ','KICKBOXING','KICKBOKS'],['Капоэйра','Capoeira','Capoeira'],['Дети','Kids','Çocuk'],
+['Закрыть','Close','Kapat'],['Карточка бойца','Fighter card','Sporcu kartı'],['Разделы бойца','Fighter sections','Sporcu bölümleri'],['Шкала пульсовых зон','Heart-rate zone scale','Nabız bölgesi ölçeği'],['График пульса за 60 секунд','Heart-rate chart, 60 seconds','60 saniyelik nabız grafiği'],['График пульса за тренировку','Training heart-rate chart','Antrenman nabız grafiği'],['Пульс двух бойцов','Heart rate of two fighters','İki sporcunun nabzı'],['Полноэкранный режим','Full screen','Tam ekran'],['Включить тёмную тему','Dark theme','Koyu tema'],['Включить светлую тему','Light theme','Açık tema'],['Главное меню PIT','PIT main menu','PIT ana menü'],['например 77','e.g. 77','ör. 77'],['Например: ушиб ребра','E.g. bruised rib','Ör. kaburga zedelenmesi'],['Без спаррингов в партере','No ground sparring','Yerde sparring yok'],['Вес за 12 недель','Weight over 12 weeks','12 haftalık kilo'],
+['По одному в строке: аллергии, хронические состояния, лекарства, что важно знать тренеру','One per line: allergies, chronic conditions, medicines, what the coach should know','Satır başına bir: alerjiler, kronik durumlar, ilaçlar, antrenörün bilmesi gerekenler'],
+['My PIT World — сообщество бойцов','My PIT World — fighter community','My PIT World — sporcu topluluğu'],['Мобильная версия спортсмена','Athlete mobile app','Sporcu mobil uygulaması'],['Экраны зала: ARENA, все участники, бой','Gym screens: ARENA, all fighters, fight','Salon ekranları: ARENA, tüm sporcular, maç'],['Интервал смены','Switch interval','Geçiş aralığı'],['Вход как (демо)','Sign in as','Giriş'],['ВСЕ УЧАСТНИКИ','ALL FIGHTERS','TÜM SPORCULAR'],['лет','y.o.','yaş'],['ЛЕТ','Y.O.','YAŞ'],['КГ','KG','KG'],['Анталья','Antalya','Antalya'],['Боец','Fighter','Sporcu'],['Тренер','Coach','Antrenör']];
+
+const RFI=UI_LANG==='tr'?2:1,RFM=new Map(RFD.map(r=>[r[0].toLowerCase(),r[RFI]])),i18Up=v=>UI_LANG==='tr'?v.toLocaleUpperCase('tr'):v.toUpperCase();
+function i18Seg(s){const k=s.trim();if(!k)return s;const lead=s.match(/^\s*/)[0],tail=s.match(/\s*$/)[0],TR=UI_LANG==='tr';let v=RFM.get(k.toLowerCase()),m;
+  if(v==null){
+    if(m=k.match(/^(\d+(?:[.,]\d+)?)\s*(кг)$/i))v=m[1]+' kg';
+    else if(m=k.match(/^(\d+)\s*(лет|год|года)$/i))v=m[1]+(TR?' yaş':' y.o.');
+    else if(m=k.match(/^(.+?)\s*\(до ([\d,]+)( кг)?\)$/)){const c=RFM.get(m[1].toLowerCase());if(c!=null)v=TR?`${c} (${m[2]} kg’a kadar)`:`${c} (up to ${m[2]} kg)`}
+    else if(m=k.match(/^(.+?)\s*\(([\d,]+\+)( кг)?\)$/)){const c=RFM.get(m[1].toLowerCase());if(c!=null)v=`${c} (${m[2]} kg)`}
+    else if(m=k.match(/^до ([\d,]+)( кг)?$/))v=TR?`${m[1]} kg’a kadar`:`up to ${m[1]} kg`;
+    else if(m=k.match(/^([\d,]+\+)( кг)?$/))v=m[1]+' kg';
+    else if(m=k.match(/^открыто (\d+)$/))v=(TR?'açık ':'open ')+m[1];
+    else if(m=k.match(/^Личный кабинет · (.+)$/))v=RFM.get('личный кабинет')+' · '+i18Name(m[1]);
+    else if(m=k.match(/^(\d+) × (\d+) МИН · ОТДЫХ (\d+) С$/))v=TR?`${m[1]} × ${m[2]} DK · DİNLENME ${m[3]} SN`:`${m[1]} × ${m[2]} MIN · REST ${m[3]} S`;
+    else if(m=k.match(/^(\d+) KO\/TKO · (\d+) сабмишн · (\d+) решением$/))v=TR?`${m[1]} KO/TKO · ${m[2]} submission · ${m[3]} karar`:`${m[1]} KO/TKO · ${m[2]} submission · ${m[3]} decision`;
+    else if(m=k.match(/^(.+) сейчас не на тренировке$/))v=i18Name(m[1])+' '+RFM.get('сейчас не на тренировке');
+    else if(m=k.match(/^Дети · (.+)$/))v=RFM.get('дети')+' · '+(RFM.get(m[1].toLowerCase())||m[1]);
+    else if(m=k.match(/^В ЗОНЕ (Z\d)$/i))v=RFM.get('в зоне')+' '+m[1];
+    else if(m=k.match(/^Р(\d*)—?$/))v='R'+m[1]+(k.endsWith('—')?'—':'');
+    else if(m=k.match(/^([✓●#\d\s]+)(.*[А-яЁё].*)$/)){const r2=i18Seg(m[2]);if(r2!=null)return lead+m[1]+r2.trim()+tail}
+    else if(/^[«"]?[А-ЯЁ][А-ЯЁа-яё«»"'.\-]*( [«"]?[А-ЯЁ][А-ЯЁа-яё«»"'.\-]*){0,2}$/.test(k))v=i18Name(k);
+  }
+  if(v==null)return null;if(k===k.toUpperCase()&&/[А-ЯЁ]/.test(k))v=i18Up(v);return lead+v+tail}
+function i18Name(s){return rnTr(s)}
+function i18Text(t){if(!/[А-яЁё]/.test(t))return t;const r=i18Seg(t);if(r!=null)return r;
+  if(t.includes(' · ')){const P=t.split(' · ').map(x=>/[А-яЁё]/.test(x)?i18Seg(x):x);if(P.every(x=>x!=null))return P.join(' · ')}
+  if(t.includes(': ')){const [a,...b]=t.split(': '),x=i18Seg(a+':');if(x!=null)return x+' '+b.join(': ')}
+  return t}
+if(I18N_ON&&window.CanvasRenderingContext2D){const F=CanvasRenderingContext2D.prototype.fillText;CanvasRenderingContext2D.prototype.fillText=function(t,...a){return F.call(this,typeof t==='string'&&/[А-яЁё]/.test(t)?i18Text(t):t,...a)}}
+const I18A=['placeholder','title','aria-label'];
+function i18Apply(root){if(!I18N_ON||!root)return;const one=n=>{if(n.nodeType===3){const p=n.parentElement;if(p&&(p.tagName==='TEXTAREA'||p.tagName==='SCRIPT'||p.tagName==='STYLE'))return;const v=n.nodeValue;if(/[А-яЁё]/.test(v)){const x=i18Text(v);if(x!==v)n.nodeValue=x}}
+    else if(n.nodeType===1){for(const a of I18A){const v=n.getAttribute(a);if(v&&/[А-яЁё]/.test(v)){const x=i18Text(v);if(x!==v)n.setAttribute(a,x)}}}};
+  if(root.nodeType===3)return one(root);one(root);const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT|NodeFilter.SHOW_ELEMENT);let x;while(x=w.nextNode())one(x)}
+function i18Start(){if(!I18N_ON)return;document.documentElement.lang=UI_LANG;i18Apply(document.body);
+  new MutationObserver(L=>{for(const m of L){if(m.type==='characterData')i18Apply(m.target);else if(m.type==='attributes')i18Apply(m.target);else m.addedNodes.forEach(n=>i18Apply(n))}}).observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:I18A})}
+
 const ATHLETES_DEMO=[
   {id:1,fit:.6,nick:'Адам',name:'Адам',  disc:'MMA',        age:27,kg:77,sex:'m',hrMax:193,hrRest:52,sensor:'Polar H10',      sim:{id:'SIM-H10-01',int:.79,rec:.012,bat:86}},
   {id:2,fit:0.75,nick:'Идрис',name:'Идрис',     disc:'Муай-тай',   age:24,kg:70,sex:'m',hrMax:196,hrRest:55,sensor:'Polar H10',      sim:{id:'SIM-H10-02',int:.81,rec:.014,bat:92}},
@@ -2620,7 +2698,7 @@ function pitRoster(){
   const hrMaxOf=age=>Math.round(208-.7*age); // Tanaka et al., 2001
   const out=[];const ms=PIT_REAL.members||[];const VER=new Set(PIT_REAL.ver||[]);
   ms.forEach(m=>{const id=out.length+1,ageK=!!m.age,age=m.age||25,dl=(Array.isArray(m.discs)&&m.discs.length?m.discs:String(m.disc||'MMA').split(/\s*[,+]\s*/)).filter(d=>d&&d!=='—');
-    out.push({id,mid:m.id,fit:.6,nick:m.first||m.name,name:m.name,disc:dl[0]||'MMA',discs:dl.length?dl:['MMA'],kids:m.kind==='kids'||!!m.kidish,age,kg:m.kg||null,sex:m.sex||'m',ageK,hrMax:m.hrMax||hrMaxOf(age),hrRest:60,sensor:'—',
+    out.push({id,mid:m.id,fit:.6,nick:I18N_ON?rnTr(m.first||m.name):(m.first||m.name),name:I18N_ON?rnTr(m.name):m.name,disc:dl[0]||'MMA',discs:dl.length?dl:['MMA'],kids:m.kind==='kids'||!!m.kidish,age,kg:m.kg||null,sex:m.sex||'m',ageK,hrMax:m.hrMax||hrMaxOf(age),hrRest:60,sensor:'—',
       sim:{id:'НЕТ ДАТЧИКА·'+id,int:.6,rec:.012,bat:100},coach:m.kind==='staff',ver:VER.has(m.id),public:m.consentPublic==='yes'||m.consentPublic===true,absent:false,end:m.end||'',start:m.start||'',plan:m.plan||'',left:m.left??null,dob:m.dob||''})});
   return out}
 const ATHLETES=REAL?pitRoster():WORLD?ATHLETES_DEMO.map(a=>a.id===1?{...a,name:'Адам AI',nick:'Адам AI'}:a):ATHLETES_DEMO;
@@ -3389,7 +3467,7 @@ function drawHR(c,m,o){const f=fit(c);if(!f)return;const{x,w,h}=f,a=m.a;
   if(o.axis){x.font='500 10px Montserrat,sans-serif';x.fillStyle='#737373';x.strokeStyle='rgba(160,160,160,.12)';x.lineWidth=1;
     for(let v=lo;v<=hi;v+=20){const y=Math.round(Y(v))+.5;x.beginPath();x.moveTo(pl,y);x.lineTo(w-pr,y);x.stroke();x.fillText(v,2,y+3)}
     x.textAlign='center';
-    if(o.span){[[t0,'−60 с'],[t0+30,'−30 с'],[t1,'сейчас']].forEach(([t,l],i)=>{x.textAlign=i===0?'left':i===2?'right':'center';x.fillText(l,X(t),h-3)})}
+    if(o.span){[[t0,I18N_ON?'−60 s':'−60 с'],[t0+30,I18N_ON?'−30 s':'−30 с'],[t1,I18N_ON?i18Text('сейчас'):'сейчас']].forEach(([t,l],i)=>{x.textAlign=i===0?'left':i===2?'right':'center';x.fillText(l,X(t),h-3)})}
     else{const step=t1-t0>1800?600:300;for(let t=step;t<t1-t0-60;t+=step)x.fillText(fmt(t).replace(/^0/,''),X(t0+t),h-3);
       (fm?fight.marks:[]).filter(k=>k.phase==='work').forEach(k=>{if(k.t>=t0){x.fillStyle='#a6a6a6';x.textAlign='left';x.fillText('Р'+k.round,X(k.t)+3,pt+10);x.fillStyle='#737373'}})}
     x.textAlign='left'}
@@ -4364,7 +4442,7 @@ function renderCard(){
      <div class="fc-medals">${MEDAL('#e8c35a',P.med.g,'золото')}${MEDAL('#c9ced6',P.med.s,'серебро')}${MEDAL('#c98a52',P.med.b,'бронза')}</div>`
     :lock('Рекорд, пояса, титулы и медали — в подписке Pro')}
    <div class="fc-stats" id="fcStats"></div>
-   <footer class="fc-foot"><span>${esc(P.stance!=='—'?P.stance:'')}</span><span>${esc(P.city)}</span><span class="fc-brand">${PITM}PIT RATING · pitrating.com</span></footer>`;
+   <footer class="fc-foot"><span>${esc(P.stance!=='—'?P.stance:'')}</span><span>${esc(P.city)}</span><span class="fc-brand" lang="en">${PITM}PIT RATING · pitrating.com</span></footer>`;
   renderCardStats();renderEdit();fitNL()}
 function fitNL(){const nl=$('#fCard .fc-nl');if(!nl||!nl.clientWidth)return;const h=nl.querySelector('.fc-name');h.style.fontSize='';let fs=parseFloat(getComputedStyle(h).fontSize),g=0;while(nl.scrollWidth>nl.clientWidth+1&&fs>18&&g++<40){fs-=1.5;h.style.fontSize=fs+'px'}}
 function renderCardStats(){const el=$('#fcStats');if(!el)return;const S=cardStats(cardId);
@@ -4828,7 +4906,7 @@ function lineChart(cv,vals,o){const f=fit(cv);if(!f)return;const{x,w,h}=f,pl=34,
   const ex=o.goal!=null?[o.goal]:[],lo=Math.min(...vals,...ex),hi=Math.max(...vals,...ex),pad=(hi-lo)*.15||1,L=lo-pad,H=hi+pad,X=i=>pl+i/(vals.length-1)*(w-pl-pr),Y=v=>pt+(1-(v-L)/(H-L))*(h-pt-pb);
   x.font='500 10px Montserrat,sans-serif';x.fillStyle='#737373';x.strokeStyle='rgba(160,160,160,.12)';
   [L+pad,H-pad].forEach(v=>{const y=Y(v);x.beginPath();x.moveTo(pl,y);x.lineTo(w-pr,y);x.stroke();x.fillText((o.dec?v.toFixed(1):Math.round(v)),2,y+3)});
-  x.fillText(o.x0||'12 нед. назад',pl,h-4);x.textAlign='right';x.fillText(o.x1||'сейчас',w-pr,h-4);x.textAlign='left';
+  x.fillText(o.x0||(I18N_ON?(UI_LANG==='tr'?'12 hafta önce':'12 weeks ago'):'12 нед. назад'),pl,h-4);x.textAlign='right';x.fillText(o.x1||(I18N_ON?i18Text('сейчас'):'сейчас'),w-pr,h-4);x.textAlign='left';
   const g=x.createLinearGradient(0,pt,0,h-pb);g.addColorStop(0,o.c+'55');g.addColorStop(1,o.c+'00');
   x.beginPath();vals.forEach((v,i)=>i?x.lineTo(X(i),Y(v)):x.moveTo(X(i),Y(v)));x.lineTo(X(vals.length-1),h-pb);x.lineTo(X(0),h-pb);x.closePath();x.fillStyle=g;x.fill();
   x.beginPath();vals.forEach((v,i)=>i?x.lineTo(X(i),Y(v)):x.moveTo(X(i),Y(v)));x.strokeStyle=o.c;x.lineWidth=2.2;x.stroke();
@@ -5311,7 +5389,7 @@ function meRealHTML(){const m=WME,C=m.comps||[],T=m.titles||[],cl=m.clubs||[],ag
    <div style="display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.9rem">${`<div style="flex:1 1 9rem;min-width:0;background:#ffffff08;border:1px solid var(--line-2);border-radius:.8rem;padding:.6rem .7rem"><b style="display:flex;gap:.45rem;font-size:1.15rem;line-height:1.2;white-space:nowrap"><span>🥇${g}</span><span>🥈${sv}</span><span>🥉${br}</span></b><span style="font-size:.74rem;opacity:.7">медали</span></div>`}${st(`${w}-${l}-${d}`,'бои W-L-D')}${st(C.length,'соревнований')}${st(T.length,'титулов')}${m.visits?st(m.visits.total??0,'тренировок в клубе'):''}</div>
    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,17rem),1fr));gap:.8rem;margin-top:.9rem">
     <div><small style="letter-spacing:.12em;font-weight:800;opacity:.7">КЛУБЫ</small><div style="display:grid;gap:.4rem;margin-top:.4rem">
-     ${m.club?`<div style="display:flex;gap:.6rem;align-items:center;padding:.5rem .6rem;border:1px solid #e8c35a55;border-radius:.7rem">${m.club.logo?`<img src="${esc(m.club.logo)}" alt="" style="height:1.6rem;max-width:4.5rem;object-fit:contain">`:''}<span style="min-width:0"><b>${esc(m.club.name)}</b><small style="display:block;opacity:.7">${esc(m.club.city||'')} · текущий клуб${m.verAt?' · с '+new Date(m.verAt).toLocaleDateString('ru-RU',{month:'short',year:'numeric'}):''}</small></span></div>`:''}
+     ${m.club?`<div style="display:flex;gap:.6rem;align-items:center;padding:.5rem .6rem;border:1px solid #e8c35a55;border-radius:.7rem">${m.club.logo?`<img src="${esc(m.club.logo)}" alt="" style="height:1.6rem;max-width:4.5rem;object-fit:contain">`:''}<span style="min-width:0"><b>${esc(m.club.name)}</b><small style="display:block;opacity:.7">${esc(UI_LANG==='ru'?(m.club.city||''):(m.club.cityEn||m.club.city||''))} · текущий клуб${m.verAt?' · '+(UI_LANG==='en'?'since ':UI_LANG==='tr'?'':'с ')+new Date(m.verAt).toLocaleDateString(UI_LANG==='en'?'en-GB':UI_LANG==='tr'?'tr-TR':'ru-RU',{month:'short',year:'numeric'})+(UI_LANG==='tr'?'’den beri':''):''}</small></span></div>`:''}
      ${cl.map(c=>`<div style="display:flex;gap:.6rem;align-items:center;padding:.5rem .6rem;border:1px solid var(--line-2);border-radius:.7rem"><span style="min-width:0"><b>${esc(c.name)}</b><small style="display:block;opacity:.7">${esc(c.city||'')} · ${esc(c.from||'?')} — ${esc(c.to||'н.в.')}</small></span></div>`).join('')}</div></div>
     <div><small style="letter-spacing:.12em;font-weight:800;opacity:.7">СОРЕВНОВАНИЯ</small><div style="display:grid;gap:.4rem;margin-top:.4rem">${C.length?C.slice(0,8).map(c=>`<div style="padding:.5rem .6rem;border:1px solid var(--line-2);border-radius:.7rem"><b style="display:block;overflow-wrap:anywhere">${esc(c.name)}</b><small style="opacity:.75">${esc(c.date||'')}${c.place?' · '+esc(c.place):''} · ${res(c)}</small></div>`).join(''):'<span style="opacity:.6;font-size:.88rem">Пока нет подтверждённых соревнований — добавьте их в My PIT, клуб проверит.</span>'}</div></div>
     ${T.length?`<div><small style="letter-spacing:.12em;font-weight:800;opacity:.7">ТИТУЛЫ</small><div style="display:grid;gap:.4rem;margin-top:.4rem">${T.map(x=>`<div style="padding:.5rem .6rem;border:1px solid var(--line-2);border-radius:.7rem">🏆 <b>${esc(x.name)}</b>${x.year?` <small style="opacity:.7">· ${esc(x.year)}</small>`:''}</div>`).join('')}</div></div>`:''}
@@ -5667,7 +5745,7 @@ const HUBS=[['Лас-Вегас',-115.14,36.17,'MMA'],['Альбукерке',-1
 const PIT_HOME={n:'Mowgli Fight Club · Анталья',lon:30.7,lat:36.9};
 const PIT_RAYS=['Стамбул','Москва','Махачкала','Дубай','Лондон','Париж','Каир','Касабланка','Лагос','Найроби','Йоханнесбург','Бангкок','Лас-Вегас','Рио-де-Жанейро'];
 /* ===== My PIT World (рабочий режим): язык аккаунта, карта сети с реальным клубом ===== */
-const WL_LANG=(window.PIT_REAL&&PIT_REAL.me&&PIT_REAL.me.lang)||'ru';
+const WL_LANG=UI_LANG;
 const WTR={en:[['Рейтинги, турниры и кубок клубов появятся, когда к PIT подключатся клубы и пройдут первые турниры сезона. На карте — первый клуб PIT и мировые центры единоборств, куда растёт сеть.','Rankings, tournaments and the club cup will appear once clubs join PIT and the first tournaments of the season take place. The map shows the first PIT club and the world martial-arts hubs the network is growing to.'],
   ['Сеть PIT World только запускается','The PIT World network is just launching'],
   ['Каждая тренировка считается: пульс, нагрузка, посещаемость, результат. Тренер подтверждает — мир видит.','Every training counts: heart rate, load, attendance, results. The coach confirms — the world sees.'],
@@ -5710,7 +5788,7 @@ function realNetHTML(){const [hx,hy]=wxy(PIT_HOME),P=HUBS.map((h,i)=>{const [x,y
    <div class="rn-info" id="rnInfo"><span class="rn-hint">${nt('hint')}</span></div></section>`}
 function rnClubCard(){const C=(window.PIT_REAL||{}).clubCard||{},g=C.lat?`https://www.google.com/maps/dir/?api=1&destination=${C.lat},${C.lon}${C.placeId?'&destination_place_id='+C.placeId:''}`:'',a=C.lat?`https://maps.apple.com/?daddr=${C.lat},${C.lon}&q=${encodeURIComponent(C.name||'')}`:'';
   const DT={en:{'Бокс':'Boxing','Кикбоксинг':'Kickboxing','Капоэйра':'Capoeira'},tr:{'Бокс':'Boks','Кикбоксинг':'Kickboks','Капоэйра':'Capoeira'}}[WL_LANG]||{};
-  return `<div class="rn-club">${C.logo?`<img src="${esc(C.logo)}" alt="${esc(C.name||'')}">`:''}<div class="rn-cw"><small>${nt('club')} · ✓ Verified</small><b>${esc(C.name||'Mowgli Fight Club')}</b><span>${esc(LI?(C.cityEn||C.city||''):(C.city||''))}${C.addr?' · '+esc(C.addr):''}</span>
+  return `<div class="rn-club"><div class="rn-cw"><small>${nt('club')} · ✓ Verified</small><b>${esc(C.name||'Mowgli Fight Club')}</b>${C.logo?`<img class="rn-logo" src="${esc(C.logo)}" alt="${esc(C.name||'')}">`:''}<span>${esc(LI?(C.cityEn||C.city||''):(C.city||''))}${C.addr?' · '+esc(C.addr):''}</span>
     <div class="rn-tags">${(C.discs||[]).map(d=>`<i>${esc(DT[d]||d)}</i>`).join('')}</div>
     <div class="rn-st"><div><b>${C.active??0}</b><small>${nt('act')}</small></div><div><b>${C.verified??0}</b><small>${nt('ver')}</small></div><div><b>${C.groups??0}</b><small>${nt('gr')}</small></div></div>
     ${(C.coaches||[]).length?`<small class="rn-co">${nt('co')}: ${C.coaches.map(n=>esc(LI?rnTr(n):n)).join(' · ')}</small>`:''}
@@ -5910,7 +5988,7 @@ function applyRole(r){if(r)ROLE.v=r;try{localStorage.setItem('fp.role',ROLE.v)}c
   if(v==='coach'&&cab.sec==='sub')cab.sec='card';
   if(!MOB.on)setView(ui.view);if(ui.view==='coach')renderAdm()}
 $('#roleSel').addEventListener('change',e=>applyRole(e.target.value));
-setTimeout(async()=>{applyRole();if(REAL)try{applyCards()}catch(e){}
+setTimeout(async()=>{applyRole();if(REAL)try{applyCards()}catch(e){}try{i18Start()}catch(e){}
   /* My PIT World — отдельная страница сообщества (/world/): без пульта зала, для сотрудников и бойцов */
   if(WORLD){document.body.classList.add('world-only');if(window.PIT_REAL){document.body.classList.add('world-real');document.documentElement.lang=WL_LANG}document.getElementById('fpGate')?.remove();$('#roleGate').hidden=true;
     const h=document.getElementById('toHome');if(h){h.hidden=false;h.href=PIT_REAL.back||'/';h.title=PIT_REAL.fighter?'My PIT':'Главное меню PIT'}
