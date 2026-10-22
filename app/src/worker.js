@@ -101,6 +101,11 @@ async function api(req, env, me, path) {
         if (!cur || cur.deleted) return json({ error: 'not_found', col: o.col, id: o.id }, 404);
         data = { ...JSON.parse(cur.data), ...o.data };
       }
+      // дисциплины бойца меняют только владелец и администратор (тренер — нет)
+      if (o.col === 'members' && (o.op === 'set' || o.op === 'update') && !(me.role === 'owner' || me.role === 'admin')) {
+        const cur = await env.DB.prepare('SELECT data,deleted FROM docs WHERE col=? AND id=?').bind(o.col, o.id).first();
+        if (cur && !cur.deleted) { const c = JSON.parse(cur.data); data = { ...data, disc: c.disc ?? null, discs: c.discs ?? null }; }
+      }
       const s = o.op === 'delete' ? null : JSON.stringify(data);
       if (s && s.length > 900000) return json({ error: 'too_large' }, 413);
       stmts.push(env.DB.prepare(

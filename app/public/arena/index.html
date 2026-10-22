@@ -2587,7 +2587,7 @@ function pitRoster(){
   const ms=PIT_REAL.members||[];const hasAdam=ms.some(m=>/^адам\b/i.test(m.first||m.name||''));
   if(adam&&!hasAdam)out.push({...adam,name:'Адам AI',nick:'Адам AI',sensor:'—',sim:{id:'НЕТ ДАТЧИКА·1',int:.6,rec:.012,bat:100},public:true,absent:false});
   ms.forEach(m=>{const id=out.length+1,age=m.age||25,dl=(Array.isArray(m.discs)&&m.discs.length?m.discs:String(m.disc||'MMA').split(/\s*[,+]\s*/)).filter(d=>d&&d!=='—');
-    out.push({id,mid:m.id,fit:.6,nick:m.first||m.name,name:m.name,disc:dl[0]||'MMA',discs:dl.length?dl:['MMA'],age,kg:m.kg||null,sex:m.sex||'m',hrMax:m.hrMax||hrMaxOf(age),hrRest:60,sensor:'—',
+    out.push({id,mid:m.id,fit:.6,nick:m.first||m.name,name:m.name,disc:dl[0]||'MMA',discs:dl.length?dl:['MMA'],kids:m.kind==='kids',age,kg:m.kg||null,sex:m.sex||'m',hrMax:m.hrMax||hrMaxOf(age),hrRest:60,sensor:'—',
       sim:{id:'НЕТ ДАТЧИКА·'+id,int:.6,rec:.012,bat:100},coach:m.kind==='staff',public:m.consentPublic==='yes'||m.consentPublic===true,absent:false,end:m.end||'',start:m.start||'',plan:m.plan||'',left:m.left??null,dob:m.dob||''})});
   return out}
 const ATHLETES=REAL?pitRoster():WORLD?ATHLETES_DEMO.map(a=>a.id===1?{...a,name:'Адам AI',nick:'Адам AI'}:a):ATHLETES_DEMO;
@@ -3637,7 +3637,7 @@ function schFrameHTML(){const who=schWho(),adm=ROLE.v==='admin',L=schUpcoming(wh
    <div class="sc-row">${L.map(o=>{const k=o.st+'|'+o.c.disc,op=SCH_UI.open===k;return`<button type="button" class="sc-c${now>=o.st?' on':''}${op?' open':''}" data-sco="${k}" aria-expanded="${op}" style="--sc:${SCH_COL[o.c.disc]||'#e8c35a'}"><div class="sc-d"><span>${lbl(o)}</span><b class="num">${o.c.time}</b></div>
      <div class="sc-g">${esc(o.c.disc)}</div><small>${cnt(o.c.disc)} бойцов${who?'':' · '+esc(coName(o.c.coach))}</small>${stt(o)}<i class="sc-more">${op?'Свернуть ▴':'Состав ▾'}</i></button>`}).join('')||'<div class="muted small">На ближайшую неделю занятий нет — добавьте в «Расписании».</div>'}</div>
    ${(()=>{const o=L.find(x=>SCH_UI.open===x.st+'|'+x.c.disc);if(!o)return'';
-     const F=ATHLETES.filter(a=>o.c.disc==='Все группы'||(a.discs||[a.disc]).includes(o.c.disc)).map(a=>({a,r:ratingOf(a.id)})).sort((x,y)=>y.r.R-x.r.R);
+     const F=ATHLETES.filter(a=>o.c.disc==='Все группы'||(REAL?aInCls(a,o.c.disc):a.disc===o.c.disc)).map(a=>({a,r:ratingOf(a.id)})).sort((x,y)=>y.r.R-x.r.R);
      return`<div class="sc-det" style="--sc:${SCH_COL[o.c.disc]||'#e8c35a'}"><div class="sc-dh"><b>${esc(o.c.disc)} · ${lbl(o)} ${o.c.time}</b><span class="muted small">${esc(coName(o.c.coach))} · ${F.length} бойцов · сортировка по PIT</span><button type="button" class="sc-x" data-scx aria-label="Свернуть состав">✕</button></div>
       <div class="sc-fl">${F.map(({a,r})=>{const m=metrics.get(a.id),st=metrics.status(m),on=st==='live'||st==='stale';
         return`<button type="button" class="sc-f" data-scf="${a.id}" title="Открыть карточку бойца"><img src="${(CAB[a.id]&&CAB[a.id].person.photo)||avatar(a.id)}" alt=""><span class="sc-fn"><b>${esc(a.name)}</b>${u18Badge(a)}<small>${a.kg?a.kg+' кг':'вес —'} · ${esc(r.cat)}</small></span>
@@ -3818,8 +3818,11 @@ const GURI={};function gLogo(name){if(GURI[name])return GURI[name];
   const svg=GLOGOS[name]||GSVG(`<path d="M60,22 l28,10 v23 q0,27 -28,39 q-28,-12 -28,-39 v-23 z" fill="none" stroke="url(#g)" stroke-width="3.5" stroke-linejoin="round"/><text x="60" y="72" text-anchor="middle" font-family="Arial Black,Arial" font-size="34" font-weight="900" fill="url(#g)">${(name[0]||'★').toUpperCase()}</text>`);
   return GURI[name]='data:image/svg+xml;utf8,'+encodeURIComponent(svg)}
 let GROUPS=null;
+// реальный зал: боец в группе, если в карточке CRM отмечена её дисциплина (детские группы — только дети)
+function aInCls(a,cd){if(!a||a.coach)return false;cd=String(cd||'');if(cd==='Все группы')return true;const L=a.discs||[a.disc];
+  if(/^Дети/i.test(cd))return!!a.kids&&L.includes(cd.replace(/^Дети\s*·\s*/i,''));return!a.kids&&L.includes(cd)}
 function groupsInit(){if(REAL){const cl=((window.PIT_REAL||{}).schedule||{}).classes||[],m2a=new Map(ATHLETES.filter(a=>a.mid).map(a=>[a.mid,a.id]));
-  GROUPS=cl.slice().sort((x,y)=>String(x.time).localeCompare(String(y.time))).map(c=>({id:c.id,name:c.disc+' · '+c.time,disc:c.disc,ids:(c.ids||[]).map(x=>m2a.get(x)).filter(Boolean),real:true}));return}
+  GROUPS=cl.slice().sort((x,y)=>String(x.time).localeCompare(String(y.time))).map(c=>({id:c.id,name:c.disc+' · '+c.time,disc:c.disc,ids:ATHLETES.filter(a=>aInCls(a,c.disc)).map(a=>a.id),real:true}));return}
   if(GROUPS)return;try{GROUPS=JSON.parse(localStorage.getItem((REAL?'fp.groups.v1.real':'fp.groups.v1')))}catch(e){}
   if(!GROUPS)GROUPS=[{id:1,name:'Сборная клуба',ids:[1,2,4,7,12,14,17]},{id:2,name:'Утренняя группа',ids:[3,5,6,8,10,13,19]},{id:3,name:'Молодёжка',ids:[11,12,15,16,20]}]}
 const saveGroups=()=>{try{localStorage.setItem((REAL?'fp.groups.v1.real':'fp.groups.v1'),JSON.stringify(GROUPS))}catch(e){}};
@@ -3836,7 +3839,7 @@ function admGroups(B){groupsInit();
      <span class="gn">${x.ids.length} ${plural(x.ids.length,'боец','бойца','бойцов')}</span>
      <span class="gav">${x.ids.slice(0,6).map(i2=>`<img src="${CAB[i2]&&CAB[i2].person.photo||avatar(i2)}" alt="">`).join('')}${x.ids.length>6?`<u>+${x.ids.length-6}</u>`:''}</span>
      ${x.auto||x.real?'':`<button class="iconbtn gdel" data-gd="${x.id}">✕</button>`}</div>`}).join('')}</div>
-   ${REAL?`<div class="muted small" style="margin-top:.6rem">${all.length?'':'Групп пока нет. '}Группы и их состав ведёт администратор в CRM → «Расписание».</div>`:`<div class="label" style="margin:.9rem 0 .3rem">Новая группа</div>
+   ${REAL?`<div class="muted small" style="margin-top:.6rem">${all.length?'':'Групп пока нет. '}Группы создаются в CRM → «Расписание», состав — по дисциплинам в карточках бойцов.</div>`:`<div class="label" style="margin:.9rem 0 .3rem">Новая группа</div>
    <div style="display:flex;gap:.5rem;align-items:end;flex-wrap:wrap">
     <label class="fe" style="min-width:14rem"><span>Название</span><input id="ngN" placeholder="Например: Подготовка к турниру"></label>
     <span style="display:flex;gap:.6rem;flex-wrap:wrap">${ATHLETES.map(a2=>`<label style="display:flex;gap:3px;font-size:.72rem;align-items:center"><input type="checkbox" class="ngA" value="${a2.id}">${esc(a2.name)}</label>`).join('')}</span>
