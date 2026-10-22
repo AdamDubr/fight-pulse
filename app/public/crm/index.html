@@ -196,8 +196,8 @@ input::-webkit-date-and-time-value{text-align:left}
 .glogo{width:3.6rem;height:3.6rem;border-radius:50%;background:#16161a;padding:.35rem;box-sizing:border-box;flex:none}
 .gav{display:inline-flex;align-items:center}.gav i{display:inline-grid;place-items:center;width:1.75rem;height:1.75rem;border-radius:50%;color:#fff;font-style:normal;font-size:.62rem;font-weight:800;border:2px solid var(--panel);margin-left:-.45rem}.gav i:first-child{margin-left:0}.gav u{text-decoration:none;font-size:.7rem;color:var(--muted);margin-left:.3rem}
 .coach{display:grid;grid-template-columns:minmax(0,15rem) minmax(0,1fr);gap:0;padding:0;overflow:hidden}
-.coach .cph{position:relative;min-height:15rem;background:#16161a}
-.coach .cph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 20%}
+.coach .cph{position:relative;align-self:start;aspect-ratio:4/5;width:100%;background:#16161a;border-radius:0 0 1rem 0;overflow:hidden}
+.coach .cph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 50%}
 .coach .cph .ini{position:absolute;inset:0;display:grid;place-items:center;font-size:3.4rem;font-weight:800;color:#e8c35a;background:radial-gradient(circle at 30% 20%,#e8c35a33,#16161a 70%)}
 .coach .cbd{padding:1.1rem 1.2rem;display:grid;gap:.7rem;align-content:start;min-width:0}
 .coach .cnm{font-size:1.35rem;font-weight:800;line-height:1.15;overflow-wrap:anywhere}
@@ -206,7 +206,7 @@ input::-webkit-date-and-time-value{text-align:left}
 .coach .cst{display:flex;flex-wrap:wrap;gap:.4rem}.coach .cst span{background:var(--panel-2);border:1px solid var(--line);border-radius:.5rem;padding:.2rem .55rem;font-size:.8rem;font-weight:700}
 .coach .csec b{display:block;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:.3rem}
 .coach .csec ul{margin:0;padding:0;list-style:none;display:grid;gap:.3rem}.coach .csec li{display:flex;gap:.5rem;line-height:1.4}.coach .csec li i{font-style:normal;flex:none}
-@media (max-width:640px){.coach{grid-template-columns:1fr}.coach .cph{min-height:0;aspect-ratio:4/3}}
+@media (max-width:640px){.coach{grid-template-columns:1fr}.coach .cph{aspect-ratio:4/5;max-height:26rem;border-radius:0}}
 html:not([data-role=trainer]) .trn-only{display:none!important}
 html[data-role=trainer] .fin-only,html[data-role=trainer] .adm-only{display:none!important}
 .cashbal{display:grid;grid-template-columns:minmax(0,1.2fr) 1fr 1fr;gap:.8rem;align-items:center}
