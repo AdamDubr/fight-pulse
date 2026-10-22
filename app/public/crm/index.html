@@ -195,6 +195,18 @@ input::-webkit-date-and-time-value{text-align:left}
 .gcard .acts{display:flex;gap:.4rem;margin-top:.3rem}
 .glogo{width:3.6rem;height:3.6rem;border-radius:50%;background:#16161a;padding:.35rem;box-sizing:border-box;flex:none}
 .gav{display:inline-flex;align-items:center}.gav i{display:inline-grid;place-items:center;width:1.75rem;height:1.75rem;border-radius:50%;color:#fff;font-style:normal;font-size:.62rem;font-weight:800;border:2px solid var(--panel);margin-left:-.45rem}.gav i:first-child{margin-left:0}.gav u{text-decoration:none;font-size:.7rem;color:var(--muted);margin-left:.3rem}
+.coach{display:grid;grid-template-columns:minmax(0,15rem) minmax(0,1fr);gap:0;padding:0;overflow:hidden}
+.coach .cph{position:relative;min-height:15rem;background:#16161a}
+.coach .cph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 20%}
+.coach .cph .ini{position:absolute;inset:0;display:grid;place-items:center;font-size:3.4rem;font-weight:800;color:#e8c35a;background:radial-gradient(circle at 30% 20%,#e8c35a33,#16161a 70%)}
+.coach .cbd{padding:1.1rem 1.2rem;display:grid;gap:.7rem;align-content:start;min-width:0}
+.coach .cnm{font-size:1.35rem;font-weight:800;line-height:1.15;overflow-wrap:anywhere}
+.coach .crole{color:var(--muted);font-size:.86rem;margin-top:.15rem}
+.coach .crec{display:inline-block;background:#16161a;color:#f3dc95;border-radius:.6rem;padding:.4rem .7rem;font-weight:800;font-size:.86rem;line-height:1.35}
+.coach .cst{display:flex;flex-wrap:wrap;gap:.4rem}.coach .cst span{background:var(--panel-2);border:1px solid var(--line);border-radius:.5rem;padding:.2rem .55rem;font-size:.8rem;font-weight:700}
+.coach .csec b{display:block;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:.3rem}
+.coach .csec ul{margin:0;padding:0;list-style:none;display:grid;gap:.3rem}.coach .csec li{display:flex;gap:.5rem;line-height:1.4}.coach .csec li i{font-style:normal;flex:none}
+@media (max-width:640px){.coach{grid-template-columns:1fr}.coach .cph{min-height:0;aspect-ratio:4/3}}
 html:not([data-role=trainer]) .trn-only{display:none!important}
 html[data-role=trainer] .fin-only,html[data-role=trainer] .adm-only{display:none!important}
 .cashbal{display:grid;grid-template-columns:minmax(0,1.2fr) 1fr 1fr;gap:.8rem;align-items:center}
@@ -750,17 +762,19 @@ const JALAL_SEED={full:'Миржалал Хасани (Mirjalal Hasani)',nick:'M
   exp:['Профессиональные бои 2016–2023 (полулёгкий вес)','Turkey Elite MMA, Strike FC, King of Warriors, WJF, UFA','SBC (Сербия), NFC (Казахстан), Spil FS'],
   links:['https://www.sherdog.com/fighter/Mirjalal-Hasani-334431','https://mmafederasyonu.org.tr/Mma-Data/sporcular/sporcu-Detay/mirjalal-hasani/1243','https://instagram.com/jalal_hasani_'],
   bio:'Профессиональный боец ММА, чемпион Турции, основатель Mowgli Fight Club. Ставит борьбу и партер — 3 победы удушающим треугольником в профи.'};
-function coachCard(c,classes){const G=classes.filter(x=>x.coach===c.k);
-  return`<article class="card" style="display:grid;gap:.6rem"><div style="display:flex;gap:.9rem;align-items:center;flex-wrap:wrap">${c.photo?`<img src="/_blob/${esc(c.photo)}" alt="" style="width:5rem;height:5rem;border-radius:1rem;object-fit:cover">`:`<span style="width:5rem;height:5rem;border-radius:1rem;display:grid;place-items:center;background:#16161a;color:#e8c35a;font-weight:800;font-size:1.4rem">${esc(ini(c.n))}</span>`}
-    <div style="flex:1;min-width:12rem"><b style="font-size:1.15rem">${esc(c.n)}</b>${c.nick&&!String(c.n).toLowerCase().includes(String(c.nick).toLowerCase())?` <span class="pill gold">«${esc(c.nick)}»</span>`:''}<small style="display:block;color:var(--muted)">${esc([c.full,c.role].filter(Boolean).join(' · '))}</small>
-     <div class="chips" style="margin-top:.35rem">${lines(c.discs).map(d=>`<span class="chip" style="cursor:default">${esc(d)}</span>`).join('')}${G.length?`<span class="note">${G.length} ${plural(G.length,'группа','группы','групп')}: ${G.map(x=>esc(x.disc+' '+x.time)).join(', ')}</span>`:''}</div></div>
-    <span class="acts adm-only"><button class="btn sm w-only" type="button" data-coed="${esc(c.k)}">Изменить анкету</button>${G.length?'':`<button class="btn sm danger w-only" type="button" data-codel="${esc(c.k)}">Убрать</button>`}</span></div>
-   ${[c.height?'рост '+c.height+' см':'',c.weight?'вес '+c.weight+' кг':'',c.record].filter(Boolean).length?`<div class="note">${esc([c.height?'рост '+c.height+' см':'',c.weight?'вес '+c.weight+' кг':'',c.record].filter(Boolean).join(' · '))}</div>`:''}
-   ${c.bio?`<p style="margin:0">${esc(c.bio)}</p>`:''}
-   ${lines(c.titles).length?`<div><b style="font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">Регалии</b><ul style="margin:.3rem 0 0 1.1rem;padding:0">${lines(c.titles).map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`:''}
-   ${lines(c.exp).length?`<div><b style="font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">Опыт и выступления</b><ul style="margin:.3rem 0 0 1.1rem;padding:0">${lines(c.exp).map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`:''}
-   ${lines(c.links).length?`<div class="chips">${lines(c.links).map(u=>`<a class="chip" href="${esc(u)}" target="_blank" rel="noopener nofollow">${esc(u.replace(/^https?:\/\/(www\.)?/,'').split('/')[0])} ↗</a>`).join('')}</div>`:''}
-   ${c.phone||c.email?`<div class="note">${esc([c.phone,c.email].filter(Boolean).join(' · '))} <span class="muted">— видно только сотрудникам</span></div>`:''}</article>`}
+function coachCard(c,classes){const G=classes.filter(x=>x.coach===c.k),nickOk=c.nick&&!String(c.n).toLowerCase().includes(String(c.nick).toLowerCase());
+  const li=(L,ic)=>`<ul>${lines(L).map(x=>`<li><i>${ic}</i><span>${esc(x)}</span></li>`).join('')}</ul>`;
+  return`<article class="card coach"><div class="cph">${c.photo?`<img src="/_blob/${esc(c.photo)}" alt="${esc(c.n)}">`:`<span class="ini">${esc(ini(c.n))}</span>`}</div>
+   <div class="cbd"><div style="display:flex;gap:.8rem;align-items:flex-start;flex-wrap:wrap"><div style="flex:1;min-width:12rem"><div class="cnm">${esc(c.n)}${nickOk?` <span style="color:var(--gold)">«${esc(c.nick)}»</span>`:''}</div><div class="crole">${esc([c.role,c.full].filter(Boolean).join(' · '))}</div></div>
+     <span class="acts adm-only"><button class="btn sm w-only" type="button" data-coed="${esc(c.k)}">Изменить анкету</button>${G.length?'':`<button class="btn sm danger w-only" type="button" data-codel="${esc(c.k)}">Убрать</button>`}</span></div>
+    <div class="cst">${lines(c.discs).map(d=>`<span>${esc(d)}</span>`).join('')}${c.height?`<span>${esc(c.height)} см</span>`:''}${c.weight?`<span>${esc(c.weight)} кг</span>`:''}${G.length?`<span>${G.length} ${plural(G.length,'группа','группы','групп')}</span>`:''}</div>
+    ${c.record?`<div><span class="crec">🥊 ${esc(c.record)}</span></div>`:''}
+    ${c.bio?`<p style="margin:0;line-height:1.5">${esc(c.bio)}</p>`:''}
+    ${lines(c.titles).length?`<div class="csec"><b>Регалии</b>${li(c.titles,'🏅')}</div>`:''}
+    ${lines(c.exp).length?`<div class="csec"><b>Опыт и выступления</b>${li(c.exp,'🥊')}</div>`:''}
+    ${G.length?`<div class="note">Группы: ${G.map(x=>esc(x.disc+' · '+x.time+' · '+(x.dow||[]).map(d=>SDAYS[d-1]).join('/'))).join('; ')}</div>`:''}
+    ${lines(c.links).length?`<div class="chips">${lines(c.links).map(u=>`<a class="chip" href="${esc(u)}" target="_blank" rel="noopener nofollow">${esc(u.replace(/^https?:\/\/(www\.)?/,'').split('/')[0])} ↗</a>`).join('')}</div>`:''}
+    ${c.phone||c.email?`<div class="note">📞 ${esc([c.phone,c.email].filter(Boolean).join(' · '))} — видно только сотрудникам</div>`:''}</div></article>`}
 function vCoaches(){const {classes,coaches}=SCH();
   return`${mviewBar()}<div class="head"><div><h1>Тренеры · ${coaches.length}</h1><p class="sub">Анкеты тренеров видят бойцы в My PIT → «Клуб» (кроме телефона и e-mail). Тренер привязывается к группам в «Расписании».</p></div></div>
    <div style="display:grid;gap:.8rem">${coaches.map(c=>S.coEdit===c.k?coachForm(c):coachCard(c,classes)).join('')}</div>
