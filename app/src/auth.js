@@ -103,7 +103,10 @@ export async function authRoutes(req, env, path) {
     const hash = await sha(email + ':' + code + ':' + (env.CODE_PEPPER || 'pit'));
     await env.DB.prepare('INSERT INTO auth_codes(email,hash,exp,tries,sent_at,sent_count,window_start) VALUES(?,?,?,0,?,1,?) ON CONFLICT(email) DO UPDATE SET hash=excluded.hash,exp=excluded.exp,tries=0,sent_at=excluded.sent_at,sent_count=?,window_start=?')
       .bind(email, hash, t + CODE_TTL, t, t, inWin ? cur.sent_count + 1 : 1, inWin ? cur.window_start : t).run();
-    const m = mail(code, lang(req, b));
+    // правило: письма — на языке, на котором создан аккаунт; для нового адреса — язык страницы входа
+    let accLang = null;
+    try { const fr = await env.DB.prepare('SELECT data FROM fighters WHERE email=?').bind(email).first(); if (fr) { const l = JSON.parse(fr.data).lang; if (['ru', 'en', 'tr'].includes(l)) accLang = l } } catch (e) { }
+    const m = mail(code, accLang || lang(req, b));
     try {
       await env.EMAIL.send({ to: email, from: { email: 'noreply@pitrating.com', name: 'PIT RATING' }, subject: m.subject, html: m.html, text: m.text });
     } catch (e) {

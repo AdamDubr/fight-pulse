@@ -89,22 +89,32 @@ async function leadByEmail(env, email) {
   for (const x of r.results || []) { try { const l = JSON.parse(x.data); if (String(l.email || (l.reg && l.reg.email) || '').toLowerCase() === email && l.status === 'booked') return l } catch (e) { } }
   return null;
 }
-const DOW_RU = ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб'];
-function trialMail(to, name, clubName, t) {
-  const d = new Date(t.date + 'T12:00:00'), ds = String(d.getDate()).padStart(2, '0') + '.' + String(d.getMonth() + 1).padStart(2, '0') + '.' + d.getFullYear() + ' (' + DOW_RU[d.getDay()] + ')';
-  const esc = v => String(v || '').replace(/[<>&"]/g, '');
-  const rows = [['Дата', ds], ['Время', t.time || 'уточнит администратор'], ['Группа', t.disc || ''], ['Тренер', t.coach || '']].filter(r => r[1]);
+const ML = {
+  ru: { loc: 'ru-RU', tag: 'ПРОБНОЕ ЗАНЯТИЕ', hi: n => n ? n + ', вы' : 'Вы', h: 'записаны на пробное занятие', D: 'Дата', T: 'Время', G: 'Группа', C: 'Тренер', tbd: 'уточнит администратор', bring: 'Возьмите спортивную форму, воду и полотенце. Приходите за 10 минут до начала.', btn: 'Открыть My PIT', chg: 'Если планы изменились — измените время в My PIT или сообщите администратору клуба.', subj: (d, t, c) => `Пробное занятие ${d}${t ? ' в ' + t : ''} — ${c}` },
+  en: { loc: 'en-GB', tag: 'TRIAL CLASS', hi: n => n ? n + ', you are' : 'You are', h: 'booked for a trial class', D: 'Date', T: 'Time', G: 'Group', C: 'Coach', tbd: 'the club admin will confirm', bring: 'Bring sportswear, water and a towel. Please arrive 10 minutes early.', btn: 'Open My PIT', chg: 'If your plans change, pick another time in My PIT or tell the club admin.', subj: (d, t, c) => `Trial class ${d}${t ? ' at ' + t : ''} — ${c}` },
+  tr: { loc: 'tr-TR', tag: 'DENEME DERSİ', hi: n => n ? n + ', deneme dersine' : 'Deneme dersine', h: 'kaydınız yapıldı', D: 'Tarih', T: 'Saat', G: 'Grup', C: 'Antrenör', tbd: 'kulüp yöneticisi bildirecek', bring: 'Spor kıyafeti, su ve havlu getirin. Dersten 10 dakika önce gelin.', btn: "My PIT'i aç", chg: "Planınız değişirse My PIT'te başka bir saat seçin veya kulüp yöneticisine bildirin.", subj: (d, t, c) => `Deneme dersi ${d}${t ? ' ' + t : ''} — ${c}` },
+};
+const DISC_L = { en: { 'Бокс': 'Boxing', 'Кикбоксинг': 'Kickboxing', 'Капоэйра': 'Capoeira', 'Дети · MMA': 'Kids · MMA' }, tr: { 'Бокс': 'Boks', 'Кикбоксинг': 'Kick boks', 'Капоэйра': 'Capoeira', 'Дети · MMA': 'Çocuk · MMA' } };
+function trialMail(to, name, clubName, t, lang) {
+  const L = ML[lang] || ML.ru, d = new Date(t.date + 'T12:00:00'), ds = d.toLocaleDateString(L.loc, { weekday: 'short', day: '2-digit', month: '2-digit', year: 'numeric' });
+  const esc = v => String(v || '').replace(/[<>&"]/g, ''), disc = t.disc ? ((DISC_L[lang] || {})[t.disc] || t.disc) : '';
+  const rows = [[L.D, ds], [L.T, t.time || L.tbd], [L.G, disc], [L.C, t.coach || '']].filter(r => r[1]);
   const html = `<!doctype html><html><body style="margin:0;background:#f4f1ea;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#15171b">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="padding:32px 12px"><tr><td align="center">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:460px;background:#fff;border:1px solid #e3ded2;border-radius:14px;overflow:hidden">
-<tr><td style="background:#111418;padding:24px 28px"><div style="color:#f4f1ea;font-size:22px;font-weight:800;letter-spacing:1px">${esc(clubName)}</div><div style="color:#e8c35a;font-size:11px;letter-spacing:2px;font-weight:700">ПРОБНОЕ ЗАНЯТИЕ</div></td></tr>
-<tr><td style="padding:28px"><div style="font-size:17px;font-weight:700;margin:0 0 14px">${name ? esc(name) + ', вы' : 'Вы'} записаны на пробное занятие</div>
+<tr><td style="background:#111418;padding:24px 28px"><div style="color:#f4f1ea;font-size:22px;font-weight:800;letter-spacing:1px">${esc(clubName)}</div><div style="color:#e8c35a;font-size:11px;letter-spacing:2px;font-weight:700">${L.tag}</div></td></tr>
+<tr><td style="padding:28px"><div style="font-size:17px;font-weight:700;margin:0 0 14px">${esc(L.hi(name))} ${L.h}</div>
 <table role="presentation" cellpadding="0" cellspacing="0" style="font-size:15px;margin:0 0 18px">${rows.map(r => `<tr><td style="color:#8b877d;padding:3px 16px 3px 0">${r[0]}</td><td style="font-weight:700;padding:3px 0">${esc(r[1])}</td></tr>`).join('')}</table>
-<p style="font-size:14px;line-height:1.5;margin:0 0 18px">Возьмите спортивную форму, воду и полотенце. Приходите за 10 минут до начала.</p>
-<a href="https://app.pitrating.com/my/" style="display:inline-block;background:#e8c35a;color:#141414;text-decoration:none;font-weight:800;padding:12px 22px;border-radius:10px">Открыть My PIT</a>
-<p style="font-size:12px;color:#8b877d;margin:18px 0 0">Если планы изменились — ответьте администратору клуба, мы перенесём занятие.</p></td></tr>
+<p style="font-size:14px;line-height:1.5;margin:0 0 18px">${L.bring}</p>
+<a href="https://app.pitrating.com/my/" style="display:inline-block;background:#e8c35a;color:#141414;text-decoration:none;font-weight:800;padding:12px 22px;border-radius:10px">${L.btn}</a>
+<p style="font-size:12px;color:#8b877d;margin:18px 0 0">${L.chg}</p></td></tr>
 <tr><td style="padding:14px 28px;border-top:1px solid #efeae0;font-size:11px;color:#8b877d">PIT RATING · pitrating.com</td></tr></table></td></tr></table></body></html>`;
-  return { to, from: { email: 'noreply@pitrating.com', name: clubName }, subject: `Пробное занятие ${ds}${t.time ? ' в ' + t.time : ''} — ${clubName}`, html, text: `Вы записаны на пробное занятие: ${rows.map(r => r[0] + ': ' + r[1]).join(', ')}. My PIT: https://app.pitrating.com/my/` };
+  return { to, from: { email: 'noreply@pitrating.com', name: clubName }, subject: L.subj(ds, t.time, clubName), html, text: `${L.hi(name)} ${L.h}: ${rows.map(r => r[0] + ': ' + r[1]).join(', ')}. My PIT: https://app.pitrating.com/my/` };
+}
+// язык аккаунта: анкета My PIT → заявка → по умолчанию RU
+async function accLang(env, email, lead) {
+  try { const fr = await env.DB.prepare('SELECT data FROM fighters WHERE email=?').bind(email).first(); if (fr) { const l = JSON.parse(fr.data).lang; if (ML[l]) return l } } catch (e) { }
+  return lead && ML[lead.lang] ? lead.lang : 'ru';
 }
 // уведомить клиента о записи на пробное (письмо); вызывает CRM после записи
 export async function notifyTrial(req, env, me) {
@@ -115,7 +125,7 @@ export async function notifyTrial(req, env, me) {
   const t = await trialInfo(env, l), to = String(l.email || (l.reg && l.reg.email) || '').trim().toLowerCase();
   if (!t) return ok({ sent: false, reason: 'not_booked' });
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(to)) return ok({ sent: false, reason: 'no_email' });
-  try { await env.EMAIL.send(trialMail(to, String(l.name || '').trim().split(/\s+/)[0], CLUBS.mowgli.name, t)); return ok({ sent: true, to }) } catch (e) { return ok({ sent: false, reason: 'send_failed' }) }
+  try { await env.EMAIL.send(trialMail(to, String(l.name || '').trim().split(/\s+/)[0], CLUBS.mowgli.name, t, await accLang(env, to, l))); return ok({ sent: true, to }) } catch (e) { return ok({ sent: false, reason: 'send_failed' }) }
 }
 async function findMember(env, email, phone) {
   const r = await env.DB.prepare("SELECT id,data FROM docs WHERE col='members' AND deleted=0").all();
@@ -249,7 +259,7 @@ export async function myRoutes(req, env, path, email, staff) {
     if (!sl) return json({ error: 'slot' }, 400);
     const nl = { ...l, status: 'booked', trialDate: sl.date, trialClass: sl.cls, trialTime: sl.time, trialDisc: sl.disc, trialBy: 'client', trialAt: at, trialNotified: { at, to: email, ch: 'email' }, touches: touch(`Клиент сам выбрал пробное: ${sl.date} ${sl.time} · ${sl.disc}`) };
     await env.DB.batch([putDoc(env, 'leads', cur.lead, nl, 'pit:' + email)]);
-    try { const tI = await trialInfo(env, nl); if (tI) await env.EMAIL.send(trialMail(email, String(l.name || '').trim().split(/\s+/)[0], CLUBS.mowgli.name, tI)) } catch (e) { }
+    try { const tI = await trialInfo(env, nl); if (tI) await env.EMAIL.send(trialMail(email, String(l.name || '').trim().split(/\s+/)[0], CLUBS.mowgli.name, tI, await accLang(env, email, l))) } catch (e) { }
     return json({ ok: true, ...(await view(env, email)) });
   }
 
@@ -317,7 +327,7 @@ export async function myRoutes(req, env, path, email, staff) {
   const fields = {
     last, first, dob, phone, disc, kind, note: clean(p.note, 300), weight: clean(p.weight, 20), stance: clean(p.stance, 20), belt: clean(p.belt, 30), city: clean(p.city, 60), parent,
   };
-  const consents = { consentData: true, photoConsent: p.photoConsent === true, consentPublic: p.consentPublic === true, consentMsg: p.consentMsg === true, parentConsent: minor ? true : null, lang: clean(p.lang, 2) || 'ru' };
+  const consents = { consentData: true, photoConsent: p.photoConsent === true, consentPublic: p.consentPublic === true, consentMsg: p.consentMsg === true, parentConsent: minor ? true : null, lang: (prev && ['ru', 'en', 'tr'].includes(prev.lang)) ? prev.lang : (['ru', 'en', 'tr'].includes(clean(p.lang, 2)) ? clean(p.lang, 2) : 'ru') };
   const stmts = [];
   let data, pending = cur && cur.pending ? JSON.parse(cur.pending) : null;
   if (cur && cur.verified) {
@@ -339,7 +349,7 @@ export async function myRoutes(req, env, path, email, staff) {
       name: first + ' ' + last, phone, email, disc, kind, age: String(age), source: 'PIT · регистрация', status: 'new', by: 'PIT',
       note: (minor ? `U18 · родитель: ${parent.name}, ${parent.phone}. ` : '') + (fields.note || ''), ts: now(), pit: true, approved: false,
       match: hit ? { id: hit.id, name: hit.m.first && hit.m.last ? hit.m.first + ' ' + hit.m.last : hit.m.name } : null,
-      reg: { first, last, dob, phone, email, parent },
+      reg: { first, last, dob, phone, email, parent }, lang: consents.lang,
     }, 'pit:' + email));
   } else if (lead && !(cur && cur.verified)) {
     const l = await getDoc(env, 'leads', lead);

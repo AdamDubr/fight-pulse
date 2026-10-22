@@ -414,7 +414,7 @@ function render(){applyLang();if(!D)return;const v=$('#v');if(GL){GL.destroy();G
   $('#ed').onclick=()=>{EDIT=true;PICK=D.profile.club;render();window.scrollTo({top:0})};
   $('#dl').onclick=async e=>{const b=e.currentTarget;if(!b.dataset.sure){b.dataset.sure=1;b.textContent=t('delSure');return}b.disabled=true;try{await api({method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({delete:true})});location.replace('/login?next=%2Fmy%2F')}catch(err){b.disabled=false}}}
 applyLang();
-api().then(j=>{D=j;render()}).catch(e=>{if(e.message!=='auth')$('#v').innerHTML='<p class="msg bad">'+esc(t('err').server)+'</p>'});
+api().then(j=>{D=j;let sv=null;try{sv=localStorage.getItem('pit.lang')}catch(e){}if(!T[sv]&&D.profile&&T[D.profile.lang]&&D.profile.lang!==L){L=D.profile.lang}render()}).catch(e=>{if(e.message!=='auth')$('#v').innerHTML='<p class="msg bad">'+esc(t('err').server)+'</p>'});
 </script>
 </body>
 </html>
