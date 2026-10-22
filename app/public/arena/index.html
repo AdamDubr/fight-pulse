@@ -3824,7 +3824,7 @@ function admFighter(B,a){groupsInit();const C=CAB[a.id],P=PROF[a.id],S=cardStats
    <div class="asg"><span class="asg-l">СОН</span><button class="btn ps" data-sl="не меньше 8 часов">8+ ЧАСОВ</button><button class="btn ps" data-sl="отбой не позже 23:00">ОТБОЙ ДО 23:00</button><input id="fdS" placeholder="или своё правило сна"><button class="btn primary" id="fdSB">НАЗНАЧИТЬ</button></div>
    ${T.length?`<div class="label" style="margin:.7rem 0 .3rem">Открытые задания</div><div class="schl">${T.map(t=>`<span>${fmtD(t.due)} · ${esc(t.text.length>48?t.text.slice(0,48)+'…':t.text)}<button data-td="${t.id}">✕</button></span>`).join('')}</div>`:''}
    <div id="admNut" style="margin-top:1rem"></div>`;
-  const task=(text,due)=>{C.tasks.push({id:Date.now(),from:COACH,text,due:due||dAdd(7),created:isoD(TODAY),status:'new',reply:''});saveCab();admFighter(B,a);toast('Задание отправлено (демо)')};
+  const task=(text,due)=>{C.tasks.push({id:Date.now(),from:COACH,text,due:due||dAdd(7),created:isoD(TODAY),status:'new',reply:''});saveCab();admFighter(B,a);toast(REAL?'Задание отправлено':'Задание отправлено (демо)')};
   $('#admBack').onclick=()=>{ADM.sel=null;renderAdm()};
   $('#fdGrpB')?.addEventListener('click',()=>{const g2=GROUPS.find(x=>String(x.id)===$('#fdGrp').value);if(!g2)return;g2.ids.push(a.id);saveGroups();admFighter(B,a);toast(`${a.name} добавлен в группу «${g2.name}»`)});
   B.querySelectorAll('[data-gx]').forEach(b2=>b2.onclick=()=>{const g2=GROUPS.find(x=>String(x.id)===String(b2.dataset.gx));if(!g2)return;g2.ids=g2.ids.filter(i2=>i2!==a.id);saveGroups();admFighter(B,a)});
@@ -4556,7 +4556,7 @@ function cabReal(a){const b=cabDemo(a);
   return{...b,person:{...b.person,fio:a.name,dob:a.dob||'',phone:'',city:'',emName:'',emPhone:'',photo:null},
     sub:{plan:a.plan||'—',start:a.start||'',end:a.end||'',limit:a.left??null,used:0,frozen:false,price:0,pays:[]},
     bio:{...b.bio,fat:null,bp:'—'},med:{consent:true,certUntil:null,contra:[],inj:[]},tasks:[],
-    nut:{...b.nut,mode:'Поддержание',kcal:NUTKCAL['Поддержание'],plan:NUTPLANS['Поддержание'],cut:null,upd:null,week:undefined,meals:mealsDemo('Поддержание',a.id)}}}  // режим питания и весогонку назначает только тренер; по умолчанию — без курса
+    nut:{...b.nut,mode:'Поддержание',kcal:NUTKCAL['Поддержание'],plan:NUTPLANS['Поддержание'],cut:null,upd:null,week:undefined,meals:mealsDemo('Поддержание',a.id),assigned:false}}}  // режим питания и весогонку назначает только тренер; по умолчанию — без курса
 let CAB={};ATHLETES.forEach(a=>CAB[a.id]=REAL?cabReal(a):cabDemo(a));
 try{const s=localStorage.getItem((REAL?'fp.cab.v4.real':'fp.cab.v3'));if(s){const o=JSON.parse(s);for(const k in o)if(CAB[k])CAB[k]=Object.assign(CAB[k],o[k])}}catch(e){}
 ATHLETES.forEach(a=>{if(!U18(a))return;const n=CAB[a.id].nut;if(n&&n.mode==='Весогонка'){n.mode='Поддержание';n.cut=null}});
@@ -4914,7 +4914,10 @@ function secHealth(a,C){const b=C.bio,m=C.med,coach=cab.role==='coach',ro=RO();
 /* Режим назначает тренер; весогонка опирается на журнал веса из «Здоровья» (b.w).
    Темп сгонки — расчёт, не медицинская оценка; темп выше ~1% массы в неделю подсвечивается как рискованный. */
 const NUTC={'Поддержание':'#2fd27a','Снижение веса':'#8fb4ff','Набор массы':'#ffc93c','Весогонка':'#ff7a3c'};
-function secNut(a,C){const n=C.nut,b=C.bio,coach=cab.role==='coach',ro=RO(),w=b.w[b.w.length-1].v,cut=n.cut;
+function secNut(a,C){const n=C.nut,coach0=cab.role==='coach';
+  if(REAL&&!n.assigned){CB().innerHTML=`<div class="panel"><div class="ph-title"><span class="label">Питание</span></div><div class="muted">План питания пока не назначен. Его составляет тренер — здесь появятся режим, меню и список покупок.</div>${coach0?'<div class="btnrow" style="margin-top:.7rem"><button class="btn primary" id="nAssign">НАЗНАЧИТЬ ПЛАН ПИТАНИЯ</button></div>':''}</div>`;
+    $('#nAssign')?.addEventListener('click',()=>{n.assigned=true;saveCab();renderCab()});return}
+  const b=C.bio,coach=cab.role==='coach',ro=RO(),w=b.w[b.w.length-1].v,cut=n.cut;
   // фактический темп, кг/нед: по точке веса ≥10 дней назад
   let act=null;const old=b.w.filter(x=>dLeft(x.d)<=-10);
   if(old.length){const o=old[old.length-1],dys=-dLeft(o.d);if(dys>0)act=(o.v-w)/dys*7}
@@ -5032,7 +5035,7 @@ function secTasks(a,C){const coach=cab.role==='coach',T=C.tasks.slice().sort((x,
        <span class="t-due">срок ${fmtD(t.due)}${t.status!=='done'?` · ${l<0?`просрочено на ${dd(-l)}`:l===0?'сегодня':`через ${dd(l)}`}`:''}</span></div>
       <div class="t-text">${esc(t.text)}</div>${t.reply?`<div class="t-reply">Ответ спортсмена: ${esc(t.reply)}</div>`:''}
       <div class="btnrow">${coach?`<button class="btn" data-a="del">УДАЛИТЬ</button>`:t.status==='done'?`<button class="btn" data-a="reopen">ВЕРНУТЬ В РАБОТУ</button>`:`${t.status==='new'?'<button class="btn" data-a="work">ВЗЯТЬ В РАБОТУ</button>':''}<button class="btn primary" data-a="done">ВЫПОЛНЕНО</button>`}</div></div>`}).join('')||'<div class="muted">Заданий нет</div>'}</div></div>`;
-  $('#tAdd')?.addEventListener('click',()=>{const tx=$('#tTxt').value.trim();if(!tx)return;C.tasks.push({id:Date.now(),from:COACH,text:tx,due:$('#tDue').value||dAdd(7),created:isoD(TODAY),status:'new',reply:''});saveCab();renderCab();toast('Задание отправлено (демо)')});
+  $('#tAdd')?.addEventListener('click',()=>{const tx=$('#tTxt').value.trim();if(!tx)return;C.tasks.push({id:Date.now(),from:COACH,text:tx,due:$('#tDue').value||dAdd(7),created:isoD(TODAY),status:'new',reply:''});saveCab();renderCab();toast(REAL?'Задание отправлено':'Задание отправлено (демо)')});
   CB().querySelectorAll('.task button').forEach(b=>b.addEventListener('click',()=>{const id=+b.closest('.task').dataset.id,t=C.tasks.find(x=>x.id===id),ac=b.dataset.a;
     if(ac==='del')C.tasks=C.tasks.filter(x=>x!==t);else if(ac==='reply'){const r=prompt('Ответ тренеру');if(r)t.reply=r.slice(0,300)}else t.status=ac==='reopen'?'work':ac;saveCab();renderCab()}))}
 // ---------- ПРОГРЕСС + ПОДЕЛИТЬСЯ ----------
