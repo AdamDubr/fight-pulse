@@ -164,11 +164,20 @@ input::-webkit-date-and-time-value{text-align:left}
 .form>*,.card,.kv dd,.acts{min-width:0}
 .card>.tbl{display:block;overflow-x:auto;max-width:100%}
 @media (max-width:760px){input,select,textarea{font-size:16px!important}}
+#bell{position:relative}#bellN{position:absolute;top:-.45rem;right:-.45rem;min-width:1.15rem;height:1.15rem;padding:0 .3rem;border-radius:1rem;background:var(--bad,#b4233a);color:#fff;font-size:.66rem;line-height:1.15rem;font-weight:800;text-align:center}
+.ntf{position:fixed;z-index:40;top:calc(env(safe-area-inset-top,0px) + 3.6rem);right:max(16px,env(safe-area-inset-right,0px));width:min(26rem,calc(100vw - 32px));max-height:min(72vh,40rem);overflow:auto;background:var(--panel);border:1px solid var(--line-2);border-radius:.8rem;box-shadow:0 18px 50px rgba(0,0,0,.25);padding:.6rem}
+.ntf h3{display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin:.2rem .3rem .5rem;font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.ntf .ni{display:grid;grid-template-columns:1.6rem minmax(0,1fr) auto;gap:.55rem;align-items:start;width:100%;text-align:left;background:none;border:0;border-top:1px solid var(--line);padding:.6rem .3rem;font:inherit;color:inherit;cursor:pointer}
+.ntf .ni:first-of-type{border-top:0}.ntf .ni:hover{background:var(--panel-2)}
+.ntf .ni i{font-style:normal;font-size:1.05rem;line-height:1.2}.ntf .ni b{display:block;font-size:.88rem}.ntf .ni small{display:block;color:var(--muted);font-size:.76rem;margin-top:.1rem}
+.ntf .ni.p1 b{color:var(--bad)}.ntf .ni.read{opacity:.5}
+.ntf .nx{border:0;background:none;color:var(--muted);cursor:pointer;font-size:.9rem;padding:.1rem .3rem}
+.ntf .ne{color:var(--muted);text-align:center;padding:1.2rem .5rem;font-size:.88rem}
 @media (max-width:620px){
   .top .wrap{gap:.5rem .6rem;padding-block:.55rem}
   .brand{flex:1 1 0;order:1}.brand b{font-size:.92rem}
   .state{order:2;width:auto;max-width:9rem;overflow:hidden;text-overflow:ellipsis;text-align:right;font-size:.66rem}
-  #thm{order:3;flex:none}#home{order:3;flex:none}#toArena{order:3;flex:none}
+  #thm{order:3;flex:none}#home{order:3;flex:none}#bell{order:3;flex:none}#toArena{order:3;flex:none}
 }
 @media (max-width:430px){.top .state{display:none}
   .tabs{order:4}
@@ -199,7 +208,7 @@ html[data-role=trainer] #ldone,html[data-role=trainer] [data-dr=askdel]{display:
     <button role="tab" data-tab="rep" aria-selected="false">Отчёты</button>
     <button role="tab" data-tab="plans" aria-selected="false">Настройки</button>
   </nav>
-  <a class="btn sm" id="home" href="/" aria-label="Главное меню PIT" title="Главное меню">⌂</a><a class="btn sm" id="toArena" href="/arena/" aria-label="Перейти в Зал · Arena" title="Зал · Arena">Arena</a><button class="btn sm" id="thm" type="button" aria-label="Тёмная тема">☾</button>
+  <a class="btn sm" id="home" href="/" aria-label="Главное меню PIT" title="Главное меню">⌂</a><button class="btn sm" id="bell" type="button" aria-label="Уведомления" aria-haspopup="true" aria-expanded="false" title="Уведомления">🔔<b id="bellN" hidden></b></button><a class="btn sm" id="toArena" href="/arena/" aria-label="Перейти в Зал · Arena" title="Зал · Arena">Arena</a><button class="btn sm" id="thm" type="button" aria-label="Тёмная тема">☾</button>
   <span class="state" id="st">Подключение…</span>
 </div></header>
 
@@ -249,6 +258,7 @@ const todayIds=()=>new Set((S.visits[today()]||{}).ids||[]);
 
 /* ===== рендер ===== */
 function render(){
+  try{updBell()}catch(e){}
   document.body.classList.toggle('ro',!S.canWrite);
   document.querySelectorAll('.tabs button').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.tab===S.tab)));
   const v=$('#view');const sy=scrollY;
@@ -1006,6 +1016,40 @@ function bindMods(v){
     write(()=>DB.doc('club/settings').set({...SET(),trialGroup:n('#st_tg'),trialInd:n('#st_ti'),groupCap:Math.max(1,n('#st_gc')),retDays:Math.max(3,n('#st_rd')),retText:$('#st_rt',v).value.trim(),retAuto:$('#st_ra',v).checked,cashFrom:$('#st_cf',v).value||TRACK0,cashStart:Math.round(+$('#st_cs',v).value||0),bankStart:Math.round(+$('#st_bs',v).value||0),services:$('#st_sv',v).value.split('\n').map(l=>{const i=l.lastIndexOf('=');const n=(i<0?l:l.slice(0,i)).trim();return n?[n,Math.max(0,Math.round(+(i<0?0:l.slice(i+1).replace(/[^\d.]/g,''))||0))]:null}).filter(Boolean)}),'Настройки клуба сохранены')});
   const ws=[...v.querySelectorAll('[data-who]')].filter(e=>e.dataset.who);if(ws.length&&USER&&USER.profiles){USER.profiles([...new Set(ws.map(e=>e.dataset.who))]).then(ps=>ws.forEach(e=>{const n=ps[e.dataset.who]?.name;e.textContent=n||''})).catch(()=>{})}
 }
+
+/* ===== Уведомления CRM: продление, неоплата, пакеты, ДР, пробные, регистрации, заморозки, события ===== */
+const NREAD_K='pit.crm.nread';let NREAD={};try{NREAD=JSON.parse(localStorage.getItem(NREAD_K)||'{}')}catch(e){}
+const saveNR=()=>{try{const d=today(),o={};for(const k in NREAD)if(NREAD[k]>=d)o[k]=NREAD[k];NREAD=o;localStorage.setItem(NREAD_K,JSON.stringify(o))}catch(e){}};
+function notes(){const out=[],td=today(),tm=addDays(td,1),M=S.members.filter(m=>m.kind!=='staff');
+  const add=(key,pri,icon,t,sub,go)=>out.push({key,pri,icon,t,sub,go});
+  const vis=new Set(),lastVis={};for(const d in S.visits){(S.visits[d].ids||[]).forEach(id=>{if(!lastVis[id]||lastVis[id]<d)lastVis[id]=d})}
+  (S.leads||[]).filter(pitPending).forEach(x=>add('reg:'+x.id,1,'🆕','Регистрация в My PIT ждёт одобрения',x.name+(x.match?' · похоже на '+x.match.name:''),{lead:x.id}));
+  (S.freezes||[]).filter(r=>r.status==='pending').forEach(r=>{const m=S.members.find(z=>z.id===r.mid);add('frz:'+r.id,1,'❄️','Запрос заморозки',(m?m.name:'Боец')+' · '+fmtD(r.start)+' — '+fmtD(r.end),{m:r.mid})});
+  M.forEach(m=>{if(frozenNow(m))return;const d=daysLeft(m.end),lv=lastVis[m.id];
+    if(d!=null&&d<0&&lv&&lv>m.end)add('debt:'+m.id+':'+lv,1,'⚠️','Ходит без оплаты',`${m.name} · абонемент истёк ${fmtD(m.end)}, был ${fmtD(lv)}`,{m:m.id});
+    else if(d!=null&&d<0&&d>=-7)add('exp:'+m.id+':'+m.end,2,'⏰','Абонемент истёк — продлить',`${m.name} · ${fmtD(m.end)}`,{m:m.id});
+    else if(d!=null&&d>=0&&d<=3)add('soon:'+m.id+':'+m.end,2,'⏳',d===0?'Абонемент заканчивается сегодня':`Абонемент заканчивается через ${d} дн.`,`${m.name} · до ${fmtD(m.end)}`,{m:m.id});
+    if(m.left!=null&&m.left<=1&&(d==null||d>=0))add('left:'+m.id+':'+m.left,2,'🎟️',m.left<=0?'Занятия в пакете кончились':'Осталось 1 занятие',m.name,{m:m.id});
+    if(m.freeze&&m.freeze.end&&(m.freeze.end===td||m.freeze.end===tm))add('fend:'+m.id+':'+m.freeze.end,3,'🔓','Заканчивается заморозка',`${m.name} · ${fmtD(m.freeze.end)}`,{m:m.id});
+    if(/^\d{4}-\d{2}-\d{2}$/.test(m.dob||'')){const md=m.dob.slice(5);if(md===td.slice(5)||md===tm.slice(5))add('bd:'+m.id+':'+td.slice(0,4)+md,3,'🎂',md===td.slice(5)?'День рождения сегодня':'День рождения завтра',m.name,{m:m.id})}});
+  (S.leads||[]).forEach(x=>{if(x.status==='booked'&&(x.trialDate===td||x.trialDate===tm))add('trial:'+x.id+':'+x.trialDate,2,'🥊',x.trialDate===td?'Пробное сегодня':'Пробное завтра',x.name+(x.phone?' · '+x.phone:''),{lead:x.id});
+    if(x.status==='new'&&!pitPending(x)&&x.ts&&Date.now()-new Date(x.ts)>864e5)add('lnew:'+x.id,2,'📞','Заявка без ответа больше суток',x.name+(x.phone?' · '+x.phone:''),{lead:x.id})});
+  (S.events||[]).forEach(e=>{const d=daysLeft(e.date);if(d!=null&&d>=0&&d<=3)add('ev:'+e.id+':'+e.date,3,'📅',d===0?'Событие сегодня':`Событие через ${d} дн.`,`${e.title||''} · ${fmtD(e.date)}`,{ev:e.id})});
+  return out.sort((a,b)=>a.pri-b.pri)}
+function updBell(){const n=notes().filter(x=>!NREAD[x.key]).length,b=$('#bellN');if(!b)return;b.hidden=!n;b.textContent=n>99?'99+':n;$('#bell').title=n?`Уведомления: ${n}`:'Уведомлений нет';if($('.ntf'))renderNtf()}
+function renderNtf(){let p=$('.ntf');const L=notes();if(!p){p=document.createElement('div');p.className='ntf';p.setAttribute('role','dialog');p.setAttribute('aria-label','Уведомления');document.body.appendChild(p)}
+  const un=L.filter(x=>!NREAD[x.key]).length;
+  p.innerHTML=`<h3><span>Уведомления${un?' · '+un:''}</span>${un?'<button class="btn sm" type="button" data-nall>Прочитать все</button>':''}</h3>${L.map(x=>`<div class="ni p${x.pri} ${NREAD[x.key]?'read':''}" role="button" tabindex="0" data-nk="${esc(x.key)}"><i aria-hidden="true">${x.icon}</i><span><b>${esc(x.t)}</b><small>${esc(x.sub||'')}</small></span>${NREAD[x.key]?'':`<button class="nx" type="button" data-nr="${esc(x.key)}" aria-label="Прочитано" title="Прочитано">✓</button>`}</div>`).join('')||'<div class="ne">Всё спокойно — уведомлений нет.</div>'}`;
+  const until=addDays(today(),1);
+  p.querySelectorAll('[data-nr]').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation();NREAD[b.dataset.nr]=until;saveNR();updBell()}));
+  const na=p.querySelector('[data-nall]');if(na)na.addEventListener('click',()=>{L.forEach(x=>NREAD[x.key]=until);saveNR();updBell()});
+  p.querySelectorAll('[data-nk]').forEach(r=>{const go=()=>{const x=L.find(z=>z.key===r.dataset.nk);if(!x)return;NREAD[x.key]=until;saveNR();closeNtf();
+    if(x.go.m){S.open=x.go.m;S.drMode='view';renderDrawer()}else if(x.go.lead){S.tab='leads';render();S.ov={type:'lead',id:x.go.lead};renderOv()}else if(x.go.ev){S.tab='events';render();S.ov={type:'event',id:x.go.ev};renderOv()}updBell()};
+    r.addEventListener('click',go);r.addEventListener('keydown',e=>{if(e.key==='Enter')go()})})}
+function closeNtf(){const p=$('.ntf');if(p)p.remove();$('#bell').setAttribute('aria-expanded','false')}
+$('#bell').addEventListener('click',e=>{e.stopPropagation();if($('.ntf'))closeNtf();else{renderNtf();$('#bell').setAttribute('aria-expanded','true')}});
+document.addEventListener('click',e=>{const p=$('.ntf');if(p&&!p.contains(e.target)&&e.target.id!=='bell')closeNtf()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeNtf()});
 
 document.querySelectorAll('.tabs button').forEach(b=>b.addEventListener('click',()=>{S.tab=b.dataset.tab;try{localStorage.setItem('mowgli.tab',S.tab)}catch(e){}render();scrollTo(0,0)}));
 try{let t=localStorage.getItem('mowgli.tab');if(t==='fin'||t==='shop')t='cash';if(['today','members','leads','cash','events','sched','rep','plans'].includes(t))S.tab=t}catch(e){}
