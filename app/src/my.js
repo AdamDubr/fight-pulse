@@ -11,7 +11,7 @@ const digits = p => String(p || '').replace(/\D/g, '');
 const samePhone = (a, b) => { a = digits(a); b = digits(b); return a.length >= 9 && b.length >= 9 && a.slice(-10) === b.slice(-10) };
 import { inbox, markRead } from './msg.js';
 const DISCS = ['MMA', 'Бокс', 'BJJ', 'Кикбоксинг', 'Капоэйра'];
-export const CLUBS = { mowgli: { id: 'mowgli', name: 'Mowgli Fight Club', city: 'Анталья', cityEn: 'Antalya', country: 'TR', lat: 36.8381506, lon: 30.5904377, addr: 'Sarısu, 131. Sk., 07130 Konyaaltı/Antalya, Türkiye', placeId: 'ChIJZUYTFaCVwxQRSgx4mbk5waQ', hours: 'Пн–Сб 09:00–22:00', logo: '/brand/clubs/mowgli.png', discs: ['MMA', 'BJJ', 'Бокс', 'Кикбоксинг', 'Капоэйра'] } };
+export const CLUBS = { mowgli: { id: 'mowgli', name: 'Mowgli Fight Club', city: 'Анталья', cityEn: 'Antalya', country: 'TR', lat: 36.8381506, lon: 30.5904377, addr: 'Sarısu, 131. Sk., 07130 Konyaaltı/Antalya, Türkiye', placeId: 'ChIJZUYTFaCVwxQRSgx4mbk5waQ', hours: 'Пн–Сб 09:00–22:00', logo: '/brand/clubs/mowgli.png', discs: ['MMA', 'BJJ', 'Бокс', 'Кикбоксинг', 'Капоэйра'], proFree: true } };
 const LEVELS = ['club', 'city', 'regional', 'national', 'international', 'pro'];
 const KINDS = ['comp', 'title', 'club', 'link'];
 
@@ -140,30 +140,30 @@ async function accLang(env, email, lead) {
 
 // приветствие после одобрения регистрации клубом: письмо на языке аккаунта + просьба заполнить полную анкету
 const WL = {
-  ru: { subj: c => `Добро пожаловать в ${c}!`, h: (n, c) => `${n ? n + ', д' : 'Д'}обро пожаловать в ${c}!`,
+  ru: { pro: c => `🎁 <b>Подарок от клуба:</b> у всех бойцов ${c} подписка <b>PIT PRO</b> — бесплатно, за счёт клуба.`, subj: c => `Добро пожаловать в ${c}!`, h: (n, c) => `${n ? n + ', д' : 'Д'}обро пожаловать в ${c}!`,
     member: ['Клуб подтвердил вашу регистрацию и нашёл вас в базе бойцов клуба.', 'Следующий шаг — <b>полная анкета</b>: фото, вес, город. Это важно: только по полной анкете клуб ставит отметку ✓ Verified, и после неё открываются все возможности — расписание и услуги клуба, My PIT World и ваш профиль бойца в мировом рейтинге.', 'Заполнить анкету'],
     new: ['Клуб одобрил вашу регистрацию в PIT RATING.', 'Запишитесь на пробное занятие в приложении. После пробного администратор оформит договор и абонемент — тогда откроется полная анкета члена клуба.', 'Открыть My PIT'],
     full: ['Договор подписан, абонемент оплачен — вы член клуба!', 'Остался последний шаг — <b>полная анкета</b>: фото, вес, город. Это важно: только по ней клуб ставит отметку ✓ Verified и открывает все возможности — расписание и услуги клуба, My PIT World и профиль бойца в мировом рейтинге.', 'Заполнить анкету'] },
-  en: { subj: c => `Welcome to ${c}!`, h: (n, c) => `${n ? n + ', w' : 'W'}elcome to ${c}!`,
+  en: { pro: c => `🎁 <b>A gift from the club:</b> every ${c} fighter gets a <b>PIT PRO</b> subscription — free, paid by the club.`, subj: c => `Welcome to ${c}!`, h: (n, c) => `${n ? n + ', w' : 'W'}elcome to ${c}!`,
     member: ['The club confirmed your registration and found you in its fighter base.', 'Next step — your <b>full profile</b>: photo, weight, city. This matters: the club gives the ✓ Verified mark only for a complete profile, and it unlocks everything — club schedule and services, My PIT World and your fighter profile in the world rating.', 'Complete profile'],
     new: ['The club has approved your registration in PIT RATING.', 'Book a trial class in the app. After the trial the admin will set up your contract and membership — then the full club member profile opens.', 'Open My PIT'],
     full: ['Contract signed, membership paid — you are a club member!', 'One last step — your <b>full profile</b>: photo, weight, city. This matters: only then does the club give the ✓ Verified mark and unlock everything — club schedule and services, My PIT World and your fighter profile in the world rating.', 'Complete profile'] },
-  tr: { subj: c => `${c}'e hoş geldiniz!`, h: (n, c) => `${n ? n + ', ' : ''}${c}'e hoş geldiniz!`,
+  tr: { pro: c => `🎁 <b>Kulüpten hediye:</b> ${c}'in tüm sporcularına <b>PIT PRO</b> aboneliği ücretsiz — kulüp karşılıyor.`, subj: c => `${c}'e hoş geldiniz!`, h: (n, c) => `${n ? n + ', ' : ''}${c}'e hoş geldiniz!`,
     member: ['Kulüp kaydınızı onayladı ve sizi kulübün sporcu kayıtlarında buldu.', 'Sonraki adım — <b>tam profiliniz</b>: fotoğraf, kilo, şehir. Bu önemli: kulüp ✓ Verified işaretini yalnızca tam profile verir ve bununla her şey açılır — kulüp programı ve hizmetleri, My PIT World ve dünya reytingindeki sporcu profiliniz.', 'Profili doldur'],
     new: ['Kulüp PIT RATING kaydınızı onayladı.', 'Uygulamadan deneme dersine kaydolun. Deneme dersinden sonra yönetici sözleşmenizi ve üyeliğinizi düzenleyecek — ardından kulüp üyeliği için tam profil açılır.', "My PIT'i aç"],
     full: ['Sözleşme imzalandı, üyelik ödendi — artık kulüp üyesisiniz!', 'Son adım — <b>tam profiliniz</b>: fotoğraf, kilo, şehir. Bu önemli: kulüp ✓ Verified işaretini yalnızca tam profile verir ve her şeyi açar — kulüp programı ve hizmetleri, My PIT World ve dünya reytingindeki sporcu profiliniz.', 'Profili doldur'] },
 };
-function welcomeMail(to, name, clubName, lang, kind) {
+function welcomeMail(to, name, clubName, lang, kind, pro) {
   const L0 = WL[lang] || WL.ru, K = L0[kind] || L0.member, L = { ...L0, p1: K[0], p2: K[1], btn: K[2] }, esc = v => String(v || '').replace(/[<>&"]/g, '');
   const html = `<!doctype html><html><body style="margin:0;background:#f4f1ea;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#15171b">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="padding:32px 12px"><tr><td align="center">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:460px;background:#fff;border:1px solid #e3ded2;border-radius:14px;overflow:hidden">
 <tr><td style="background:#111418;padding:24px 28px"><div style="color:#f4f1ea;font-size:22px;font-weight:800;letter-spacing:1px">${esc(clubName)}</div><div style="color:#e8c35a;font-size:11px;letter-spacing:2px;font-weight:700">PIT RATING</div></td></tr>
 <tr><td style="padding:28px"><div style="font-size:18px;font-weight:800;margin:0 0 12px">${esc(L.h(name, clubName))}</div>
-<p style="font-size:14px;line-height:1.55;margin:0 0 12px">${L.p1}</p><p style="font-size:14px;line-height:1.55;margin:0 0 20px">${L.p2}</p>
+<p style="font-size:14px;line-height:1.55;margin:0 0 12px">${L.p1}</p>${pro ? `<p style="font-size:14px;line-height:1.55;margin:0 0 12px;background:#fbf3dc;border:1px solid #e8c35a;border-radius:10px;padding:10px 12px">${L.pro(clubName)}</p>` : ''}<p style="font-size:14px;line-height:1.55;margin:0 0 20px">${L.p2}</p>
 <a href="https://app.pitrating.com/my/" style="display:inline-block;background:#e8c35a;color:#141414;text-decoration:none;font-weight:800;padding:12px 22px;border-radius:10px">${L.btn}</a></td></tr>
 <tr><td style="padding:14px 28px;border-top:1px solid #efeae0;font-size:11px;color:#8b877d">PIT RATING · pitrating.com</td></tr></table></td></tr></table></body></html>`;
-  return { to, from: { email: 'noreply@pitrating.com', name: clubName }, subject: L.subj(clubName), html, text: `${L.h(name, clubName)} ${L.p1} ${L.p2.replace(/<[^>]+>/g, '')} https://app.pitrating.com/my/` };
+  return { to, from: { email: 'noreply@pitrating.com', name: clubName }, subject: L.subj(clubName), html, text: `${L.h(name, clubName)} ${L.p1} ${pro ? L.pro(clubName).replace(/<[^>]+>/g, '') + ' ' : ''}${L.p2.replace(/<[^>]+>/g, '')} https://app.pitrating.com/my/` };
 }
 export async function notifyWelcome(req, env, me) {
   const ok = o => new Response(JSON.stringify(o), { headers: { 'content-type': 'application/json' } });
@@ -175,7 +175,7 @@ export async function notifyWelcome(req, env, me) {
   to = to || String(l.email || (l.reg && l.reg.email) || '').trim().toLowerCase();
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(to)) return ok({ sent: false, reason: 'no_email' });
   const nm = l ? ((l.reg && l.reg.first) || String(l.name || '').trim().split(/\s+/)[0]) : '';
-  try { await env.EMAIL.send(welcomeMail(to, nm, CLUBS.mowgli.name, await accLang(env, to, l), kind)); return ok({ sent: true, to, kind }) } catch (e) { return ok({ sent: false, reason: 'send_failed' }) }
+  try { await env.EMAIL.send(welcomeMail(to, nm, CLUBS.mowgli.name, await accLang(env, to, l), kind, !!CLUBS.mowgli.proFree)); return ok({ sent: true, to, kind }) } catch (e) { return ok({ sent: false, reason: 'send_failed' }) }
 }
 // уведомить клиента о записи на пробное (письмо); вызывает CRM после записи
 export async function notifyTrial(req, env, me) {
@@ -282,7 +282,7 @@ function validItem(kind, d) {
 export async function myRoutes(req, env, path, email, staff) {
   await ensure(env);
   const t = Date.now();
-  if (path === '/api/my' && req.method === 'GET') return json(await view(env, email));
+  if (path === '/api/my' && req.method === 'GET') return json({ ...(await view(env, email)), staff: staff || null });
 
   // фото анкеты: владелец и сотрудники клуба
   const pm = path.match(/^\/api\/my\/photo\/([a-f0-9]{32})$/);
