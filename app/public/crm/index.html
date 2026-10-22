@@ -1469,17 +1469,23 @@ function myPitData(m){if(!m||m.kind==='staff'||!(m.myPhoto||m.weight||m.city||m.
 /* ===== Сообщения бойцам в My PIT: всем / группе / выбранным; каждому — на языке его аккаунта ===== */
 S.msg={to:'all',cls:null,sel:{},q:'',tr:{},hist:null,lang:'ru'};
 const MLANG=[['ru','Русский'],['en','English'],['tr','Türkçe']];
+const ANK_TXT={ru:{title:'Заполните анкету бойца',text:'Здравствуйте! Спасибо, что зарегистрировались в Mowgli Fight Club. Для доступа к функциям подписки PIT PRO заполните, пожалуйста, полную анкету бойца: фото, вес, город. Это займёт 2 минуты: My PIT → «Заполнить полную анкету».'},
+  en:{title:'Complete your fighter profile',text:'Hi! Thank you for registering at Mowgli Fight Club. To access the PIT PRO subscription features, please complete your full fighter profile: photo, weight and city. It takes 2 minutes: My PIT → “Complete full profile”.'},
+  tr:{title:'Sporcu profilinizi tamamlayın',text:'Merhaba! Mowgli Fight Club’a kaydolduğunuz için teşekkürler. PIT PRO abonelik özelliklerine erişmek için lütfen tam sporcu profilinizi doldurun: fotoğraf, kilo, şehir. 2 dakika sürer: My PIT → “Tam profili doldur”.'}};
+function msgNewList(){return((S.pv&&S.pv.all)||[]).filter(f=>f.needAnketa)}
 function msgRecipients(){const M=S.msg,act=S.members.filter(m=>m.kind!=='staff'&&!['exp','none'].includes(status(m).k));
+  if(M.to==='new'){const N=msgNewList();return{L:N.map(f=>({id:f.mid||f.email,name:f.name,email:f.email})),E:N.map(f=>f.email),label:'Зарегистрировались с 22.10 · анкета не заполнена'}}
   if(M.to==='all')return{L:act,label:'Все активные бойцы'};
   if(M.to==='group'){const c=SCH().classes.find(z=>z.id===M.cls);return{L:c?gIds(c).map(id=>S.members.find(m=>m.id===id)).filter(Boolean):[],label:c?'Группа '+clsLbl(c):'Группа не выбрана'}}
   const L=S.members.filter(m=>M.sel[m.id]);return{L,label:'Выбранные: '+L.length}}
-function vMsg(){const M=S.msg,R0=msgRecipients(),pv=S.pv&&S.pv.all||[],inApp=new Set(pv.filter(f=>f.mid).map(f=>f.mid)),n=R0.L.length,na=R0.L.filter(m=>inApp.has(m.id)).length;
+function vMsg(){const M=S.msg,R0=msgRecipients(),pv=S.pv&&S.pv.all||[],inApp=new Set(pv.filter(f=>f.mid).map(f=>f.mid)),n=R0.L.length,na=R0.E?R0.E.length:R0.L.filter(m=>inApp.has(m.id)).length;
   const cl=SCH().classes.slice().sort((a,b)=>String(a.disc).localeCompare(String(b.disc),'ru')||String(a.time).localeCompare(String(b.time)));
   const q=M.q.trim().toLocaleLowerCase('tr'),pick=S.members.filter(m=>m.kind!=='staff'&&(!q||m.name.toLocaleLowerCase('tr').includes(q))).sort((a,b)=>a.name.localeCompare(b.name,'ru')).slice(0,80);
   const tx=l=>M.tr[l]||{title:'',text:''};
   return`<div class="head"><div><h1>Сообщения</h1><p class="sub">Сообщение приходит бойцу в приложение My PIT на языке его аккаунта (RU / EN / TR). Пишите на своём языке — переводы сделает «Перевести», их можно поправить.</p></div></div>
-  <section class="card"><h2>Кому</h2><div class="chips">${[['all','Всем'],['group','Группе'],['some','Выбрать бойцов']].map(([k,t])=>`<button class="chip" type="button" data-mto="${k}" aria-pressed="${M.to===k}">${t}</button>`).join('')}</div>
+  <section class="card"><h2>Кому</h2><div class="chips">${[['all','Всем'],['group','Группе'],['some','Выбрать бойцов'],['new','Новые без анкеты']].map(([k,t])=>`<button class="chip" type="button" data-mto="${k}" aria-pressed="${M.to===k}">${t}</button>`).join('')}</div>
    ${M.to==='group'?`<label class="f" style="margin-top:.7rem">Группа<select id="mg">${cl.map(c=>`<option value="${esc(c.id)}" ${c.id===M.cls?'selected':''}>${esc(clsLbl(c))} · ${gIds(c).length} бойц.</option>`).join('')}</select></label>`:''}
+   ${M.to==='new'?`<div class="list" style="max-height:14rem;overflow:auto;margin-top:.6rem">${R0.L.map(x=>`<div class="row" style="grid-template-columns:minmax(0,1fr);cursor:default"><span class="nm">${esc(x.name||x.email)}<small>${esc(x.email)}</small></span></div>`).join('')||'<div class="empty">Таких нет</div>'}</div><button class="btn" type="button" data-mank style="margin-top:.6rem">Подставить текст «Заполните анкету» (RU/EN/TR)</button>`:''}
    ${M.to==='some'?`<input type="search" id="mq2" placeholder="Поиск по имени" value="${esc(M.q)}" style="width:100%;margin:.7rem 0 .5rem"><div class="list" style="max-height:18rem;overflow:auto">${pick.map(m=>`<label class="row" style="grid-template-columns:auto minmax(0,1fr) auto;cursor:pointer"><input type="checkbox" data-msel="${esc(m.id)}" ${M.sel[m.id]?'checked':''}><span class="nm">${esc(m.name)}<small>${esc(m.disc||'')}</small></span>${inApp.has(m.id)?'<span class="pill ok">My PIT</span>':'<span class="pill">нет в My PIT</span>'}</label>`).join('')}</div>`:''}
    <p class="note" style="margin:.7rem 0 0"><b>${esc(R0.label)}</b> · получателей ${n}, из них в My PIT <b>${na}</b>${n-na?` · ${n-na} ещё не зарегистрированы в My PIT — им сообщение не придёт`:''}</p></section>
   <section class="card"><h2>Текст</h2>
@@ -1493,6 +1499,7 @@ function loadMsgHist(){fetch('/api/msg/list',{credentials:'same-origin'}).then(r
 function bindMsg(v){const M=S.msg;if(M.hist===null){M.hist=[];loadMsgHist()}
   const keep=()=>{const t=$('#mt',v),b=$('#mb',v);if(t&&b)M.tr[M.lang]={title:t.value,text:b.value}};
   v.querySelectorAll('[data-mto]').forEach(b=>b.addEventListener('click',()=>{keep();M.to=b.dataset.mto;if(M.to==='group'&&!M.cls)M.cls=(SCH().classes[0]||{}).id||null;render()}));
+  const ak=$('[data-mank]',v);if(ak)ak.addEventListener('click',()=>{M.tr=JSON.parse(JSON.stringify(ANK_TXT));M.lang='ru';DIRTY.view=false;render();toast('Текст подставлен на трёх языках — проверьте вкладки RU / EN / TR')});
   const mg=$('#mg',v);if(mg)mg.addEventListener('change',()=>{keep();M.cls=mg.value;render()});
   const q=$('#mq2',v);if(q)q.addEventListener('input',()=>{keep();M.q=q.value;render();const j=$('#mq2');j.focus();j.setSelectionRange(j.value.length,j.value.length)});
   v.querySelectorAll('[data-msel]').forEach(c=>c.addEventListener('change',()=>{keep();M.sel[c.dataset.msel]=c.checked;render()}));
@@ -1503,7 +1510,7 @@ function bindMsg(v){const M=S.msg;if(M.hist===null){M.hist=[];loadMsgHist()}
     catch(e){tr.disabled=false;$('#mst',v).textContent='';toast(String(e.message)==='ai_off'?'Автоперевод недоступен — заполните языки вручную':'Перевод не удался — заполните языки вручную',5000)}});
   const sd=$('[data-msend]',v);if(sd)sd.addEventListener('click',async()=>{keep();const R0=msgRecipients(),texts={};for(const [l] of MLANG){const o=M.tr[l];if(o&&o.text&&o.text.trim())texts[l]=o}
     if(!Object.keys(texts).length){toast('Напишите текст');return}if(!sd.dataset.sure){sd.dataset.sure=1;sd.textContent='Точно отправить?';return}sd.disabled=true;
-    try{const r=await fetch('/api/msg/send',{method:'POST',headers:{'content-type':'application/json'},credentials:'same-origin',body:JSON.stringify({texts,mids:R0.L.map(m=>m.id),label:R0.label})});const j=await r.json();if(!r.ok)throw 0;
+    try{const r=await fetch('/api/msg/send',{method:'POST',headers:{'content-type':'application/json'},credentials:'same-origin',body:JSON.stringify({texts,mids:R0.E?[]:R0.L.map(m=>m.id),emails:R0.E||[],label:R0.label})});const j=await r.json();if(!r.ok)throw 0;
       toast(`Отправлено в My PIT: ${j.delivered}${j.missing?` · не в My PIT: ${j.missing}`:''}`,5000);audit('Сообщение бойцам: '+R0.label+' · '+((texts.ru||Object.values(texts)[0]).title||''));M.tr={};M.sel={};M.lang='ru';DIRTY.view=false;loadMsgHist();render()}
     catch(e){sd.disabled=false;toast('Не отправлено')}})}
 /* ===== Письма бойцу My PIT: member — найден в базе (сразу полная анкета), new — новый клиент, full — договор и оплата есть, анкета открыта ===== */

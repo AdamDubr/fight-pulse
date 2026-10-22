@@ -38,18 +38,20 @@ export async function msgRoutes(req, env, path, me) {
     for (const l of LANGS) { const t = b.texts && b.texts[l]; if (t && clean(t.text, 2000)) texts[l] = { title: clean(t.title, 120), text: clean(t.text, 2000) } }
     if (!Object.keys(texts).length) return json({ error: 'empty' }, 400);
     const mids = [...new Set((Array.isArray(b.mids) ? b.mids : []).map(x => String(x)).filter(Boolean))].slice(0, 2000);
-    if (!mids.length) return json({ error: 'no_recipients' }, 400);
+    const em0 = [...new Set((Array.isArray(b.emails) ? b.emails : []).map(x => String(x).trim().toLowerCase()).filter(x => /^[^@\s]+@[^@\s]+$/.test(x)))].slice(0, 2000);
+    if (!mids.length && !em0.length) return json({ error: 'no_recipients' }, 400);
     const emails = new Set(), found = new Set();
+    for (let i = 0; i < em0.length; i += 90) { const part = em0.slice(i, i + 90), r = await env.DB.prepare(`SELECT email FROM fighters WHERE email IN (${part.map(() => '?').join(',')})`).bind(...part).all(); for (const x of r.results || []) emails.add(x.email) }
     for (let i = 0; i < mids.length; i += 90) {
       const part = mids.slice(i, i + 90), r = await env.DB.prepare(`SELECT email, mid FROM fighters WHERE mid IN (${part.map(() => '?').join(',')})`).bind(...part).all();
       for (const x of r.results || []) { emails.add(x.email); found.add(x.mid) }
     }
     const id = 'm' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), t = Date.now();
     const st = [env.DB.prepare('INSERT INTO msgs(id,created,by,title,texts,target,total,delivered) VALUES(?,?,?,?,?,?,?,?)')
-      .bind(id, t, me.email, (texts.ru || Object.values(texts)[0]).title || '', JSON.stringify(texts), JSON.stringify({ label: clean(b.label, 120), mids: mids.length }), mids.length, emails.size)];
+      .bind(id, t, me.email, (texts.ru || Object.values(texts)[0]).title || '', JSON.stringify(texts), JSON.stringify({ label: clean(b.label, 120), mids: mids.length + em0.length }), mids.length + em0.length, emails.size)];
     for (const e of emails) st.push(env.DB.prepare('INSERT OR IGNORE INTO msg_to(msg,email) VALUES(?,?)').bind(id, e));
     for (let i = 0; i < st.length; i += 90) await env.DB.batch(st.slice(i, i + 90));
-    return json({ ok: true, id, total: mids.length, delivered: emails.size, missing: mids.length - found.size });
+    return json({ ok: true, id, total: mids.length + em0.length, delivered: emails.size, missing: mids.length - found.size });
   }
   if (path === '/api/msg/list' && req.method === 'GET') {
     if (!staff) return json({ error: 'forbidden' }, 403);

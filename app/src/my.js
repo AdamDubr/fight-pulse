@@ -12,6 +12,9 @@ const samePhone = (a, b) => { a = digits(a); b = digits(b); return a.length >= 9
 import { inbox, markRead, trTexts } from './msg.js';
 import { coachDict } from './coachtr.js';
 const DISCS = ['MMA', 'Бокс', 'BJJ', 'Кикбоксинг', 'Капоэйра'];
+// с 22.10.2026 (Анталья): новым бойцам функции PIT PRO открываются после полной анкеты (кроме проверенных вручную администратором)
+export const ANKETA_FROM = Date.UTC(2026, 9, 21, 21, 0, 0);
+export function needsAnketa(f, d) { if (!f || !(f.created >= ANKETA_FROM)) return false; if (f.ver_by && f.ver_by !== 'pro') return false; if (!d) { try { d = JSON.parse(f.data) } catch (e) { d = {} } } return !d.submittedAt }
 export const CLUBS = { mowgli: { id: 'mowgli', name: 'Mowgli Fight Club', city: 'Анталья', cityEn: 'Antalya', country: 'TR', lat: 36.8381506, lon: 30.5904377, addr: 'Sarısu, 131. Sk., 07130 Konyaaltı/Antalya, Türkiye', placeId: 'ChIJZUYTFaCVwxQRSgx4mbk5waQ', hours: 'Пн–Сб 09:00–22:00', logo: '/brand/clubs/mowgli.png', discs: ['MMA', 'BJJ', 'Бокс', 'Кикбоксинг', 'Капоэйра'], proFree: true } };
 const LEVELS = ['club', 'city', 'regional', 'national', 'international', 'pro'];
 const KINDS = ['comp', 'title', 'club', 'link'];
@@ -269,10 +272,11 @@ async function view(env, email, uiLang) {
   out.missing = fullMissing(profile, out.photo);
   out.submitted = profile.submittedAt || null;
   // PIT PRO: клуб с proFree (Mowgli) даёт PRO всем своим бойцам; PRO включает отметку ✓ Verified
-  out.pro = !!(f.mid && CLUBS[f.club] && CLUBS[f.club].proFree);
+  const gate = needsAnketa(f, profile); out.needAnketa = gate; if (gate) { out.fullOpen = true; out.verified = false }
+  out.pro = !gate && !!(f.mid && CLUBS[f.club] && CLUBS[f.club].proFree);
   if (out.pro && !f.verified) { const t0 = Date.now(); await env.DB.prepare("UPDATE fighters SET verified=1, ver_by='pro', ver_at=? WHERE email=?").bind(t0, email).run(); f.verified = 1; out.verified = true; out.verAt = t0 }
-  out.access = !!(f.mid && f.verified);
-  out.world = !!f.verified;
+  out.access = !!(f.mid && f.verified) && !gate;
+  out.world = !!f.verified && !gate;
   try { out.inbox = await inbox(env, email, ['ru', 'en', 'tr'].includes(profile.lang) ? profile.lang : 'ru') } catch (e) { out.inbox = [] }
   out.approved = !!(lead && lead.approved && !lead.rejected) || !!f.mid;
   if (out.access) { const lg = uiLang || (['ru', 'en', 'tr'].includes(profile.lang) ? profile.lang : 'ru'); out.schedule = await trialSlots(env, 62); if (lg !== 'ru') out.schedule = out.schedule.map(x => x.coach ? { ...x, coach: translit(x.coach) } : x); out.clubInfo = await clubInfo(env, f.club, lg) }
@@ -309,15 +313,15 @@ export async function myRoutes(req, env, path, email, staff) {
 
   // Зал бойца: кто сейчас в зале (отметки посещений за сегодня) — только для членов клуба с ✓ Verified
   if (path === '/api/my/hall' && req.method === 'GET') {
-    const f = await env.DB.prepare('SELECT mid,verified FROM fighters WHERE email=?').bind(email).first();
-    if (!f || !f.mid || !f.verified) return json({ error: 'forbidden' }, 403);
+    const f = await env.DB.prepare('SELECT mid,verified,created,ver_by,data FROM fighters WHERE email=?').bind(email).first();
+    if (!f || !f.mid || !f.verified || needsAnketa(f)) return json({ error: 'forbidden' }, 403);
     const d = new Date().toLocaleDateString('sv-SE', { timeZone: 'Europe/Istanbul' }), v = await getDoc(env, 'visits', d);
     return json({ date: d, ids: v && Array.isArray(v.ids) ? v.ids : [] });
   }
   // карточка бойца из Зала (Arena): изменения → модерация клубом (pending) → сохранено
   if (path === '/api/my/card' && req.method === 'POST') {
-    const f = await env.DB.prepare('SELECT data,pending,mid,verified FROM fighters WHERE email=?').bind(email).first();
-    if (!f || !f.mid || !f.verified) return json({ error: 'forbidden' }, 403);
+    const f = await env.DB.prepare('SELECT data,pending,mid,verified,created,ver_by FROM fighters WHERE email=?').bind(email).first();
+    if (!f || !f.mid || !f.verified || needsAnketa(f)) return json({ error: 'forbidden' }, 403);
     const b = await req.json().catch(() => ({})), n = v => Math.max(0, Math.min(999, parseInt(v, 10) || 0)), st = ['orthodox', 'southpaw', 'switch'];
     const c = {
       nick: clean(b.nick, 40), weight: clean(b.weight, 20), stance: st.includes(b.stance) ? b.stance : '', city: clean(b.city, 60), belt: clean(b.belt, 40), bio: clean(b.bio, 400),
@@ -531,14 +535,14 @@ export async function reviewRoutes(req, env, path, me) {
   const t = Date.now(), club = env.CLUB || 'mowgli', by = me.email;
 
   if (path === '/api/review' && req.method === 'GET') {
-    const fs = await env.DB.prepare('SELECT email,data,mid,lead,verified,pending,note,ver_at,invited,updated FROM fighters WHERE club=? ORDER BY updated DESC').bind(club).all();
+    const fs = await env.DB.prepare('SELECT email,data,mid,lead,verified,pending,note,ver_at,ver_by,invited,updated,created FROM fighters WHERE club=? ORDER BY updated DESC').bind(club).all();
     const its = await env.DB.prepare("SELECT i.* FROM fighter_items i JOIN fighters f ON f.email=i.email WHERE f.club=? ORDER BY i.created DESC").bind(club).all();
     const byE = {};
     for (const r of its.results || []) (byE[r.email] = byE[r.email] || []).push(itemOut(r));
     const list = (fs.results || []).map(f => {
       const d = JSON.parse(f.data), pend = f.pending ? JSON.parse(f.pending) : null, items = byE[f.email] || [];
       return {
-        email: f.email, name: `${d.last || ''} ${d.first || ''}`.trim(), profile: d, pending: pend, verified: !!f.verified, mid: f.mid, lead: f.lead, invited: !!f.invited, note: f.note,
+        email: f.email, created: f.created || null, needAnketa: needsAnketa(f, d), name: `${d.last || ''} ${d.first || ''}`.trim(), profile: d, pending: pend, verified: !!f.verified, mid: f.mid, lead: f.lead, invited: !!f.invited, note: f.note,
         photo: photoUrl((pend && pend.photo) || d.photo), items, pendingItems: items.filter(i => i.status === 'pending').length, updated: f.updated,
       };
     });

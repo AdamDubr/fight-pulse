@@ -1,7 +1,7 @@
 // PIT RATING — app.pitrating.com
 // Вход: собственный (код на e-mail → сессия), на переходный период также Cloudflare Access. Роли: owner | admin | trainer.
 import { authRoutes, sessionEmail, sessionsOf, revokeAll } from './auth.js';
-import { myRoutes, reviewRoutes, notifyTrial, notifyWelcome, worldMe, CLUBS } from './my.js';
+import { myRoutes, reviewRoutes, notifyTrial, notifyWelcome, worldMe, CLUBS, ANKETA_FROM, needsAnketa } from './my.js';
 import { worldRoutes } from './world.js';
 import { msgRoutes } from './msg.js';
 // Данные: D1 (документы коллекций), файлы: R2.
@@ -249,9 +249,9 @@ async function arenaReal(req, env, opt = {}) {
   const events = {}; for (const x of ev.results || []) { try { const e = JSON.parse(x.data); events[x.id] = { title: e.title, date: e.date, end: e.end || null } } catch (e) { } }
   const today = clubDay();
   // PIT PRO от клуба (Mowgli): все бойцы клуба с привязанным входом — ✓ Verified
-  if (CLUBS[env.CLUB || 'mowgli'] && CLUBS[env.CLUB || 'mowgli'].proFree) { try { await env.DB.prepare("UPDATE fighters SET verified=1, ver_by='pro', ver_at=? WHERE mid IS NOT NULL AND verified=0 AND club=?").bind(Date.now(), env.CLUB || 'mowgli').run() } catch (e) { } }
+  if (CLUBS[env.CLUB || 'mowgli'] && CLUBS[env.CLUB || 'mowgli'].proFree) { try { await env.DB.prepare("UPDATE fighters SET verified=1, ver_by='pro', ver_at=? WHERE mid IS NOT NULL AND verified=0 AND club=? AND (created < ? OR json_extract(data,'$.submittedAt') IS NOT NULL)").bind(Date.now(), env.CLUB || 'mowgli', ANKETA_FROM).run() } catch (e) { } }
   let ver = [], cards = {}; try {
-    const vr = (await env.DB.prepare('SELECT mid,data FROM fighters WHERE mid IS NOT NULL AND verified=1').all()).results || [];
+    const vr = ((await env.DB.prepare('SELECT mid,data,created,ver_by FROM fighters WHERE mid IS NOT NULL AND verified=1').all()).results || []).filter(x => !needsAnketa(x));
     ver = [...new Set(vr.map(x => x.mid))];
     // открытая карточка бойца: только подтверждённые клубом поля (без контактов и дат рождения)
     for (const x of vr) { let d = {}; try { d = JSON.parse(x.data) } catch (e) { } const c = {}; for (const k of ['nick', 'weight', 'stance', 'city', 'belt', 'rec', 'med', 'titles']) if (d[k] != null && d[k] !== '') c[k] = d[k];
@@ -293,8 +293,8 @@ export default {
       if (!w) return new Response(null, { status: 302, headers: { location: '/login?next=%2Fworld%2F' } });
       if (!w.role) {
         // боец: My PIT World открывается после проверки анкеты клубом (член клуба)
-        const f = await env.DB.prepare('SELECT mid,verified FROM fighters WHERE email=?').bind(w.email).first().catch(() => null);
-        if (!f || !f.verified) return new Response(null, { status: 302, headers: { location: '/my/?locked=world' } });
+        const f = await env.DB.prepare('SELECT mid,verified,created,ver_by,data FROM fighters WHERE email=?').bind(w.email).first().catch(() => null);
+        if (!f || !f.verified || needsAnketa(f)) return new Response(null, { status: 302, headers: { location: '/my/?locked=world' } });
       }
       let me = null; if (!w.role) { try { me = await worldMe(env, w.email) } catch (e) { me = null } }
       return arenaReal(req, env, { asset: true, world: true, fighter: !w.role, me });
@@ -324,8 +324,8 @@ export default {
     }
     // Зал бойца: Arena в роли бойца (своя карточка, Участники, Бой) — для членов клуба с ✓ Verified / PRO; сотрудник — ?as=fighter
     if ((path === '/arena/' || path === '/arena/index.html') && (!me.role || url.searchParams.get('as') === 'fighter')) {
-      const f = await env.DB.prepare('SELECT mid,verified FROM fighters WHERE email=?').bind(me.email).first().catch(() => null);
-      if (f && f.mid && f.verified) { const x = await env.DB.prepare('SELECT data,pending FROM fighters WHERE email=?').bind(me.email).first(); let d = {}, pd = null; try { d = JSON.parse(x.data); pd = x.pending ? JSON.parse(x.pending) : null } catch (e) { }
+      const f = await env.DB.prepare('SELECT mid,verified,created,ver_by,data FROM fighters WHERE email=?').bind(me.email).first().catch(() => null);
+      if (f && f.mid && f.verified && !needsAnketa(f)) { const x = await env.DB.prepare('SELECT data,pending FROM fighters WHERE email=?').bind(me.email).first(); let d = {}, pd = null; try { d = JSON.parse(x.data); pd = x.pending ? JSON.parse(x.pending) : null } catch (e) { }
         const K = ['nick', 'weight', 'stance', 'city', 'belt', 'rec', 'med', 'titles', 'bio', 'disc'], pick = o => { const r = {}; for (const k of K) if (o && o[k] != null) r[k] = o[k]; return r };
         return arenaReal(req, env, { fighterArena: true, mid: f.mid, lang: ['ru', 'en', 'tr'].includes(d.lang) ? d.lang : 'ru', meCard: { ...pick(d), pending: pd ? pick(pd) : null } }) }
       return new Response(null, { status: 302, headers: { location: '/my/' } });   // режим бойца без привязанной карточки — обратно в My PIT, не в пульт клуба
