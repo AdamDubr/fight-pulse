@@ -243,7 +243,7 @@ const DEF_TARIFFS=[
  {key:'ind10b',name:'Индивидуальные Бокс/Кикбоксинг · 10 сеансов',price:12000,sessions:10,kind:'ind',disc:['Бокс','Кикбоксинг']},
  {key:'ind8',name:'Индивидуальные · 8 сеансов',price:10000,sessions:8,kind:'ind',disc:['Бокс','Кикбоксинг']},
  {key:'staff',name:'Безлимит · без оплаты',price:0,sessions:null,kind:'staff',disc:[]}];
-const DISCS=['MMA','BJJ','Бокс','Муай-тай','Кикбоксинг','Борьба','Функционал','Капоэйра'];
+const DISCS=['MMA','Дети · MMA','BJJ','Бокс','Муай-тай','Кикбоксинг','Борьба','Функционал','Капоэйра'];
 /* несколько дисциплин у бойца: discs — список, disc — строка «MMA, BJJ» для показа и совместимости */
 const discsOf=m=>Array.isArray(m&&m.discs)&&m.discs.length?m.discs:String(m&&m.disc||'').split(/\s*[,+]\s*/).filter(d=>d&&d!=='—');
 const discPick=(id,m,free)=>{const cur=discsOf(m),all=[...new Set([...DISCS,...cur])],ro=!free&&!canAdm();
@@ -623,7 +623,7 @@ const GURI={};function gLogo(name){if(GURI[name])return GURI[name];
 const canAdm=()=>['owner','admin'].includes((window.PIT_ME||{}).role);
 // состав группы = активные бойцы с этой дисциплиной в карточке (единственный источник — карточка бойца)
 const inGroup=(m,c)=>{if(!m||m.kind==='staff')return false;const cd=String(c.disc||''),kids=m.kind==='kids';if(cd==='Все группы')return true;
-  const k=/^Дети/i.test(cd),base=cd.replace(/^Дети\s*·\s*/i,'');return k?kids&&discsOf(m).includes(base):!kids&&discsOf(m).includes(cd)};
+  const L=discsOf(m),k=/^Дети/i.test(cd),base=cd.replace(/^Дети\s*·\s*/i,'');return k?L.includes(cd)||kids&&L.includes(base):!kids&&L.includes(cd)};
 const gIds=c=>S.members.filter(m=>inGroup(m,c)&&!['exp','none'].includes(status(m).k)).sort((a,b)=>a.name.localeCompare(b.name,'ru')).map(m=>m.id);
 const ini=n=>String(n||'?').trim().split(/\s+/).slice(0,2).map(w=>w[0]).join('').toUpperCase();
 const avc=id=>{let h=0;for(const ch of String(id))h=(h*31+ch.charCodeAt(0))>>>0;return`hsl(${h%360} 45% 42%)`};
@@ -684,7 +684,7 @@ function bindDrawer(host,m){
   const del=host.querySelector('[data-del]');if(del)del.addEventListener('click',async()=>{if(await write(()=>DB.doc('members/'+m.id).delete(),'Боец удалён')){S.open=null;host.innerHTML=''}});
   host.querySelectorAll('[data-visit]').forEach(b=>b.addEventListener('click',()=>markVisit(b.dataset.visit)));
   host.querySelectorAll('[data-copy]').forEach(b=>b.addEventListener('click',()=>{navigator.clipboard.writeText(b.dataset.copy).then(()=>toast('Телефон скопирован'),()=>toast(b.dataset.copy))}));
-  const fp=$('#f_plan',host);if(fp)fp.addEventListener('change',()=>{const t=tf(fp.value);if(t){$('#f_left',host).value=t.sessions??'';if(t.kind==='kids')discSet('f_disc',host,['MMA'])}});
+  const fp=$('#f_plan',host);if(fp)fp.addEventListener('change',()=>{const t=tf(fp.value);if(t){$('#f_left',host).value=t.sessions??'';if(t.kind==='kids')discSet('f_disc',host,['Дети · MMA'])}});
   const rp=$('#r_plan',host);if(rp)rp.addEventListener('change',()=>{$('#r_sum',host).value=tf(rp.value)?.price??0});
   const rs=$('#r_start',host);if(rs)rs.addEventListener('change',()=>{$('#r_end',host).value=addMonth(rs.value)});
   const fs=$('#f_start',host);if(fs&&S.open==='new')fs.addEventListener('change',()=>{$('#f_end',host).value=addMonth(fs.value)});
@@ -712,7 +712,7 @@ function bindDrawer(host,m){
     if(ok&&pay&&t&&t.price>0)await write(()=>DB.collection('payments').doc().set({mid:id,name,sum:t.price,date:doc.start,plan,method:pay,src:'pit'}));
     if(ok&&S.prefillLead){const lid=S.prefillLead;S.prefillLead=null;S.prefill=null;await write(()=>DB.doc('leads/'+lid).update({status:'bought',mid:id,boughtAt:today()}),'Заявка закрыта: купил абонемент')}
     if(ok){S.open=id;S.drMode='view';renderDrawer()}});
-  const cf=$('#cf',host);if(cf){const cp=$('#c_plan',host),upd=()=>{$('#c_calc',host).innerHTML=changeCalcHTML(m,cp.value);const t=tf(cp.value);if(t&&t.kind==='kids')discSet('c_disc',host,['MMA'])};cp.addEventListener('change',upd);upd();
+  const cf=$('#cf',host);if(cf){const cp=$('#c_plan',host),upd=()=>{$('#c_calc',host).innerHTML=changeCalcHTML(m,cp.value);const t=tf(cp.value);if(t&&t.kind==='kids')discSet('c_disc',host,['Дети · MMA'])};cp.addEventListener('change',upd);upd();
     cf.addEventListener('submit',async e=>{e.preventDefault();const plan=cp.value,x=changeCalc(m,plan),method=$('#c_m',host).value,dl=discGet('c_disc',host),disc=dl.join(', ')||'—';
       const hist=Array.isArray(m.changes)?m.changes.slice():[];hist.push({date:x.start,from:m.plan,to:plan,credit:x.c.sum,remDays:x.c.rem,totalDays:x.c.total,pay:x.pay,extra:x.extra});
       const ok=await write(()=>DB.doc('members/'+m.id).update({plan,kind:x.t?.kind||m.kind,disc,discs:dl,price:x.P,start:x.start,end:x.t?.kind==='staff'?null:x.end,left:x.t?.sessions??null,frozen:false,changes:hist}));
@@ -837,7 +837,7 @@ function leadDrawer(){const host=$('#ovHost'),x=S.ov.id==='new'?{status:'new',ki
   host.querySelectorAll('[data-lmove]').forEach(b=>b.addEventListener('click',()=>up({status:'new'},'Заявка возвращена в работу')));
   const ns=host.querySelector('[data-lnoshow]');if(ns)ns.addEventListener('click',()=>up({status:'lost',lostReason:'Не пришёл на пробное'},'Не пришёл на пробное'));
   host.querySelectorAll('[data-llost]').forEach(b=>b.addEventListener('click',()=>up({status:'lost',lostReason:b.dataset.llost},'Отказ ('+b.dataset.llost+')')));
-  const by=host.querySelector('[data-lbuy]');if(by)by.addEventListener('click',()=>{const w=x.name.trim().split(/\s+/);S.prefill={last:w.length>1?w.pop():'',first:w.join(' ')||x.name,phone:x.phone,disc:x.disc,discs:discsOf(x),plan:x.kind==='ind'?(discsOf(x).some(d=>['Бокс','Кикбоксинг'].includes(d))?'ind10b':'ind10m'):(/дет|\b([4-9]|1[0-7])\s*лет/i.test(x.age||'')&&discsOf(x).includes('MMA')?'kids12':'grp12')};S.prefillLead=x.id;S.ov=null;S.open='new';renderDrawer()});
+  const by=host.querySelector('[data-lbuy]');if(by)by.addEventListener('click',()=>{const w=x.name.trim().split(/\s+/);S.prefill={last:w.length>1?w.pop():'',first:w.join(' ')||x.name,phone:x.phone,disc:x.disc,discs:discsOf(x),plan:x.kind==='ind'?(discsOf(x).some(d=>['Бокс','Кикбоксинг'].includes(d))?'ind10b':'ind10m'):((/дет|\b([4-9]|1[0-7])\s*лет/i.test(x.age||'')&&discsOf(x).includes('MMA'))||discsOf(x).includes('Дети · MMA')?'kids12':'grp12')};S.prefillLead=x.id;S.ov=null;S.open='new';renderDrawer()});
   const lm=host.querySelector('[data-lmember]');if(lm)lm.addEventListener('click',()=>{S.ov=null;S.open=lm.dataset.lmember;S.drMode='view';renderDrawer()});
 }
 

@@ -3820,7 +3820,7 @@ const GURI={};function gLogo(name){if(GURI[name])return GURI[name];
 let GROUPS=null;
 // реальный зал: боец в группе, если в карточке CRM отмечена её дисциплина (детские группы — только дети)
 function aInCls(a,cd){if(!a||a.coach)return false;cd=String(cd||'');if(cd==='Все группы')return true;const L=a.discs||[a.disc];
-  if(/^Дети/i.test(cd))return!!a.kids&&L.includes(cd.replace(/^Дети\s*·\s*/i,''));return!a.kids&&L.includes(cd)}
+  if(/^Дети/i.test(cd))return L.includes(cd)||!!a.kids&&L.includes(cd.replace(/^Дети\s*·\s*/i,''));return!a.kids&&L.includes(cd)}
 function groupsInit(){if(REAL){const cl=((window.PIT_REAL||{}).schedule||{}).classes||[],m2a=new Map(ATHLETES.filter(a=>a.mid).map(a=>[a.mid,a.id]));
   GROUPS=cl.slice().sort((x,y)=>String(x.time).localeCompare(String(y.time))).map(c=>({id:c.id,name:c.disc+' · '+c.time,disc:c.disc,ids:ATHLETES.filter(a=>aInCls(a,c.disc)).map(a=>a.id),real:true}));return}
   if(GROUPS)return;try{GROUPS=JSON.parse(localStorage.getItem((REAL?'fp.groups.v1.real':'fp.groups.v1')))}catch(e){}
