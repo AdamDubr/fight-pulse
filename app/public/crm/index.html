@@ -1472,7 +1472,7 @@ const MLANG=[['ru','Русский'],['en','English'],['tr','Türkçe']];
 const ANK_TXT={ru:{title:'Заполните анкету бойца',text:'Здравствуйте! Спасибо, что зарегистрировались в Mowgli Fight Club. Для доступа к функциям подписки PIT PRO заполните, пожалуйста, полную анкету бойца: фото, вес, город. Это займёт 2 минуты: My PIT → «Заполнить полную анкету».'},
   en:{title:'Complete your fighter profile',text:'Hi! Thank you for registering at Mowgli Fight Club. To access the PIT PRO subscription features, please complete your full fighter profile: photo, weight and city. It takes 2 minutes: My PIT → “Complete full profile”.'},
   tr:{title:'Sporcu profilinizi tamamlayın',text:'Merhaba! Mowgli Fight Club’a kaydolduğunuz için teşekkürler. PIT PRO abonelik özelliklerine erişmek için lütfen tam sporcu profilinizi doldurun: fotoğraf, kilo, şehir. 2 dakika sürer: My PIT → “Tam profili doldur”.'}};
-function msgNewList(){return((S.pv&&S.pv.all)||[]).filter(f=>f.needAnketa)}
+function msgNewList(){return((S.pv&&S.pv.all)||[]).filter(f=>f.needAnketa&&!(f.profile&&f.profile.submittedAt))}
 function msgRecipients(){const M=S.msg,act=S.members.filter(m=>m.kind!=='staff'&&!['exp','none'].includes(status(m).k));
   if(M.to==='new'){const N=msgNewList();return{L:N.map(f=>({id:f.mid||f.email,name:f.name,email:f.email})),E:N.map(f=>f.email),label:'Зарегистрировались с 22.10 · анкета не заполнена'}}
   if(M.to==='all')return{L:act,label:'Все активные бойцы'};

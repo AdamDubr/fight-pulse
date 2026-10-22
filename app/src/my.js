@@ -14,7 +14,8 @@ import { coachDict } from './coachtr.js';
 const DISCS = ['MMA', 'Бокс', 'BJJ', 'Кикбоксинг', 'Капоэйра'];
 // с 22.10.2026 (Анталья): новым бойцам функции PIT PRO открываются после полной анкеты (кроме проверенных вручную администратором)
 export const ANKETA_FROM = Date.UTC(2026, 9, 21, 21, 0, 0);
-export function needsAnketa(f, d) { if (!f || !(f.created >= ANKETA_FROM)) return false; if (f.ver_by && f.ver_by !== 'pro') return false; if (!d) { try { d = JSON.parse(f.data) } catch (e) { d = {} } } return !d.submittedAt }
+// анкета → отправка → проверка администратором; до проверки функции PRO закрыты
+export function needsAnketa(f) { if (!f || !(f.created >= ANKETA_FROM)) return false; return !(f.ver_by && f.ver_by !== 'pro') }
 export const CLUBS = { mowgli: { id: 'mowgli', name: 'Mowgli Fight Club', city: 'Анталья', cityEn: 'Antalya', country: 'TR', lat: 36.8381506, lon: 30.5904377, addr: 'Sarısu, 131. Sk., 07130 Konyaaltı/Antalya, Türkiye', placeId: 'ChIJZUYTFaCVwxQRSgx4mbk5waQ', hours: 'Пн–Сб 09:00–22:00', logo: '/brand/clubs/mowgli.png', discs: ['MMA', 'BJJ', 'Бокс', 'Кикбоксинг', 'Капоэйра'], proFree: true } };
 const LEVELS = ['club', 'city', 'regional', 'national', 'international', 'pro'];
 const KINDS = ['comp', 'title', 'club', 'link'];
@@ -388,7 +389,7 @@ export async function myRoutes(req, env, path, email, staff) {
 
   if (path === '/api/my/submit') {
     if (!cur) return json({ error: 'profile' }, 403);
-    if (!cur.mid || !fullOpenOf(await getDoc(env, 'members', cur.mid))) return json({ error: 'not_member' }, 409);
+    if (!cur.mid || (!needsAnketa(cur) && !fullOpenOf(await getDoc(env, 'members', cur.mid)))) return json({ error: 'not_member' }, 409);
     const d = JSON.parse(cur.data), miss = fullMissing(d, d.photo ? 1 : 0);
     if (miss.length) return json({ error: 'incomplete', missing: miss }, 400);
     await env.DB.prepare('UPDATE fighters SET data=?,note=NULL,updated=? WHERE email=?').bind(JSON.stringify({ ...d, submittedAt: new Date().toISOString() }), t, email).run();
@@ -546,7 +547,7 @@ export async function reviewRoutes(req, env, path, me) {
         photo: photoUrl((pend && pend.photo) || d.photo), items, pendingItems: items.filter(i => i.status === 'pending').length, updated: f.updated,
       };
     });
-    list.forEach(x => { x.full = !x.verified && !!x.profile.submittedAt });
+    list.forEach(x => { x.full = (!x.verified || x.needAnketa) && !!x.profile.submittedAt; if (x.needAnketa) x.verified = false });
     const todo = list.filter(x => (x.verified && x.pending) || x.pendingItems || x.full);
     return json({ todo, all: list, counts: { full: todo.filter(x => x.full).length, todo: todo.length, items: todo.reduce((a, x) => a + x.pendingItems, 0), verified: list.filter(x => x.verified).length } });
   }

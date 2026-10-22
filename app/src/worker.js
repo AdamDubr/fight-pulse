@@ -249,7 +249,7 @@ async function arenaReal(req, env, opt = {}) {
   const events = {}; for (const x of ev.results || []) { try { const e = JSON.parse(x.data); events[x.id] = { title: e.title, date: e.date, end: e.end || null } } catch (e) { } }
   const today = clubDay();
   // PIT PRO от клуба (Mowgli): все бойцы клуба с привязанным входом — ✓ Verified
-  if (CLUBS[env.CLUB || 'mowgli'] && CLUBS[env.CLUB || 'mowgli'].proFree) { try { await env.DB.prepare("UPDATE fighters SET verified=1, ver_by='pro', ver_at=? WHERE mid IS NOT NULL AND verified=0 AND club=? AND (created < ? OR json_extract(data,'$.submittedAt') IS NOT NULL)").bind(Date.now(), env.CLUB || 'mowgli', ANKETA_FROM).run() } catch (e) { } }
+  if (CLUBS[env.CLUB || 'mowgli'] && CLUBS[env.CLUB || 'mowgli'].proFree) { try { await env.DB.prepare("UPDATE fighters SET verified=1, ver_by='pro', ver_at=? WHERE mid IS NOT NULL AND verified=0 AND club=? AND created < ?").bind(Date.now(), env.CLUB || 'mowgli', ANKETA_FROM).run() } catch (e) { } }
   let ver = [], cards = {}; try {
     const vr = ((await env.DB.prepare('SELECT mid,data,created,ver_by FROM fighters WHERE mid IS NOT NULL AND verified=1').all()).results || []).filter(x => !needsAnketa(x));
     ver = [...new Set(vr.map(x => x.mid))];
