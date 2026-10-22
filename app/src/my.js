@@ -287,6 +287,13 @@ export async function myRoutes(req, env, path, email, staff) {
   const t = Date.now();
   if (path === '/api/my' && req.method === 'GET') return json({ ...(await view(env, email)), staff: staff || null });
 
+  // Зал бойца: кто сейчас в зале (отметки посещений за сегодня) — только для членов клуба с ✓ Verified
+  if (path === '/api/my/hall' && req.method === 'GET') {
+    const f = await env.DB.prepare('SELECT mid,verified FROM fighters WHERE email=?').bind(email).first();
+    if (!f || !f.mid || !f.verified) return json({ error: 'forbidden' }, 403);
+    const d = new Date().toISOString().slice(0, 10), v = await getDoc(env, 'visits', d);
+    return json({ date: d, ids: v && Array.isArray(v.ids) ? v.ids : [] });
+  }
   // режим бойца для сотрудника: привязать свою реальную карточку из CRM к своему входу
   if (path === '/api/my/staffpick' && req.method === 'GET') {
     if (!staff) return json({ error: 'forbidden' }, 403);

@@ -1535,6 +1535,10 @@ button.sc-c:focus-visible{outline:2px solid var(--sc);outline-offset:2px}
  body.rf .s-nav .s-co,body.rf .s-nav .s-fin{display:none!important}
  body.m-force-desk.rf:not(.m-tv) .s-nav{grid-template-columns:repeat(5,1fr)}
  body.rf #toCrm,body.rf #roleSel,body.rf .protgl{display:none!important}
+ #gridCards .card{position:relative}
+ .c-ver{position:absolute;top:5px;right:5px;z-index:2;display:inline-flex;align-items:center;gap:2px;background:#e8c35a;color:#141414;border-radius:999px;padding:2px 5px 2px 4px;box-shadow:0 0 0 2px #0b0b0b,0 0 10px #e8c35a66;line-height:1}
+ .c-ver .pitm{width:9px;height:11px}.c-ver b{font-size:10px;font-weight:900}
+ .g-empty{margin:1rem;padding:1.4rem 1rem;border:1px dashed var(--line);border-radius:.8rem;text-align:center;color:#8a8a8a;font-size:.9rem}
  body.real #aRate,body.real .frate,body.real .m-rt,body.real .rtx{display:none!important}
  body.m-force-desk:not(.m-tv):is(:not([data-role=fighter]),.rf) .top .tabs{display:none!important}
  body.m-force-desk:not(.m-tv):is(:not([data-role=fighter]),.rf) #mobBtn{display:none!important}
@@ -2588,10 +2592,10 @@ const ATHLETES_DEMO=[
 ].map(a=>({...a,public:true,absent:REAL?false:[5,13,19].includes(a.id)}));
 function pitRoster(){
   const hrMaxOf=age=>Math.round(208-.7*age); // Tanaka et al., 2001
-  const out=[];const ms=PIT_REAL.members||[];
+  const out=[];const ms=PIT_REAL.members||[];const VER=new Set(PIT_REAL.ver||[]);
   ms.forEach(m=>{const id=out.length+1,age=m.age||25,dl=(Array.isArray(m.discs)&&m.discs.length?m.discs:String(m.disc||'MMA').split(/\s*[,+]\s*/)).filter(d=>d&&d!=='—');
     out.push({id,mid:m.id,fit:.6,nick:m.first||m.name,name:m.name,disc:dl[0]||'MMA',discs:dl.length?dl:['MMA'],kids:m.kind==='kids'||!!m.kidish,age,kg:m.kg||null,sex:m.sex||'m',hrMax:m.hrMax||hrMaxOf(age),hrRest:60,sensor:'—',
-      sim:{id:'НЕТ ДАТЧИКА·'+id,int:.6,rec:.012,bat:100},coach:m.kind==='staff',public:m.consentPublic==='yes'||m.consentPublic===true,absent:false,end:m.end||'',start:m.start||'',plan:m.plan||'',left:m.left??null,dob:m.dob||''})});
+      sim:{id:'НЕТ ДАТЧИКА·'+id,int:.6,rec:.012,bat:100},coach:m.kind==='staff',ver:VER.has(m.id),public:m.consentPublic==='yes'||m.consentPublic===true,absent:false,end:m.end||'',start:m.start||'',plan:m.plan||'',left:m.left??null,dob:m.dob||''})});
   return out}
 const ATHLETES=REAL?pitRoster():WORLD?ATHLETES_DEMO.map(a=>a.id===1?{...a,name:'Адам AI',nick:'Адам AI'}:a):ATHLETES_DEMO;
 const byId=new Map(ATHLETES.map(a=>[a.id,a]));
@@ -3451,7 +3455,7 @@ addEventListener('keydown',e=>{if(ui.view!=='arena'||/INPUT|SELECT|TEXTAREA/.tes
 /* ---- overview ---- */
 const G=$('#gridCards');
 G.innerHTML=ATHLETES.map((a,i)=>`<button class="card" data-i="${i}">
-  <div class="c-head"><span class="n">${String(a.id).padStart(2,'0')}</span><span class="nick"></span><span class="disc">${a.disc.toUpperCase()}</span><img class="c-ava" alt=""></div>
+  <div class="c-head"><span class="n">${String(a.id).padStart(2,'0')}</span><span class="nick"></span><span class="disc">${a.disc.toUpperCase()}</span><img class="c-ava" alt="">${a.ver?`<span class="c-ver" title="✓ Verified · PIT PRO">${PITM}<b>✓</b></span>`:''}</div>
   <div class="c-name"></div>
   <div class="c-bpm"><b>--</b><span>УД/МИН</span><span class="pc">--%</span></div>
   <div class="zrowc" style="display:flex;justify-content:space-between;align-items:center;gap:.5rem"><span class="zchip">Z0</span><span class="kc num"></span><span class="conn"></span></div>
@@ -3459,15 +3463,16 @@ G.innerHTML=ATHLETES.map((a,i)=>`<button class="card" data-i="${i}">
   <canvas class="c-spark"></canvas>
   <div class="c-foot meter"><span class="mk2">ЗАПАС СИЛ</span><span class="ms">—</span><span class="mv">--</span><span class="segs">${'<i></i>'.repeat(20)}</span></div>
 </button>`).join('');
+G.insertAdjacentHTML('afterend','<div class="g-empty" id="gEmpty" hidden>В зале пока никого: боец появится здесь, когда отметится на тренировке в CRM или подключит датчик.</div>');
 G.style.setProperty('--gc',ATHLETES.length<=8?4:ATHLETES.length<=12?4:ATHLETES.length<=18?5:6);G.classList.toggle('dense',ATHLETES.length>12);
 const cards=[...G.children];cards.forEach(c=>c.addEventListener('click',()=>{if(ATHLETES[+c.dataset.i].public)select(+c.dataset.i,true)}));
-function renderGrid(){cards.forEach((c,i)=>{const a=ATHLETES[i],m=metrics.get(a.id),st=metrics.status(m),z=m.hr?zoneOf(m.hr,a.hrMax):0,live=st==='live'||st==='stale';
+function renderGrid(){if(REAL)hallSync();cards.forEach((c,i)=>{c.hidden=REAL&&!!ATHLETES[i].absent;if(c.hidden)return;const a=ATHLETES[i],m=metrics.get(a.id),st=metrics.status(m),z=m.hr?zoneOf(m.hr,a.hrMax):0,live=st==='live'||st==='stale';
   const av=$('.c-ava',c);if(av&&!av.dataset.s){av.dataset.s=1;av.src=(CAB[a.id]&&CAB[a.id].person.photo)||avatar(a.id)}
   c.style.setProperty('--zc',live?ZCOL[z]:ZCOL[0]);c.classList.toggle('lost',!live);c.classList.toggle('private',!a.public);
   $('.nick',c).textContent=display(a);const cn2=a.name===a.nick?'':(settings.nameMode==='nick'?a.name:a.nick);$('.c-name',c).innerHTML=(cn2?esc(cn2)+' · ':'')+rtBadge(a.id);
   $('.c-bpm b',c).textContent=live&&m.hr?m.hr:'--';$('.pc',c).textContent=live&&m.hr?Math.round(m.hr/a.hrMax*100)+'%':'--%';
   const zc=$('.zchip',c);zc.style.setProperty('--zc',ZCOL[z]);zc.textContent=`${ZONES[z].key} · ${ZONES[z].label}`;
-  $('.kc',c).textContent=m.kcal>=1?Math.round(m.kcal)+' ккал':'';const cn=$('.conn',c);cn.className='conn '+st;cn.textContent=st==='live'?'':CONN[st];
+  $('.kc',c).textContent=m.kcal>=1?Math.round(m.kcal)+' ккал':'';const cn=$('.conn',c);cn.className='conn '+st;cn.textContent=st==='live'?'':REAL&&st==='none'&&!a.absent?'В ЗАЛЕ · НЕТ ДАТЧИКА':CONN[st];
   const mt=$('.meter',c),cd=COND[m.lvl];mt.style.setProperty('--rc',cd.c);$('.mv',c).textContent=m.reserve+'%';$('.ms',c).textContent=cd.l;
   const no=Math.round(m.reserve/5);[...$('.segs',c).children].forEach((e,k)=>e.classList.toggle('on',k<no));
   if(a.public)drawHR($('.c-spark',c),m,{span:180,lw:2,dot:true,bands:true})})}
@@ -3722,7 +3727,12 @@ function renderAdm(){const co=$('.coach'),B=$('#admBody');
   ({roster:admRoster,groups:admGroups,wk:admWk,league:admLeague,sched:admSched,fin:admFin,imp:B2=>window.admImport(B2)})[ADM.tab](B)}
 // ---- мобильная сводка монитора: только смотреть, без выбора и назначений ----
 // ---- инфографика загрузки: сегодня против прошлых таких же дней недели (DEMO-история) ----
-const ATT={manual:new Set()};const igR=(id,k)=>{const x=Math.sin(id*12.9898+k*78.233)*43758.5453;return x-Math.floor(x)};
+const ATT={manual:new Set()};
+/* Зал в реальном режиме: только те, кто в зале сейчас — отметка посещения за сегодня (CRM), ручная отметка тренера или живой датчик */
+function hereNow(a){const m=metrics.get(a.id),st=m?metrics.status(m):'none';return st==='live'||st==='stale'||ATT.manual.has(a.id)||pitVisited(a,0)}
+function hallSync(){let n=0;ATHLETES.forEach(a=>{a.absent=!hereNow(a);if(!a.absent)n++});const e=document.getElementById('gEmpty');if(e)e.hidden=n>0}
+if(REAL){setInterval(()=>{try{hallSync();const a=ATHLETES[ui.idx];if(!document.body.classList.contains('rf')&&ui.view==='arena'&&!ui.pinned&&a&&a.absent)nextAthlete(1)}catch(e){}},3000);
+  if(window.PIT_REAL.fighterArena){const hp=async()=>{if(document.hidden)return;try{const r=await fetch('/api/my/hall',{cache:'no-store'});if(!r.ok)return;const j=await r.json();PIT_REAL.visits=PIT_REAL.visits||{};PIT_REAL.visits[j.date]={date:j.date,ids:j.ids||[]};hallSync()}catch(e){}};setInterval(hp,30000)}}const igR=(id,k)=>{const x=Math.sin(id*12.9898+k*78.233)*43758.5453;return x-Math.floor(x)};
 function monIG(host){if(!host)return;if(typeof groupsInit==='function')groupsInit();const wd=new Date().toLocaleDateString('ru-RU',{weekday:'long'}),wdP={'понедельник':'понедельники','вторник':'вторники','среда':'среды','четверг':'четверги','пятница':'пятницы','суббота':'субботы','воскресенье':'воскресенья'}[wd]||'такие же дни';
   const rows=ATHLETES.map(a=>{const m=metrics.get(a.id),st=metrics.status(m),sens=st==='live'||st==='stale',man=ATT.manual.has(a.id),here=REAL?(sens||man||pitVisited(a,0)):(sens||man||(!a.absent&&st!=='none')),
       p=.62+.33*a.fit,hist=[7,6,5,4,3,2,1].map(k=>REAL?pitVisited(a,k):a.absent&&k<=2?false:igR(a.id,k+10)<p),C=CAB[a.id],sub=dLeft(C.sub.end)<0,inj=C.med.inj.some(t=>dLeft(t.until)>=0);

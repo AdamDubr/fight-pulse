@@ -1,7 +1,7 @@
 // PIT RATING — app.pitrating.com
 // Вход: собственный (код на e-mail → сессия), на переходный период также Cloudflare Access. Роли: owner | admin | trainer.
 import { authRoutes, sessionEmail, sessionsOf, revokeAll } from './auth.js';
-import { myRoutes, reviewRoutes, notifyTrial, notifyWelcome, worldMe } from './my.js';
+import { myRoutes, reviewRoutes, notifyTrial, notifyWelcome, worldMe, CLUBS } from './my.js';
 import { worldRoutes } from './world.js';
 import { msgRoutes } from './msg.js';
 // Данные: D1 (документы коллекций), файлы: R2.
@@ -244,6 +244,9 @@ async function arenaReal(req, env, opt = {}) {
   const visits = {}; for (const x of vs.results || []) { try { const v = JSON.parse(x.data); visits[x.id] = { date: v.date || x.id, ids: v.ids || [] } } catch (e) { } }
   const events = {}; for (const x of ev.results || []) { try { const e = JSON.parse(x.data); events[x.id] = { title: e.title, date: e.date, end: e.end || null } } catch (e) { } }
   const today = new Date().toISOString().slice(0, 10);
+  // PIT PRO от клуба (Mowgli): все бойцы клуба с привязанным входом — ✓ Verified
+  if (CLUBS[env.CLUB || 'mowgli'] && CLUBS[env.CLUB || 'mowgli'].proFree) { try { await env.DB.prepare("UPDATE fighters SET verified=1, ver_by='pro', ver_at=? WHERE mid IS NOT NULL AND verified=0 AND club=?").bind(Date.now(), env.CLUB || 'mowgli').run() } catch (e) { } }
+  let ver = []; try { ver = ((await env.DB.prepare('SELECT DISTINCT mid FROM fighters WHERE mid IS NOT NULL AND verified=1').all()).results || []).map(x => x.mid) } catch (e) { }
   const age = d => { if (!/^\d{4}-\d{2}-\d{2}$/.test(d || '')) return null; const b = new Date(d), n = new Date(); let a = n.getFullYear() - b.getFullYear(); if (n < new Date(n.getFullYear(), b.getMonth(), b.getDate())) a--; return a > 3 && a < 90 ? a : null };
   const all = (r.results || []).map(x => { let m = {}; try { m = JSON.parse(x.data) } catch (e) { } if (m.first && m.last) m.name = m.first + ' ' + m.last; if (m.kind === 'staff' && ((age(m.dob) != null && age(m.dob) < 18) || (m.parent && (m.parent.name || m.parent.mid)))) { m.kind = 'group'; if (m.plan === 'staff') m.plan = 'free'; } return { id: x.id, m } });
   const membersAll = all.map(({ id, m }) => ({ id, name: m.name, disc: m.disc, kind: m.kind, end: m.end || '', frozen: !!m.frozen, consentPublic: m.consentPublic || null, left: m.left ?? null }));
@@ -254,10 +257,10 @@ async function arenaReal(req, env, opt = {}) {
   // боец в зале: остальные — только имя (с согласием на показ) или анонимно; без абонементов, дат рождения и оплат
   const fMembers = () => members.map(m => m.id === opt.mid ? m : { id: m.id, name: m.consentPublic === 'yes' || m.consentPublic === true ? m.first : 'Боец', first: m.consentPublic === 'yes' || m.consentPublic === true ? m.first : 'Боец', kidish: m.kidish, disc: m.disc, discs: m.discs, kind: m.kind, age: null, consentPublic: m.consentPublic === 'yes' || m.consentPublic === true ? 'yes' : null, end: '', start: '', plan: '', left: null });
   const inj = '<script>window.PIT_REAL=' + JSON.stringify(opt.fighterArena
-    ? { club: env.CLUB || 'mowgli', fighterArena: true, me: opt.mid, back: '/my/', role: null, schEdit: false, since: 0, members: fMembers(), membersAll: [], schedule: sch ? JSON.parse(sch.data) : null, events, visits: {}, trials: {} }
+    ? { club: env.CLUB || 'mowgli', fighterArena: true, me: opt.mid, back: '/my/', role: null, schEdit: false, since: 0, members: fMembers(), membersAll: [], ver, schedule: sch ? JSON.parse(sch.data) : null, events, visits: visits[today] ? { [today]: { date: today, ids: visits[today].ids } } : {}, trials: {} }
     : opt.fighter
     ? { club: env.CLUB || 'mowgli', worldOnly: true, fighter: true, me: opt.me || null, back: '/my/', since: 0, members: [], membersAll: [], schedule: sch ? JSON.parse(sch.data) : null, events, visits: {} }
-    : { club: env.CLUB || 'mowgli', ...(opt.world ? { worldOnly: true, back: '/' } : {}), role: opt.role || null, schEdit: opt.role === 'owner' || opt.role === 'admin', since: mx ? mx.s : 0, members, membersAll, schedule: sch ? JSON.parse(sch.data) : null, events, visits, trials }).replace(/</g, '\\u003c') + '</script>';
+    : { club: env.CLUB || 'mowgli', ...(opt.world ? { worldOnly: true, back: '/' } : {}), role: opt.role || null, schEdit: opt.role === 'owner' || opt.role === 'admin', since: mx ? mx.s : 0, members, membersAll, ver, schedule: sch ? JSON.parse(sch.data) : null, events, visits, trials }).replace(/</g, '\\u003c') + '</script>';
   const html = (await res.text()).replace('<meta charset="utf-8">', '<meta charset="utf-8">' + inj);
   return new Response(html, { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' } });
 }
