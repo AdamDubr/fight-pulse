@@ -275,7 +275,7 @@ const FLB={name:'ФИО',last:'Фамилия',first:'Имя',email:'E-mail',pho
 /* ===== рендер ===== */
 /* фоновые обновления (синхронизация, анкеты) не перерисовывают форму, которую сейчас заполняют */
 const DIRTY={view:false,ov:false};
-document.addEventListener('input',e=>{const t=e.target;if(!t||t.type==='search')return;if(t.closest('#ovHost'))DIRTY.ov=true;else if(t.closest('#view'))DIRTY.view=true},true);
+const markDirty=e=>{const t=e.target;if(!t||!t.closest||t.type==='search')return;if(t.closest('#ovHost'))DIRTY.ov=true;else if(t.closest('#view'))DIRTY.view=true};document.addEventListener('input',markDirty,true);document.addEventListener('change',markDirty,true);
 const busy=sel=>{const h=$(sel),a=document.activeElement;return!!(h&&a&&h.contains(a)&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)&&a.type!=='search')};
 const ovForm=()=>{const h=$('#ovHost');return!!(h&&h.querySelector('form'))};
 function renderBg(){const skipV=DIRTY.view||busy('#view'),skipO=DIRTY.ov||busy('#ovHost')||ovForm();
