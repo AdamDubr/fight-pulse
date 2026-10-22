@@ -248,6 +248,9 @@ async function view(env, email) {
   // шаги клиента: регистрация → пробное → абонемент → полная анкета → проверка клубом → доступ ко всему клубу и My PIT World
   out.missing = fullMissing(profile, out.photo);
   out.submitted = profile.submittedAt || null;
+  // PIT PRO: клуб с proFree (Mowgli) даёт PRO всем своим бойцам; PRO включает отметку ✓ Verified
+  out.pro = !!(f.mid && CLUBS[f.club] && CLUBS[f.club].proFree);
+  if (out.pro && !f.verified) { const t0 = Date.now(); await env.DB.prepare("UPDATE fighters SET verified=1, ver_by='pro', ver_at=? WHERE email=?").bind(t0, email).run(); f.verified = 1; out.verified = true; out.verAt = t0 }
   out.access = !!(f.mid && f.verified);
   out.world = !!f.verified;
   try { out.inbox = await inbox(env, email, ['ru', 'en', 'tr'].includes(profile.lang) ? profile.lang : 'ru') } catch (e) { out.inbox = [] }
