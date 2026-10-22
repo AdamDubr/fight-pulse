@@ -649,6 +649,53 @@ function bindGroup(v){const bk=$('[data-gback]',v);if(bk)bk.addEventListener('cl
 
 /* ===== Пробные занятия в расписании: заявка «записан на пробное» привязана к группе на дату ===== */
 const dowOf=d=>{const x=new Date(d+'T12:00:00').getDay();return x||7};
+
+
+/* ===== Формат заявки: пробные, все абонементы и все услуги клуба ===== */
+function fmtList(){const s=SET();return[
+  ['Пробное',[['group','Пробное · группа — '+lira(s.trialGroup)],['ind','Пробное · индивидуальное — '+lira(s.trialInd)]]],
+  ['Абонементы',tariffs().filter(t=>t.kind!=='staff').map(t=>['t:'+t.key,t.name+' — '+lira(t.price)])],
+  ['Услуги',services().filter(v=>!/^Пробное/i.test(v[0])).map(v=>['s:'+v[0],v[0]+(+v[1]?' — '+lira(+v[1]):'')])]]}
+const fmtOpts=x=>{const cur=x.fmt||(x.kind==='ind'?'ind':'group');return fmtList().map(([g,L])=>`<optgroup label="${esc(g)}">${L.map(([k,t])=>`<option value="${esc(k)}" ${k===cur?'selected':''}>${esc(t)}</option>`).join('')}</optgroup>`).join('')};
+function fmtVal(v){let kind='group',name='';
+  if(v==='ind'){kind='ind';name='Пробное · индивидуальное'}else if(v==='group')name='Пробное · группа';
+  else if(v.startsWith('t:')){const t=tf(v.slice(2));kind=t&&t.kind==='ind'?'ind':'group';name=t?t.name:v}
+  else if(v.startsWith('s:')){name=v.slice(2);kind=/персональн|индивид/i.test(name)?'ind':'group'}
+  return{kind,fmt:v,fmtName:name}}
+const fmtTxt=x=>x.fmtName||(x.kind==='ind'?'индивидуальное':'группа');
+/* ===== Продажа абонемента прямо из заявки: боец + абонемент + оплата/долг + группа ===== */
+const leadPlan=x=>x.fmt&&x.fmt.startsWith('t:')&&tf(x.fmt.slice(2))?x.fmt.slice(2):x.kind==='ind'?(discsOf(x).some(d=>['Бокс','Кикбоксинг'].includes(d))?'ind10b':'ind10m'):((/дет|\b([4-9]|1[0-7])\s*лет/i.test(x.age||'')&&discsOf(x).includes('MMA'))||discsOf(x).includes('Дети · MMA')?'kids12':'grp12');
+const clsLbl=c=>`${(c.dow||[]).map(d=>SDAYS[d-1]).join('/')} ${c.time} · ${c.disc}`;
+function sellHTML(x){const T=tariffs().filter(t=>t.kind!=='staff'),pl=leadPlan(x),cl=SCH().classes.slice().sort((a,b)=>String(a.time).localeCompare(String(b.time))),want=discsOf(x),
+  kid=tf(pl)?.kind==='kids',bc=x.trialClass&&cl.find(c=>c.id===x.trialClass)||cl.find(c=>kid?/^Дети/.test(c.disc):want.includes(c.disc));
+  return`<details class="card adm-only" id="sellbox" ${x.status==='done'?'open':''}><summary style="cursor:pointer;font-weight:800;font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold)">💳 Продать абонемент и добавить в группу</summary>
+   <form class="form" id="sellf" style="margin-top:.7rem">
+    <label class="f">Абонемент<select id="sl_p">${T.map(t=>`<option value="${esc(t.key)}" ${t.key===pl?'selected':''}>${esc(t.name)} — ${lira(t.price)}</option>`).join('')}</select></label>
+    <label class="f">Группа<select id="sl_g">${cl.map(c=>`<option value="${esc(c.id)}" ${bc&&c.id===bc.id?'selected':''}>${esc(clsLbl(c))}</option>`).join('')}<option value="" ${bc?'':'selected'}>Без группы</option></select></label>
+    <div class="f" style="grid-column:1/-1"><span style="font-size:.74rem;font-weight:700;color:var(--muted)">Дисциплины</span>${discPick('sl_d',{discs:[...new Set([...want,...(bc?[bc.disc]:[])])]},true)}</div>
+    <label class="f">Начало<input type="date" id="sl_s" value="${today()}"></label>
+    <label class="f">Окончание<input type="date" id="sl_e" value="${addMonth(today())}"></label>
+    <label class="f">Оплата<select id="sl_m">${methodOpts('cash')}<option value="debt">Не оплачено — в долг</option></select></label>
+    <label class="f">Сумма, ₺<input type="number" id="sl_sum" min="0" step="50" value="${esc(String(tf(pl)?.price??''))}"></label>
+    <label class="f" id="sl_dl" hidden>Обещал оплатить<input type="date" id="sl_due" value="${addDays(today(),3)}"></label>
+    <div class="acts full"><button class="btn gold" type="submit">Продать и добавить в группу</button></div></form></details>`}
+function bindSell(host,x,apv){const f=$('#sellf',host);if(!f)return;
+  const sp=$('#sl_p',host),sg=$('#sl_g',host),ss=$('#sl_s',host),sm=$('#sl_m',host);
+  sp.addEventListener('change',()=>{$('#sl_sum',host).value=tf(sp.value)?.price??0;if(tf(sp.value)?.kind==='kids')discSet('sl_d',host,['Дети · MMA'])});
+  sg.addEventListener('change',()=>{const c=SCH().classes.find(z=>z.id===sg.value);if(c){const cur=discGet('sl_d',host);discSet('sl_d',host,[...new Set([...cur,c.disc])])}});
+  ss.addEventListener('change',()=>{$('#sl_e',host).value=addMonth(ss.value)});
+  sm.addEventListener('change',()=>{$('#sl_dl',host).hidden=sm.value!=='debt'});
+  f.addEventListener('submit',async e=>{e.preventDefault();if(!canAdm()){toast('Продажа — администратор клуба');return}
+    const plan=sp.value,t=tf(plan),start=ss.value,end=$('#sl_e',host).value,sum=Math.max(0,+$('#sl_sum',host).value||0),method=sm.value,dl=discGet('sl_d',host);
+    if(!start||!end||end<start){toast('Проверьте даты');return}if(!dl.length){toast('Отметьте дисциплину');return}
+    const r=x.reg||{},w=String(x.name||'').trim().split(/\s+/),last=r.last||(w.length>1?w.pop():''),first=r.first||w.join(' ')||x.name,id=newId();
+    const doc={name:[first,last].filter(Boolean).join(' '),first,last,phone:x.phone||r.phone||'',email:r.email||x.email||'',dob:r.dob||'',parent:r.parent||null,disc:dl.join(', '),discs:dl,plan,kind:t?.kind||'group',price:t?.price??null,start,end,left:t?.sessions??null,note:x.note||'',src:'pit',lead:x.id,createdAt:new Date().toISOString(),
+      ...(method==='debt'&&sum>0?{due:{sum,date:$('#sl_due',host).value||addDays(today(),3),since:today(),plan,what:'Абонемент',note:''}}:{})};
+    if(!await write(()=>DB.doc('members/'+id).set(doc)))return;
+    if(method!=='debt'&&sum>0)await write(()=>DB.collection('payments').doc().set({kind:'sub',mid:id,name:doc.name,sum,date:today(),ts:new Date().toISOString(),plan,method,what:'Абонемент',src:'pit'}));
+    const c=SCH().classes.find(z=>z.id===sg.value);
+    await write(()=>DB.doc('leads/'+x.id).update({...(x.pit?apv:{}),status:'bought',mid:id,boughtAt:today()}),`Продан абонемент: ${doc.name} · ${t?.name||plan}${c?' · группа '+clsLbl(c):''}${method==='debt'?' · не оплачено':''}`);
+    ovClose();S.tab='members';render();S.open=id;S.drMode='view';renderDrawer()})}
 function trialOpts(x,d){const L=d?SCH().classes.filter(c=>(c.dow||[]).includes(dowOf(d))).sort((a,b)=>String(a.time).localeCompare(String(b.time))):[];
   const want=discsOf(x),best=L.find(c=>want.includes(c.disc))||L[0];
   return (L.length?L.map(c=>`<option value="${esc(c.id)}" ${best&&c.id===best.id?'selected':''}>${esc(c.time)} · ${esc(c.disc)}</option>`).join(''):'')+`<option value="" ${L.length?'':'selected'}>${L.length?'Без группы':'В этот день групп нет'}</option>`}
@@ -832,13 +879,13 @@ function vLeads(){const L=S.leads.slice().sort((a,b)=>String(b.ts).localeCompare
   <div class="kpis"><div class="kpi"><b>${c('new')}</b><span>новые заявки</span></div><div class="kpi warn"><b>${c('booked')}</b><span>записаны на пробное</span></div><div class="kpi gold"><b>${c('done')}</b><span>были на пробном, думают</span></div><div class="kpi ok"><b>${c('bought')}</b><span>купили абонемент</span></div><div class="kpi"><b>${conv}%</b><span>конверсия за 30 дней</span></div></div>
   ${leadStats()}
   <div class="chips">${[['open','В работе'],['all','Все'],...LSTAT.map(x=>[x[0],x[1]])].map(([k,t])=>`<button class="chip" data-lflt="${k}" aria-pressed="${f===k}">${t}</button>`).join('')}</div>
-  <section class="card" style="padding:.6rem"><div class="list">${R.map(x=>{const st=pitPending(x)?['p','Ждёт одобрения','gold']:lst(x.status);return`<button class="row" data-lead="${x.id}" style="grid-template-columns:minmax(0,1fr) auto"><span class="nm">${esc(x.name)}<small>${esc(x.disc||'—')} · ${x.kind==='ind'?'индивидуальное':'группа'} · ${esc(x.source||'')}${x.trialDate?' · пробное '+fmtD(x.trialDate):''}${x.status==='think'&&x.thinkReason?' · '+esc(x.thinkReason):''}${leadOpen(x)&&x.nextAt?` · <b style="color:${x.nextAt<today()?'var(--bad)':'var(--gold)'}">🔔 ${fmtD(x.nextAt)}</b>`:''}${pitPending(x)?(()=>{const b=bestMatch(x);return b?` · <b style="color:var(--gold)">≈ ${esc(b.m.name)} (${b.n} совп.)</b>`:x.match?' · похоже на '+esc(x.match.name):''})():''}</small></span><span class="pill ${st[2]}">${st[1]}</span></button>`}).join('')||'<div class="empty">Заявок нет. Добавьте первую через «+ Заявка» — например, звонок или сообщение в Instagram.</div>'}</div></section>`}
+  <section class="card" style="padding:.6rem"><div class="list">${R.map(x=>{const st=pitPending(x)?['p','Ждёт одобрения','gold']:lst(x.status);return`<button class="row" data-lead="${x.id}" style="grid-template-columns:minmax(0,1fr) auto"><span class="nm">${esc(x.name)}<small>${esc(x.disc||'—')} · ${esc(fmtTxt(x))} · ${esc(x.source||'')}${x.trialDate?' · пробное '+fmtD(x.trialDate):''}${x.status==='think'&&x.thinkReason?' · '+esc(x.thinkReason):''}${leadOpen(x)&&x.nextAt?` · <b style="color:${x.nextAt<today()?'var(--bad)':'var(--gold)'}">🔔 ${fmtD(x.nextAt)}</b>`:''}${pitPending(x)?(()=>{const b=bestMatch(x);return b?` · <b style="color:var(--gold)">≈ ${esc(b.m.name)} (${b.n} совп.)</b>`:x.match?' · похоже на '+esc(x.match.name):''})():''}</small></span><span class="pill ${st[2]}">${st[1]}</span></button>`}).join('')||'<div class="empty">Заявок нет. Добавьте первую через «+ Заявка» — например, звонок или сообщение в Instagram.</div>'}</div></section>`}
 function leadDrawer(){const host=$('#ovHost'),x=S.ov.id==='new'?{status:'new',kind:'group',disc:'MMA',source:'Instagram'}:S.leads.find(l=>l.id===S.ov.id);if(!x){ovClose();return}
   const s=SET(),price=x.kind==='ind'?s.trialInd:s.trialGroup,st=lst(x.status),isNew=S.ov.id==='new';
   const form=`<form class="card form" id="lf"><label class="f">Имя и фамилия<input type="text" id="l_n" value="${esc(x.name||'')}" required></label>
     <label class="f">Телефон<input type="tel" id="l_p" value="${esc(x.phone||'')}"></label>
     <div class="f" style="grid-column:1/-1"><span style="font-size:.74rem;font-weight:700;color:var(--muted)">Дисциплины</span>${discPick('l_d',x,true)}</div>
-    <label class="f">Формат<select id="l_k"><option value="group" ${x.kind!=='ind'?'selected':''}>Группа — пробное ${lira(s.trialGroup)}</option><option value="ind" ${x.kind==='ind'?'selected':''}>Индивидуально — пробное ${lira(s.trialInd)}</option></select></label>
+    <label class="f">Формат<select id="l_k">${fmtOpts(x)}</select></label>
     <label class="f">Откуда узнал<select id="l_s">${LSRC.map(o=>`<option ${o===x.source?'selected':''}>${o}</option>`).join('')}</select></label>
     <label class="f">Возраст / ребёнок<input type="text" id="l_a" value="${esc(x.age||'')}" placeholder="взрослый, 9 лет…"></label>
     <label class="f full">Заметка<input type="text" id="l_note" value="${esc(x.note||'')}"></label>
@@ -857,6 +904,7 @@ function leadDrawer(){const host=$('#ovHost'),x=S.ov.id==='new'?{status:'new',ki
       <label class="f">Напомнить о нас<input type="date" id="lk_d" value="${addDays(today(),7)}" required></label>
       <label class="f full">Комментарий<input type="text" id="lk_t" maxlength="300" placeholder="Например: живёт в Коньяалты, подумает о расписании"></label>
       <div class="acts full"><button class="btn gold" type="submit">Перевести в «Думает»</button></div></form></details>`;
+    if(leadOpen(x))act+=sellHTML(x);
     if(leadOpen(x))act+=touchHTML(x);
     if(['new','booked','done','think'].includes(x.status))act+=`<section class="card"><h2>Отказ</h2><div class="acts">${LLOST.map(r=>`<button class="btn sm" type="button" data-llost="${esc(r)}">${esc(r)}</button>`).join('')}</div></section>`;
     if(x.status==='bought'&&x.mid)act=`<section class="card"><h2>Стал бойцом</h2><button class="btn" type="button" data-lmember="${x.mid}">Открыть карточку бойца</button></section>`;
@@ -878,7 +926,7 @@ function leadDrawer(){const host=$('#ovHost'),x=S.ov.id==='new'?{status:'new',ki
     if(await write(()=>DB.doc('leads/'+x.id).delete(),'Заявка удалена: '+x.name)){ovClose();render()}});
   ovBindClose(host);
   const lf=$('#lf',host);lf.addEventListener('submit',async e=>{e.preventDefault();const name=$('#l_n',host).value.trim();if(!name){toast('Укажите имя');return}
-    const d={...(isNew?{}:Object.fromEntries(Object.entries(x).filter(([k])=>k!=='id'))),name,phone:$('#l_p',host).value.trim(),disc:discGet('l_d',host).join(', ')||'MMA',discs:discGet('l_d',host),kind:$('#l_k',host).value,source:$('#l_s',host).value,age:$('#l_a',host).value.trim(),note:$('#l_note',host).value.trim()};
+    const d={...(isNew?{}:Object.fromEntries(Object.entries(x).filter(([k])=>k!=='id'))),name,phone:$('#l_p',host).value.trim(),disc:discGet('l_d',host).join(', ')||'MMA',discs:discGet('l_d',host),...fmtVal($('#l_k',host).value),source:$('#l_s',host).value,age:$('#l_a',host).value.trim(),note:$('#l_note',host).value.trim()};
     if(isNew){d.status='new';d.ts=new Date().toISOString();d.by=ME||null}
     const ref=isNew?DB.collection('leads').doc():DB.doc('leads/'+x.id);
     if(await write(()=>ref.set(d),isNew?'Заявка: '+name:'Заявка сохранена')){S.ov={type:'lead',id:ref.id};renderOv()}});
@@ -898,6 +946,7 @@ function leadDrawer(){const host=$('#ovHost'),x=S.ov.id==='new'?{status:'new',ki
     if(await write(()=>DB.collection('payments').doc().set({kind:'trial',lid:x.id,name:x.name,sum:price,date:today(),method,what:'Пробное · '+(x.kind==='ind'?'индивидуальное':'группа'),src:'pit'})))up({status:'done',trialPaid:price,trialDone:today()},'Пробное оплачено '+lira(price))});
   host.querySelectorAll('[data-lmove]').forEach(b=>b.addEventListener('click',()=>up({status:'new'},'Заявка возвращена в работу')));
   const ns=host.querySelector('[data-lnoshow]');if(ns)ns.addEventListener('click',()=>up({status:'lost',lostReason:'Не пришёл на пробное'},'Не пришёл на пробное'));
+  bindSell(host,x,apv);
   const tk=$('#lthink',host);if(tk)tk.addEventListener('submit',e=>{e.preventDefault();const r=$('#lk_r',host).value,d=$('#lk_d',host).value,t=$('#lk_t',host).value.trim();if(!d){toast('Укажите дату напоминания');return}
     const now=new Date().toISOString();up({status:'think',thinkReason:r,thinkAt:today(),nextAt:d,touches:[...(x.touches||[]),{at:now,by:ME||null,ch:'Решение',text:r+(t?' · '+t:''),next:d,kind:'think'}]},'Думает ('+r+'), напомнить '+fmtD(d))});
   const tf2=$('#ltouch',host);if(tf2){const save=(next)=>{const t={at:new Date().toISOString(),by:ME||null,ch:$('#lt_c',host).value,text:$('#lt_t',host).value.trim(),next:next||null};
