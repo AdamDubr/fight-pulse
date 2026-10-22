@@ -3,6 +3,7 @@
 import { authRoutes, sessionEmail, sessionsOf, revokeAll } from './auth.js';
 import { myRoutes, reviewRoutes, notifyTrial, notifyWelcome, worldMe } from './my.js';
 import { worldRoutes } from './world.js';
+import { msgRoutes } from './msg.js';
 // Данные: D1 (документы коллекций), файлы: R2.
 
 const ROLES = { owner: 3, admin: 2, trainer: 1 };
@@ -67,6 +68,7 @@ async function api(req, env, me, path) {
   if (path === '/api/review' || path.startsWith('/api/review/')) return reviewRoutes(req, env, path, me);
   if (path === '/api/notify/trial' && req.method === 'POST') return notifyTrial(req, env, me);
   if (path === '/api/notify/welcome' && req.method === 'POST') return notifyWelcome(req, env, me);
+  if (path.startsWith('/api/msg/')) return msgRoutes(req, env, path, me);
 
   // Синхронизация: все изменения после seq
   if (path === '/api/sync' && req.method === 'GET') {

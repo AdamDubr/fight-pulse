@@ -11,6 +11,8 @@
   // Письма с кодами входа и приглашения — Cloudflare Email Sending (noreply@pitrating.com)
   "send_email": [ { "name": "EMAIL" } ],
   "r2_buckets": [ { "binding": "FILES", "bucket_name": "pit-files" } ],
+  // Перевод сообщений клуба на язык аккаунта бойца (RU/EN/TR) — Workers AI
+  "ai": { "binding": "AI" },
   // OWNER_EMAILS — секрет (Settings → Variables and Secrets), не хранится в репозитории
   "vars": {
     "ACCESS_TEAM": "royal-bar-2529",

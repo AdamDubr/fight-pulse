@@ -9,6 +9,7 @@ const enc = new TextEncoder();
 const sha = async s => [...new Uint8Array(await crypto.subtle.digest('SHA-256', enc.encode(s)))].map(x => x.toString(16).padStart(2, '0')).join('');
 const digits = p => String(p || '').replace(/\D/g, '');
 const samePhone = (a, b) => { a = digits(a); b = digits(b); return a.length >= 9 && b.length >= 9 && a.slice(-10) === b.slice(-10) };
+import { inbox, markRead } from './msg.js';
 const DISCS = ['MMA', 'Бокс', 'BJJ', 'Кикбоксинг', 'Капоэйра'];
 export const CLUBS = { mowgli: { id: 'mowgli', name: 'Mowgli Fight Club', city: 'Анталья', cityEn: 'Antalya', country: 'TR', lat: 36.8381506, lon: 30.5904377, addr: 'Sarısu, 131. Sk., 07130 Konyaaltı/Antalya, Türkiye', placeId: 'ChIJZUYTFaCVwxQRSgx4mbk5waQ', hours: 'Пн–Сб 09:00–22:00', logo: '/brand/clubs/mowgli.png', discs: ['MMA', 'BJJ', 'Бокс', 'Кикбоксинг', 'Капоэйра'] } };
 const LEVELS = ['club', 'city', 'regional', 'national', 'international', 'pro'];
@@ -249,6 +250,7 @@ async function view(env, email) {
   out.submitted = profile.submittedAt || null;
   out.access = !!(f.mid && f.verified);
   out.world = !!f.verified;
+  try { out.inbox = await inbox(env, email, ['ru', 'en', 'tr'].includes(profile.lang) ? profile.lang : 'ru') } catch (e) { out.inbox = [] }
   out.approved = !!(lead && lead.approved && !lead.rejected) || !!f.mid;
   if (out.access) { out.schedule = await trialSlots(env, 62); out.clubInfo = await clubInfo(env, f.club) }
   if (lead) out.lead = { status: lead.rejected ? 'rejected' : (!lead.approved && (lead.status || 'new') === 'new') ? 'pending' : (lead.status || 'new'), trialDate: lead.trialDate || null };
@@ -301,6 +303,8 @@ export async function myRoutes(req, env, path, email, staff) {
   }
   if (req.method !== 'POST') return json({ error: 'not_found' }, 404);
   const cur = await env.DB.prepare('SELECT * FROM fighters WHERE email=?').bind(email).first();
+
+  if (path === '/api/my/msgread') { const b = await req.json().catch(() => ({})); await markRead(env, email, b.ids); return json({ ok: true }) }
 
   if (path === '/api/my/submit') {
     if (!cur) return json({ error: 'profile' }, 403);

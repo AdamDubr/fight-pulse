@@ -216,7 +216,7 @@ html[data-role=trainer] .fin-only,html[data-role=trainer] .adm-only{display:none
 .jd{font-size:.8rem;color:var(--muted)}.jt{min-width:0}.jt b{display:block;font-size:.9rem;overflow-wrap:anywhere}.jt small{display:block;color:var(--muted);font-size:.74rem;overflow-wrap:anywhere}
 .js{font-weight:600;white-space:nowrap}.js.in{color:var(--ok)}.js.out{color:var(--bad)}.js.own{color:var(--warn)}
 textarea{background:var(--panel-2);border:1px solid var(--line-2);border-radius:.5rem;padding:.5rem .65rem;font:inherit;width:100%;resize:vertical}
-html[data-role=trainer] .tabs [data-tab=cash],html[data-role=trainer] .tabs [data-tab=rep],html[data-role=trainer] .tabs [data-tab=plans],
+html[data-role=trainer] .tabs [data-tab=msg],html[data-role=trainer] .tabs [data-tab=cash],html[data-role=trainer] .tabs [data-tab=rep],html[data-role=trainer] .tabs [data-tab=plans],
 html[data-role=trainer] [data-dr=renew],html[data-role=trainer] [data-dr=change],html[data-role=trainer] [data-gotab=cash],html[data-role=trainer] label.f:has(#f_pay),
 html[data-role=trainer] #ldone,html[data-role=trainer] [data-dr=askdel]{display:none!important}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
@@ -230,6 +230,7 @@ html[data-role=trainer] #ldone,html[data-role=trainer] [data-dr=askdel]{display:
     <button role="tab" data-tab="members" aria-selected="false">Бойцы</button>
     <button role="tab" data-tab="leads" aria-selected="false">Заявки</button>
     <button role="tab" data-tab="pv" aria-selected="false" class="fin-only">Анкеты<b class="tabn" id="pvN" hidden></b></button>
+    <button role="tab" data-tab="msg" aria-selected="false" class="adm-only">Сообщения</button>
     <button role="tab" data-tab="events" aria-selected="false">События</button>
     <button role="tab" data-tab="sched" aria-selected="false">Расписание</button>
     <button role="tab" data-tab="cash" aria-selected="false">Касса</button>
@@ -310,8 +311,8 @@ function render(o){
   document.body.classList.toggle('ro',!S.canWrite);
   document.querySelectorAll('.tabs button').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.tab===S.tab)));
   const v=$('#view');const sy=scrollY;
-  v.innerHTML=({today:vToday,members:vMembers,leads:vLeads,cash:vCash,events:vEvents,sched:vSched,pv:vPv,rep:vReports,plans:vSettings})[S.tab]();
-  bindView(v);if(S.tab==='members')bindCoach(v);if(S.tab==='sched')bindSched(v);if(S.tab==='pv')bindPv(v);if(S.tab==='leads')fillWho(v);scrollTo(0,sy);
+  v.innerHTML=({today:vToday,members:vMembers,leads:vLeads,cash:vCash,events:vEvents,sched:vSched,pv:vPv,msg:vMsg,rep:vReports,plans:vSettings})[S.tab]();
+  bindView(v);if(S.tab==='members')bindCoach(v);if(S.tab==='sched')bindSched(v);if(S.tab==='pv')bindPv(v);if(S.tab==='msg')bindMsg(v);if(S.tab==='leads')fillWho(v);scrollTo(0,sy);
   if(o&&o.keepOv)return;
   const d=$('#ovHost .dr'),st=d?d.scrollTop:0;
   if(S.open)renderDrawer();else if(S.ov)renderOv();
@@ -1437,6 +1438,47 @@ function myPitData(m){if(!m||m.kind==='staff'||!(m.myPhoto||m.weight||m.city||m.
   const row=(k,v)=>v?`<dt>${k}</dt><dd>${esc(v)}</dd>`:'';
   return`<section class="card"><h2>Анкета бойца · My PIT</h2><div style="display:flex;gap:1rem;align-items:flex-start;flex-wrap:wrap">${m.myPhoto?`<img src="/api/my/photo/${esc(m.myPhoto)}" alt="" style="width:7rem;height:7rem;border-radius:1rem;object-fit:cover;flex:none">`:''}
    <dl class="kv" style="flex:1;min-width:12rem;margin:0">${row('Вес / категория',m.weight?m.weight+(/кг|kg/i.test(m.weight)?'':' кг'):'')}${row('Город',m.city)}${row('Пояс / ранг',m.belt)}${row('Стойка',STN[m.stance]||m.stance)}${m.myPit?`<dt>Проверено</dt><dd>${fmtD(String(m.myPit.at).slice(0,10))} · ${esc(m.myPit.email||'')}</dd>`:''}</dl></div></section>`}
+
+/* ===== Сообщения бойцам в My PIT: всем / группе / выбранным; каждому — на языке его аккаунта ===== */
+S.msg={to:'all',cls:null,sel:{},q:'',tr:{},hist:null,lang:'ru'};
+const MLANG=[['ru','Русский'],['en','English'],['tr','Türkçe']];
+function msgRecipients(){const M=S.msg,act=S.members.filter(m=>m.kind!=='staff'&&!['exp','none'].includes(status(m).k));
+  if(M.to==='all')return{L:act,label:'Все активные бойцы'};
+  if(M.to==='group'){const c=SCH().classes.find(z=>z.id===M.cls);return{L:c?gIds(c).map(id=>S.members.find(m=>m.id===id)).filter(Boolean):[],label:c?'Группа '+clsLbl(c):'Группа не выбрана'}}
+  const L=S.members.filter(m=>M.sel[m.id]);return{L,label:'Выбранные: '+L.length}}
+function vMsg(){const M=S.msg,R0=msgRecipients(),pv=S.pv&&S.pv.all||[],inApp=new Set(pv.filter(f=>f.mid).map(f=>f.mid)),n=R0.L.length,na=R0.L.filter(m=>inApp.has(m.id)).length;
+  const cl=SCH().classes.slice().sort((a,b)=>String(a.disc).localeCompare(String(b.disc),'ru')||String(a.time).localeCompare(String(b.time)));
+  const q=M.q.trim().toLocaleLowerCase('tr'),pick=S.members.filter(m=>m.kind!=='staff'&&(!q||m.name.toLocaleLowerCase('tr').includes(q))).sort((a,b)=>a.name.localeCompare(b.name,'ru')).slice(0,80);
+  const tx=l=>M.tr[l]||{title:'',text:''};
+  return`<div class="head"><div><h1>Сообщения</h1><p class="sub">Сообщение приходит бойцу в приложение My PIT на языке его аккаунта (RU / EN / TR). Пишите на своём языке — переводы сделает «Перевести», их можно поправить.</p></div></div>
+  <section class="card"><h2>Кому</h2><div class="chips">${[['all','Всем'],['group','Группе'],['some','Выбрать бойцов']].map(([k,t])=>`<button class="chip" type="button" data-mto="${k}" aria-pressed="${M.to===k}">${t}</button>`).join('')}</div>
+   ${M.to==='group'?`<label class="f" style="margin-top:.7rem">Группа<select id="mg">${cl.map(c=>`<option value="${esc(c.id)}" ${c.id===M.cls?'selected':''}>${esc(clsLbl(c))} · ${gIds(c).length} бойц.</option>`).join('')}</select></label>`:''}
+   ${M.to==='some'?`<input type="search" id="mq2" placeholder="Поиск по имени" value="${esc(M.q)}" style="width:100%;margin:.7rem 0 .5rem"><div class="list" style="max-height:18rem;overflow:auto">${pick.map(m=>`<label class="row" style="grid-template-columns:auto minmax(0,1fr) auto;cursor:pointer"><input type="checkbox" data-msel="${esc(m.id)}" ${M.sel[m.id]?'checked':''}><span class="nm">${esc(m.name)}<small>${esc(m.disc||'')}</small></span>${inApp.has(m.id)?'<span class="pill ok">My PIT</span>':'<span class="pill">нет в My PIT</span>'}</label>`).join('')}</div>`:''}
+   <p class="note" style="margin:.7rem 0 0"><b>${esc(R0.label)}</b> · получателей ${n}, из них в My PIT <b>${na}</b>${n-na?` · ${n-na} ещё не зарегистрированы в My PIT — им сообщение не придёт`:''}</p></section>
+  <section class="card"><h2>Текст</h2>
+   <div class="chips" style="margin-bottom:.6rem">${MLANG.map(([l,t])=>`<button class="chip" type="button" data-mlang="${l}" aria-pressed="${M.lang===l}">${t}${tx(l).text?' ✓':''}</button>`).join('')}</div>
+   <label class="f">Заголовок<input type="text" id="mt" maxlength="120" value="${esc(tx(M.lang).title)}" placeholder="Например: Тренировка в субботу переносится"></label>
+   <label class="f" style="margin-top:.5rem">Сообщение<textarea id="mb" rows="5" maxlength="2000" placeholder="Текст для бойцов">${esc(tx(M.lang).text)}</textarea></label>
+   <div class="acts" style="margin-top:.6rem"><button class="btn" type="button" data-mtr>🌐 Перевести на остальные языки</button><button class="btn gold" type="button" data-msend ${na?'':'disabled'}>Отправить ${na?na+' бойцам':''}</button><span class="note" id="mst"></span></div>
+   <p class="note" style="margin:.5rem 0 0">Боец без перевода на его язык получит русскую версию.</p></section>
+  <section class="card"><h2>Отправленные</h2><div class="list">${(M.hist||[]).map(h=>{const t=h.texts.ru||Object.values(h.texts)[0]||{};return`<div class="row" style="grid-template-columns:minmax(0,1fr) auto;cursor:default"><span class="nm">${esc(t.title||String(t.text).slice(0,60))}<small>${new Date(h.created).toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})} · ${esc(h.target.label||'')} · ${Object.keys(h.texts).map(x=>x.toUpperCase()).join('/')}</small></span><span class="pill ${h.read?'ok':'info'}">прочитали ${h.read} из ${h.delivered}</span></div>`}).join('')||'<div class="empty">Сообщений ещё не было.</div>'}</div></section>`}
+function loadMsgHist(){fetch('/api/msg/list',{credentials:'same-origin'}).then(r=>r.json()).then(j=>{S.msg.hist=j.items||[];if(S.tab==='msg')render()}).catch(()=>{})}
+function bindMsg(v){const M=S.msg;if(M.hist===null){M.hist=[];loadMsgHist()}
+  const keep=()=>{const t=$('#mt',v),b=$('#mb',v);if(t&&b)M.tr[M.lang]={title:t.value,text:b.value}};
+  v.querySelectorAll('[data-mto]').forEach(b=>b.addEventListener('click',()=>{keep();M.to=b.dataset.mto;if(M.to==='group'&&!M.cls)M.cls=(SCH().classes[0]||{}).id||null;render()}));
+  const mg=$('#mg',v);if(mg)mg.addEventListener('change',()=>{keep();M.cls=mg.value;render()});
+  const q=$('#mq2',v);if(q)q.addEventListener('input',()=>{keep();M.q=q.value;render();const j=$('#mq2');j.focus();j.setSelectionRange(j.value.length,j.value.length)});
+  v.querySelectorAll('[data-msel]').forEach(c=>c.addEventListener('change',()=>{keep();M.sel[c.dataset.msel]=c.checked;render()}));
+  v.querySelectorAll('[data-mlang]').forEach(b=>b.addEventListener('click',()=>{keep();M.lang=b.dataset.mlang;render()}));
+  const tr=$('[data-mtr]',v);if(tr)tr.addEventListener('click',async()=>{keep();const src=M.tr[M.lang]||{};if(!src.text){toast('Сначала напишите текст');return}tr.disabled=true;$('#mst',v).textContent='Перевожу…';
+    try{const r=await fetch('/api/msg/translate',{method:'POST',headers:{'content-type':'application/json'},credentials:'same-origin',body:JSON.stringify({from:M.lang,title:src.title,text:src.text})});const j=await r.json();
+      if(!r.ok)throw new Error(j.error);for(const [l,o] of Object.entries(j.out))M.tr[l]=o;toast('Готово: проверьте переводы на вкладках языков');DIRTY.view=false;render()}
+    catch(e){tr.disabled=false;$('#mst',v).textContent='';toast(String(e.message)==='ai_off'?'Автоперевод недоступен — заполните языки вручную':'Перевод не удался — заполните языки вручную',5000)}});
+  const sd=$('[data-msend]',v);if(sd)sd.addEventListener('click',async()=>{keep();const R0=msgRecipients(),texts={};for(const [l] of MLANG){const o=M.tr[l];if(o&&o.text&&o.text.trim())texts[l]=o}
+    if(!Object.keys(texts).length){toast('Напишите текст');return}if(!sd.dataset.sure){sd.dataset.sure=1;sd.textContent='Точно отправить?';return}sd.disabled=true;
+    try{const r=await fetch('/api/msg/send',{method:'POST',headers:{'content-type':'application/json'},credentials:'same-origin',body:JSON.stringify({texts,mids:R0.L.map(m=>m.id),label:R0.label})});const j=await r.json();if(!r.ok)throw 0;
+      toast(`Отправлено в My PIT: ${j.delivered}${j.missing?` · не в My PIT: ${j.missing}`:''}`,5000);audit('Сообщение бойцам: '+R0.label+' · '+((texts.ru||Object.values(texts)[0]).title||''));M.tr={};M.sel={};M.lang='ru';DIRTY.view=false;loadMsgHist();render()}
+    catch(e){sd.disabled=false;toast('Не отправлено')}})}
 /* ===== Письма бойцу My PIT: member — найден в базе (сразу полная анкета), new — новый клиент, full — договор и оплата есть, анкета открыта ===== */
 function pitMail(body,okMsg){return fetch('/api/notify/welcome',{method:'POST',headers:{'content-type':'application/json'},credentials:'same-origin',body:JSON.stringify(body)}).then(r=>r.json()).then(j=>{if(j.sent)toast(okMsg+': '+j.to,5000);return j}).catch(()=>null)}
 const fullReady=m=>!!m&&(!m.lead||(!!m.contractAt&&!m.due));
