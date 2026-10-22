@@ -767,9 +767,9 @@ const JALAL_SEED={full:'Миржалал Хасани (Mirjalal Hasani)',nick:'M
   bio:'Профессиональный боец ММА, чемпион Турции, основатель Mowgli Fight Club. Ставит борьбу и партер — 3 победы удушающим треугольником в профи.'};
 const AKMURAD_SEED={n:'Акмурад Акиев',full:'Акмурад Акиев (Akmurad Akiyev)',nick:'',role:'Тренер по боксу и кикбоксингу',discs:['Бокс','Кикбоксинг'],height:'',weight:'',record:'',
   titles:['Мастер спорта Туркменистана по боксу (2018)','Заслуженный тренер Туркменистана по кикбоксингу (2009)','Судья международной категории World Federation of Kickboxing — WFK (2005)'],
-  exp:['Тренер международного уровня по боксу и кикбоксингу','С 2026 года — тренер Mowgli Fight Club (Анталья)'],links:[],
+  exp:['Тренер международного уровня по боксу и кикбоксингу','Готовит профессиональных спортсменов с 1992 года','С 2026 года — тренер Mowgli Fight Club (Анталья)'],links:['https://instagram.com/akmuradakiyev'],
   bio:'Тренер международного уровня по боксу и кикбоксингу, заслуженный тренер Туркменистана. Ставит ударную технику — бокс и кикбоксинг.'};
-const COACH_SEEDS=[{re:/джал|mowgli|jalal/i,d:JALAL_SEED,src:'Sherdog, Федерация ММА Турции, Instagram'},{re:/акмур|akmur|акиев|akiy/i,d:AKMURAD_SEED,src:'документы тренера (сертификаты, удостоверение) и публикации Mowgli'}];
+const COACH_SEEDS=[{re:/джал|mowgli|jalal/i,d:JALAL_SEED,src:'Sherdog, Федерация ММА Турции, Instagram'},{re:/акмур|akmur|акиев|akiy/i,d:AKMURAD_SEED,src:'документы тренера, его Instagram и публикации Mowgli'}];
 function coachCard(c,classes){const G=classes.filter(x=>x.coach===c.k),nickOk=c.nick&&!String(c.n).toLowerCase().includes(String(c.nick).toLowerCase());
   const li=(L,ic)=>`<ul>${lines(L).map(x=>`<li><i>${ic}</i><span>${esc(x)}</span></li>`).join('')}</ul>`;
   return`<article class="card coach"><div class="cph">${c.photo?`<img src="/_blob/${esc(c.photo)}" alt="${esc(c.n)}">`:`<span class="ini">${esc(ini(c.n))}</span>`}</div>
