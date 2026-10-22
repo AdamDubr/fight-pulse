@@ -210,13 +210,14 @@ export async function myRoutes(req, env, path, email, staff) {
     const hit = await findMember(env, email, phone);
     lead = 'pit' + (await sha(email)).slice(0, 18);
     stmts.push(putDoc(env, 'leads', lead, {
-      name: last + ' ' + first, phone, email, disc, kind, age: String(age), source: 'PIT · регистрация', status: 'new', by: 'PIT',
+      name: first + ' ' + last, phone, email, disc, kind, age: String(age), source: 'PIT · регистрация', status: 'new', by: 'PIT',
       note: (minor ? `U18 · родитель: ${parent.name}, ${parent.phone}. ` : '') + (fields.note || ''), ts: now(), pit: true, approved: false,
       match: hit ? { id: hit.id, name: hit.m.first && hit.m.last ? hit.m.first + ' ' + hit.m.last : hit.m.name } : null,
+      reg: { first, last, dob, phone, email, parent },
     }, 'pit:' + email));
   } else if (lead && !(cur && cur.verified)) {
     const l = await getDoc(env, 'leads', lead);
-    if (l && (l.status || 'new') === 'new') stmts.push(putDoc(env, 'leads', lead, { ...l, name: last + ' ' + first, phone, disc, kind, age: String(age) }, 'pit:' + email));
+    if (l && (l.status || 'new') === 'new') stmts.push(putDoc(env, 'leads', lead, { ...l, name: first + ' ' + last, phone, disc, kind, age: String(age), reg: { first, last, dob, phone, email, parent } }, 'pit:' + email));
   }
   stmts.push(env.DB.prepare(`INSERT INTO fighters(email,data,club,mid,lead,created,updated,pending) VALUES(?,?,?,?,?,?,?,?)
     ON CONFLICT(email) DO UPDATE SET data=excluded.data,club=excluded.club,mid=excluded.mid,lead=excluded.lead,updated=excluded.updated,pending=excluded.pending`)

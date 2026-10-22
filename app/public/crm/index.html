@@ -797,7 +797,7 @@ function vLeads(){const L=S.leads.slice().sort((a,b)=>String(b.ts).localeCompare
    <button class="btn gold w-only" data-act="leadnew">+ Заявка</button></div>
   <div class="kpis"><div class="kpi"><b>${c('new')}</b><span>новые заявки</span></div><div class="kpi warn"><b>${c('booked')}</b><span>записаны на пробное</span></div><div class="kpi gold"><b>${c('done')}</b><span>были на пробном, думают</span></div><div class="kpi ok"><b>${c('bought')}</b><span>купили абонемент</span></div><div class="kpi"><b>${conv}%</b><span>конверсия за 30 дней</span></div></div>
   <div class="chips">${[['open','В работе'],['all','Все'],...LSTAT.map(x=>[x[0],x[1]])].map(([k,t])=>`<button class="chip" data-lflt="${k}" aria-pressed="${f===k}">${t}</button>`).join('')}</div>
-  <section class="card" style="padding:.6rem"><div class="list">${R.map(x=>{const st=pitPending(x)?['p','Ждёт одобрения','gold']:lst(x.status);return`<button class="row" data-lead="${x.id}" style="grid-template-columns:minmax(0,1fr) auto"><span class="nm">${esc(x.name)}<small>${esc(x.disc||'—')} · ${x.kind==='ind'?'индивидуальное':'группа'} · ${esc(x.source||'')}${x.trialDate?' · пробное '+fmtD(x.trialDate):''}${x.match&&pitPending(x)?' · похоже на '+esc(x.match.name):''}</small></span><span class="pill ${st[2]}">${st[1]}</span></button>`}).join('')||'<div class="empty">Заявок нет. Добавьте первую через «+ Заявка» — например, звонок или сообщение в Instagram.</div>'}</div></section>`}
+  <section class="card" style="padding:.6rem"><div class="list">${R.map(x=>{const st=pitPending(x)?['p','Ждёт одобрения','gold']:lst(x.status);return`<button class="row" data-lead="${x.id}" style="grid-template-columns:minmax(0,1fr) auto"><span class="nm">${esc(x.name)}<small>${esc(x.disc||'—')} · ${x.kind==='ind'?'индивидуальное':'группа'} · ${esc(x.source||'')}${x.trialDate?' · пробное '+fmtD(x.trialDate):''}${pitPending(x)?(()=>{const b=bestMatch(x);return b?` · <b style="color:var(--gold)">≈ ${esc(b.m.name)} (${b.n} совп.)</b>`:x.match?' · похоже на '+esc(x.match.name):''})():''}</small></span><span class="pill ${st[2]}">${st[1]}</span></button>`}).join('')||'<div class="empty">Заявок нет. Добавьте первую через «+ Заявка» — например, звонок или сообщение в Instagram.</div>'}</div></section>`}
 function leadDrawer(){const host=$('#ovHost'),x=S.ov.id==='new'?{status:'new',kind:'group',disc:'MMA',source:'Instagram'}:S.leads.find(l=>l.id===S.ov.id);if(!x){ovClose();return}
   const s=SET(),price=x.kind==='ind'?s.trialInd:s.trialGroup,st=lst(x.status),isNew=S.ov.id==='new';
   const form=`<form class="card form" id="lf"><label class="f">Имя и фамилия<input type="text" id="l_n" value="${esc(x.name||'')}" required></label>
@@ -820,8 +820,12 @@ function leadDrawer(){const host=$('#ovHost'),x=S.ov.id==='new'?{status:'new',ki
     if(pitPending(x)){const opts=S.members.slice().sort((a,b)=>String(a.name).localeCompare(String(b.name),'ru')).map(m=>`<option value="${esc(m.id)}" ${x.match&&x.match.id===m.id?'selected':''}>${esc(m.name)}${m.phone?' · '+esc(m.phone):''}</option>`).join('');
       act=`<section class="card" style="border-color:var(--gold)"><h2>Регистрация в My PIT · ждёт одобрения</h2><p class="note trn-only" style="margin:0 0 .6rem">Одобряет и заводит бойца администратор клуба.</p>
         <p class="note" style="margin:0 0 .7rem">${esc(x.email||'')} · ${esc(x.phone||'')} · ${esc(x.age||'')} лет · ${esc(x.disc||'')}${x.note?'<br>'+esc(x.note):''}</p>
-        ${x.match?`<p style="margin:0 0 .7rem">Похоже, это боец клуба: <b>${esc(x.match.name)}</b> (совпал e-mail или телефон).</p><div class="acts" style="margin-bottom:.7rem"><button class="btn gold adm-only" type="button" data-papp="link" data-mid="${esc(x.match.id)}">Подтвердить и привязать к ${esc(x.match.name)}</button></div>`:''}
-        <div class="acts"><button class="btn adm-only ${x.match?'':'gold'}" type="button" data-papp="new">Одобрить как новую заявку</button></div>
+        ${(()=>{const B=bestMatch(x);if(B){const F=mergePlan(x,B.m,B.R);return`<div style="border:1px solid var(--gold);border-radius:.6rem;padding:.7rem;margin:0 0 .8rem;background:var(--gold-bg)"><p style="margin:0 0 .4rem">Скорее всего это боец клуба: <b>${esc(B.m.name)}</b>${B.m.phone?' · '+esc(B.m.phone):''}</p>
+          <p class="note" style="margin:0 0 .5rem">Совпало ${B.n}: ${B.why.join(', ')}</p>
+          ${F.length?`<p class="note" style="margin:0 0 .5rem">В карточку добавится: ${F.map(f=>esc(f[1])+' — '+esc(typeof f[2]==='object'?(f[2].name||'')+' '+(f[2].phone||''):f[1]==='Дата рождения'?fmtD(f[2]):f[2])).join('; ')}. Заполненные поля карточки не меняются.</p>`:'<p class="note" style="margin:0 0 .5rem">Карточка уже заполнена — только привязка.</p>'}
+          <div class="acts"><button class="btn gold adm-only" type="button" data-papp="merge" data-mid="${esc(B.m.id)}">Объединить с ${esc(B.m.name)}</button></div></div>`}
+          return x.match?`<p style="margin:0 0 .7rem">Похоже, это боец клуба: <b>${esc(x.match.name)}</b> (совпал e-mail или телефон).</p><div class="acts" style="margin-bottom:.7rem"><button class="btn gold adm-only" type="button" data-papp="link" data-mid="${esc(x.match.id)}">Подтвердить и привязать к ${esc(x.match.name)}</button></div>`:''})()}
+        <div class="acts"><button class="btn adm-only ${x.match||bestMatch(x)?'':'gold'}" type="button" data-papp="new">Одобрить как новую заявку</button></div>
         <form class="form adm-only" id="plink" style="margin-top:.7rem"><label class="f">Это уже наш боец — привязать к карточке<select id="pl_m"><option value="">— выберите бойца —</option>${opts}</select></label><div class="acts" style="align-self:end"><button class="btn" type="submit">Привязать</button></div></form>
         <div class="acts" style="margin-top:.7rem"><button class="btn sm danger adm-only" type="button" data-papp="reject">Отклонить</button></div></section>`}
   }
@@ -836,6 +840,8 @@ function leadDrawer(){const host=$('#ovHost'),x=S.ov.id==='new'?{status:'new',ki
   const apv={approved:true,approvedAt:today(),approvedBy:ME||null};
   const linkTo=mid=>{const m=S.members.find(z=>z.id===mid);if(!m)return;up({...apv,status:'bought',mid,boughtAt:today(),match:{id:mid,name:m.name}},'Привязан к карточке '+m.name)};
   host.querySelectorAll('[data-papp]').forEach(b=>b.addEventListener('click',()=>{const k=b.dataset.papp;
+    if(k==='merge'){const m=S.members.find(z=>z.id===b.dataset.mid);if(!m)return;const F=mergePlan(x,m),patch=Object.fromEntries(F.map(f=>[f[0],f[2]]));
+      (async()=>{if(Object.keys(patch).length&&!await write(()=>DB.doc('members/'+m.id).update(patch)))return;linkTo(m.id)})();return}
     if(k==='link')linkTo(b.dataset.mid);else if(k==='new')up(apv,'Заявка одобрена');
     else if(k==='reject'){if(!b.dataset.sure){b.dataset.sure=1;b.textContent='Точно отклонить?';return}up({approved:false,rejected:true,status:'lost',lostReason:'Отклонена клубом'},'Заявка отклонена')}}));
   const pl=$('#plink',host);if(pl)pl.addEventListener('submit',e=>{e.preventDefault();const mid=$('#pl_m',host).value;if(!mid){toast('Выберите бойца');return}linkTo(mid)});
@@ -1190,6 +1196,34 @@ function bindDue(host,m){if(!m)return;
     if(await write(()=>DB.doc('members/'+m.id).update({due:{...m.due,date:d}}),`${m.name}: оплата перенесена на ${fmtD(d)}`))renderDrawer()});
   const dl=$('[data-duedel]',host);if(dl)dl.addEventListener('click',async()=>{if(!dl.dataset.sure){dl.dataset.sure=1;dl.textContent='Точно снять?';return}
     if(await write(()=>DB.doc('members/'+m.id).update({due:null}),`Снята отметка «не оплачено»: ${m.name}`))renderDrawer()})}
+
+/* ===== Поиск похожего бойца для регистрации My PIT: имя, фамилия, дата рождения/возраст, телефон, почта, родитель ===== */
+const MATCH_MIN=3;
+const TRL={а:'a',б:'b',в:'v',г:'g',д:'d',е:'e',ё:'e',ж:'zh',з:'z',и:'i',й:'y',к:'k',л:'l',м:'m',н:'n',о:'o',п:'p',р:'r',с:'s',т:'t',у:'u',ф:'f',х:'h',ц:'ts',ч:'ch',ш:'sh',щ:'sch',ъ:'',ы:'y',ь:'',э:'e',ю:'yu',я:'ya',ş:'s',ç:'c',ğ:'g',ı:'i',ö:'o',ü:'u',â:'a',î:'i',û:'u'};
+const nrm=t=>String(t||'').toLocaleLowerCase('tr').replace(/i̇/g,'i').split('').map(c=>TRL[c]??c).join('').replace(/[^a-z0-9]/g,'');
+const nameToks=t=>String(t||'').split(/[\s\-]+/).map(nrm).filter(w=>w.length>1);
+const ph10=t=>{const d=String(t||'').replace(/\D/g,'');return d.length>=7?d.slice(-10):''};
+function regOf(x){const P=S.pv&&S.pv.all&&x.email?S.pv.all.find(f=>f.email===String(x.email).toLowerCase()):null,pr=(P&&P.profile)||{},r=x.reg||{};
+  const w=String(x.name||'').trim().split(/\s+/);
+  return{first:r.first||pr.first||'',last:r.last||pr.last||'',toks:nameToks([r.first||pr.first,r.last||pr.last].filter(Boolean).join(' ')||x.name),dob:r.dob||pr.dob||'',age:x.age?+x.age:null,
+    phone:r.phone||pr.phone||x.phone||'',email:String(r.email||x.email||'').toLowerCase(),parent:r.parent||pr.parent||null,w}}
+function matchScore(x,m,R){R=R||regOf(x);const why=[];
+  const mt=nameToks(m.first&&m.last?m.first+' '+m.last:m.name),fn=nameToks(m.first||nameParts(m).first),ln=nameToks(m.last||nameParts(m).last);
+  const has=a=>a.length&&a.every(t=>R.toks.includes(t));
+  if(has(fn))why.push('имя');if(has(ln))why.push('фамилия');
+  if(!fn.length&&!ln.length&&mt.some(t=>R.toks.includes(t)))why.push('имя');
+  if(R.dob&&m.dob&&R.dob===m.dob)why.push('дата рождения');
+  else if(R.age&&m.dob&&ageOf(m.dob)===R.age)why.push('возраст');
+  const p=ph10(R.phone);if(p&&ph10(m.phone)===p)why.push('телефон');
+  else if(p&&m.parent&&ph10(m.parent.phone)===p)why.push('телефон родителя');
+  if(R.parent&&R.parent.phone&&m.parent&&ph10(m.parent.phone)===ph10(R.parent.phone)&&!why.includes('телефон родителя'))why.push('телефон родителя');
+  if(R.parent&&R.parent.name&&m.parent&&m.parent.name&&nameToks(R.parent.name).some(t=>nameToks(m.parent.name).includes(t)))why.push('родитель');
+  if(R.email&&m.email&&String(m.email).toLowerCase()===R.email)why.push('почта');
+  return{n:why.length,why}}
+function bestMatch(x){const R=regOf(x);let best=null;for(const m of S.members){if(m.kind==='staff')continue;const r=matchScore(x,m,R);if(r.n&&(!best||r.n>best.n))best={...r,m}}return best&&best.n>=MATCH_MIN?{...best,R}:null}
+function mergePlan(x,m,R){R=R||regOf(x);const f=[],put=(k,lbl,v)=>{if(v&&!m[k])f.push([k,lbl,v])};
+  put('dob','Дата рождения',R.dob);put('phone','Телефон',R.phone);put('email','E-mail',R.email);
+  if(R.parent&&R.parent.name&&!(m.parent&&m.parent.name))f.push(['parent','Родитель',R.parent]);return f}
 function notes(){const out=[],td=today(),tm=addDays(td,1),M=S.members.filter(m=>m.kind!=='staff');
   const add=(key,pri,icon,t,sub,go)=>out.push({key,pri,icon,t,sub,go});
   const vis=new Set(),lastVis={};for(const d in S.visits){(S.visits[d].ids||[]).forEach(id=>{if(!lastVis[id]||lastVis[id]<d)lastVis[id]=d})}
