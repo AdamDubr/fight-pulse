@@ -2154,6 +2154,8 @@ body.world-only .top .tabs,body.world-only #roundPill,body.world-only #fightPill
 body.real #srcSim,body.real .imp-banner,body.real .medf{display:none!important}
 /* клиентский режим, рабочий режим, My PIT World — для всех размеров экрана */
 body.world-real #fCard,body.world-real #fcShareRow,body.world-real #fcEdit{display:none!important}
+body.real .protgl{display:none!important}
+.wl.light .wl-pro-g div,html.light .wl-pro-g div{border-color:#0000001f;background:#00000006}
  body.rf .s-nav .s-co,body.rf .s-nav .s-fin{display:none!important}
  body.rf #toCrm,body.rf #roleSel,body.rf .protgl{display:none!important}
  body.rf .a-strip .ctrl{display:none!important}
@@ -2162,7 +2164,10 @@ body.world-real #fCard,body.world-real #fcShareRow,body.world-real #fcEdit{displ
  .cm-box{position:relative;width:min(100%,460px);margin:auto 0}.cm-x{position:absolute;top:-6px;right:-6px;z-index:3;width:2.2rem;height:2.2rem;border-radius:50%;border:1px solid #e8c35a;background:#111;color:#e8c35a;font-size:1rem;cursor:pointer}
  body.real .s-nav .s-fin{display:none!important}
  body.world-real .wl [data-sec=ajp],body.world-real .wl [data-sec=map],body.world-real .wl [data-sec=rank],body.world-real .wl [data-sec=cup],body.world-real .wl [data-sec=tour],body.world-real .wl [data-sec=rew],body.world-real .wl [data-sec=reg],body.world-real .wl-cta,body.world-real .wl-toc,body.world-real .wl-figw{display:none!important}
- body:not(.world-real) .wl-soon{display:none}
+ body:not(.world-real):not(.real) .wl-soon{display:none}
+ .wl-pro{margin:1rem 0;padding:1.1rem;border:1px dashed #e8c35a88;border-radius:1rem}.wl-pro-h{display:flex;flex-direction:column;gap:.2rem;margin-bottom:.8rem}.wl-pro-h b{font-family:Unbounded,sans-serif;color:#e8c35a;letter-spacing:.06em;text-transform:uppercase;font-size:.9rem}.wl-pro-h span{font-size:.84rem;opacity:.7}
+ .wl-pro-g{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,15rem),1fr));gap:.6rem}.wl-pro-g div{position:relative;padding:.8rem .9rem;border:1px solid #ffffff1a;border-radius:.8rem;background:#ffffff06;display:flex;flex-direction:column;gap:.25rem}.wl-pro-g b{font-size:.95rem;padding-right:3.5rem}.wl-pro-g span{font-size:.8rem;opacity:.75;line-height:1.4}.wl-pro-g i{position:absolute;top:.7rem;right:.7rem;font-style:normal;font-size:.62rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#e8c35a;border:1px solid #e8c35a77;border-radius:999px;padding:.1rem .45rem}
+ body.world-real .wl>:not(.wl-hero):not(.wl-me):not(.wl-soon):not(.rn):not(.wl-pro){display:none!important}
  .rn{margin:1rem 0;padding:1.1rem;border:1px solid #e8c35a55;border-radius:1rem;background:#0b0d10}.rn-h{margin:0 0 .25rem;font-size:1.05rem;color:#f3f1ec}.rn-p{margin:0 0 .7rem;font-size:.84rem;opacity:.7;color:#f3f1ec}
  .rn-map{overflow-x:auto;-webkit-overflow-scrolling:touch}.rn-map svg{display:block;width:100%;min-width:560px;height:auto}.rn-land{stroke:#e8c35a;stroke-opacity:.3}
  .rn-ray{fill:none;stroke:#e8c35a;stroke-width:.32;stroke-dasharray:.9 .8;stroke-opacity:.75;animation:rnDash 2.4s linear infinite}@keyframes rnDash{to{stroke-dashoffset:-3.4}}
@@ -2175,7 +2180,6 @@ body.world-real #fCard,body.world-real #fcShareRow,body.world-real #fcEdit{displ
  .rn-st{display:flex;gap:.5rem;flex-wrap:wrap}.rn-st div{flex:1 1 6rem;background:#ffffff08;border:1px solid #ffffff1a;border-radius:.7rem;padding:.5rem .6rem}.rn-st b{display:block;font-size:1.2rem}.rn-st small{color:#f3f1ecaa!important;font-weight:600;letter-spacing:0;text-transform:none;font-size:.72rem}
  .rn-cw .rn-co{color:#f3f1ecbb!important;text-transform:none;letter-spacing:0;font-weight:600}.rn-rt{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.2rem}.rn-rt a{font-size:.82rem;font-weight:800;color:#141414;background:#e8c35a;border-radius:.55rem;padding:.45rem .8rem;text-decoration:none}.rn-rt a+a{background:transparent;color:#e8c35a;border:1px solid #e8c35a}
  .rn-hubc{padding:1rem;border:1px solid #5aa9ff66;border-radius:.9rem;background:#5aa9ff10;display:flex;flex-direction:column;gap:.25rem}.rn-hubc small{color:#9fd0ff;font-weight:800;letter-spacing:.08em;font-size:.7rem;text-transform:uppercase}.rn-hubc b{font-size:1.15rem}.rn-hubc span{font-size:.84rem;opacity:.75}.rn-hubc p{margin:.35rem 0 0;font-size:.86rem}
- body.world-real .wl>:not(.wl-hero):not(.wl-me):not(.wl-soon):not(.rn){display:none!important}
  #gridCards .card{position:relative}
  .fe-auto{display:flex;flex-direction:column;gap:2px;padding:.55rem .7rem;border:1px dashed var(--line);border-radius:.5rem}.fe-auto b{font-size:.95rem}.fe-auto small{color:#8a8a8a;font-size:.72rem}
  .rf-flow{display:flex;align-items:center;flex-wrap:wrap;gap:.35rem;margin:.9rem 0 .5rem;font-size:.78rem;font-weight:700;letter-spacing:.04em}.rf-flow span{padding:.25rem .6rem;border-radius:999px;border:1px solid var(--line);color:#8a8a8a}.rf-flow span.cur{border-color:#e8c35a;color:#e8c35a}.rf-flow span.done{border-color:#3ddc84;color:#3ddc84}.rf-flow i{font-style:normal;color:#6d6d6d}
@@ -3966,7 +3970,7 @@ function admGroups(B){groupsInit();
    <div class="grp-cards">${all.map(x=>{const R=Math.round(x.ids.reduce((q,i2)=>q+fpRating(i2),0)/Math.max(1,x.ids.length)),ti=RTIERS.find(t=>R>=t[0]);
     return`<div class="grp-c" role="button" tabindex="0" data-g="${x.id}" style="--tc:${ti[2]}">
      <img class="gi2" src="${gLogo(x.disc||x.name)}" alt=""><b>${esc(x.name)}</b>
-     <span class="gr num">${PITM} PIT ${R}</span><em>${ti[1]}</em>
+     ${REAL?'':`<span class="gr num">${PITM} PIT ${R}</span><em>${ti[1]}</em>`}
      <span class="gn">${x.ids.length} ${plural(x.ids.length,'боец','бойца','бойцов')}</span>
      <span class="gav">${x.ids.slice(0,6).map(i2=>`<img src="${CAB[i2]&&CAB[i2].person.photo||avatar(i2)}" alt="">`).join('')}${x.ids.length>6?`<u>+${x.ids.length-6}</u>`:''}</span>
      ${x.auto||x.real?'':`<button class="iconbtn gdel" data-gd="${x.id}">✕</button>`}</div>`}).join('')}</div>
@@ -3992,7 +3996,7 @@ function admGroupDetail(B,g){
   gt.sort((x,y)=>y.created.localeCompare(x.created));
   B.innerHTML=`<button class="m-back" id="gBack">‹ Все группы</button>
    <div class="fdk-top"><img class="gi2" src="${gLogo(g.disc||g.name)}" alt="">
-    <div><span class="fdk-nm">${esc(g.name)}</span> <span class="rt-badge" style="--tc:${ti[2]}">${PITM} PIT <b>${R}</b> · ${ti[1]}</span>
+    <div><span class="fdk-nm">${esc(g.name)}</span> ${REAL?'':`<span class="rt-badge" style="--tc:${ti[2]}">${PITM} PIT <b>${R}</b> · ${ti[1]}</span>`}
      <div class="muted small">${g.ids.length} ${plural(g.ids.length,'боец','бойца','бойцов')} · средний рейтинг группы (расчёт)</div></div></div>
    <div class="asg"><span class="asg-l">ЗАДАНИЕ ГРУППЕ</span><input id="grT" placeholder="Например: сгонка — взвешивание каждое утро, отчёт тренеру"><input type="date" id="grD" value="${dAdd(7)}"><button class="btn primary" id="grB">НАЗНАЧИТЬ ${g.ids.length} БОЙЦАМ</button></div>
    <div class="asg"><span class="asg-l">СОН ГРУППЕ</span><button class="btn ps" data-gs="не меньше 8 часов">8+ ЧАСОВ</button><button class="btn ps" data-gs="отбой не позже 23:00">ОТБОЙ ДО 23:00</button></div>
@@ -5751,7 +5755,7 @@ const PIT_HOME={n:'Mowgli Fight Club · Анталья',lon:30.7,lat:36.9};
 const PIT_RAYS=['Стамбул','Москва','Махачкала','Дубай','Лондон','Париж','Каир','Касабланка','Лагос','Найроби','Йоханнесбург','Бангкок','Лас-Вегас','Рио-де-Жанейро'];
 /* ===== My PIT World (рабочий режим): язык аккаунта, карта сети с реальным клубом ===== */
 const WL_LANG=UI_LANG;
-const WTR={en:[['Рейтинги, турниры и кубок клубов появятся, когда к PIT подключатся клубы и пройдут первые турниры сезона. На карте — первый клуб PIT и мировые центры единоборств, куда растёт сеть.','Rankings, tournaments and the club cup will appear once clubs join PIT and the first tournaments of the season take place. The map shows the first PIT club and the world martial-arts hubs the network is growing to.'],
+const WTR={en:[["так будет расти My PIT World — разделы откроются по мере подключения клубов", "how My PIT World will grow — sections open as clubs join"],["Перспектива развития", "Development roadmap"],["Рейтинги клубов и стран", "Club and country rankings"],["Места клубов и стран по подтверждённым результатам — после первых турниров сезона.", "Club and country places by confirmed results — after the first tournaments of the season."],["Командный кубок «клуб на клуб»", "Team cup “club vs club”"],["Матчи между клубами сети: составы по весам, согласия админа, тренера и бойца, трансляция.", "Matches between network clubs: line-ups by weight, admin, coach and fighter consent, streaming."],["Турниры PIT", "PIT tournaments"],["Календарь, заявка в один тап, взвешивание, сетки и протоколы — очки идут в рейтинг.", "Calendar, one-tap entry, weigh-ins, brackets and protocols — points go to the ranking."],["Награды сезона", "Season rewards"],["Кэмпы, экипировка и PRO лидерам весов по итогам сезона.", "Camps, gear and PRO for weight-class leaders at the end of the season."],["Вызов на бой", "Fight challenge"],["Только Verified ↔ Verified, с согласия тренеров обоих клубов.", "Verified ↔ Verified only, with consent of both clubs’ coaches."],["Кэмпы и мастер-классы", "Camps and masterclasses"],["Сборы и тренировки от чемпионов — запись через клуб.", "Training camps and sessions with champions — booked via the club."],["скоро", "soon"],['Рейтинги, турниры и кубок клубов появятся, когда к PIT подключатся клубы и пройдут первые турниры сезона. На карте — первый клуб PIT и мировые центры единоборств, куда растёт сеть.','Rankings, tournaments and the club cup will appear once clubs join PIT and the first tournaments of the season take place. The map shows the first PIT club and the world martial-arts hubs the network is growing to.'],
   ['Сеть PIT World только запускается','The PIT World network is just launching'],
   ['Каждая тренировка считается: пульс, нагрузка, посещаемость, результат. Тренер подтверждает — мир видит.','Every training counts: heart rate, load, attendance, results. The coach confirms — the world sees.'],
   ['Бесплатно для бойца · только честные данные клуба','Free for fighters · only honest club data'],['Расти в рейтинге. Бросай вызов. Выходи на бой.','Climb the ranking. Throw a challenge. Step into the fight.'],
@@ -5761,7 +5765,7 @@ const WTR={en:[['Рейтинги, турниры и кубок клубов п�
   ['Пока нет подтверждённых соревнований — добавьте их в My PIT, клуб проверит.','No confirmed competitions yet — add them in My PIT and the club will check them.'],
   ['тренировок в клубе','trainings at the club'],['Изменить анкету','Edit profile'],['МОЯ АНКЕТА','MY PROFILE'],['СОРЕВНОВАНИЯ','COMPETITIONS'],['соревнований','competitions'],['текущий клуб','current club'],
   ['бои W-L-D','fights W-L-D'],['Поражение','Loss'],['титулов','titles'],['Участие','Participation'],['Победа','Win'],['медали','medals'],['ТИТУЛЫ','TITLES'],['Ничья','Draw'],['КЛУБЫ','CLUBS'],['место','place'],['н.в.','now'],['лет','y.o.'],['кг','kg']],
- tr:[['Рейтинги, турниры и кубок клубов появятся, когда к PIT подключатся клубы и пройдут первые турниры сезона. На карте — первый клуб PIT и мировые центры единоборств, куда растёт сеть.','Sıralamalar, turnuvalar ve kulüpler kupası, kulüpler PIT’e katılıp sezonun ilk turnuvaları yapıldığında görünecek. Haritada ilk PIT kulübü ve ağın büyüdüğü dünya dövüş sporları merkezleri var.'],
+ tr:[["так будет расти My PIT World — разделы откроются по мере подключения клубов", "My PIT World böyle büyüyecek — bölümler kulüpler katıldıkça açılacak"],["Перспектива развития", "Gelişim planı"],["Рейтинги клубов и стран", "Kulüp ve ülke sıralamaları"],["Места клубов и стран по подтверждённым результатам — после первых турниров сезона.", "Onaylı sonuçlara göre kulüp ve ülke sıraları — sezonun ilk turnuvalarından sonra."],["Командный кубок «клуб на клуб»", "Takım kupası “kulüp kulübe karşı”"],["Матчи между клубами сети: составы по весам, согласия админа, тренера и бойца, трансляция.", "Ağdaki kulüpler arası maçlar: sıklete göre kadrolar, yönetici, antrenör ve sporcu onayı, yayın."],["Турниры PIT", "PIT turnuvaları"],["Календарь, заявка в один тап, взвешивание, сетки и протоколы — очки идут в рейтинг.", "Takvim, tek dokunuşla kayıt, tartı, fikstür ve protokoller — puanlar sıralamaya gider."],["Награды сезона", "Sezon ödülleri"],["Кэмпы, экипировка и PRO лидерам весов по итогам сезона.", "Sezon sonunda sıklet liderlerine kamp, ekipman ve PRO."],["Вызов на бой", "Maç daveti"],["Только Verified ↔ Verified, с согласия тренеров обоих клубов.", "Yalnızca Verified ↔ Verified, iki kulübün antrenörlerinin onayıyla."],["Кэмпы и мастер-классы", "Kamplar ve ustalık dersleri"],["Сборы и тренировки от чемпионов — запись через клуб.", "Şampiyonlarla kamplar ve antrenmanlar — kulüp üzerinden kayıt."],["скоро", "yakında"],['Рейтинги, турниры и кубок клубов появятся, когда к PIT подключатся клубы и пройдут первые турниры сезона. На карте — первый клуб PIT и мировые центры единоборств, куда растёт сеть.','Sıralamalar, turnuvalar ve kulüpler kupası, kulüpler PIT’e katılıp sezonun ilk turnuvaları yapıldığında görünecek. Haritada ilk PIT kulübü ve ağın büyüdüğü dünya dövüş sporları merkezleri var.'],
   ['Сеть PIT World только запускается','PIT World ağı yeni başlıyor'],
   ['Каждая тренировка считается: пульс, нагрузка, посещаемость, результат. Тренер подтверждает — мир видит.','Her antrenman sayılır: nabız, yük, katılım, sonuç. Antrenör onaylar — dünya görür.'],
   ['Бесплатно для бойца · только честные данные клуба','Sporcu için ücretsiz · yalnızca dürüst kulüp verileri'],['Расти в рейтинге. Бросай вызов. Выходи на бой.','Sıralamada yüksel. Meydan oku. Ringe çık.'],
@@ -5827,7 +5831,26 @@ function mapSVG(big){const [ox,oy]=wxy(WNODES[0]);
     return `<g><circle class="wl-pulse" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${r}" fill="none" stroke="${col}" style="animation-delay:${(i*.2).toFixed(1)}s"/><circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${r}" fill="${col}"/>${big&&n.n?`<text x="${(x+(n.lx??1.8)).toFixed(1)}" y="${(y+(n.ly??.6)).toFixed(1)}" text-anchor="${n.la||'start'}" fill="${col}">${n.n}</text>`:''}</g>`}).join('');
   const pins=big?WNODES.filter(n=>n.ck).map(n=>{const [x,y]=wxy(n);return rkPin(n,x,y)}).join(''):'';
   return `<svg viewBox="0 0 138 52" role="img" aria-label="Карта сети My PIT World (демо)"><path d="${WMAP}" stroke="#e8c35a" stroke-opacity="${big?.34:.26}" stroke-width=".36" stroke-linecap="round" fill="none"/>${arcs}${nodes}${pins}</svg>`}
-function worldHTML(m){const a=byId.get(cardId)||ATHLETES[0],rt=ratingOf(a.id);
+/* My PIT World в рабочем режиме: только реальное — клуб, карта сети, анкета бойца; будущие разделы — блоком «Перспектива развития» (без выдуманных цифр) */
+function worldRealHTML(m){const PR=[['Рейтинги клубов и стран','Места клубов и стран по подтверждённым результатам — после первых турниров сезона.'],['Командный кубок «клуб на клуб»','Матчи между клубами сети: составы по весам, согласия админа, тренера и бойца, трансляция.'],['Турниры PIT','Календарь, заявка в один тап, взвешивание, сетки и протоколы — очки идут в рейтинг.'],['Награды сезона','Кэмпы, экипировка и PRO лидерам весов по итогам сезона.'],['Вызов на бой','Только Verified ↔ Verified, с согласия тренеров обоих клубов.'],['Кэмпы и мастер-классы','Сборы и тренировки от чемпионов — запись через клуб.']];
+  return `<div class="wl ${m?'wl-m':''} ${WLD.light?'light':''}">
+  <section class="wl-hero"><div class="wl-map">${heroNetSVG()}</div>
+    <div class="wl-ht"><span class="wl-eb">MY PIT WORLD</span>
+      <div class="wl-dec" aria-label="PIT — Performance Index of Training"><span><b>P</b>erformance</span><span><b>I</b>ndex of</span><span><b>T</b>raining</span><em>индекс тренировок бойца</em></div>
+      <h2>Мировое сообщество бойцов</h2>
+      <p class="wl-about"><b>Твой пот — в цифрах.</b> Каждая тренировка считается: пульс, нагрузка, посещаемость, результат. Тренер подтверждает — мир видит.</p>
+      <p class="wl-punch">Расти в рейтинге. Бросай вызов. Выходи на бой.<span>Бесплатно для бойца · только честные данные клуба</span></p>
+      
+      <div class="wl-chips wl-chips1"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8.3-7 10-4-1.7-7-5.5-7-10V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg>Verified-рейтинг</span><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 11V7.5a3.5 3.5 0 0 1 7 0V9h1.5A2.5 2.5 0 0 1 18 11.5V14a6 6 0 0 1-6 6h-1a4 4 0 0 1-4-4z"/><path d="M7 13h6M14 9v3"/></svg>Бои с согласия тренеров</span><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2.5"/><path d="M10.5 10v5l4-2.5z"/><path d="M8 3l4 3 4-3"/></svg>Трансляции в My PIT</span></div><p class="wl-legend"><i class="g"></i>клуб PIT · Mowgli, Анталья <i class="b"></i>мировые центры единоборств — сеть PIT растёт</p></div>
+
+  </section>
+  <section class="wl-soon" style="margin:1rem 0;padding:1rem 1.1rem;border:1px dashed #e8c35a77;border-radius:1rem"><b style="display:block;margin-bottom:.3rem">Сеть PIT World только запускается</b><span style="opacity:.8;font-size:.9rem">Рейтинги, турниры и кубок клубов появятся, когда к PIT подключатся клубы и пройдут первые турниры сезона. На карте — первый клуб PIT и мировые центры единоборств, куда растёт сеть.</span></section>
+  ${realNetHTML()}
+  ${WME?meRealHTML():''}
+  <section class="wl-pro"><div class="wl-pro-h"><b>Перспектива развития</b><span>так будет расти My PIT World — разделы откроются по мере подключения клубов</span></div>
+   <div class="wl-pro-g">${PR.map(([t,d])=>`<div><b>${t}</b><span>${d}</span><i>скоро</i></div>`).join('')}</div></section>
+  </div>`}
+function worldHTML(m){if(window.PIT_REAL)return worldRealHTML(m);const a=byId.get(cardId)||ATHLETES[0],rt=ratingOf(a.id);
   const all=ATHLETES.map(x=>({id:x.id,R:ratingOf(x.id).R})).sort((p,q)=>q.R-p.R),wr=all.findIndex(x=>x.id===a.id)+1;
   const t0=new Date();t0.setHours(0,0,0,0);const dl=Math.round((new Date(2026,9,24)-t0)/864e5);
   const cnt=dl>1?`через ${dl} ${plural(dl,'день','дня','дней')}`:dl===1?'завтра':dl===0?'сегодня':'состоялся';
