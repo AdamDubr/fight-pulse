@@ -691,7 +691,7 @@ function bindDrawer(host,m){
   const mf=$('#mf',host);if(mf)mf.addEventListener('submit',async e=>{e.preventDefault();
     const last=$('#f_last',host).value.trim(),first=$('#f_first',host).value.trim();
     if(!last||!first){toast('Укажите фамилию и имя');return}
-    const name=[last,first].filter(Boolean).join(' ');
+    const name=[first,last].filter(Boolean).join(' ');
     const plan=$('#f_plan',host).value,t=tf(plan),lv=$('#f_left',host).value,id=S.open==='new'?newId():m.id,pay=$('#f_pay',host).value;
     const base=m?Object.fromEntries(Object.entries(m).filter(([k])=>!['id','middle','kimlik','address'].includes(k))):{};if(base.docs){const{kimlik:_k,contract:_c,kimlikAt:_ka,contractAt:_ca,...rest}=base.docs;base.docs=rest}
     const v=id=>$(id,host).value.trim();
@@ -1201,7 +1201,7 @@ render();
   try{const u=await claude.use('user');USER=u;if(u){try{ME=await u.id()}catch(e){}const w=await u.can('data.write');if(w===false)S.canWrite=false}}catch(e){}
   let tm=null;const rr=()=>{clearTimeout(tm);tm=setTimeout(renderBg,60)};
   const err=e=>{$('#st').textContent='Нет связи с базой';console.warn(e)};
-  db.collection('members').onSnapshot(s=>{S.members=s.docs.map(d=>({id:d.id,...d.data()}));S.ready.m=true;$('#st').textContent='Онлайн · бойцов: '+S.members.length;rr()},err);
+  db.collection('members').onSnapshot(s=>{S.members=s.docs.map(d=>{const x={id:d.id,...d.data()};if(x.first&&x.last)x.name=x.first+' '+x.last;return x});S.ready.m=true;$('#st').textContent='Онлайн · бойцов: '+S.members.length;rr()},err);
   db.collection('payments').onSnapshot(s=>{S.payments=s.docs.map(d=>({id:d.id,...d.data()}));S.ready.p=true;rr()},err);
   db.collection('leads').onSnapshot(s=>{S.leads=s.docs.map(d=>({id:d.id,...d.data()}));rr()},err);
   db.collection('products').onSnapshot(s=>{S.products=s.docs.map(d=>({id:d.id,...d.data()}));rr()},err);

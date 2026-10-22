@@ -81,7 +81,7 @@ async function view(env, email) {
       const v = await env.DB.prepare("SELECT data FROM docs WHERE col='visits' AND deleted=0").all();
       let total = 0, month = 0; const ym = new Date().toISOString().slice(0, 7);
       for (const x of v.results || []) { try { const d = JSON.parse(x.data); if (Array.isArray(d.ids) && d.ids.includes(f.mid)) { total++; if (String(d.date || '').startsWith(ym)) month++ } } catch (e) { } }
-      out.member = { name: m.name, plan: m.plan || null, start: m.start || null, end: m.end || null, left: m.left ?? null, frozen: !!m.frozen, disc: m.disc || null, visits: { total, month } };
+      out.member = { name: m.first && m.last ? m.first + ' ' + m.last : m.name, plan: m.plan || null, start: m.start || null, end: m.end || null, left: m.left ?? null, frozen: !!m.frozen, disc: m.disc || null, visits: { total, month } };
     }
   }
   if (lead) out.lead = { status: lead.rejected ? 'rejected' : (!lead.approved && (lead.status || 'new') === 'new') ? 'pending' : (lead.status || 'new'), trialDate: lead.trialDate || null };
@@ -212,7 +212,7 @@ export async function myRoutes(req, env, path, email, staff) {
     stmts.push(putDoc(env, 'leads', lead, {
       name: last + ' ' + first, phone, email, disc, kind, age: String(age), source: 'PIT · регистрация', status: 'new', by: 'PIT',
       note: (minor ? `U18 · родитель: ${parent.name}, ${parent.phone}. ` : '') + (fields.note || ''), ts: now(), pit: true, approved: false,
-      match: hit ? { id: hit.id, name: hit.m.name } : null,
+      match: hit ? { id: hit.id, name: hit.m.first && hit.m.last ? hit.m.first + ' ' + hit.m.last : hit.m.name } : null,
     }, 'pit:' + email));
   } else if (lead && !(cur && cur.verified)) {
     const l = await getDoc(env, 'leads', lead);
@@ -308,7 +308,7 @@ export async function reviewRoutes(req, env, path, me) {
       const ex = await env.DB.prepare('SELECT email,invited FROM fighters WHERE email=?').bind(email).first();
       if (ex && (ex.invited || b.all)) { skipped++; continue }
       if (!ex) {
-        const parts = String(m.name || '').trim().split(/\s+/), last = m.last || parts[0] || '', first = m.first || parts.slice(1).join(' ') || '';
+        const parts = String(m.name || '').trim().split(/\s+/), last = m.last || (parts.length > 1 ? parts[parts.length - 1] : '') || '', first = m.first || (parts.length > 1 ? parts.slice(0, -1).join(' ') : parts[0]) || '';
         const d = { last, first, dob: m.dob || '', phone: m.phone || '', disc: m.disc || 'MMA', kind: m.kind === 'ind' ? 'ind' : 'group', club, consentData: false, invitedBy: by, createdAt: now() };
         if (m.parent && m.parent.name) d.parent = { name: m.parent.name, phone: m.parent.phone || '' };
         await env.DB.prepare('INSERT INTO fighters(email,data,club,mid,created,updated,verified,ver_by,ver_at,invited) VALUES(?,?,?,?,?,?,1,?,?,1)').bind(email, JSON.stringify(d), club, id, t, t, by, t).run();

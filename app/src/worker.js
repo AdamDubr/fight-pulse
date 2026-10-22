@@ -237,7 +237,7 @@ async function arenaReal(req, env, opt = {}) {
   const events = {}; for (const x of ev.results || []) { try { const e = JSON.parse(x.data); events[x.id] = { title: e.title, date: e.date, end: e.end || null } } catch (e) { } }
   const today = new Date().toISOString().slice(0, 10);
   const age = d => { if (!/^\d{4}-\d{2}-\d{2}$/.test(d || '')) return null; const b = new Date(d), n = new Date(); let a = n.getFullYear() - b.getFullYear(); if (n < new Date(n.getFullYear(), b.getMonth(), b.getDate())) a--; return a > 3 && a < 90 ? a : null };
-  const all = (r.results || []).map(x => { let m = {}; try { m = JSON.parse(x.data) } catch (e) { } return { id: x.id, m } });
+  const all = (r.results || []).map(x => { let m = {}; try { m = JSON.parse(x.data) } catch (e) { } if (m.first && m.last) m.name = m.first + ' ' + m.last; return { id: x.id, m } });
   const membersAll = all.map(({ id, m }) => ({ id, name: m.name, disc: m.disc, kind: m.kind, end: m.end || '', frozen: !!m.frozen, consentPublic: m.consentPublic || null, left: m.left ?? null }));
   const members = all
     .filter(({ m }) => m && m.name && !m.frozen && (m.kind === 'staff' || !m.end || m.end >= today))
