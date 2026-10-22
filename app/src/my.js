@@ -250,7 +250,7 @@ async function view(env, email) {
   out.access = !!(f.mid && f.verified);
   out.world = !!f.verified;
   out.approved = !!(lead && lead.approved && !lead.rejected) || !!f.mid;
-  if (out.access) { out.schedule = await trialSlots(env, 14); out.clubInfo = await clubInfo(env, f.club) }
+  if (out.access) { out.schedule = await trialSlots(env, 62); out.clubInfo = await clubInfo(env, f.club) }
   if (lead) out.lead = { status: lead.rejected ? 'rejected' : (!lead.approved && (lead.status || 'new') === 'new') ? 'pending' : (lead.status || 'new'), trialDate: lead.trialDate || null };
   const it = await env.DB.prepare('SELECT * FROM fighter_items WHERE email=? ORDER BY created DESC').bind(email).all();
   out.items = (it.results || []).map(itemOut);
