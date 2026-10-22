@@ -2088,6 +2088,10 @@ html.light .a-stage [style*="color:"],html.light body.m-on .m-holo3d .mh-ov [sty
 .demo,.top #demoBadge{display:none!important}
 body.real .tabs [data-view=league],body.real .tabs [data-view=card],body.real .tabs [data-view=world]{display:none!important}
 body.real #admTabs [data-adm=league],body.real #admTabs [data-adm=fin],body.real #admTabs [data-adm=imp],body.real #admTabs [data-adm=groups]{display:none!important}
+body.world-only #mNav,body.world-only #mAva,body.world-only #mTPill{display:none!important}
+body.world-only main{padding-bottom:env(safe-area-inset-bottom,0px)!important}
+.m-wback{margin-left:auto;display:inline-flex;align-items:center;padding:.4rem .7rem;border-radius:.5rem;border:1px solid currentColor;font-weight:800;font-size:.8rem;text-decoration:none;color:inherit;white-space:nowrap}
+body.world-only .top .tabs,body.world-only #roundPill,body.world-only #fightPill,body.world-only #roleSw,body.world-only #mobBtn,body.world-only #clock{display:none!important}
 body.real #srcSim,body.real .imp-banner,body.real .medf{display:none!important}
 </style>
 
@@ -2399,7 +2403,7 @@ body.real #srcSim,body.real .imp-banner,body.real .medf{display:none!important}
 
 
 <div id="mobile" aria-label="Мобильное приложение спортсмена">
-  <header class="m-top"><img class="m-logo" alt="Mowgli Fight Club"><span class="demo">DEMO</span><button class="thm-btn" data-gtheme aria-label="Сменить тему">☾</button><span class="m-tpill" id="mTPill"></span><button class="m-ava" id="mAva" aria-label="Профиль"></button></header>
+  <header class="m-top"><img class="m-logo" alt="Mowgli Fight Club"><span class="demo">DEMO</span><button class="thm-btn" data-gtheme aria-label="Сменить тему">☾</button><span class="m-tpill" id="mTPill"></span><button class="m-ava" id="mAva" aria-label="Профиль"></button><a class="m-wback" id="mWBack" href="/my/" hidden>← My PIT</a></header>
   <main class="m-main" id="mMain"><div id="mBody"></div></main>
   <nav class="m-nav" id="mNav">
     <button data-t="home"><svg viewBox="0 0 24 24"><path d="M3 11 12 4l9 7v9h-6v-6H9v6H3z"/></svg>Главная</button>
@@ -2429,7 +2433,7 @@ body.real #srcSim,body.real .imp-banner,body.real .medf{display:none!important}
     <button data-sv="fin" class="s-fin"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20zm1 4h-2v1.1c-1.7.3-3 1.4-3 3 0 2 1.8 2.6 3.5 3 1.4.3 2.1.6 2.1 1.3 0 .6-.7 1.1-1.7 1.1-1.1 0-1.9-.5-2.2-1.3l-1.9.6c.4 1.4 1.6 2.4 3.2 2.7V19h2v-1.1c1.8-.3 3-1.5 3-3.1 0-2.1-1.9-2.7-3.6-3.1-1.3-.3-2-.6-2-1.2 0-.5.6-1 1.5-1 .9 0 1.6.4 1.9 1.1l1.9-.6c-.4-1.2-1.4-2.1-2.7-2.4z"/></svg>Финансы</button>
     <button data-sv="world"><svg viewBox="0 0 100 124" fill="currentColor"><path d="M8 44L50 12 92 44V62L50 30 8 62Z"/><path d="M8 74L50 42 92 74V92L50 60 8 92Z" opacity=".65"/><path d="M8 104L50 72 92 104V122L50 90 8 122Z" opacity=".38"/></svg>My PIT</button>
   </nav>
-<script src="three.min.js"></script>
+<script src="/arena/three.min.js"></script>
 <script>/* html2canvas-pro 2.5.0 (встроен для экспорта карточки) *//*!
 * html2canvas-pro 2.5.0 <https://yorickshan.github.io/html2canvas-pro/>
 * Copyright (c) 2024-present yorickshan and html2canvas-pro contributors
@@ -2496,7 +2500,8 @@ const keytel=(hr,a)=>Math.max(0,a.sex==='f'
   :(-55.0969+0.6309*hr+0.1988*a.kg+0.2017*a.age)/4.184);
 
 /* Режим реального зала: в app.pitrating.com сервер подставляет бойцов из PIT CRM (window.PIT_REAL). Без него — демо с симулятором. */
-const REAL=!!(window.PIT_REAL&&Array.isArray(window.PIT_REAL.members));
+const WORLD=!!(window.PIT_REAL&&window.PIT_REAL.worldOnly);  // /world/ — сообщество PIT на демо-данных сети, без данных клуба
+const REAL=!!(window.PIT_REAL&&Array.isArray(window.PIT_REAL.members))&&!WORLD;
 const ATHLETES_DEMO=[
   {id:1,fit:.6,nick:'Адам',name:'Адам',  disc:'MMA',        age:27,kg:77,sex:'m',hrMax:193,hrRest:52,sensor:'Polar H10',      sim:{id:'SIM-H10-01',int:.79,rec:.012,bat:86}},
   {id:2,fit:0.75,nick:'Идрис',name:'Идрис',     disc:'Муай-тай',   age:24,kg:70,sex:'m',hrMax:196,hrRest:55,sensor:'Polar H10',      sim:{id:'SIM-H10-02',int:.81,rec:.014,bat:92}},
@@ -2529,7 +2534,7 @@ function pitRoster(){
     out.push({id,mid:m.id,fit:.6,nick:m.first||m.name,name:m.name,disc:m.disc||'MMA',age,kg:m.kg||null,sex:m.sex||'m',hrMax:m.hrMax||hrMaxOf(age),hrRest:60,sensor:'—',
       sim:{id:'НЕТ ДАТЧИКА·'+id,int:.6,rec:.012,bat:100},coach:m.kind==='staff',public:m.consentPublic==='yes'||m.consentPublic===true,absent:false,end:m.end||'',start:m.start||'',plan:m.plan||'',left:m.left??null,dob:m.dob||''})});
   return out}
-const ATHLETES=REAL?pitRoster():ATHLETES_DEMO;
+const ATHLETES=REAL?pitRoster():WORLD?ATHLETES_DEMO.map(a=>a.id===1?{...a,name:'Адам AI',nick:'Адам AI'}:a):ATHLETES_DEMO;
 const byId=new Map(ATHLETES.map(a=>[a.id,a]));
 const settings={nameMode:'nick',interval:12,trimpTarget:150,target:[4,5],normTrimp:130,norm90:8};
 const display=a=>settings.nameMode==='nick'?a.nick:a.name;
@@ -5588,6 +5593,11 @@ function applyRole(r){if(r)ROLE.v=r;try{localStorage.setItem('fp.role',ROLE.v)}c
   if(!MOB.on)setView(ui.view);if(ui.view==='coach')renderAdm()}
 $('#roleSel').addEventListener('change',e=>applyRole(e.target.value));
 setTimeout(async()=>{applyRole();
+  /* My PIT World — отдельная страница сообщества (/world/): без пульта зала, для сотрудников и бойцов */
+  if(WORLD){document.body.classList.add('world-only');document.getElementById('fpGate')?.remove();$('#roleGate').hidden=true;
+    const h=document.getElementById('toHome');if(h){h.hidden=false;h.href=PIT_REAL.back||'/';h.title=PIT_REAL.fighter?'My PIT':'Главное меню PIT'}
+    if(!PIT_REAL.fighter){const c=document.getElementById('toCrm');if(c)c.hidden=false}
+    applyRole('admin');setView('world');MOB.tab='world';MOB.sub=null;const wb=document.getElementById('mWBack');if(wb){wb.hidden=false;wb.href=PIT_REAL.back||'/';wb.textContent=PIT_REAL.fighter?'← My PIT':'← PIT'}if(MOB.on)renderMobile();return}
   /* вход PIT: если открыто внутри app.pitrating.com с сессией — без демо-логина, роль из системы клуба */
   try{const r=await fetch('/api/me',{cache:'no-store'});if(r.ok){const me=await r.json();const map={owner:'admin',admin:'admin',trainer:'coach'};
     if(map[me.role]){document.getElementById('fpGate')?.remove();['toHome','toCrm'].forEach(i=>{const e=document.getElementById(i);if(e)e.hidden=false});enterRole(map[me.role]);return}}}catch(e){}
@@ -5736,6 +5746,7 @@ function tickUI(){if(MOB.on)return;
     $('#aKcal').textContent=m.kcal>=1?Math.round(m.kcal):'0';$('#aKcalR').textContent=live?`сейчас ≈ ${keytel(m.hr,a).toFixed(1)} ккал/мин`:'';$('#aKcK').textContent=m.mode==='fight'?'Сожжено · тренировка + бой':'Сожжено · тренировка'}else if(ui.view==='grid')renderGrid();else if(ui.view==='fight')renderFight();else if(ui.view==='card'){if(cab.sec==='card')renderCardStats()}else renderCoach();
   if(ui.view!=='fight'){const fp=$('#fightPill');fp.hidden=fight.state==='idle'||fight.state==='finished';$('#fpText').textContent=`${display(byId.get(fight.ids[0]))} — ${display(byId.get(fight.ids[1]))} · Р${fight.round}`;$('#fpTime').textContent=fmt(fight.remaining())}
 }
+if(WORLD)document.body.classList.add('world-only');
 if(REAL){pitLive();document.body.classList.add('real');const r=document.querySelector('input[name=src][value=ws]');if(r){r.checked=true;r.dispatchEvent(new Event('change',{bubbles:true}))}const sl=document.querySelector('input[name=src][value=sim]');if(sl)sl.closest('label').style.display='none'}
 // идти на первого публичного
 select(0);renderArena();

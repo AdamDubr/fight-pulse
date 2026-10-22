@@ -216,8 +216,8 @@ const NO_ACCESS = (email) => new Response(`<!doctype html><meta charset=utf-8><m
 <p><a href="/auth/logout">Выйти и войти с другим e-mail</a></p></div></body>`, { status: 403, headers: { 'content-type': 'text/html; charset=utf-8' } });
 
 /* Arena в реальном режиме: бойцы из PIT CRM вместо демо-списка. Отдаём минимум полей. */
-async function arenaReal(req, env) {
-  const res = await env.ASSETS.fetch(req);
+async function arenaReal(req, env, opt = {}) {
+  const res = await env.ASSETS.fetch(opt.asset ? new Request(new URL('/arena/', req.url), req) : req);
   if (!res.ok || !(res.headers.get('content-type') || '').includes('text/html')) return res;
   const r = await env.DB.prepare("SELECT id,data FROM docs WHERE col='members' AND deleted=0").all();
   const mx = await env.DB.prepare('SELECT COALESCE(MAX(seq),0) AS s FROM docs').first();
@@ -234,7 +234,9 @@ async function arenaReal(req, env) {
     .filter(({ m }) => m && m.name && !m.frozen && (m.kind === 'staff' || !m.end || m.end >= today))
     .map(({ id, m }) => ({ id, name: m.name, first: m.first || m.name, disc: m.disc || 'MMA', kind: m.kind || 'group', age: age(m.dob), consentPublic: m.consentPublic || null, end: m.end || '', start: m.start || '', plan: m.plan || '', left: m.left ?? null }))
     .sort((a, b) => a.name.localeCompare(b.name, 'ru'));
-  const inj = '<script>window.PIT_REAL=' + JSON.stringify({ club: env.CLUB || 'mowgli', since: mx ? mx.s : 0, members, membersAll, schedule: sch ? JSON.parse(sch.data) : null, events, visits }).replace(/</g, '\\u003c') + '</script>';
+  const inj = '<script>window.PIT_REAL=' + JSON.stringify(opt.fighter
+    ? { club: env.CLUB || 'mowgli', worldOnly: true, fighter: true, back: '/my/', since: 0, members: [], membersAll: [], schedule: sch ? JSON.parse(sch.data) : null, events, visits: {} }
+    : { club: env.CLUB || 'mowgli', ...(opt.world ? { worldOnly: true, back: '/' } : {}), since: mx ? mx.s : 0, members, membersAll, schedule: sch ? JSON.parse(sch.data) : null, events, visits }).replace(/</g, '\\u003c') + '</script>';
   const html = (await res.text()).replace('<meta charset="utf-8">', '<meta charset="utf-8">' + inj);
   return new Response(html, { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' } });
 }
@@ -243,7 +245,13 @@ export default {
   async fetch(req, env) {
     const url = new URL(req.url), path = url.pathname;
     // открыто без входа: страница входа, логотипы, методы входа
-    if (path === '/login' || path === '/login.html' || path.startsWith('/brand/') || path.startsWith('/vendor/')) return env.ASSETS.fetch(req);
+    if (path === '/login' || path === '/login.html' || path.startsWith('/brand/') || path.startsWith('/vendor/') || path === '/arena/three.min.js') return env.ASSETS.fetch(req);
+    // My PIT World — сообщество PIT (новости, кэмпы, турниры, клубы): для сотрудников и бойцов
+    if (path === '/world' || path === '/world/') {
+      const w = await whoami(req, env);
+      if (!w) return new Response(null, { status: 302, headers: { location: '/login?next=%2Fworld%2F' } });
+      return arenaReal(req, env, { asset: true, world: true, fighter: !w.role });
+    }
     if (path.startsWith('/auth/')) {
       try { const r = await authRoutes(req, env, path); if (r) return r } catch (e) { return json({ error: 'server' }, 500) }
       return json({ error: 'not_found' }, 404);
