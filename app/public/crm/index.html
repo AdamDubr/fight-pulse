@@ -653,12 +653,14 @@ const dowOf=d=>{const x=new Date(d+'T12:00:00').getDay();return x||7};
 
 /* ===== Формат заявки: пробные, все абонементы и все услуги клуба ===== */
 function fmtList(){const s=SET();return[
-  ['Пробное',[['group','Пробное · группа — '+lira(s.trialGroup)],['ind','Пробное · индивидуальное — '+lira(s.trialInd)]]],
+  ['Пробное · группа — '+lira(s.trialGroup),[['group','Пробное · группа (направление ниже)'],...DISCS.map(d=>['tg:'+d,'Пробное · '+d+' · группа'])]],
+  ['Пробное · индивидуальное — '+lira(s.trialInd),[['ind','Пробное · индивидуальное'],...DISCS.filter(d=>!/^Дети/.test(d)).map(d=>['ti:'+d,'Пробное · '+d+' · индивидуальное'])]],
   ['Абонементы',tariffs().filter(t=>t.kind!=='staff').map(t=>['t:'+t.key,t.name+' — '+lira(t.price)])],
   ['Услуги',services().filter(v=>!/^Пробное/i.test(v[0])).map(v=>['s:'+v[0],v[0]+(+v[1]?' — '+lira(+v[1]):'')])]]}
 const fmtOpts=x=>{const cur=x.fmt||(x.kind==='ind'?'ind':'group');return fmtList().map(([g,L])=>`<optgroup label="${esc(g)}">${L.map(([k,t])=>`<option value="${esc(k)}" ${k===cur?'selected':''}>${esc(t)}</option>`).join('')}</optgroup>`).join('')};
 function fmtVal(v){let kind='group',name='';
   if(v==='ind'){kind='ind';name='Пробное · индивидуальное'}else if(v==='group')name='Пробное · группа';
+  else if(v.startsWith('tg:')||v.startsWith('ti:')){kind=v[1]==='i'?'ind':'group';name='Пробное · '+v.slice(3)+(kind==='ind'?' · индивидуальное':' · группа');return{kind,fmt:v,fmtName:name,_d:v.slice(3)}}
   else if(v.startsWith('t:')){const t=tf(v.slice(2));kind=t&&t.kind==='ind'?'ind':'group';name=t?t.name:v}
   else if(v.startsWith('s:')){name=v.slice(2);kind=/персональн|индивид/i.test(name)?'ind':'group'}
   return{kind,fmt:v,fmtName:name}}
@@ -890,7 +892,7 @@ function leadDrawer(){const host=$('#ovHost'),x=S.ov.id==='new'?{status:'new',ki
     <label class="f">Возраст / ребёнок<input type="text" id="l_a" value="${esc(x.age||'')}" placeholder="взрослый, 9 лет…"></label>
     <label class="f full">Заметка<input type="text" id="l_note" value="${esc(x.note||'')}"></label>
     <div class="acts full"><button class="btn ${isNew?'gold':''}" type="submit">${isNew?'Создать заявку':'Сохранить'}</button></div></form>`;
-  let act='';
+  let act='',mid='',tail='';
   if(!isNew){
     if(x.status==='new')act=`<form class="card form" id="lbook"><h2 class="full">Записать на пробное</h2><label class="f">Дата пробного<input type="date" id="lb_d" value="${addDays(today(),1)}"></label><label class="f">Группа<select id="lb_c">${trialOpts(x,addDays(today(),1))}</select></label><div class="acts" style="align-self:end"><button class="btn gold" type="submit">Записать</button></div></form>`;
     if(x.status==='booked')act=`<section class="card"><h2>Пробное ${fmtD(x.trialDate)} · ${lira(price)}</h2><form class="form" id="ldone"><label class="f">Способ оплаты<select id="ld_m">${methodOpts('cash')}</select></label><div class="acts" style="align-self:end"><button class="btn gold" type="submit">Пришёл и оплатил</button></div></form>
@@ -899,17 +901,17 @@ function leadDrawer(){const host=$('#ovHost'),x=S.ov.id==='new'?{status:'new',ki
     if(x.status==='think')act=`<section class="card" style="border-color:var(--gold)"><h2>Думает${x.thinkReason?' · '+esc(x.thinkReason):''}</h2><p class="note" style="margin:0 0 .6rem">С ${fmtD(x.thinkAt||'')}. Напоминайте о клубе и отмечайте каждое касание ниже — по ним видно работу менеджера.</p>
       <form class="form" id="lbook"><label class="f">Записать на пробное<input type="date" id="lb_d" value="${addDays(today(),1)}"></label><label class="f">Группа<select id="lb_c">${trialOpts(x,addDays(today(),1))}</select></label><div class="acts" style="align-self:end"><button class="btn gold" type="submit">Записать</button></div></form>
       ${x.trialDone?'<div class="acts" style="margin-top:.6rem"><button class="btn gold adm-only" type="button" data-lbuy="1">Купил абонемент → завести бойца</button></div>':''}</section>`;
-    if(['new','booked','done'].includes(x.status))act+=`<details class="card"><summary style="cursor:pointer;font-weight:800;font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)">Думает — не готов сейчас</summary>
+    if(['new','booked','done'].includes(x.status))mid+=`<details class="card"><summary style="cursor:pointer;font-weight:800;font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)">Думает — не готов сейчас</summary>
       <form class="form" id="lthink" style="margin-top:.6rem"><label class="f">Причина<select id="lk_r">${LTHINK.map(r=>`<option>${esc(r)}</option>`).join('')}</select></label>
       <label class="f">Напомнить о нас<input type="date" id="lk_d" value="${addDays(today(),7)}" required></label>
       <label class="f full">Комментарий<input type="text" id="lk_t" maxlength="300" placeholder="Например: живёт в Коньяалты, подумает о расписании"></label>
       <div class="acts full"><button class="btn gold" type="submit">Перевести в «Думает»</button></div></form></details>`;
-    if(leadOpen(x))act+=sellHTML(x);
-    if(leadOpen(x))act+=touchHTML(x);
-    if(['new','booked','done','think'].includes(x.status))act+=`<section class="card"><h2>Отказ</h2><div class="acts">${LLOST.map(r=>`<button class="btn sm" type="button" data-llost="${esc(r)}">${esc(r)}</button>`).join('')}</div></section>`;
-    if(x.status==='bought'&&x.mid)act=`<section class="card"><h2>Стал бойцом</h2><button class="btn" type="button" data-lmember="${x.mid}">Открыть карточку бойца</button></section>`;
-    if(x.status==='lost')act=`<section class="card"><h2>Отказ: ${esc(x.lostReason||'')}</h2><button class="btn sm" type="button" data-lmove="new">Вернуть в работу</button></section>`;
-    if(pitPending(x)){const opts=S.members.slice().sort((a,b)=>String(a.name).localeCompare(String(b.name),'ru')).map(m=>`<option value="${esc(m.id)}" ${x.match&&x.match.id===m.id?'selected':''}>${esc(m.name)}${m.phone?' · '+esc(m.phone):''}</option>`).join('');
+    if(leadOpen(x))mid=sellHTML(x)+mid;
+    if(leadOpen(x))tail+=touchHTML(x);
+    if(['new','booked','done','think'].includes(x.status))tail+=`<section class="card"><h2>Отказ</h2><div class="acts">${LLOST.map(r=>`<button class="btn sm" type="button" data-llost="${esc(r)}">${esc(r)}</button>`).join('')}</div></section>`;
+    if(x.status==='bought'&&x.mid)mid=tail='',act=`<section class="card"><h2>Стал бойцом</h2><button class="btn" type="button" data-lmember="${x.mid}">Открыть карточку бойца</button></section>`;
+    if(x.status==='lost')mid=tail='',act=`<section class="card"><h2>Отказ: ${esc(x.lostReason||'')}</h2><button class="btn sm" type="button" data-lmove="new">Вернуть в работу</button></section>`;
+    if(pitPending(x)){mid=tail='';const opts=S.members.slice().sort((a,b)=>String(a.name).localeCompare(String(b.name),'ru')).map(m=>`<option value="${esc(m.id)}" ${x.match&&x.match.id===m.id?'selected':''}>${esc(m.name)}${m.phone?' · '+esc(m.phone):''}</option>`).join('');
       act=`<section class="card" style="border-color:var(--gold)"><h2>Регистрация в My PIT · ждёт одобрения</h2><p class="note trn-only" style="margin:0 0 .6rem">Одобряет и заводит бойца администратор клуба.</p>
         <p class="note" style="margin:0 0 .7rem">${esc(x.email||'')} · ${esc(x.phone||'')} · ${esc(x.age||'')} лет · ${esc(x.disc||'')}${x.note?'<br>'+esc(x.note):''}</p>
         ${(()=>{const B=bestMatch(x);if(B){const F=mergePlan(x,B.m,B.R);return`<div style="border:1px solid var(--gold);border-radius:.6rem;padding:.7rem;margin:0 0 .8rem;background:var(--gold-bg)"><p style="margin:0 0 .4rem">Скорее всего это боец клуба: <b>${esc(B.m.name)}</b>${B.m.phone?' · '+esc(B.m.phone):''}</p>
@@ -921,12 +923,13 @@ function leadDrawer(){const host=$('#ovHost'),x=S.ov.id==='new'?{status:'new',ki
         <form class="form adm-only" id="plink" style="margin-top:.7rem"><label class="f">Это уже наш боец — привязать к карточке<select id="pl_m"><option value="">— выберите бойца —</option>${opts}</select></label><div class="acts" style="align-self:end"><button class="btn" type="submit">Привязать</button></div></form>
         <div class="acts" style="margin-top:.7rem"><button class="btn sm danger adm-only" type="button" data-papp="reject">Отклонить</button></div></section>`}
   }
-  host.innerHTML=ovShell(isNew?'Новая заявка':x.name,isNew?'':`<span class="pill ${st[2]}">${st[1]}</span>`,act+form+(isNew?'':`<p class="note">Заявка от ${fmtD(String(x.ts).slice(0,10))}${x.trialPaid?` · пробное оплачено ${lira(x.trialPaid)}`:''}</p><div class="acts adm-only" style="margin-top:.4rem"><button class="btn sm danger" type="button" data-ldel>Удалить заявку</button></div>`));
+  host.innerHTML=ovShell(isNew?'Новая заявка':x.name,isNew?'':`<span class="pill ${st[2]}">${st[1]}</span>`,act+form+mid+tail+(isNew?'':`<p class="note">Заявка от ${fmtD(String(x.ts).slice(0,10))}${x.trialPaid?` · пробное оплачено ${lira(x.trialPaid)}`:''}</p><div class="acts adm-only" style="margin-top:.4rem"><button class="btn sm danger" type="button" data-ldel>Удалить заявку</button></div>`));
   const ldl=$('[data-ldel]',host);if(ldl)ldl.addEventListener('click',async()=>{if(!ldl.dataset.sure){ldl.dataset.sure=1;ldl.textContent='Удалить навсегда? Нажмите ещё раз';return}
     if(await write(()=>DB.doc('leads/'+x.id).delete(),'Заявка удалена: '+x.name)){ovClose();render()}});
   ovBindClose(host);
   const lf=$('#lf',host);lf.addEventListener('submit',async e=>{e.preventDefault();const name=$('#l_n',host).value.trim();if(!name){toast('Укажите имя');return}
     const d={...(isNew?{}:Object.fromEntries(Object.entries(x).filter(([k])=>k!=='id'))),name,phone:$('#l_p',host).value.trim(),disc:discGet('l_d',host).join(', ')||'MMA',discs:discGet('l_d',host),...fmtVal($('#l_k',host).value),source:$('#l_s',host).value,age:$('#l_a',host).value.trim(),note:$('#l_note',host).value.trim()};
+    if(d._d){if(!d.discs.includes(d._d))d.discs=[d._d,...d.discs.filter(z=>z!=='MMA'||d.discs.length>1)];d.disc=d.discs.join(', ');delete d._d}else delete d._d;
     if(isNew){d.status='new';d.ts=new Date().toISOString();d.by=ME||null}
     const ref=isNew?DB.collection('leads').doc():DB.doc('leads/'+x.id);
     if(await write(()=>ref.set(d),isNew?'Заявка: '+name:'Заявка сохранена')){S.ov={type:'lead',id:ref.id};renderOv()}});
