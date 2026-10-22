@@ -299,7 +299,7 @@ function render(o){
   document.querySelectorAll('.tabs button').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.tab===S.tab)));
   const v=$('#view');const sy=scrollY;
   v.innerHTML=({today:vToday,members:vMembers,leads:vLeads,cash:vCash,events:vEvents,sched:vSched,pv:vPv,rep:vReports,plans:vSettings})[S.tab]();
-  bindView(v);if(S.tab==='sched')bindSched(v);if(S.tab==='pv')bindPv(v);if(S.tab==='leads')fillWho(v);scrollTo(0,sy);
+  bindView(v);if(S.tab==='members')bindCoach(v);if(S.tab==='sched')bindSched(v);if(S.tab==='pv')bindPv(v);if(S.tab==='leads')fillWho(v);scrollTo(0,sy);
   if(o&&o.keepOv)return;
   const d=$('#ovHost .dr'),st=d?d.scrollTop:0;
   if(S.open)renderDrawer();else if(S.ov)renderOv();
@@ -350,9 +350,10 @@ function rowMini(m,s){return`<button class="row" data-open="${m.id}" style="grid
 const FLT=[['all','Все'],['active','Активные'],['today','Пришли сегодня'],['soon','Скоро продление'],['exp','Истекли'],['group','Группы'],['kids','Дети'],['ind','Индивидуальные'],['staff','Безлимит'],['debt','Не оплатили'],['nodoc','Без договора'],['nocons','Нет согласия'],['noem','Нет экстренного контакта'],['u18','U18'],['frozen','Заморожены']];
 function fltFn(k){const ids=todayIds();return({all:()=>true,active:m=>m.kind!=='staff'&&!['exp','none'].includes(status(m).k),today:m=>ids.has(m.id),soon:m=>status(m).k==='soon',exp:m=>['exp','none'].includes(status(m).k),group:m=>m.kind==='group',kids:m=>m.kind==='kids',ind:m=>m.kind==='ind',staff:m=>m.kind==='staff',debt:m=>!!m.due,nodoc:m=>!m.contractAt,nocons:m=>m.consentData!=='yes',noem:m=>!(m.emergency&&m.emergency.phone),u18:m=>isMinor(m),frozen:m=>frozenNow(m)})[k]}
 function vMembers(){
+  if(S.mview==='coach')return vCoaches();
   const le=loadingOrEmpty(),q=S.q.trim().toLocaleLowerCase('tr'),
     L=S.members.filter(fltFn(S.flt)).filter(m=>!q||(m.name+' '+phoneDigits(m.phone)+' '+(m.disc||'')).toLocaleLowerCase('tr').includes(q)).sort((a,b)=>a.name.localeCompare(b.name,'tr'));
-  return`<div class="head"><div><h1>Бойцы · ${S.members.length}</h1><p class="sub">Клик по строке — карточка, продление, история посещений и оплат.</p></div>
+  return`${mviewBar()}<div class="head"><div><h1>Бойцы · ${S.members.length}</h1><p class="sub">Клик по строке — карточка, продление, история посещений и оплат.</p></div>
     <div class="acts"><button class="btn" data-act="csv">Скачать CSV</button><button class="btn gold w-only adm-only" data-act="new">+ Новый боец</button></div></div>
   ${le||`<input type="search" id="mq" placeholder="Поиск: имя, телефон, дисциплина" value="${esc(S.q)}" autocomplete="off">
   <div class="chips">${FLT.map(([k,t])=>`<button class="chip" data-flt="${k}" aria-pressed="${S.flt===k}">${t}<i>${S.members.filter(fltFn(k)).length}</i></button>`).join('')}</div>
@@ -611,10 +612,7 @@ function vSched(){const {classes,coaches}=SCH(),co=k=>coaches.find(c=>c.k===k)?.
     <label class="f">Мест в группе<input type="number" id="s_cap" min="1" max="200" value="${e.cap?esc(String(e.cap)):''}" placeholder="${esc(String(SET().groupCap||''))}"></label>
     <div class="f" style="justify-content:flex-end;flex-direction:row;gap:.5rem;align-items:flex-end"><button class="btn gold" type="submit">${E?'Сохранить изменения':'+ Добавить группу'}</button>${E?'<button class="btn" type="button" data-scx>Отмена</button>':''}</div></form>`})()}</section>
   <section class="card"><h2 style="margin:0 0 .7rem;font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)">Тренеры</h2>
-   <p class="note" style="margin:-.3rem 0 .7rem">Фото, направления и регалии тренеров видят бойцы клуба в My PIT → «Клуб».</p>
-   <div class="gcards">${coaches.map(c=>S.coEdit===c.k?coachForm(c):`<div class="gcard" style="cursor:default">${c.photo?`<img class="glogo" src="/_blob/${esc(c.photo)}" alt="" style="object-fit:cover;padding:0">`:`<span class="glogo" style="display:grid;place-items:center;color:#e8c35a;font-weight:800">${esc(ini(c.n))}</span>`}<b>${esc(c.n)}</b><small>${esc((c.discs||[]).join(', ')||'направления не указаны')}</small>${(c.titles||[]).length?`<small>🏅 ${esc(c.titles[0])}${c.titles.length>1?' · +'+(c.titles.length-1):''}</small>`:''}
-     <span class="acts adm-only"><button class="btn sm w-only" type="button" data-coed="${esc(c.k)}">Изменить</button>${classes.some(x=>x.coach===c.k)?'':`<button class="btn sm danger w-only" type="button" data-codel="${esc(c.k)}">Убрать</button>`}</span></div>`).join('')}</div>
-   <form id="cof" class="w-only adm-only" style="display:flex;gap:.5rem;margin-top:.7rem;flex-wrap:wrap"><input type="text" id="co_n" placeholder="Имя тренера" maxlength="40" style="flex:1;min-width:10rem"><button class="btn" type="submit">+ Тренер</button></form></section>`}
+   <div class="chips">${coaches.map(c=>`<span class="chip" style="cursor:default">${esc(c.n)}</span>`).join('')}<button class="chip" type="button" data-gocoach>Анкеты тренеров → «Бойцы → Тренеры»</button></div></section>`}
 
 /* ===== Группы: составы бойцов (как в демо Arena) ===== */
 const GSVG=i2=>`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f3d98b"/><stop offset=".5" stop-color="#e8c35a"/><stop offset="1" stop-color="#8a6a20"/></linearGradient><radialGradient id="b" cx=".5" cy=".38" r=".85"><stop offset="0" stop-color="#2b2b2b"/><stop offset="1" stop-color="#0c0c0c"/></radialGradient></defs><circle cx="60" cy="60" r="57" fill="url(#b)"/><circle cx="60" cy="60" r="55.5" fill="none" stroke="url(#g)" stroke-width="2.6"/><circle cx="60" cy="60" r="49" fill="none" stroke="#e8c35a3d" stroke-width="1.2"/>${i2}</svg>`;
@@ -634,7 +632,7 @@ const isKid=m=>m.kind==='kids'||(m.dob?ageOf(m.dob)<18:false)||!!(m.parent&&(m.p
 const inGroup=(m,c)=>{if(!m||m.kind==='staff')return false;const cd=String(c.disc||''),kids=isKid(m);if(cd==='Все группы')return true;
   const L=discsOf(m),k=/^Дети/i.test(cd),base=cd.replace(/^Дети\s*·\s*/i,'');return k?L.includes(cd)||kids&&L.includes(base):!kids&&L.includes(cd)};
 const gIds=c=>S.members.filter(m=>inGroup(m,c)&&!['exp','none'].includes(status(m).k)).sort((a,b)=>a.name.localeCompare(b.name,'ru')).map(m=>m.id);
-const ini=n=>String(n||'?').trim().split(/\s+/).slice(0,2).map(w=>w[0]).join('').toUpperCase();
+const ini=n=>(String(n||'?').replace(/[^\p{L}\s]/gu,' ').trim().split(/\s+/).slice(0,2).map(w=>w[0]).join('')||'?').toUpperCase();
 const avc=id=>{let h=0;for(const ch of String(id))h=(h*31+ch.charCodeAt(0))>>>0;return`hsl(${h%360} 45% 42%)`};
 const gAv=ids=>`<span class="gav">${ids.slice(0,6).map(id=>{const m=S.members.find(x=>x.id===id);return`<i style="background:${avc(id)}" title="${esc(m?.name)}">${esc(ini(m?.name))}</i>`}).join('')}${ids.length>6?`<u>+${ids.length-6}</u>`:''}</span>`;
 function plural(n,a,b,c){n=Math.abs(n)%100;const k=n%10;return n>10&&n<20?c:k>1&&k<5?b:k===1?a:c}
@@ -743,23 +741,64 @@ function trialsHTML(){const T=trialsUp(),co=SCH().coaches;
   return`<section class="card"><h2 style="margin:0 0 .7rem;font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)">Пробные занятия · ${T.length}</h2>
    <div class="list">${T.map(x=>{const c=SCH().classes.find(z=>z.id===x.trialClass);return`<button class="row" type="button" data-trial="${esc(x.id)}" style="grid-template-columns:minmax(0,1fr) auto"><span class="nm">${esc(x.name)}<small>${fmtD(x.trialDate)}${c?' · '+esc(c.time)+' · '+esc(c.disc)+' · '+esc(co.find(k=>k.k===c.coach)?.n||''):x.trialTime?' · '+esc(x.trialTime):' · группа не выбрана'}${x.phone?' · '+esc(x.phone):''}</small></span><span class="pill warn">${x.trialDate===today()?'сегодня':'пробное'}</span></button>`}).join('')||'<div class="empty">Записей на пробное нет. Запись — в «Заявках»: «Записать на пробное» с выбором группы.</div>'}</div></section>`}
 
-/* ===== Профиль тренера: фото, направления, регалии, опыт — для My PIT «Клуб» ===== */
-function coachForm(c){return`<form class="card form" id="coedf" style="grid-column:1/-1;border-color:var(--gold)"><h2 class="full" style="margin:0">Тренер: ${esc(c.n)}</h2>
-  <label class="f">Имя (как увидят бойцы)<input type="text" id="ce_n" maxlength="60" value="${esc(c.n)}" required></label>
+/* ===== Тренеры: раздел «Бойцы → Тренеры», полные анкеты (данные в club/schedule.coaches — общие с расписанием и My PIT) ===== */
+const mviewBar=()=>`<div class="chips" style="margin:0 0 .8rem"><button class="chip" data-mview="fighters" aria-pressed="${S.mview!=='coach'}">Бойцы <i>${S.members.filter(m=>m.kind!=='staff').length}</i></button><button class="chip" data-mview="coach" aria-pressed="${S.mview==='coach'}">Тренеры <i>${SCH().coaches.length}</i></button></div>`;
+const lines=a=>(Array.isArray(a)?a:[]).filter(Boolean);
+// данные о Джаляле, собранные ранее (Sherdog, Федерация ММА Турции, Instagram) — админ проверяет и сохраняет
+const JALAL_SEED={full:'Миржалал Хасани (Mirjalal Hasani)',nick:'MOWGLI',role:'Главный тренер',discs:['MMA','BJJ'],height:'178',weight:'78',record:'Pro MMA 5-2-0 (1 NC): 1 KO/TKO, 3 сабмишна (треугольник), 1 решение',
+  titles:['Чемпион Турции по ММА 2019 (любители, золото) — Федерация ММА Турции','ABJJ Eurasian Championship 2026 — 1 место','Сертификат тренера MMA Level 4 — Федерация ММА Турции','Профессиональный боец ММА 🇦🇿🇹🇷, клуб Mowgli назван в его честь'],
+  exp:['Профессиональные бои 2016–2023 (полулёгкий вес)','Turkey Elite MMA, Strike FC, King of Warriors, WJF, UFA','SBC (Сербия), NFC (Казахстан), Spil FS'],
+  links:['https://www.sherdog.com/fighter/Mirjalal-Hasani-334431','https://mmafederasyonu.org.tr/Mma-Data/sporcular/sporcu-Detay/mirjalal-hasani/1243','https://instagram.com/jalal_hasani_'],
+  bio:'Профессиональный боец ММА, чемпион Турции, основатель Mowgli Fight Club. Ставит борьбу и партер — 3 победы удушающим треугольником в профи.'};
+function coachCard(c,classes){const G=classes.filter(x=>x.coach===c.k);
+  return`<article class="card" style="display:grid;gap:.6rem"><div style="display:flex;gap:.9rem;align-items:center;flex-wrap:wrap">${c.photo?`<img src="/_blob/${esc(c.photo)}" alt="" style="width:5rem;height:5rem;border-radius:1rem;object-fit:cover">`:`<span style="width:5rem;height:5rem;border-radius:1rem;display:grid;place-items:center;background:#16161a;color:#e8c35a;font-weight:800;font-size:1.4rem">${esc(ini(c.n))}</span>`}
+    <div style="flex:1;min-width:12rem"><b style="font-size:1.15rem">${esc(c.n)}</b>${c.nick&&!String(c.n).toLowerCase().includes(String(c.nick).toLowerCase())?` <span class="pill gold">«${esc(c.nick)}»</span>`:''}<small style="display:block;color:var(--muted)">${esc([c.full,c.role].filter(Boolean).join(' · '))}</small>
+     <div class="chips" style="margin-top:.35rem">${lines(c.discs).map(d=>`<span class="chip" style="cursor:default">${esc(d)}</span>`).join('')}${G.length?`<span class="note">${G.length} ${plural(G.length,'группа','группы','групп')}: ${G.map(x=>esc(x.disc+' '+x.time)).join(', ')}</span>`:''}</div></div>
+    <span class="acts adm-only"><button class="btn sm w-only" type="button" data-coed="${esc(c.k)}">Изменить анкету</button>${G.length?'':`<button class="btn sm danger w-only" type="button" data-codel="${esc(c.k)}">Убрать</button>`}</span></div>
+   ${[c.height?'рост '+c.height+' см':'',c.weight?'вес '+c.weight+' кг':'',c.record].filter(Boolean).length?`<div class="note">${esc([c.height?'рост '+c.height+' см':'',c.weight?'вес '+c.weight+' кг':'',c.record].filter(Boolean).join(' · '))}</div>`:''}
+   ${c.bio?`<p style="margin:0">${esc(c.bio)}</p>`:''}
+   ${lines(c.titles).length?`<div><b style="font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">Регалии</b><ul style="margin:.3rem 0 0 1.1rem;padding:0">${lines(c.titles).map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`:''}
+   ${lines(c.exp).length?`<div><b style="font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">Опыт и выступления</b><ul style="margin:.3rem 0 0 1.1rem;padding:0">${lines(c.exp).map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`:''}
+   ${lines(c.links).length?`<div class="chips">${lines(c.links).map(u=>`<a class="chip" href="${esc(u)}" target="_blank" rel="noopener nofollow">${esc(u.replace(/^https?:\/\/(www\.)?/,'').split('/')[0])} ↗</a>`).join('')}</div>`:''}
+   ${c.phone||c.email?`<div class="note">${esc([c.phone,c.email].filter(Boolean).join(' · '))} <span class="muted">— видно только сотрудникам</span></div>`:''}</article>`}
+function vCoaches(){const {classes,coaches}=SCH();
+  return`${mviewBar()}<div class="head"><div><h1>Тренеры · ${coaches.length}</h1><p class="sub">Анкеты тренеров видят бойцы в My PIT → «Клуб» (кроме телефона и e-mail). Тренер привязывается к группам в «Расписании».</p></div></div>
+   <div style="display:grid;gap:.8rem">${coaches.map(c=>S.coEdit===c.k?coachForm(c):coachCard(c,classes)).join('')}</div>
+   <form id="cof" class="card w-only adm-only" style="display:flex;gap:.5rem;margin-top:.8rem;flex-wrap:wrap"><input type="text" id="co_n" placeholder="Имя нового тренера" maxlength="40" style="flex:1;min-width:10rem"><button class="btn" type="submit">+ Тренер</button></form>`}
+function coachForm(c){const isJ=/джал|mowgli|jalal/i.test(c.n+' '+(c.nick||''));
+  const ta=(id,lbl,val,ph)=>`<label class="f full">${lbl} — каждое с новой строки<textarea id="${id}" rows="4" maxlength="2000" placeholder="${ph}">${esc(lines(val).join('\n'))}</textarea></label>`;
+  return`<form class="card form" id="coedf" style="border-color:var(--gold)"><h2 class="full" style="margin:0">Анкета тренера</h2>
+  ${isJ?`<div class="full" style="background:var(--gold-bg);border-radius:.6rem;padding:.6rem .8rem"><b>Есть данные из прошлых материалов</b> (Sherdog, Федерация ММА Турции, Instagram). <button class="btn sm gold" type="button" data-coseed>Подставить в анкету</button><small style="display:block;color:var(--muted);margin-top:.3rem">Поля заполнятся — проверьте и нажмите «Сохранить».</small></div>`:''}
+  <label class="f">Имя в приложении<input type="text" id="ce_n" maxlength="60" value="${esc(c.n)}" required></label>
+  <label class="f">Полное имя<input type="text" id="ce_full" maxlength="80" value="${esc(c.full||'')}"></label>
+  <label class="f">Прозвище<input type="text" id="ce_nick" maxlength="30" value="${esc(c.nick||'')}"></label>
+  <label class="f">Должность<input type="text" id="ce_role" maxlength="40" value="${esc(c.role||'')}" placeholder="Главный тренер"></label>
   <label class="f">Фото<input type="file" id="ce_ph" accept="image/*"></label>
-  <div class="f" style="grid-column:1/-1"><span style="font-size:.74rem;font-weight:700;color:var(--muted)">Направления</span><div class="chips">${DISCS.map(d=>`<label class="chip" style="display:inline-flex;gap:.3rem;align-items:center"><input type="checkbox" name="ce_d" value="${esc(d)}" ${(c.discs||[]).includes(d)?'checked':''}> ${esc(d)}</label>`).join('')}</div></div>
-  <label class="f full">Регалии и звания — каждое с новой строки<textarea id="ce_t" rows="4" maxlength="1500" placeholder="Мастер спорта по боксу&#10;Чёрный пояс BJJ, 2 дан">${esc((c.titles||[]).join('\n'))}</textarea></label>
-  <label class="f full">Где выступал / опыт — каждое с новой строки<textarea id="ce_x" rows="4" maxlength="1500" placeholder="Чемпион Турции по ММА 2019&#10;ACA, 8 боёв">${esc((c.exp||[]).join('\n'))}</textarea></label>
-  <label class="f full">Коротко о себе<input type="text" id="ce_b" maxlength="200" value="${esc(c.bio||'')}" placeholder="Тренер с 2012 года, специализация — ударная техника"></label>
+  <label class="f">Рост, см<input type="number" id="ce_h" min="100" max="230" value="${esc(c.height||'')}"></label>
+  <label class="f">Вес, кг<input type="number" id="ce_w" min="30" max="200" value="${esc(c.weight||'')}"></label>
+  <label class="f full">Рекорд боёв<input type="text" id="ce_rec" maxlength="120" value="${esc(c.record||'')}" placeholder="Pro MMA 5-2-0"></label>
+  <div class="f" style="grid-column:1/-1"><span style="font-size:.74rem;font-weight:700;color:var(--muted)">Направления</span><div class="chips">${DISCS.map(d=>`<label class="chip" style="display:inline-flex;gap:.3rem;align-items:center"><input type="checkbox" name="ce_d" value="${esc(d)}" ${lines(c.discs).includes(d)?'checked':''}> ${esc(d)}</label>`).join('')}</div></div>
+  ${ta('ce_t','Регалии и звания',c.titles,'Чемпион Турции по ММА 2019')}
+  ${ta('ce_x','Опыт и выступления',c.exp,'ACA — 8 боёв')}
+  ${ta('ce_l','Ссылки (Sherdog, федерация, Instagram)',c.links,'https://www.sherdog.com/...')}
+  <label class="f full">Коротко о себе<input type="text" id="ce_b" maxlength="240" value="${esc(c.bio||'')}"></label>
+  <label class="f">Телефон (только для сотрудников)<input type="tel" id="ce_ph2" maxlength="24" value="${esc(c.phone||'')}"></label>
+  <label class="f">E-mail (только для сотрудников)<input type="email" id="ce_em" maxlength="80" value="${esc(c.email||'')}"></label>
   <div class="acts full"><button class="btn gold" type="submit">Сохранить</button><button class="btn" type="button" data-cex>Отмена</button></div></form>`}
-function bindCoach(v){v.querySelectorAll('[data-coed]').forEach(b=>b.addEventListener('click',()=>{S.coEdit=b.dataset.coed;render()}));
+function bindCoach(v){v.querySelectorAll('[data-mview]').forEach(b=>b.addEventListener('click',()=>{S.mview=b.dataset.mview;S.coEdit=null;render();scrollTo(0,0)}));
+  v.querySelectorAll('[data-coed]').forEach(b=>b.addEventListener('click',()=>{S.coEdit=b.dataset.coed;render()}));
   const x=$('[data-cex]',v);if(x)x.addEventListener('click',()=>{S.coEdit=null;render()});
-  const f=$('#coedf',v);if(!f)return;f.addEventListener('submit',async e=>{e.preventDefault();const k=S.coEdit,lines=id=>$(id,v).value.split('\n').map(z=>z.trim()).filter(Boolean).slice(0,15);
-    const o={n:$('#ce_n',v).value.trim(),discs:[...v.querySelectorAll('input[name=ce_d]:checked')].map(i=>i.value),titles:lines('#ce_t'),exp:lines('#ce_x'),bio:$('#ce_b',v).value.trim()};if(!o.n){toast('Укажите имя');return}
+  const sd=$('[data-coseed]',v);if(sd)sd.addEventListener('click',()=>{const J=JALAL_SEED,setv=(id,val)=>{const e=$(id,v);if(e&&!e.value)e.value=val};
+    setv('#ce_full',J.full);setv('#ce_nick',J.nick);setv('#ce_role',J.role);setv('#ce_h',J.height);setv('#ce_w',J.weight);setv('#ce_rec',J.record);setv('#ce_b',J.bio);
+    const mrg=(id,L)=>{const e=$(id,v),cur=e.value.split('\n').map(z=>z.trim()).filter(Boolean);e.value=[...cur,...L.filter(x=>!cur.includes(x))].join('\n')};mrg('#ce_t',J.titles);mrg('#ce_x',J.exp);mrg('#ce_l',J.links);v.querySelectorAll('input[name=ce_d]').forEach(i=>{if(J.discs.includes(i.value))i.checked=true});DIRTY.view=true;toast('Данные подставлены — проверьте и сохраните')});
+  v.querySelectorAll('[data-codel]').forEach(b=>b.addEventListener('click',()=>{if(!b.dataset.sure){b.dataset.sure=1;b.textContent='Точно?';return}saveSch({coaches:SCH().coaches.filter(c=>c.k!==b.dataset.codel)},'Тренер убран')}));
+  const cf=$('#cof',v);if(cf)cf.addEventListener('submit',e=>{e.preventDefault();const n=$('#co_n',v).value.trim();if(!n)return;saveSch({coaches:[...SCH().coaches,{k:'co'+Date.now().toString(36),n}]},'Тренер добавлен: '+n)});
+  const f=$('#coedf',v);if(!f)return;f.addEventListener('submit',async e=>{e.preventDefault();const k=S.coEdit,ls=id=>$(id,v).value.split('\n').map(z=>z.trim()).filter(Boolean).slice(0,20),val=id=>$(id,v).value.trim();
+    const o={n:val('#ce_n'),full:val('#ce_full'),nick:val('#ce_nick'),role:val('#ce_role'),height:val('#ce_h'),weight:val('#ce_w'),record:val('#ce_rec'),discs:[...v.querySelectorAll('input[name=ce_d]:checked')].map(i=>i.value),titles:ls('#ce_t'),exp:ls('#ce_x'),links:ls('#ce_l').filter(u=>/^https?:\/\//.test(u)),bio:val('#ce_b'),phone:val('#ce_ph2'),email:val('#ce_em')};if(!o.n){toast('Укажите имя');return}
     const file=$('#ce_ph',v).files[0];if(file){if(!ASSETS){toast('Загрузка фото доступна администратору клуба');return}try{const r=await ASSETS.upload(file,file.type?undefined:{type:'image/jpeg'});o.photo=r.id}catch(err){toast('Фото не загрузилось');return}}
-    S.coEdit=null;saveSch({coaches:SCH().coaches.map(c=>c.k===k?{...c,...o}:c)},'Тренер обновлён: '+o.n)})}
+    S.coEdit=null;DIRTY.view=false;saveSch({coaches:SCH().coaches.map(c=>c.k===k?{...c,...o}:c)},'Анкета тренера сохранена: '+o.n)})}
 function bindSched(v){
-  bindCoach(v);
+  const gc=$('[data-gocoach]',v);if(gc)gc.addEventListener('click',()=>{S.tab='members';S.mview='coach';render();scrollTo(0,0)});
   v.querySelectorAll('[data-trial]').forEach(b=>b.addEventListener('click',()=>{S.tab='leads';render();S.ov={type:'lead',id:b.dataset.trial};renderOv()}));
   if(S.grp&&SCH().classes.some(c=>c.id===S.grp)){bindGroup(v);return}
   v.querySelectorAll('[data-gopen]').forEach(x=>{const go=e=>{if(e.target.closest('button'))return;S.grp=x.dataset.gopen;render();scrollTo(0,0)};x.addEventListener('click',go);x.addEventListener('keydown',e=>{if(e.key==='Enter')go(e)})});
@@ -1460,7 +1499,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeNtf()});
 
 document.querySelectorAll('.tabs button').forEach(b=>b.addEventListener('click',()=>{S.tab=b.dataset.tab;
   // каждая вкладка открывается с начальной страницы: без открытой группы, формы, фильтров и поиска
-  Object.assign(S,{grp:null,schEdit:null,evEdit:null,expOpen:false,cashMode:undefined,shopMode:undefined,q:'',flt:'all',ciq:'',shq:'',lflt:undefined,month:null,open:null,ov:null});$('#ovHost').innerHTML='';try{localStorage.setItem('mowgli.tab',S.tab)}catch(e){}render();scrollTo(0,0)}));
+  Object.assign(S,{mview:null,coEdit:null,grp:null,schEdit:null,evEdit:null,expOpen:false,cashMode:undefined,shopMode:undefined,q:'',flt:'all',ciq:'',shq:'',lflt:undefined,month:null,open:null,ov:null});$('#ovHost').innerHTML='';try{localStorage.setItem('mowgli.tab',S.tab)}catch(e){}render();scrollTo(0,0)}));
 try{let t=localStorage.getItem('mowgli.tab');if(t==='fin'||t==='shop')t='cash';if(['today','members','leads','pv','cash','events','sched','rep','plans'].includes(t))S.tab=t}catch(e){}
 function setThm(d){document.documentElement.classList.toggle("dk",d);const b=$("#thm");b.textContent=d?"☀":"☾";b.setAttribute("aria-label",d?"Светлая тема":"Тёмная тема");try{localStorage.setItem("mowgli.theme",d?"dark":"light")}catch(e){}}
 let DK=false;try{DK=localStorage.getItem("mowgli.theme")==="dark"}catch(e){}setThm(DK);$("#thm").addEventListener("click",()=>{DK=!DK;setThm(DK)});

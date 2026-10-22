@@ -65,7 +65,7 @@ async function trialSlots(env, days = 14) {
 // «Мой клуб» для членов клуба: тренеры с фото и регалиями, честная статистика клуба (без выдуманного рейтинга)
 async function clubInfo(env, club) {
   const sc = (await getDoc(env, 'club', 'schedule')) || {}, cls = sc.classes || [];
-  const coaches = (sc.coaches || []).map(c => ({ n: c.n, photo: c.photo ? '/api/my/cphoto/' + c.photo : null, discs: c.discs && c.discs.length ? c.discs : [...new Set(cls.filter(x => x.coach === c.k).map(x => x.disc))], titles: c.titles || [], exp: c.exp || [], bio: c.bio || '', groups: cls.filter(x => x.coach === c.k).length }));
+  const coaches = (sc.coaches || []).map(c => ({ n: c.n, photo: c.photo ? '/api/my/cphoto/' + c.photo : null, discs: c.discs && c.discs.length ? c.discs : [...new Set(cls.filter(x => x.coach === c.k).map(x => x.disc))], titles: c.titles || [], exp: c.exp || [], bio: c.bio || '', nick: c.nick || '', role: c.role || '', record: c.record || '', links: (c.links || []).filter(u => /^https?:\/\//.test(u)).slice(0, 5), groups: cls.filter(x => x.coach === c.k).length }));
   const td = new Date().toISOString().slice(0, 10);
   const ms = await env.DB.prepare("SELECT data FROM docs WHERE col='members' AND deleted=0").all();
   let active = 0; for (const x of ms.results || []) { try { const m = JSON.parse(x.data); if (m.kind !== 'staff' && !m.frozen && (!m.end || m.end >= td)) active++ } catch (e) { } }
