@@ -3476,7 +3476,7 @@ function renderGrid(){if(REAL)hallSync();cards.forEach((c,i)=>{if(REAL){c.style.
   $('.nick',c).textContent=display(a);const cn2=a.name===a.nick?'':(settings.nameMode==='nick'?a.name:a.nick);$('.c-name',c).innerHTML=(cn2?esc(cn2)+' · ':'')+rtBadge(a.id);
   $('.c-bpm b',c).textContent=live&&m.hr?m.hr:'--';$('.pc',c).textContent=live&&m.hr?Math.round(m.hr/a.hrMax*100)+'%':'--%';
   const zc=$('.zchip',c);zc.style.setProperty('--zc',ZCOL[z]);zc.textContent=`${ZONES[z].key} · ${ZONES[z].label}`;
-  $('.kc',c).textContent=m.kcal>=1?Math.round(m.kcal)+' ккал':'';const cn=$('.conn',c);cn.className='conn '+st;cn.textContent=st==='live'?'':REAL&&st==='none'?(a.absent?'НЕ В ЗАЛЕ':'В ЗАЛЕ · НЕТ ДАТЧИКА'):CONN[st];
+  $('.kc',c).textContent=m.kcal>=1?Math.round(m.kcal)+' ккал':'';const cn=$('.conn',c);cn.className='conn '+st;cn.textContent=st==='live'?'':REAL&&st==='none'?(a.absent?'ОФЛАЙН':'НА ТРЕНИРОВКЕ · НЕТ ДАТЧИКА'):CONN[st];
   const mt=$('.meter',c),cd=COND[m.lvl];mt.style.setProperty('--rc',cd.c);$('.mv',c).textContent=m.reserve+'%';$('.ms',c).textContent=cd.l;
   const no=Math.round(m.reserve/5);[...$('.segs',c).children].forEach((e,k)=>e.classList.toggle('on',k<no));
   if(a.public)drawHR($('.c-spark',c),m,{span:180,lw:2,dot:true,bands:true})})}
@@ -3733,7 +3733,12 @@ function renderAdm(){const co=$('.coach'),B=$('#admBody');
 // ---- инфографика загрузки: сегодня против прошлых таких же дней недели (DEMO-история) ----
 const ATT={manual:new Set()};
 /* Зал в реальном режиме: только те, кто в зале сейчас — отметка посещения за сегодня (CRM), ручная отметка тренера или живой датчик */
-function hereNow(a){const m=metrics.get(a.id),st=m?metrics.status(m):'none';return st==='live'||st==='stale'||ATT.manual.has(a.id)||pitVisited(a,0)}
+/* онлайн = сейчас на тренировке: идёт занятие по расписанию (±10 мин), боец из этой группы и отмечен сегодня (CRM / тренер); живой датчик — онлайн всегда. Нет занятия — все офлайн */
+function clsNow(){const sc=((window.PIT_REAL||{}).schedule||{}).classes||[],d=new Date(),dw=d.getDay(),mn=d.getHours()*60+d.getMinutes();
+  return sc.filter(c=>(c.dow||[]).map(x=>x%7).includes(dw)&&/^\d{1,2}:\d{2}$/.test(c.time||'')&&(()=>{const[h,m]=c.time.split(':').map(Number),st=h*60+m,en=st+(+c.dur||60);return mn>=st-10&&mn<=en+10})())}
+function hereNow(a){const m=metrics.get(a.id),st=m?metrics.status(m):'none';if(st==='live'||st==='stale')return true;
+  const L=clsNow();if(!L.length)return false;const inC=L.some(c=>(Array.isArray(c.ids)&&a.mid&&c.ids.includes(a.mid))||aInCls(a,c.disc));
+  return inC&&(ATT.manual.has(a.id)||pitVisited(a,0))}
 function hallSync(){ATHLETES.forEach(a=>{a.absent=!hereNow(a)})}
 if(REAL){setInterval(()=>{try{hallSync();const a=ATHLETES[ui.idx];if(!document.body.classList.contains('rf')&&ui.view==='arena'&&!ui.pinned&&a&&a.absent)nextAthlete(1)}catch(e){}},3000);
   if(window.PIT_REAL.fighterArena){const hp=async()=>{if(document.hidden)return;try{const r=await fetch('/api/my/hall',{cache:'no-store'});if(!r.ok)return;const j=await r.json();PIT_REAL.visits=PIT_REAL.visits||{};PIT_REAL.visits[j.date]={date:j.date,ids:j.ids||[]};hallSync()}catch(e){}};setInterval(hp,30000)}}const igR=(id,k)=>{const x=Math.sin(id*12.9898+k*78.233)*43758.5453;return x-Math.floor(x)};
