@@ -245,7 +245,7 @@ export default {
   async fetch(req, env) {
     const url = new URL(req.url), path = url.pathname;
     // открыто без входа: страница входа, логотипы, методы входа
-    if (path === '/login' || path === '/login.html' || path.startsWith('/brand/') || path.startsWith('/vendor/') || path === '/arena/three.min.js' || path === '/manifest.webmanifest' || path === '/sw.js' || path === '/offline.html') return env.ASSETS.fetch(req);
+    if (path === '/login' || path === '/login.html' || path.startsWith('/brand/') || path.startsWith('/vendor/') || path === '/arena/three.min.js' || path === '/manifest.webmanifest' || path === '/sw.js' || path === '/offline.html' || path.startsWith('/legal/')) return env.ASSETS.fetch(req);
     // My PIT World — сообщество PIT (новости, кэмпы, турниры, клубы): для сотрудников и бойцов
     if (path === '/world' || path === '/world/') {
       const w = await whoami(req, env);
