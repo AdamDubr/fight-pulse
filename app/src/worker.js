@@ -229,6 +229,8 @@ const NO_ACCESS = (email) => new Response(`<!doctype html><meta charset=utf-8><m
 <p><a href="/auth/logout">Выйти и войти с другим e-mail</a></p></div></body>`, { status: 403, headers: { 'content-type': 'text/html; charset=utf-8' } });
 
 /* Arena в реальном режиме: бойцы из PIT CRM вместо демо-списка. Отдаём минимум полей. */
+// дата клуба (Анталья): посещения в CRM отмечаются по местному дню
+const clubDay = (off = 0) => new Date(Date.now() + off * 864e5).toLocaleDateString('sv-SE', { timeZone: 'Europe/Istanbul' });
 async function arenaReal(req, env, opt = {}) {
   const res = await env.ASSETS.fetch(opt.asset ? new Request(new URL('/arena/', req.url), req) : req);
   if (!res.ok || !(res.headers.get('content-type') || '').includes('text/html')) return res;
@@ -240,13 +242,18 @@ async function arenaReal(req, env, opt = {}) {
   const tl = await env.DB.prepare("SELECT id,data FROM docs WHERE col='leads' AND deleted=0").all();
   const trials = {}; const td0 = new Date().toISOString().slice(0, 10);
   for (const x of tl.results || []) { try { const l = JSON.parse(x.data); if (l.status === 'booked' && l.trialDate && l.trialDate >= td0) trials[x.id] = { d: l.trialDate, cls: l.trialClass || null, t: l.trialTime || null, disc: l.trialDisc || null, n: String(l.name || '').trim().split(/\s+/)[0] || 'Гость' } } catch (e) { } }
-  const vs = await env.DB.prepare("SELECT id,data FROM docs WHERE col='visits' AND deleted=0 AND id>=?").bind(new Date(Date.now() - 70 * 864e5).toISOString().slice(0, 10)).all();
+  const vs = await env.DB.prepare("SELECT id,data FROM docs WHERE col='visits' AND deleted=0 AND id>=?").bind(clubDay(-70)).all();
   const visits = {}; for (const x of vs.results || []) { try { const v = JSON.parse(x.data); visits[x.id] = { date: v.date || x.id, ids: v.ids || [] } } catch (e) { } }
   const events = {}; for (const x of ev.results || []) { try { const e = JSON.parse(x.data); events[x.id] = { title: e.title, date: e.date, end: e.end || null } } catch (e) { } }
-  const today = new Date().toISOString().slice(0, 10);
+  const today = clubDay();
   // PIT PRO от клуба (Mowgli): все бойцы клуба с привязанным входом — ✓ Verified
   if (CLUBS[env.CLUB || 'mowgli'] && CLUBS[env.CLUB || 'mowgli'].proFree) { try { await env.DB.prepare("UPDATE fighters SET verified=1, ver_by='pro', ver_at=? WHERE mid IS NOT NULL AND verified=0 AND club=?").bind(Date.now(), env.CLUB || 'mowgli').run() } catch (e) { } }
-  let ver = []; try { ver = ((await env.DB.prepare('SELECT DISTINCT mid FROM fighters WHERE mid IS NOT NULL AND verified=1').all()).results || []).map(x => x.mid) } catch (e) { }
+  let ver = [], cards = {}; try {
+    const vr = (await env.DB.prepare('SELECT mid,data FROM fighters WHERE mid IS NOT NULL AND verified=1').all()).results || [];
+    ver = [...new Set(vr.map(x => x.mid))];
+    // открытая карточка бойца: только подтверждённые клубом поля (без контактов и дат рождения)
+    for (const x of vr) { let d = {}; try { d = JSON.parse(x.data) } catch (e) { } const c = {}; for (const k of ['nick', 'weight', 'stance', 'city', 'belt', 'rec', 'med', 'titles']) if (d[k] != null && d[k] !== '') c[k] = d[k]; cards[x.mid] = c }
+  } catch (e) { }
   const age = d => { if (!/^\d{4}-\d{2}-\d{2}$/.test(d || '')) return null; const b = new Date(d), n = new Date(); let a = n.getFullYear() - b.getFullYear(); if (n < new Date(n.getFullYear(), b.getMonth(), b.getDate())) a--; return a > 3 && a < 90 ? a : null };
   const all = (r.results || []).map(x => { let m = {}; try { m = JSON.parse(x.data) } catch (e) { } if (m.first && m.last) m.name = m.first + ' ' + m.last; if (m.kind === 'staff' && ((age(m.dob) != null && age(m.dob) < 18) || (m.parent && (m.parent.name || m.parent.mid)))) { m.kind = 'group'; if (m.plan === 'staff') m.plan = 'free'; } return { id: x.id, m } });
   const membersAll = all.map(({ id, m }) => ({ id, name: m.name, disc: m.disc, kind: m.kind, end: m.end || '', frozen: !!m.frozen, consentPublic: m.consentPublic || null, left: m.left ?? null }));
@@ -258,11 +265,13 @@ async function arenaReal(req, env, opt = {}) {
   // открытая карточка бойца клуба: имя (у детей — только имя), направление; без абонементов, дат рождения и оплат
   const fMembers = () => members.map(m => m.id === opt.mid ? { ...m, consentPublic: 'yes' } : { id: m.id, name: m.kidish ? m.first : m.name, first: m.first, kidish: m.kidish, disc: m.disc, discs: m.discs, kind: m.kind, age: null, consentPublic: 'yes', end: '', start: '', plan: '', left: null });
   const inj = '<script>window.PIT_REAL=' + JSON.stringify(opt.fighterArena
-    ? { club: env.CLUB || 'mowgli', fighterArena: true, me: opt.mid, meCard: opt.meCard || null, back: '/my/', role: null, schEdit: false, since: 0, members: fMembers(), membersAll: [], ver, schedule: sch ? JSON.parse(sch.data) : null, events, visits: visits[today] ? { [today]: { date: today, ids: visits[today].ids } } : {}, trials: {} }
+    ? { club: env.CLUB || 'mowgli', fighterArena: true, me: opt.mid, meCard: opt.meCard || null, back: '/my/', role: null, schEdit: false, since: 0, members: fMembers(), membersAll: [], ver, cards, schedule: sch ? JSON.parse(sch.data) : null, events, visits: visits[today] ? { [today]: { date: today, ids: visits[today].ids } } : {}, trials: {} }
     : opt.fighter
     ? { club: env.CLUB || 'mowgli', worldOnly: true, fighter: true, me: opt.me || null, back: '/my/', since: 0, members: [], membersAll: [], schedule: sch ? JSON.parse(sch.data) : null, events, visits: {} }
-    : { club: env.CLUB || 'mowgli', ...(opt.world ? { worldOnly: true, back: '/' } : {}), role: opt.role || null, schEdit: opt.role === 'owner' || opt.role === 'admin', since: mx ? mx.s : 0, members, membersAll, ver, schedule: sch ? JSON.parse(sch.data) : null, events, visits, trials }).replace(/</g, '\\u003c') + '</script>';
-  const html = (await res.text()).replace('<meta charset="utf-8">', '<meta charset="utf-8">' + inj);
+    : { club: env.CLUB || 'mowgli', ...(opt.world ? { worldOnly: true, back: '/' } : {}), role: opt.role || null, schEdit: opt.role === 'owner' || opt.role === 'admin', since: mx ? mx.s : 0, members, membersAll, ver, cards, schedule: sch ? JSON.parse(sch.data) : null, events, visits, trials }).replace(/</g, '\\u003c') + '</script>';
+  // пульт и зал бойца: не показывать стартовую раскладку, пока не применена роль (без мелькания)
+  const veil = opt.world ? '' : '<style>html:not(.ready) body{opacity:0}html.ready body{transition:opacity .15s}</style><script>setTimeout(function(){document.documentElement.classList.add("ready")},2500)</script>';
+  const html = (await res.text()).replace('<meta charset="utf-8">', '<meta charset="utf-8">' + inj + veil);
   return new Response(html, { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' } });
 }
 

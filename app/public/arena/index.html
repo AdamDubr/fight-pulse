@@ -1535,6 +1535,10 @@ button.sc-c:focus-visible{outline:2px solid var(--sc);outline-offset:2px}
  body.rf .s-nav .s-co,body.rf .s-nav .s-fin{display:none!important}
  body.m-force-desk.rf:not(.m-tv) .s-nav{grid-template-columns:repeat(5,1fr)}
  body.rf #toCrm,body.rf #roleSel,body.rf .protgl{display:none!important}
+ body.rf .a-strip .ctrl{display:none!important}
+ .chip.off{opacity:.35;filter:grayscale(1)}
+ .cm{position:fixed;inset:0;z-index:9000;background:#000c;backdrop-filter:blur(6px);display:flex;align-items:flex-start;justify-content:center;overflow:auto;padding:max(16px,env(safe-area-inset-top)) 16px 24px}.cm[hidden]{display:none}
+ .cm-box{position:relative;width:min(100%,460px);margin:auto 0}.cm-x{position:absolute;top:-6px;right:-6px;z-index:3;width:2.2rem;height:2.2rem;border-radius:50%;border:1px solid #e8c35a;background:#111;color:#e8c35a;font-size:1rem;cursor:pointer}
  body.real .s-nav .s-fin{display:none!important}
  body.world-real .wl [data-sec=ajp],body.world-real .wl [data-sec=map],body.world-real .wl [data-sec=rank],body.world-real .wl [data-sec=cup],body.world-real .wl [data-sec=tour],body.world-real .wl [data-sec=rew],body.world-real .wl [data-sec=reg],body.world-real .wl-cta,body.world-real .wl-toc,body.world-real .wl-figw{display:none!important}
  body:not(.world-real) .wl-soon{display:none}
@@ -3397,7 +3401,9 @@ const A={};['aNum','aNick','aName','aRate','aMeta','aBpm','aHeart','aPct','aZone
 A.aCell.innerHTML='<i></i>'.repeat(12);
 A.aChips.innerHTML=ATHLETES.map((a,i)=>`<button class="chip" data-i="${i}"><span class="top1"><span class="n">${String(a.id).padStart(2,'0')}</span><span class="nk"></span></span><span class="b"><span class="v">--</span><small>BPM</small></span><span class="mini">${'<i></i>'.repeat(10)}</span></button>`).join('');
 const chips=[...A.aChips.querySelectorAll('.chip')];
-chips.forEach(c=>c.addEventListener('click',()=>{select(+c.dataset.i,true)}));
+chips.forEach(c=>c.addEventListener('click',()=>{const i=+c.dataset.i,a=ATHLETES[i];
+  if(document.body.classList.contains('rf')){if(a.absent&&a.id!==MOB.me){toast(esc(a.nick||a.name)+' сейчас не на тренировке');return}select(i,true);ui.pinned=true;return}
+  select(i,true)}));
 
 const ok3d=Body3D.init($('#stage3d'),$('#fight3d'));
 if(!ok3d)$('#stage3d').innerHTML='<div class="st-fallback">3D недоступен: не загрузилась библиотека Three.js или WebGL отключён.<br>Все показатели продолжают обновляться.</div>';
@@ -3449,7 +3455,7 @@ function renderArena(){
   drawHR(A.cSes,m,{axis:true,phases:true,lw:1.4});
   chips.forEach((c,i)=>{const aa=ATHLETES[i],mm=metrics.get(aa.id),s2=metrics.status(mm),zz=mm.hr?zoneOf(mm.hr,aa.hrMax):0;
     c.style.setProperty('--zc',s2==='lost'?ZCOL[0]:ZCOL[zz]);c.querySelector('.nk').textContent=display(aa).toUpperCase();
-    c.querySelector('.v').textContent=s2==='lost'||!mm.hr?'--':mm.hr;c.classList.toggle('active',i===ui.idx);
+    c.querySelector('.v').textContent=s2==='lost'||!mm.hr?'--':mm.hr;c.classList.toggle('active',i===ui.idx);if(REAL){const rf=document.body.classList.contains('rf'),off=!!aa.absent&&!(rf&&aa.id===MOB.me);c.classList.toggle('off',off);c.style.order=aa.id===MOB.me&&rf?-1:off?1:0}
     const mi=c.querySelector('.mini');mi.style.setProperty('--rc',COND[mm.lvl].c);const no=Math.round(mm.reserve/10);[...mi.children].forEach((e,k)=>e.classList.toggle('on',k<no));c.classList.toggle('hidden-ath',!aa.public)});
 }
 A.pinBtn.addEventListener('click',()=>{ui.pinned=!ui.pinned;A.pinBtn.setAttribute('aria-pressed',ui.pinned);A.pinBtn.textContent=ui.pinned?'ЗАКРЕПЛЁН':'ЗАКРЕПИТЬ';ui.cycleStart=performance.now()});
@@ -3474,7 +3480,7 @@ G.innerHTML=ATHLETES.map((a,i)=>`<button class="card" data-i="${i}">
   <div class="c-foot meter"><span class="mk2">ЗАПАС СИЛ</span><span class="ms">—</span><span class="mv">--</span><span class="segs">${'<i></i>'.repeat(20)}</span></div>
 </button>`).join('');
 G.style.setProperty('--gc',ATHLETES.length<=8?4:ATHLETES.length<=12?4:ATHLETES.length<=18?5:6);G.classList.toggle('dense',ATHLETES.length>12);
-const cards=[...G.children];cards.forEach(c=>c.addEventListener('click',()=>{if(ATHLETES[+c.dataset.i].public)select(+c.dataset.i,true)}));
+const cards=[...G.children];cards.forEach(c=>c.addEventListener('click',()=>{const a=ATHLETES[+c.dataset.i];if(document.body.classList.contains('rf')){openCardModal(a.id);return}if(a.public)select(+c.dataset.i,true)}));
 function renderGrid(){if(REAL)hallSync();cards.forEach((c,i)=>{if(REAL){c.style.order=ATHLETES[i].absent?1:0;c.classList.toggle('away',!!ATHLETES[i].absent);c.classList.toggle('here',!ATHLETES[i].absent)}const a=ATHLETES[i],m=metrics.get(a.id),st=metrics.status(m),z=m.hr?zoneOf(m.hr,a.hrMax):0,live=st==='live'||st==='stale';
   const av=$('.c-ava',c);if(av&&!av.dataset.s){av.dataset.s=1;av.src=(CAB[a.id]&&CAB[a.id].person.photo)||avatar(a.id)}
   c.style.setProperty('--zc',live?ZCOL[z]:ZCOL[0]);c.classList.toggle('lost',!live);c.classList.toggle('private',!a.public);
@@ -4403,7 +4409,7 @@ function renderEditRF(){const a=byId.get(cardId),D=RFC.draft;if(!D){rfInit()}con
     try{const r=await fetch('/api/my/card',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(RFC.draft)});const j=await r.json();if(!r.ok)throw 0;
       RFC.pend=j.pending;RFC.dirty=false;toast(j.pending?'Отправлено на модерацию в клуб':'Сохранено')}catch(e){toast('Не отправилось — проверьте связь и попробуйте ещё раз')}
     RFC.busy=false;rfApply();renderCard()})}
-function renderEdit(){if(window.PIT_REAL&&PIT_REAL.fighterArena&&cardId===MOB.me)return renderEditRF();const a=byId.get(cardId),P=PROF[cardId],pro=P.pro,dis=pro?'':'disabled';
+function renderEdit(){if(window.PIT_REAL&&PIT_REAL.fighterArena){if(cardId===MOB.me)return renderEditRF();$('#fcEdit').innerHTML='';return}const a=byId.get(cardId),P=PROF[cardId],pro=P.pro,dis=pro?'':'disabled';
   const f=(lbl,html,isPro)=>`<label class="fe ${isPro&&!pro?'locked':''}"><span>${lbl}${isPro?' <i class="pro">PRO</i>':''}</span>${html}</label>`;
   $('#fcEdit').innerHTML=`<div class="ph-title"><span class="label">Личный кабинет · ${esc(a.name)}</span></div>
    <label class="protgl"><input type="checkbox" id="feP" ${pro?'checked':''}> <span>Подписка <b>Pro</b> (демо-переключатель)</span></label>
@@ -4782,6 +4788,20 @@ async function nutSharePages(a,C){const n=C.nut,b=C.bio,cut=n.cut;
   return composePages(blocks,{title:`Питание · ${a.name}`,sub:`${n.mode} · ${n.kcal} ккал/день · меню на неделю и покупки · ${fmtD(n.upd)}`})}
 const cardBuild=id=>async()=>{const pc=cardId;cardId=id;try{return await cardCanvas()}finally{cardId=pc}};
 function prepCard(id){return prepShot('card:'+id,cardBuild(id))}
+/* Открытая карточка бойца (клиентский режим): просмотр и «Поделиться» */
+function openCardModal(id){const a2=byId.get(id);if(!a2)return;let M=$('#cardModal');
+  if(!M){M=document.createElement('div');M.id='cardModal';M.className='cm';M.setAttribute('role','dialog');M.setAttribute('aria-modal','true');
+    M.innerHTML='<div class="cm-box"><button type="button" class="cm-x" aria-label="Закрыть">✕</button><div class="cm-slot"></div><div class="btnrow" style="justify-content:center;margin-top:.7rem"><button class="btn primary" id="cmShare">ПОДЕЛИТЬСЯ КАРТОЧКОЙ</button></div></div>';
+    document.body.appendChild(M);M.addEventListener('click',e=>{if(e.target===M||e.target.closest('.cm-x'))closeCardModal()});
+    $('#cmShare').addEventListener('click',()=>{const x=byId.get(+M.dataset.id);shareShot('card:'+x.id,'pit-rating-'+x.name+'.jpg','PIT RATING — карточка бойца',cardBuild(x.id))})}
+  M.dataset.id=id;M.dataset.back=cardId;$('.cm-slot',M).appendChild($('#fCard'));cardId=id;renderCard();M.hidden=false;document.body.style.overflow='hidden';fitNL()}
+function closeCardModal(){const M=$('#cardModal');if(!M||M.hidden)return;M.hidden=true;document.body.style.overflow='';cardId=+M.dataset.back||MOB.me;
+  const st=$('.fc-stage');if(st)st.prepend($('#fCard'));renderCard()}
+addEventListener('keydown',e=>{if(e.key==='Escape')closeCardModal()});
+function applyCards(){const CD=(window.PIT_REAL||{}).cards||{};ATHLETES.forEach(a=>{const c=a.mid&&CD[a.mid],P=PROF[a.id];if(!P)return;if(a.ver)P.pro=true;
+  if(!c||(document.body.classList.contains('rf')&&a.id===MOB.me))return;if(c.nick)a.nick=c.nick;
+  const kg=parseFloat(String(c.weight||'').replace(',','.'));if(kg>20)a.kg=kg;P.cls=wClass(a.disc,c.weight,a).t;P.stance=STN[c.stance]||'—';P.city=c.city||'';P.rank=BELTS[c.belt]?c.belt:'—';
+  if(c.rec)P.rec={w:0,l:0,d:0,ko:0,sub:0,...c.rec};if(c.med)P.med={g:0,s:0,b:0,...c.med};if(Array.isArray(c.titles))P.titles=c.titles.slice(0,8)})}
 function shareCard(){const id=cardId,a2=byId.get(id);shareShot('card:'+id,'pit-rating-'+a2.name+'.jpg','PIT RATING — карточка бойца',cardBuild(id))}
 $('#fcShare').addEventListener('click',()=>shareCard());
 function toast(t){let el=$('#toast');if(!el){el=document.createElement('div');el.id='toast';document.body.appendChild(el)}el.textContent=t;el.classList.add('on');clearTimeout(toast.tm);toast.tm=setTimeout(()=>el.classList.remove('on'),2600)}
@@ -5820,7 +5840,7 @@ function applyRole(r){if(r)ROLE.v=r;try{localStorage.setItem('fp.role',ROLE.v)}c
   if(v==='coach'&&cab.sec==='sub')cab.sec='card';
   if(!MOB.on)setView(ui.view);if(ui.view==='coach')renderAdm()}
 $('#roleSel').addEventListener('change',e=>applyRole(e.target.value));
-setTimeout(async()=>{applyRole();
+setTimeout(async()=>{applyRole();if(REAL)try{applyCards()}catch(e){}
   /* My PIT World — отдельная страница сообщества (/world/): без пульта зала, для сотрудников и бойцов */
   if(WORLD){document.body.classList.add('world-only');if(window.PIT_REAL)document.body.classList.add('world-real');document.getElementById('fpGate')?.remove();$('#roleGate').hidden=true;
     const h=document.getElementById('toHome');if(h){h.hidden=false;h.href=PIT_REAL.back||'/';h.title=PIT_REAL.fighter?'My PIT':'Главное меню PIT'}
@@ -5831,10 +5851,11 @@ setTimeout(async()=>{applyRole();
     const mine=ATHLETES.find(a=>a.mid===PIT_REAL.me);MOB.me=mine?mine.id:1;if(mine){mine.public=true;if(PROF[mine.id])PROF[mine.id].pro=true;try{rfInit()}catch(e){}}try{localStorage.setItem('fp.me.real',MOB.me)}catch(e){}
     const h=document.getElementById('toHome');if(h){h.hidden=false;h.href='/my/';h.title='My PIT'}
     MOB.frame=false;MOB.on=false;document.body.classList.remove('m-on','m-frame','m-tv');document.body.classList.add('m-force-desk');
-    applyRole('fighter');cardId=MOB.me;cab.role='athlete';setView('arena');{const i=ATHLETES.indexOf(mine);if(i>=0)try{select(i,true);ui.pinned=true;A.pinBtn&&A.pinBtn.setAttribute('aria-pressed','true')}catch(e){}}sNavSync();return}
+    applyRole('fighter');cardId=MOB.me;cab.role='athlete';setView('arena');{const i=ATHLETES.indexOf(mine);if(i>=0)try{select(i,true);ui.pinned=true;A.pinBtn&&A.pinBtn.setAttribute('aria-pressed','true')}catch(e){}}sNavSync();document.documentElement.classList.add('ready');return}
   /* вход PIT: если открыто внутри app.pitrating.com с сессией — без демо-логина, роль из системы клуба */
   try{const r=await fetch('/api/me',{cache:'no-store'});if(r.ok){const me=await r.json();const map={owner:'admin',admin:'admin',trainer:'coach'};
-    if(map[me.role]){document.getElementById('fpGate')?.remove();['toHome','toCrm'].forEach(i=>{const e=document.getElementById(i);if(e)e.hidden=false});enterRole(map[me.role]);return}}}catch(e){}
+    if(map[me.role]){document.getElementById('fpGate')?.remove();['toHome','toCrm'].forEach(i=>{const e=document.getElementById(i);if(e)e.hidden=false});enterRole(map[me.role]);document.documentElement.classList.add('ready');return}}}catch(e){}
+  document.documentElement.classList.add('ready');
   gateShow()},0);
 $('#fsBtn').addEventListener('click',()=>{const d=document.documentElement;(document.fullscreenElement?document.exitFullscreen():d.requestFullscreen?.())?.catch?.(()=>{})});
 document.addEventListener('click',()=>{try{navigator.wakeLock?.request('screen').catch(()=>{})}catch(e){}},{once:true});

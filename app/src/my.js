@@ -291,7 +291,7 @@ export async function myRoutes(req, env, path, email, staff) {
   if (path === '/api/my/hall' && req.method === 'GET') {
     const f = await env.DB.prepare('SELECT mid,verified FROM fighters WHERE email=?').bind(email).first();
     if (!f || !f.mid || !f.verified) return json({ error: 'forbidden' }, 403);
-    const d = new Date().toISOString().slice(0, 10), v = await getDoc(env, 'visits', d);
+    const d = new Date().toLocaleDateString('sv-SE', { timeZone: 'Europe/Istanbul' }), v = await getDoc(env, 'visits', d);
     return json({ date: d, ids: v && Array.isArray(v.ids) ? v.ids : [] });
   }
   // карточка бойца из Зала (Arena): изменения → модерация клубом (pending) → сохранено
