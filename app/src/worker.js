@@ -1,7 +1,7 @@
 // PIT RATING — app.pitrating.com
 // Вход: собственный (код на e-mail → сессия), на переходный период также Cloudflare Access. Роли: owner | admin | trainer.
 import { authRoutes, sessionEmail, sessionsOf, revokeAll } from './auth.js';
-import { myRoutes } from './my.js';
+import { myRoutes, reviewRoutes } from './my.js';
 import { worldRoutes } from './world.js';
 // Данные: D1 (документы коллекций), файлы: R2.
 
@@ -63,6 +63,7 @@ const canWriteCol = (me, col) => canCol(me, col) || (me.role === 'trainer' && co
 async function api(req, env, me, path) {
   const url = new URL(req.url);
   if (path === '/api/me') return json(me);
+  if (path === '/api/review' || path.startsWith('/api/review/')) return reviewRoutes(req, env, path, me);
 
   // Синхронизация: все изменения после seq
   if (path === '/api/sync' && req.method === 'GET') {
@@ -263,10 +264,10 @@ export default {
       try { return await worldRoutes(req, env, path, { email: w.email, staff: w.role || null }) } catch (e) { return json({ error: 'server', message: String(e && e.message || e) }, 500) }
     }
     // My PIT — кабинет бойца: нужен только вход по коду, роль сотрудника не нужна
-    if (path === '/my' || path.startsWith('/my/') || path === '/api/my') {
-      const email = env.DEV === '1' && env.DEV_EMAIL ? String(req.headers.get('x-dev-email') || env.DEV_EMAIL).toLowerCase() : await sessionEmail(req, env);
-      if (!email) return path === '/api/my' ? json({ error: 'unauthorized' }, 401) : new Response(null, { status: 302, headers: { location: '/login?next=%2Fmy%2F' } });
-      if (path === '/api/my') { try { return await myRoutes(req, env, path, email) } catch (e) { return json({ error: 'server', message: String(e && e.message || e) }, 500) } }
+    if (path === '/my' || path.startsWith('/my/') || path === '/api/my' || path.startsWith('/api/my/')) {
+      const w = await whoami(req, env), email = w && w.email;
+      if (!email) return path.startsWith('/api/') ? json({ error: 'unauthorized' }, 401) : new Response(null, { status: 302, headers: { location: '/login?next=%2Fmy%2F' } });
+      if (path.startsWith('/api/')) { try { return await myRoutes(req, env, path, email, w.role || null) } catch (e) { return json({ error: 'server', message: String(e && e.message || e) }, 500) } }
       if (path === '/my') return new Response(null, { status: 301, headers: { location: '/my/' } });
       return env.ASSETS.fetch(req);
     }

@@ -59,6 +59,19 @@ textarea{min-height:4.5rem;resize:vertical}
 .foot{text-align:center;color:var(--muted);font-size:.74rem;padding-bottom:1rem}
 .foot a{color:inherit}
 [hidden]{display:none!important}
+.ver{display:inline-flex;align-items:center;gap:.4rem;border:1px solid #3ddc84;color:#3ddc84;border-radius:2rem;padding:.2rem .65rem .2rem .3rem;font-weight:800;font-size:.76rem}.ver b{display:grid;place-items:center;width:1.2rem;height:1.2rem;border-radius:50%;background:#3ddc84;color:#0b0c0f;font-size:.72rem}.ver img{height:.95rem;width:auto;display:block}
+.ava.ph{position:relative;cursor:pointer;overflow:hidden}.ava.ph img{width:100%;height:100%;object-fit:cover;border-radius:50%}.ava.ph i{position:absolute;right:-.1rem;bottom:-.1rem;font-style:normal;font-size:.85rem;background:#15181d;border:1px solid var(--line-2);border-radius:50%;width:1.5rem;height:1.5rem;display:grid;place-items:center}
+.warnc{border-color:rgba(255,201,60,.55)!important;color:#ffc93c;font-size:.88rem}
+.medals{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.55rem}.md{display:flex;flex-direction:column;align-items:center;gap:.15rem;background:var(--panel-2);border:1px solid var(--line);border-radius:.8rem;padding:.7rem .3rem}.md i{font-style:normal;font-size:2rem;line-height:1;filter:drop-shadow(0 4px 10px rgba(232,195,90,.35))}.md b{font:800 1.2rem 'Unbounded',sans-serif}.md.off{opacity:.35;filter:grayscale(1)}
+.rec{margin:.7rem 0 0}.rec b{font-family:'Unbounded',sans-serif}.titles{list-style:none;padding:0;margin:.6rem 0 0;display:grid;gap:.3rem}
+.sh{display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin-bottom:.5rem}.sh h2{margin:0}
+.it{border-top:1px solid var(--line);padding:.65rem 0}.it:first-of-type{border-top:0}.it-h{display:flex;align-items:center;justify-content:space-between;gap:.5rem;flex-wrap:wrap}.it-h b{display:flex;align-items:center;gap:.45rem}.it-s{color:var(--muted);font-size:.82rem;margin-top:.15rem;overflow-wrap:anywhere}.it-s a,.it-r a{color:var(--gold)}
+.it-r{margin-top:.3rem;font-size:.9rem}.res{font-weight:800}.res.w{color:#3ddc84}.res.l{color:var(--bad)}.res.d{color:var(--muted)}.res.p{color:var(--gold)}
+.it-d{margin:.35rem 0 0;font-size:.86rem;color:#d6d3cb;white-space:pre-wrap}.it-n{margin:.35rem 0 0;font-size:.8rem;color:#ffc93c}.it-a{display:flex;gap:.4rem;margin-top:.45rem}.it-a .sp{flex:1}
+.cl-i{display:inline-grid;place-items:center;width:1.6rem;height:1.6rem;border-radius:.4rem;background:var(--panel-2);border:1px solid var(--line-2);color:var(--gold);font-size:.8rem}
+.curclub{display:flex;align-items:center;gap:.8rem;background:var(--panel-2);border:1px solid color-mix(in srgb,var(--gold) 45%,transparent);border-radius:.8rem;padding:.7rem .8rem;margin-bottom:.4rem;flex-wrap:wrap}.curclub img{height:2rem;width:auto}.curclub div{flex:1;min-width:8rem}.curclub small{display:block;color:var(--muted);font-size:.78rem}
+.iform{background:var(--panel-2)!important;margin:.4rem 0}.lbl{font-size:.78rem;font-weight:700;color:var(--muted);display:block;margin-bottom:.3rem}
+
 .globe{position:relative;width:100%;aspect-ratio:1/1;max-height:min(72vh,560px);margin:0 auto}
 .club{display:flex;gap:.9rem;align-items:center}
 .club .flag{font-size:1.7rem;line-height:1}
@@ -111,6 +124,40 @@ tr:{docs:'Ayrıntılar:',docP:'Gizlilik Politikası',docT:'Kullanım Koşulları
  soonH:'Yakında My PIT’te',soonP:'Antrenman nabzı ve yükü, PIT sıralaması, turnuvalar ve gelişim — kulübünüz sensörleri bağladığında.',
  profH:'Profil',privacy:'Verileriniz kayıt olduğunuz kulüpte saklanır. İstediğiniz zaman buradan silebilirsiniz.',
  err:{name:'Ad ve soyadı girin',dob:'Doğum tarihini kontrol edin',phone:'Telefon girin',club:'Kulüp seçin',consent:'Veri işleme onayı gerekli',parent:'18 yaş altı için veli ve onayı gerekli',server:'Olmadı. Tekrar deneyin'},saved:'Kaydedildi'}};
+
+Object.assign(T.ru,{editH:'Анкета бойца',editP:'Правки уйдут на подтверждение в клуб. Пока клуб не подтвердит, действует текущая версия.',invP:'Клуб уже создал вашу анкету. Проверьте данные, дайте согласия и сохраните.',sportH:'Спортивный профиль',weight:'Вес / категория',weightP:'например 77 кг',stance:'Стойка',st_orthodox:'Ортодокс',st_southpaw:'Левша',st_switch:'Свитч',belt:'Пояс / ранг',beltP:'BJJ синий, 2 дан…',city:'Город',
+ verT:'Данные подтверждены клубом',medH:'Медали и титулы',medE:'Пока нет подтверждённых медалей. Добавьте соревнования и титулы — клуб подтвердит их.',medN:'Показываются только подтверждённые клубом результаты.',record:'Рекорд боёв',recW:'победы',recL:'поражения',recD:'ничьи',
+ itOk:'подтверждено',itNo:'отклонено',itPend:'на проверке у клуба',res_W:'Победа',res_L:'Поражение',res_D:'Ничья',vs:'против',part:'Участие',placeN:'место',linkL:'ссылка',clubNote:'Комментарий клуба',ed:'Изменить',add:'Добавить',now:'н.в.',
+ c_date:'Дата',c_name:'Турнир / событие',c_nameP:'Открытый чемпионат Анталии',c_place:'Город, страна',c_placeP:'Анталья, Турция',c_org:'Организация / федерация',c_level:'Уровень',c_rtype:'Результат',rt_place:'Место в турнире',rt_bout:'Отдельный бой',c_pos:'Место',c_res:'Итог боя',c_method:'Способ',c_methodP:'KO, TKO, сабмишн, решение',c_opp:'Соперник',c_link:'Ссылка на результат, протокол или видео',c_desc:'Своими словами',c_descP:'Если ссылки нет — опишите, где и как выступали',
+ lv_club:'Клубный',lv_city:'Городской',lv_regional:'Региональный',lv_national:'Национальный',lv_international:'Международный',lv_pro:'Профессиональный',
+ ti_name:'Титул / звание',ti_nameP:'Чемпион Турции по BJJ',ti_year:'Год',cl_name:'Клуб',cl_from:'С (месяц)',cl_to:'По (месяц)',ln_url:'Ссылка на ваш профиль',ln_site:'Сайт / организация',ln_n:'Импорт результатов по ссылке выполняет администратор клуба.',
+ k_comp:'соревнование',k_title:'титул',k_club:'клуб',k_link:'профиль',toClub:'Отправить на подтверждение',cancel:'Отмена',sentClub:'Отправлено в клуб на подтверждение',itErr:'Проверьте обязательные поля',delQ:'Удалить?',
+ clubsH:'Клубы',pastClub:'Прошлый клуб',curClub:'текущий клуб',since:'с',clubsN:'Переходы между клубами сети PIT подтверждают оба клуба; прошлые клубы вне сети отмечаются со слов бойца.',
+ compH:'Соревнования',compN:'Укажите, где и когда выступали, место или итог боя. Приложите ссылку или опишите своими словами.',titleH:'Титулы и звания',linkH:'Профили в организациях',
+ empty_comp:'Соревнований пока нет.',empty_title:'Титулов пока нет.',empty_link:'Ссылок пока нет.',photo:'Фото профиля',pendP:'На проверке у клуба',
+ f_last:'фамилия',f_first:'имя',f_dob:'дата рождения',f_phone:'телефон',f_disc:'направление',f_kind:'формат',f_note:'комментарий',f_weight:'вес',f_stance:'стойка',f_belt:'пояс',f_city:'город',f_photo:'фото',f_parent:'родитель'});
+Object.assign(T.en,{editH:'Fighter profile',editP:'Edits go to your club for approval. Until approved, the current version stays.',invP:'Your club has created your profile. Check it, give consents and save.',sportH:'Sport profile',weight:'Weight / class',weightP:'e.g. 77 kg',stance:'Stance',st_orthodox:'Orthodox',st_southpaw:'Southpaw',st_switch:'Switch',belt:'Belt / rank',beltP:'BJJ blue, 2nd dan…',city:'City',
+ verT:'Verified by the club',medH:'Medals and titles',medE:'No verified medals yet. Add competitions and titles — your club will verify them.',medN:'Only club-verified results are shown.',record:'Fight record',recW:'W',recL:'L',recD:'D',
+ itOk:'verified',itNo:'declined',itPend:'under club review',res_W:'Win',res_L:'Loss',res_D:'Draw',vs:'vs',part:'Participation',placeN:'place',linkL:'link',clubNote:'Club note',ed:'Edit',add:'Add',now:'now',
+ c_date:'Date',c_name:'Tournament / event',c_nameP:'Antalya Open',c_place:'City, country',c_placeP:'Antalya, Türkiye',c_org:'Organisation / federation',c_level:'Level',c_rtype:'Result',rt_place:'Tournament place',rt_bout:'Single bout',c_pos:'Place',c_res:'Bout result',c_method:'Method',c_methodP:'KO, TKO, submission, decision',c_opp:'Opponent',c_link:'Link to results, bracket or video',c_desc:'In your own words',c_descP:'No link? Describe where and how you competed',
+ lv_club:'Club',lv_city:'City',lv_regional:'Regional',lv_national:'National',lv_international:'International',lv_pro:'Professional',
+ ti_name:'Title',ti_nameP:'Turkish BJJ champion',ti_year:'Year',cl_name:'Club',cl_from:'From (month)',cl_to:'To (month)',ln_url:'Link to your profile',ln_site:'Site / organisation',ln_n:'Importing results from a link is done by the club admin.',
+ k_comp:'competition',k_title:'title',k_club:'club',k_link:'profile',toClub:'Send for approval',cancel:'Cancel',sentClub:'Sent to your club for approval',itErr:'Check the required fields',delQ:'Delete?',
+ clubsH:'Clubs',pastClub:'Past club',curClub:'current club',since:'since',clubsN:'Moves between PIT clubs are confirmed by both clubs; past clubs outside the network are marked as self-reported.',
+ compH:'Competitions',compN:'Add where and when you competed and your place or bout result. Attach a link or describe it in your own words.',titleH:'Titles',linkH:'Profiles on other sites',
+ empty_comp:'No competitions yet.',empty_title:'No titles yet.',empty_link:'No links yet.',photo:'Profile photo',pendP:'Under club review',
+ f_last:'last name',f_first:'first name',f_dob:'date of birth',f_phone:'phone',f_disc:'discipline',f_kind:'format',f_note:'note',f_weight:'weight',f_stance:'stance',f_belt:'belt',f_city:'city',f_photo:'photo',f_parent:'parent'});
+Object.assign(T.tr,{editH:'Sporcu profili',editP:'Değişiklikler kulüp onayına gider. Onaylanana kadar mevcut sürüm geçerlidir.',invP:'Kulübünüz profilinizi oluşturdu. Kontrol edin, onay verin ve kaydedin.',sportH:'Spor profili',weight:'Kilo / sıklet',weightP:'ör. 77 kg',stance:'Duruş',st_orthodox:'Ortodoks',st_southpaw:'Solak',st_switch:'Switch',belt:'Kuşak / derece',beltP:'BJJ mavi, 2. dan…',city:'Şehir',
+ verT:'Kulüp tarafından doğrulandı',medH:'Madalyalar ve unvanlar',medE:'Henüz doğrulanmış madalya yok. Turnuva ve unvan ekleyin — kulübünüz doğrulasın.',medN:'Yalnızca kulübün doğruladığı sonuçlar gösterilir.',record:'Maç rekoru',recW:'galibiyet',recL:'mağlubiyet',recD:'beraberlik',
+ itOk:'doğrulandı',itNo:'reddedildi',itPend:'kulüp incelemesinde',res_W:'Galibiyet',res_L:'Mağlubiyet',res_D:'Beraberlik',vs:'rakip',part:'Katılım',placeN:'derece',linkL:'bağlantı',clubNote:'Kulüp notu',ed:'Düzenle',add:'Ekle',now:'halen',
+ c_date:'Tarih',c_name:'Turnuva / etkinlik',c_nameP:'Antalya Açık',c_place:'Şehir, ülke',c_placeP:'Antalya, Türkiye',c_org:'Organizasyon / federasyon',c_level:'Seviye',c_rtype:'Sonuç',rt_place:'Turnuva derecesi',rt_bout:'Tek maç',c_pos:'Derece',c_res:'Maç sonucu',c_method:'Yöntem',c_methodP:'KO, TKO, submission, karar',c_opp:'Rakip',c_link:'Sonuç, tablo veya video bağlantısı',c_desc:'Kendi sözlerinizle',c_descP:'Bağlantı yoksa nerede ve nasıl yarıştığınızı yazın',
+ lv_club:'Kulüp',lv_city:'Şehir',lv_regional:'Bölgesel',lv_national:'Ulusal',lv_international:'Uluslararası',lv_pro:'Profesyonel',
+ ti_name:'Unvan',ti_nameP:'Türkiye BJJ şampiyonu',ti_year:'Yıl',cl_name:'Kulüp',cl_from:'Başlangıç (ay)',cl_to:'Bitiş (ay)',ln_url:'Profil bağlantınız',ln_site:'Site / organizasyon',ln_n:'Bağlantıdan sonuç aktarımını kulüp yöneticisi yapar.',
+ k_comp:'turnuva',k_title:'unvan',k_club:'kulüp',k_link:'profil',toClub:'Onaya gönder',cancel:'İptal',sentClub:'Kulüp onayına gönderildi',itErr:'Zorunlu alanları kontrol edin',delQ:'Silinsin mi?',
+ clubsH:'Kulüpler',pastClub:'Önceki kulüp',curClub:'mevcut kulüp',since:'başlangıç',clubsN:'PIT kulüpleri arasındaki geçişleri iki kulüp de onaylar; ağ dışındaki eski kulüpler sporcunun beyanıdır.',
+ compH:'Turnuvalar',compN:'Nerede ve ne zaman yarıştığınızı, derecenizi veya maç sonucunu ekleyin. Bağlantı ekleyin ya da kendi sözlerinizle anlatın.',titleH:'Unvanlar',linkH:'Diğer sitelerdeki profiller',
+ empty_comp:'Henüz turnuva yok.',empty_title:'Henüz unvan yok.',empty_link:'Henüz bağlantı yok.',photo:'Profil fotoğrafı',pendP:'Kulüp incelemesinde',
+ f_last:'soyadı',f_first:'adı',f_dob:'doğum tarihi',f_phone:'telefon',f_disc:'branş',f_kind:'tür',f_note:'not',f_weight:'kilo',f_stance:'duruş',f_belt:'kuşak',f_city:'şehir',f_photo:'fotoğraf',f_parent:'veli'});
 const DISC_T={en:{'Бокс':'Boxing','Кикбоксинг':'Kickboxing','Муай-тай':'Muay Thai','Борьба':'Wrestling','Функционал':'Functional','Капоэйра':'Capoeira'},tr:{'Бокс':'Boks','Кикбоксинг':'Kickboks','Муай-тай':'Muay Thai','Борьба':'Güreş','Функционал':'Fonksiyonel','Капоэйра':'Capoeira'}};
 const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 let L=(()=>{try{const s=localStorage.getItem('pit.lang');if(T[s])return s}catch(e){}const n=(navigator.language||'ru').slice(0,2);return T[n]?n:'en'})();
@@ -123,8 +170,8 @@ function applyLang(){document.documentElement.lang=L;document.querySelectorAll('
 document.querySelectorAll('.lang button').forEach(b=>b.onclick=()=>{L=b.dataset.l;try{localStorage.setItem('pit.lang',L)}catch(e){}applyLang();render()});
 async function api(o){const r=await fetch('/api/my',{cache:'no-store',credentials:'same-origin',...o});if(r.status===401){location.replace('/login?next=%2Fmy%2F');throw new Error('auth')}const j=await r.json().catch(()=>({}));if(!r.ok)throw Object.assign(new Error(j.error||'server'),{code:j.error});return j}
 
-function form(){const p=D.profile||{},clubs=D.clubs||[],discs=D.discs||[];const kind=p.kind||'group';
-  return `<div><h1>${t('regH')}</h1><p class="sub">${t('regP')}</p></div>
+function form(){const p={...(D.profile||{}),...(D.pending||{})},clubs=D.clubs||[],discs=D.discs||[];const kind=p.kind||'group';
+  return `<div><h1>${D.profile?t('editH'):t('regH')}</h1><p class="sub">${D.verified?t('editP'):D.profile&&!D.profile.consentData?t('invP'):t('regP')}</p></div>
   <form class="card" id="rf" novalidate><div class="grid">
     ${(()=>{const c=clubs.find(x=>x.id===(PICK||p.club))||clubs[0]||{};return`<div class="f full"><span style="font-size:.78rem;font-weight:700;color:var(--muted)">${t('club')}</span><div class="clubchip"><span aria-hidden="true">${FLAG[c.country]||'🥋'}</span><span>${esc(c.name)}<small>${esc(cityOf(c))}</small></span><button class="btn sm" type="button" id="chg">${t('chg')}</button></div><input type="hidden" id="r_club" value="${esc(c.id)}"></div>`})()}
     <label class="f"><span>${t('last')} <span class="req">*</span></span><input id="r_last" autocomplete="family-name" value="${esc(p.last)}" required></label>
@@ -135,6 +182,11 @@ function form(){const p=D.profile||{},clubs=D.clubs||[],discs=D.discs||[];const 
     <div class="f full"><label class="f" style="margin-bottom:.3rem">${t('want')}</label><div class="seg"><label><input type="radio" name="r_kind" value="group" ${kind!=='ind'?'checked':''}>${t('grp')}</label><label><input type="radio" name="r_kind" value="ind" ${kind==='ind'?'checked':''}>${t('ind')}</label></div></div>
     <label class="f full">${t('note')}<textarea id="r_note" maxlength="300" placeholder="${esc(t('noteP'))}">${esc(p.note)}</textarea></label>
   </div></form>
+  <section class="card"><h2>${t('sportH')}</h2><div class="grid">
+    <label class="f">${t('weight')}<input id="r_w" maxlength="20" placeholder="${esc(t('weightP'))}" value="${esc(p.weight)}"></label>
+    <label class="f">${t('stance')}<select id="r_st">${['','orthodox','southpaw','switch'].map(x=>`<option value="${x}" ${x===(p.stance||'')?'selected':''}>${x?esc(t('st_'+x)):'—'}</option>`).join('')}</select></label>
+    <label class="f">${t('belt')}<input id="r_belt" maxlength="30" placeholder="${esc(t('beltP'))}" value="${esc(p.belt)}"></label>
+    <label class="f">${t('city')}<input id="r_city" maxlength="60" value="${esc(p.city)}"></label></div></section>
   <section class="card" id="u18" hidden><h2>${t('u18H')}</h2><p class="note" style="margin-bottom:.75rem">${t('u18P')}</p><div class="grid">
     <label class="f"><span>${t('pName')} <span class="req">*</span></span><input id="r_pn" value="${esc(p.parent?.name)}"></label>
     <label class="f"><span>${t('pPhone')} <span class="req">*</span></span><input id="r_pp" type="tel" inputmode="tel" value="${esc(p.parent?.phone)}"></label></div>
@@ -154,7 +206,7 @@ function bindForm(){const dob=$('#r_dob'),u=()=>{const a=ageOf(dob.value);$('#u1
   $('#chg').onclick=()=>{PICK=null;render();window.scrollTo({top:0})};
   $('#go').onclick=async()=>{const m=$('#m'),b=$('#go');m.textContent='';m.className='msg';
     const v=id=>$(id).value.trim();
-    const prof={club:$('#r_club').value,last:v('#r_last'),first:v('#r_first'),dob:v('#r_dob'),phone:v('#r_phone'),disc:$('#r_disc').value,kind:document.querySelector('input[name=r_kind]:checked')?.value||'group',note:v('#r_note'),
+    const prof={weight:v('#r_w'),stance:$('#r_st').value,belt:v('#r_belt'),city:v('#r_city'),club:$('#r_club').value,last:v('#r_last'),first:v('#r_first'),dob:v('#r_dob'),phone:v('#r_phone'),disc:$('#r_disc').value,kind:document.querySelector('input[name=r_kind]:checked')?.value||'group',note:v('#r_note'),
       parent:{name:v('#r_pn'),phone:v('#r_pp')},parentConsent:$('#r_pok').checked,consentData:$('#c_data').checked,photoConsent:$('#c_photo').checked,consentPublic:$('#c_pub').checked,consentMsg:$('#c_msg').checked,lang:L};
     const loc=!prof.last||!prof.first?'name':!prof.dob?'dob':prof.phone.replace(/\D/g,'').length<9?'phone':!prof.consentData?'consent':null;
     if(loc){m.textContent=t('err')[loc];m.className='msg bad';return}
@@ -171,14 +223,87 @@ function statusCard(){
   const p={pending:t('pendingP'),rejected:t('rejectedP'),new:t('newP'),booked:T[L].bookedP(fd(D.lead?.trialDate)),done:t('doneP'),bought:'',lost:t('lostP')}[st]||t('newP');
   return `<section class="card"><span class="pill ${cls}">● ${t('st_'+st)||t('st_new')}</span><p style="margin:.7rem 0 0">${p}</p></section>`}
 
+const LVL=['club','city','regional','national','international','pro'];
+const medalOf=c=>c.rtype==='bout'?(c.res==='W'?'win':c.res==='L'?'loss':'draw'):c.pos;
+function badge(){if(D.verified){const c=D.club||{};return `<span class="ver" title="${esc(t('verT'))}"><b>✓</b> Verified · ${c.logo?`<img src="${esc(c.logo)}" alt="${esc(c.name)}">`:esc(c.name||'')}</span>`}
+  return `<span class="pill gold">● ${t('st_pending')}</span>`}
+function medals(){const ok=(D.items||[]).filter(i=>i.status==='ok'),C=ok.filter(i=>i.kind==='comp').map(i=>i.data),Ti=ok.filter(i=>i.kind==='title');
+  const g=C.filter(c=>c.rtype!=='bout'&&c.pos==='1').length,s=C.filter(c=>c.rtype!=='bout'&&c.pos==='2').length,b=C.filter(c=>c.rtype!=='bout'&&c.pos==='3').length;
+  const w=C.filter(c=>c.rtype==='bout'&&c.res==='W').length,l=C.filter(c=>c.rtype==='bout'&&c.res==='L').length,d=C.filter(c=>c.rtype==='bout'&&c.res==='D').length;
+  if(!g&&!s&&!b&&!Ti.length&&!w&&!l&&!d)return `<section class="card"><h2>${t('medH')}</h2><p class="note">${t('medE')}</p></section>`;
+  return `<section class="card"><h2>${t('medH')}</h2><div class="medals">${[['g',g,'🥇'],['s',s,'🥈'],['b',b,'🥉']].map(([k,n,i])=>`<div class="md ${k} ${n?'':'off'}"><i>${i}</i><b>${n}</b></div>`).join('')}<div class="md t ${Ti.length?'':'off'}"><i>🏆</i><b>${Ti.length}</b></div></div>
+    ${w+l+d?`<p class="rec">${t('record')}: <b>${w}-${l}-${d}</b> <span class="note">(${t('recW')}-${t('recL')}-${t('recD')})</span></p>`:''}
+    ${Ti.length?`<ul class="titles">${Ti.map(x=>`<li>🏆 ${esc(x.data.name)}${x.data.year?` · ${esc(x.data.year)}`:''}${x.data.org?` · <span class="note">${esc(x.data.org)}</span>`:''}</li>`).join('')}</ul>`:''}
+    <p class="note" style="margin:.6rem 0 0">${t('medN')}</p></section>`}
+const stChip=i=>i.status==='ok'?`<span class="pill ok">✓ ${t('itOk')}</span>`:i.status==='rejected'?`<span class="pill bad">${t('itNo')}</span>`:`<span class="pill gold">${t('itPend')}</span>`;
+function resOf(c){if(c.rtype==='bout')return `<span class="res ${c.res==='W'?'w':c.res==='L'?'l':'d'}">${t('res_'+c.res)}</span>${c.method?` · ${esc(c.method)}`:''}${c.opp?` · ${t('vs')} ${esc(c.opp)}`:''}`;
+  return c.pos==='part'?`<span class="res d">${t('part')}</span>`:`<span class="res p">${['','🥇','🥈','🥉'][+c.pos]} ${c.pos} ${t('placeN')}</span>`}
+function itemRow(i){const d=i.data,act=`<span class="sp"></span><button class="btn sm" data-ied="${esc(i.id)}">${t('ed')}</button><button class="btn sm danger" data-idel="${esc(i.id)}">✕</button>`;
+  if(i.kind==='comp')return `<div class="it"><div class="it-h"><b>${esc(d.name)}</b>${stChip(i)}</div><div class="it-s">${esc(d.date)}${d.place?' · '+esc(d.place):''}${d.org?' · '+esc(d.org):''}${d.level?' · '+esc(t('lv_'+d.level)):''}${d.disc?' · '+esc(dn(d.disc)):''}${d.weight?' · '+esc(d.weight):''}</div>
+    <div class="it-r">${resOf(d)}${d.link?` · <a href="${esc(d.link)}" target="_blank" rel="noopener nofollow">${t('linkL')} ↗</a>`:''}</div>${d.desc?`<p class="it-d">${esc(d.desc)}</p>`:''}${i.note?`<p class="it-n">${t('clubNote')}: ${esc(i.note)}</p>`:''}<div class="it-a">${act}</div></div>`;
+  if(i.kind==='title')return `<div class="it"><div class="it-h"><b>🏆 ${esc(d.name)}</b>${stChip(i)}</div><div class="it-s">${[d.year,d.org].filter(Boolean).map(esc).join(' · ')}${d.link?` · <a href="${esc(d.link)}" target="_blank" rel="noopener nofollow">${t('linkL')} ↗</a>`:''}</div>${i.note?`<p class="it-n">${t('clubNote')}: ${esc(i.note)}</p>`:''}<div class="it-a">${act}</div></div>`;
+  if(i.kind==='club')return `<div class="it"><div class="it-h"><b><span class="cl-i">${esc((d.name||'?')[0])}</span>${esc(d.name)}</b>${stChip(i)}</div><div class="it-s">${d.city?esc(d.city)+' · ':''}${esc(d.from||'?')} — ${esc(d.to||t('now'))}</div>${i.note?`<p class="it-n">${t('clubNote')}: ${esc(i.note)}</p>`:''}<div class="it-a">${act}</div></div>`;
+  return `<div class="it"><div class="it-h"><b>🔗 ${esc(d.site||new URL(d.url).hostname)}</b>${stChip(i)}</div><div class="it-s"><a href="${esc(d.url)}" target="_blank" rel="noopener nofollow">${esc(d.url)}</a></div><div class="it-a">${act}</div></div>`}
+let OPEN=null;
+function itemForm(kind,i){const d=(i&&i.data)||{},lv=d.level||'club';
+  const F={comp:`<div class="grid"><label class="f">${t('c_date')} *<input type="date" id="i_date" value="${esc(d.date)}" max="${new Date().toISOString().slice(0,10)}"></label><label class="f">${t('c_name')} *<input id="i_name" maxlength="120" value="${esc(d.name)}" placeholder="${esc(t('c_nameP'))}"></label>
+      <label class="f">${t('c_place')}<input id="i_place" maxlength="80" value="${esc(d.place)}" placeholder="${esc(t('c_placeP'))}"></label><label class="f">${t('c_org')}<input id="i_org" maxlength="80" value="${esc(d.org)}" placeholder="UFC, IBJJF, WAKO…"></label>
+      <label class="f">${t('disc')}<select id="i_disc">${(D.discs||[]).map(x=>`<option value="${esc(x)}" ${x===(d.disc||D.profile.disc)?'selected':''}>${esc(dn(x))}</option>`).join('')}</select></label><label class="f">${t('weight')}<input id="i_weight" maxlength="30" value="${esc(d.weight)}" placeholder="${esc(t('weightP'))}"></label>
+      <label class="f full">${t('c_level')}<select id="i_level">${LVL.map(x=>`<option value="${x}" ${x===lv?'selected':''}>${esc(t('lv_'+x))}</option>`).join('')}</select></label>
+      <div class="f full"><span class="lbl">${t('c_rtype')}</span><div class="seg"><label><input type="radio" name="i_rt" value="place" ${d.rtype!=='bout'?'checked':''}>${t('rt_place')}</label><label><input type="radio" name="i_rt" value="bout" ${d.rtype==='bout'?'checked':''}>${t('rt_bout')}</label></div></div>
+      <label class="f full" data-rt="place">${t('c_pos')}<select id="i_pos">${['1','2','3','part'].map(x=>`<option value="${x}" ${x===(d.pos||'1')?'selected':''}>${x==='part'?esc(t('part')):['','🥇','🥈','🥉'][+x]+' '+x+' '+esc(t('placeN'))}</option>`).join('')}</select></label>
+      <label class="f" data-rt="bout">${t('c_res')}<select id="i_res">${['W','L','D'].map(x=>`<option value="${x}" ${x===(d.res||'W')?'selected':''}>${esc(t('res_'+x))}</option>`).join('')}</select></label>
+      <label class="f" data-rt="bout">${t('c_method')}<input id="i_method" maxlength="40" value="${esc(d.method)}" placeholder="${esc(t('c_methodP'))}"></label>
+      <label class="f full" data-rt="bout">${t('c_opp')}<input id="i_opp" maxlength="80" value="${esc(d.opp)}"></label>
+      <label class="f full">${t('c_link')}<input id="i_link" type="url" maxlength="300" value="${esc(d.link)}" placeholder="https://"></label>
+      <label class="f full">${t('c_desc')}<textarea id="i_desc" maxlength="500" placeholder="${esc(t('c_descP'))}">${esc(d.desc)}</textarea></label></div>`,
+    title:`<div class="grid"><label class="f full">${t('ti_name')} *<input id="i_name" maxlength="120" value="${esc(d.name)}" placeholder="${esc(t('ti_nameP'))}"></label><label class="f">${t('ti_year')}<input id="i_year" inputmode="numeric" maxlength="4" value="${esc(d.year)}"></label><label class="f">${t('c_org')}<input id="i_org" maxlength="80" value="${esc(d.org)}"></label><label class="f full">${t('c_link')}<input id="i_link" type="url" maxlength="300" value="${esc(d.link)}" placeholder="https://"></label></div>`,
+    club:`<div class="grid"><label class="f full">${t('cl_name')} *<input id="i_name" maxlength="80" value="${esc(d.name)}"></label><label class="f full">${t('city')}<input id="i_city" maxlength="60" value="${esc(d.city)}"></label><label class="f">${t('cl_from')}<input type="month" id="i_from" value="${esc(d.from)}"></label><label class="f">${t('cl_to')}<input type="month" id="i_to" value="${esc(d.to)}"></label></div>`,
+    link:`<div class="grid"><label class="f full">${t('ln_url')} *<input id="i_url" type="url" maxlength="300" value="${esc(d.url)}" placeholder="https://www.tapology.com/fightcenter/fighters/…"></label><label class="f full">${t('ln_site')}<input id="i_site" maxlength="40" value="${esc(d.site)}" placeholder="Tapology, Sherdog, Smoothcomp, BJJ Heroes…"></label></div><p class="note" style="margin:.5rem 0 0">${t('ln_n')}</p>`};
+  return `<div class="card iform" id="iform"><h2>${i?t('ed'):t('add')} · ${t('k_'+kind)}</h2>${F[kind]}<div class="msg" id="im" role="status"></div><div class="actions"><button class="btn gold" id="isave" type="button" style="flex:1">${t('toClub')}</button><button class="btn" id="icx" type="button">${t('cancel')}</button></div></div>`}
+function bindItemForm(kind,id){const v=x=>{const e=$(x);return e?e.value.trim():''};
+  const syncRt=()=>{const rt=document.querySelector('input[name=i_rt]:checked')?.value;document.querySelectorAll('[data-rt]').forEach(e=>e.hidden=e.dataset.rt!==rt)};document.querySelectorAll('input[name=i_rt]').forEach(r=>r.onchange=syncRt);syncRt();
+  $('#icx').onclick=()=>{OPEN=null;render()};
+  $('#isave').onclick=async()=>{const m=$('#im'),b=$('#isave');let data;
+    if(kind==='comp')data={date:v('#i_date'),name:v('#i_name'),place:v('#i_place'),org:v('#i_org'),disc:v('#i_disc'),weight:v('#i_weight'),level:v('#i_level'),rtype:document.querySelector('input[name=i_rt]:checked')?.value,pos:v('#i_pos'),res:v('#i_res'),method:v('#i_method'),opp:v('#i_opp'),link:v('#i_link'),desc:v('#i_desc')};
+    if(kind==='title')data={name:v('#i_name'),year:v('#i_year'),org:v('#i_org'),link:v('#i_link')};
+    if(kind==='club')data={name:v('#i_name'),city:v('#i_city'),from:v('#i_from'),to:v('#i_to')};
+    if(kind==='link')data={url:v('#i_url'),site:v('#i_site')};
+    b.disabled=true;try{D=await apiP('/api/my/item',{kind,id,data});OPEN=null;render();toastMy(t('sentClub'))}catch(e){m.textContent=t('itErr');m.className='msg bad'}finally{b.disabled=false}}}
+async function apiP(u,body){const r=await fetch(u,{method:'POST',cache:'no-store',credentials:'same-origin',headers:{'content-type':'application/json'},body:JSON.stringify(body)});const j=await r.json().catch(()=>({}));if(!r.ok)throw Object.assign(new Error(j.error||'server'),{code:j.error});return j}
+function toastMy(x){let e=$('#tst');if(!e){e=document.createElement('div');e.id='tst';e.setAttribute('role','status');e.style.cssText='position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 18px);transform:translateX(-50%);background:#e8c35a;color:#16130a;font-weight:800;padding:.6rem 1rem;border-radius:.6rem;z-index:50;max-width:calc(100% - 32px)';document.body.appendChild(e)}e.textContent=x;e.hidden=false;clearTimeout(toastMy.t);toastMy.t=setTimeout(()=>e.hidden=true,2600)}
+function sec(kind,title,hint){const L=(D.items||[]).filter(i=>i.kind===kind).sort((a,b)=>String((b.data.date||b.data.from||b.data.year||''))<String((a.data.date||a.data.from||a.data.year||''))?-1:1);
+  const open=OPEN&&OPEN.kind===kind;
+  return `<section class="card" id="sec-${kind}"><div class="sh"><h2>${title}</h2>${open?'':`<button class="btn sm gold" data-add="${kind}">＋ ${t('add')}</button>`}</div>${hint?`<p class="note" style="margin:-.3rem 0 .6rem">${hint}</p>`:''}
+    ${open&&!OPEN.id?itemForm(kind):''}${L.map(i=>open&&OPEN.id===i.id?itemForm(kind,i):itemRow(i)).join('')||(open?'':`<p class="note">${t('empty_'+kind)}</p>`)}</section>`}
+function clubsSec(){const c=D.club||{};
+  return `<section class="card" id="sec-club"><div class="sh"><h2>${t('clubsH')}</h2>${OPEN&&OPEN.kind==='club'?'':`<button class="btn sm gold" data-add="club">＋ ${t('pastClub')}</button>`}</div>
+    <div class="curclub">${c.logo?`<img src="${esc(c.logo)}" alt="${esc(c.name)}">`:`<b>${esc(c.name||'')}</b>`}<div><b>${esc(c.name||'')}</b><small>${esc(cityOf(c))} · ${t('curClub')}${D.verAt?' · ✓ '+t('since')+' '+new Date(D.verAt).toLocaleDateString({ru:'ru-RU',en:'en-GB',tr:'tr-TR'}[L],{month:'short',year:'numeric'}):''}</small></div>${D.verified?'<span class="pill ok">✓ Verified</span>':''}</div>
+    ${(()=>{const L2=(D.items||[]).filter(i=>i.kind==='club');const open=OPEN&&OPEN.kind==='club';return (open&&!OPEN.id?itemForm('club'):'')+L2.map(i=>open&&OPEN.id===i.id?itemForm('club',i):itemRow(i)).join('')})()}
+    <p class="note" style="margin:.6rem 0 0">${t('clubsN')}</p></section>`}
 function home(){const p=D.profile,a=ageOf(p.dob),ini=((p.first||'')[0]||'')+((p.last||'')[0]||'');
-  return `<section class="hero"><div class="ava" aria-hidden="true">${esc(ini.toUpperCase())}</div><div style="min-width:0"><h1>${t('hi')}, ${esc(p.first)}!</h1><p class="sub">${esc(D.club?.name||'')} · ${esc(dn(p.disc))}${a!=null?` · ${a}`:''}</p></div></section>
+  const P=D.pending?Object.keys(D.pending):[];
+  return `<section class="hero"><label class="ava ph" title="${esc(t('photo'))}">${D.photo?`<img src="${esc(D.photo)}" alt="">`:esc(ini.toUpperCase())}<input type="file" accept="image/*" id="phf" hidden><i aria-hidden="true">📷</i></label>
+    <div style="min-width:0"><h1>${esc(p.first)} ${esc(p.last)}</h1><p class="sub">${esc(dn(p.disc))}${a!=null?` · ${a}`:''}${p.weight?` · ${esc(p.weight)}`:''}${p.belt?` · ${esc(p.belt)}`:''}</p><div style="margin-top:.45rem">${badge()}</div></div></section>
+  ${D.note?`<div class="card warnc">⚠️ ${esc(D.note)}</div>`:''}
+  ${P.length?`<div class="card warnc">⏳ ${t('pendP')}: <b>${P.map(k=>esc(t('f_'+k)||k)).join(', ')}</b></div>`:''}
+  ${medals()}
   ${statusCard()}
+  ${clubsSec()}
+  ${sec('comp',t('compH'),t('compN'))}
+  ${sec('title',t('titleH'))}
+  ${sec('link',t('linkH'),t('ln_n'))}
   <a class="card" href="/world/" style="display:flex;align-items:center;gap:.8rem;text-decoration:none;color:inherit;border-color:color-mix(in srgb,var(--gold) 55%,transparent)"><span style="font-size:1.6rem" aria-hidden="true">✦</span><span style="flex:1"><b style="font-family:Unbounded,sans-serif">My PIT World</b><small style="display:block;color:var(--muted)">${t('worldP')}</small></span><span style="color:var(--gold);font-weight:800">→</span></a>
-  <section class="card soon"><i aria-hidden="true">♥</i><div><h2 style="margin-bottom:.35rem">${t('soonH')}</h2><p class="note" style="font-size:.88rem">${t('soonP')}</p></div></section>
-  <section class="card"><h2>${t('profH')}</h2><p style="margin:0">${esc(p.last)} ${esc(p.first)}<br><span class="note">${esc(D.email)} · ${esc(p.phone)} · ${fd(p.dob)}</span></p>
+  <section class="card"><h2>${t('profH')}</h2><p style="margin:0">${esc(p.last)} ${esc(p.first)}<br><span class="note">${esc(D.email)} · ${esc(p.phone)} · ${fd(p.dob)}${p.city?' · '+esc(p.city):''}</span></p>
     <div class="actions" style="margin-top:.9rem"><button class="btn" id="ed" type="button">${t('edit')}</button><button class="btn danger" id="dl" type="button">${t('del')}</button></div>
     <p class="note" style="margin-top:.8rem">${t('privacy')}</p></section>`}
+function bindHome(){
+  document.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>{OPEN={kind:b.dataset.add};render();setTimeout(()=>$('#iform')?.scrollIntoView({behavior:'smooth',block:'center'}),50)});
+  document.querySelectorAll('[data-ied]').forEach(b=>b.onclick=()=>{const i=D.items.find(x=>x.id===b.dataset.ied);OPEN={kind:i.kind,id:i.id};render();setTimeout(()=>$('#iform')?.scrollIntoView({behavior:'smooth',block:'center'}),50)});
+  document.querySelectorAll('[data-idel]').forEach(b=>b.onclick=async()=>{if(!b.dataset.sure){b.dataset.sure=1;b.textContent=t('delQ');return}try{D=await apiP('/api/my/item/del',{id:b.dataset.idel});render()}catch(e){}});
+  if(OPEN&&$('#iform'))bindItemForm(OPEN.kind,OPEN.id);
+  const pf=$('#phf');if(pf)pf.onchange=async()=>{const f=pf.files[0];if(!f)return;try{const blob=await shrinkImg(f,900);const r=await fetch('/api/my/photo',{method:'POST',headers:{'content-type':'image/jpeg'},body:blob,credentials:'same-origin'});const j=await r.json();if(!r.ok)throw 0;D=j;render();toastMy(D.verified?t('sentClub'):t('saved'))}catch(e){toastMy(t('itErr'))}}}
+function shrinkImg(file,max){return new Promise((res,rej)=>{const img=new Image(),u=URL.createObjectURL(file);img.onload=()=>{const k=Math.min(1,max/Math.max(img.width,img.height)),c=document.createElement('canvas');c.width=Math.round(img.width*k);c.height=Math.round(img.height*k);c.getContext('2d').drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(u);c.toBlob(b=>b?res(b):rej(),'image/jpeg',.86)};img.onerror=()=>{URL.revokeObjectURL(u);rej()};img.src=u})}
 
 function picker(){const cl=D.clubs||[];
   return `<div><h1>${t('pickH')}</h1><p class="sub">${t('pickP')}</p></div>
@@ -187,11 +312,12 @@ function picker(){const cl=D.clubs||[];
   <p class="note">${t('soon')}</p>`}
 function render(){applyLang();if(!D)return;const v=$('#v');if(GL){GL.destroy();GL=null}if(FD){FD.destroy();FD=null}
   const who=`<p class="note" style="margin:0">${t('as')} <b style="color:var(--fg)">${esc(D.email)}</b> · <a href="/auth/logout?next=/my/" style="color:var(--gold)">${t('notYou')}</a></p>`;
+  if(D.profile&&!D.profile.consentData&&!PICK){PICK=D.profile.club}
   if((!D.profile||EDIT)&&!PICK){v.innerHTML=who+picker();const pick=id=>{PICK=id;render();window.scrollTo({top:0,behavior:'smooth'})};
     try{GL=PITGlobe.mount($('#gl'),{clubs:(D.clubs||[]).map(c=>({...c,city:cityOf(c)})),focus:(D.profile&&D.profile.club)||null,onPick:c=>pick(c.id),label:t('pickH')})}catch(e){$('#gl').hidden=true}
     v.querySelectorAll('[data-pick]').forEach(b=>b.onclick=()=>pick(b.dataset.pick));return}
-  if(!D.profile||EDIT){v.innerHTML=who+form();bindForm();return}
-  v.innerHTML=who+home();
+  if(!D.profile||EDIT||!D.profile.consentData){v.innerHTML=who+form();bindForm();return}
+  v.innerHTML=who+home();bindHome();
   $('#ed').onclick=()=>{EDIT=true;PICK=D.profile.club;render();window.scrollTo({top:0})};
   $('#dl').onclick=async e=>{const b=e.currentTarget;if(!b.dataset.sure){b.dataset.sure=1;b.textContent=t('delSure');return}b.disabled=true;try{await api({method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({delete:true})});location.replace('/login?next=%2Fmy%2F')}catch(err){b.disabled=false}}}
 applyLang();

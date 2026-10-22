@@ -182,6 +182,13 @@ input::-webkit-date-and-time-value{text-align:left}
 @media (max-width:620px){.top .state{display:none}
   .tabs{order:4}
 }
+.tabn{display:inline-block;min-width:1.1rem;margin-left:.3rem;padding:0 .3rem;border-radius:1rem;background:var(--bad,#b4233a);color:#fff;font-size:.66rem;line-height:1.1rem;text-align:center;vertical-align:1px}
+.pv-h{display:flex;align-items:center;gap:.7rem;flex-wrap:wrap}.pv-h img,.pv-a{width:2.8rem;height:2.8rem;border-radius:50%;object-fit:cover;flex:none}.pv-a{display:grid;place-items:center;background:var(--gold-bg,#f4e9c9);color:var(--gold);font-weight:800}.pv-h div{flex:1;min-width:10rem}.pv-h small{display:block;color:var(--muted);font-size:.78rem}.pv-h .bad{color:var(--bad)}
+.pv h3{font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:1rem 0 .4rem}
+.pv-t{width:100%;border-collapse:collapse;font-size:.86rem}.pv-t th{text-align:left;color:var(--muted);font-size:.72rem;font-weight:700;padding:.3rem}.pv-t td{border-top:1px solid var(--line);padding:.4rem .3rem;vertical-align:middle;overflow-wrap:anywhere}
+.pv-it{border-top:1px solid var(--line);padding:.6rem 0;display:flex;gap:.6rem;align-items:flex-start;flex-wrap:wrap}.pv-ih{flex:1;min-width:12rem;display:flex;flex-direction:column;gap:.15rem}.pv-ih small{color:var(--muted);font-size:.78rem}.pv-ih em{font-size:.84rem;color:var(--muted)}.pv-ih a{color:var(--gold);font-weight:700;font-size:.82rem}
+.pv-f{display:flex;gap:.5rem;margin-top:.8rem;flex-wrap:wrap}.pv-f input{flex:1;min-width:12rem}
+html[data-role=trainer] .fin-only{display:none!important}
 .cashbal{display:grid;grid-template-columns:minmax(0,1.2fr) 1fr 1fr;gap:.8rem;align-items:center}
 .cb{display:flex;flex-direction:column;gap:.1rem}.cb b{font-size:1.45rem;font-weight:600;line-height:1.1}.cb span{font-size:.74rem;color:var(--muted);font-weight:600}
 @media (max-width:620px){.cashbal{grid-template-columns:1fr 1fr}.cashbal>div:first-child{grid-column:1/-1}.kpis[style]{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
@@ -202,6 +209,7 @@ html[data-role=trainer] #ldone,html[data-role=trainer] [data-dr=askdel]{display:
     <button role="tab" data-tab="today" aria-selected="true">Сегодня</button>
     <button role="tab" data-tab="members" aria-selected="false">Бойцы</button>
     <button role="tab" data-tab="leads" aria-selected="false">Заявки</button>
+    <button role="tab" data-tab="pv" aria-selected="false" class="fin-only">Анкеты<b class="tabn" id="pvN" hidden></b></button>
     <button role="tab" data-tab="events" aria-selected="false">События</button>
     <button role="tab" data-tab="sched" aria-selected="false">Расписание</button>
     <button role="tab" data-tab="cash" aria-selected="false">Касса</button>
@@ -262,8 +270,8 @@ function render(){
   document.body.classList.toggle('ro',!S.canWrite);
   document.querySelectorAll('.tabs button').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.tab===S.tab)));
   const v=$('#view');const sy=scrollY;
-  v.innerHTML=({today:vToday,members:vMembers,leads:vLeads,cash:vCash,events:vEvents,sched:vSched,rep:vReports,plans:vSettings})[S.tab]();
-  bindView(v);if(S.tab==='sched')bindSched(v);scrollTo(0,sy);
+  v.innerHTML=({today:vToday,members:vMembers,leads:vLeads,cash:vCash,events:vEvents,sched:vSched,pv:vPv,rep:vReports,plans:vSettings})[S.tab]();
+  bindView(v);if(S.tab==='sched')bindSched(v);if(S.tab==='pv')bindPv(v);scrollTo(0,sy);
   if(S.open)renderDrawer();else if(S.ov)renderOv();
 }
 function loadingOrEmpty(){
@@ -406,6 +414,7 @@ function renderDrawer(){
       pays=S.payments.filter(p=>p.mid===m.id).sort((a,b)=>String(b.date).localeCompare(String(a.date))),wa=phoneDigits(m.phone),pm=m.parent&&m.parent.mid?S.members.find(x=>x.id===m.parent.mid):null,kids=S.members.filter(x=>x.parent&&x.parent.mid===m.id),dia=S.diary.filter(d=>d.mid===m.id).sort((a,b)=>String(b.ts).localeCompare(String(a.ts)));
     body=`<div class="acts w-only">${todayIds().has(m.id)?'<span class="pill ok">✓ отмечен сегодня</span>':`<button class="btn gold" data-visit="${m.id}">Пришёл сегодня</button>`}
         ${m.kind!=='staff'?`<button class="btn" data-dr="renew">Продлить</button><button class="btn" data-dr="change">Сменить абонемент</button>`:''}<button class="btn" data-dr="edit">Изменить</button></div>
+      ${pitBlock(m)}
       <section class="card"><h2>Абонемент</h2><dl class="kv">
         <dt>Тариф</dt><dd>${esc(t?.name||m.pkg||'—')}${m.price!=null&&m.kind!=='staff'?` · <span class="num">${lira(m.price)}</span>`:''}</dd>
         <dt>Период</dt><dd class="num">${fmtD(m.start)} — ${m.kind==='staff'?'без срока':fmtD(m.end)}</dd>
@@ -1017,6 +1026,47 @@ function bindMods(v){
   const ws=[...v.querySelectorAll('[data-who]')].filter(e=>e.dataset.who);if(ws.length&&USER&&USER.profiles){USER.profiles([...new Set(ws.map(e=>e.dataset.who))]).then(ps=>ws.forEach(e=>{const n=ps[e.dataset.who]?.name;e.textContent=n||''})).catch(()=>{})}
 }
 
+/* ===== Анкеты бойцов My PIT: проверка клубом, ✓ Verified, приглашения ===== */
+S.pv=null;
+async function loadPv(){try{const r=await fetch('/api/review',{cache:'no-store',credentials:'same-origin'});if(!r.ok)return;S.pv=await r.json();const n=S.pv.counts.todo,b=$('#pvN');if(b){b.hidden=!n;b.textContent=n}if(S.tab==='pv'||S.open)render();else updBell()}catch(e){}}
+setTimeout(loadPv,800);setInterval(()=>{if(!document.hidden)loadPv()},30000);
+const PVF={last:'Фамилия',first:'Имя',dob:'Дата рождения',phone:'Телефон',disc:'Направление',kind:'Формат',note:'Комментарий',weight:'Вес / категория',stance:'Стойка',belt:'Пояс / ранг',city:'Город',photo:'Фото',parent:'Родитель'};
+const PVST={orthodox:'Ортодокс',southpaw:'Левша',switch:'Свитч'},PVLV={club:'клубный',city:'городской',regional:'региональный',national:'национальный',international:'международный',pro:'профессиональный'};
+const pvVal=(k,v)=>{if(v==null||v==='')return'<span class="muted">—</span>';if(k==='photo')return `<img src="/api/my/photo/${esc(v)}" alt="" style="width:3.2rem;height:3.2rem;object-fit:cover;border-radius:50%">`;if(k==='parent')return esc((v.name||'')+' '+(v.phone||''));if(k==='dob')return fmtD(v);if(k==='stance')return esc(PVST[v]||v);if(k==='kind')return v==='ind'?'индивидуально':'группа';return esc(v)};
+function pvItem(i){const d=i.data,lk=d.link||d.url;let h='';
+  if(i.kind==='comp')h=`<b>${esc(d.name)}</b><small>${esc(d.date)}${d.place?' · '+esc(d.place):''}${d.org?' · '+esc(d.org):''} · ${esc(PVLV[d.level]||'')}${d.disc?' · '+esc(d.disc):''}${d.weight?' · '+esc(d.weight):''}</small><span>${d.rtype==='bout'?({W:'Победа',L:'Поражение',D:'Ничья'})[d.res]+(d.method?' · '+esc(d.method):'')+(d.opp?' · против '+esc(d.opp):''):d.pos==='part'?'Участие':['','🥇 1','🥈 2','🥉 3'][+d.pos]+' место'}</span>${d.desc?`<em>${esc(d.desc)}</em>`:''}`;
+  if(i.kind==='title')h=`<b>🏆 ${esc(d.name)}</b><small>${[d.year,d.org].filter(Boolean).map(esc).join(' · ')}</small>`;
+  if(i.kind==='club')h=`<b>Прошлый клуб: ${esc(d.name)}</b><small>${esc(d.city||'')} · ${esc(d.from||'?')} — ${esc(d.to||'н.в.')}</small>`;
+  if(i.kind==='link')h=`<b>🔗 Профиль: ${esc(d.site||'')}</b><small>Импорт: откройте ссылку и подтвердите соревнования бойца, которые там указаны</small>`;
+  return `<div class="pv-it"><div class="pv-ih">${h}${lk?`<a href="${esc(lk)}" target="_blank" rel="noopener nofollow">Открыть ссылку ↗</a>`:''}</div><div class="acts w-only"><button class="btn sm gold" data-pvi="${esc(i.id)}" data-a="ok">✓ Подтвердить</button><button class="btn sm danger" data-pvi="${esc(i.id)}" data-a="no">Отклонить</button></div></div>`}
+function vPv(){const P=S.pv;if(!P)return `<div class="head"><div><h1>Анкеты бойцов</h1></div></div><div class="card empty">Загружаю анкеты…</div>`;
+  const regs=(S.leads||[]).filter(pitPending),mn=id=>S.members.find(m=>m.id===id);
+  return `<div class="head"><div><h1>Анкеты бойцов</h1><p class="sub">Боец сам правит анкету в My PIT — подтверждает только клуб. После подтверждения у бойца ✓ Verified и логотип клуба, данные переносятся в карточку.</p></div>
+    <button class="btn w-only" data-pvinvall>Пригласить всех с e-mail</button></div>
+  <div class="kpis"><div class="kpi warn"><b>${P.counts.todo}</b><span>анкет на проверке</span></div><div class="kpi"><b>${P.counts.items}</b><span>достижений ждут</span></div><div class="kpi ok"><b>${P.counts.verified}</b><span>✓ Verified</span></div><div class="kpi"><b>${P.all.length}</b><span>бойцов в My PIT</span></div></div>
+  ${regs.length?`<button class="card" data-pitgo="1" style="display:flex;align-items:center;justify-content:space-between;gap:.8rem;width:100%;text-align:left;cursor:pointer;border-color:var(--gold);font:inherit;color:inherit"><span><b>${regs.length} новых регистраций ждут одобрения</b><small style="display:block;color:var(--muted);font-size:.8rem">Одобрение в «Заявках»: подтвердите и привяжите к карточке бойца.</small></span><span class="pill gold">Открыть</span></button>`:''}
+  ${P.todo.map(x=>{const m=x.mid&&mn(x.mid),pk=x.pending?Object.keys(x.pending):[],pi=x.items.filter(i=>i.status==='pending');
+    return `<section class="card pv" data-pve="${esc(x.email)}"><div class="pv-h">${x.photo?`<img src="${esc(x.photo)}" alt="">`:`<span class="pv-a">${esc((x.profile.first||'?')[0])}</span>`}<div><b>${esc(x.name)}</b><small>${esc(x.email)}${m?' · карточка: '+esc(m.name):' · <span class="bad">не привязан к карточке</span>'}</small></div>${x.verified?'<span class="pill ok">✓ Verified</span>':'<span class="pill warn">не подтверждён</span>'}</div>
+      ${pk.length?`<h3>Изменения анкеты</h3><table class="pv-t"><thead><tr><th>Поле</th><th>Было</th><th>Стало</th></tr></thead><tbody>${pk.map(k=>`<tr><td>${esc(PVF[k]||k)}</td><td>${pvVal(k,x.profile[k])}</td><td><b>${pvVal(k,x.pending[k])}</b></td></tr>`).join('')}</tbody></table>
+        <div class="acts w-only"><button class="btn sm gold" data-pvp="ok">✓ Подтвердить изменения</button><button class="btn sm danger" data-pvp="no">Отклонить изменения</button></div>`:''}
+      ${pi.length?`<h3>Достижения на проверке · ${pi.length}</h3>${pi.map(pvItem).join('')}`:''}
+      <div class="pv-f w-only"><input type="text" class="pv-note" maxlength="300" placeholder="Комментарий бойцу при отклонении (необязательно)">${pk.length||pi.length>1?`<button class="btn gold" data-pvall>✓ Подтвердить всё</button>`:''}</div></section>`}).join('')||'<div class="card empty">Нет анкет на проверке. Когда боец изменит анкету или добавит медали и соревнования, они появятся здесь.</div>'}
+  <section class="card"><h2>Бойцы в My PIT · ${P.all.length}</h2><div class="list">${P.all.map(x=>{const m=x.mid&&mn(x.mid),ok=x.items.filter(i=>i.status==='ok');
+    return `<div class="row" style="grid-template-columns:minmax(0,1fr) auto;cursor:default"><span class="nm">${esc(x.name||x.email)}<small>${esc(x.email)}${m?' · '+esc(m.name):''} · медалей ${ok.filter(i=>i.kind==='comp'&&['1','2','3'].includes(i.data.pos)&&i.data.rtype!=='bout').length} · соревнований ${ok.filter(i=>i.kind==='comp').length}${x.invited&&!x.profile.consentData?' · приглашён, ещё не вошёл':''}</small></span>${x.verified?'<span class="pill ok">✓ Verified</span>':'<span class="pill warn">ждёт</span>'}</div>`}).join('')||'<div class="empty">Пока никого. Пригласите бойцов или покажите QR на ресепшене: app.pitrating.com/my</div>'}</div></section>`}
+function bindPv(v){
+  const post=async(u,b,msg)=>{try{const r=await fetch(u,{method:'POST',headers:{'content-type':'application/json'},credentials:'same-origin',body:JSON.stringify(b)});const j=await r.json().catch(()=>({}));if(!r.ok)throw 0;if(msg){toast(msg);audit(msg)}await loadPv();return j}catch(e){toast('Не сохранилось');return null}};
+  v.querySelectorAll('[data-pvi]').forEach(b=>b.addEventListener('click',()=>{const c=b.closest('[data-pve]');post('/api/review',{item:b.dataset.pvi,act:b.dataset.a,note:c.querySelector('.pv-note')?.value||''},(b.dataset.a==='ok'?'Достижение подтверждено: ':'Достижение отклонено: ')+c.querySelector('b').textContent)}));
+  v.querySelectorAll('[data-pvp]').forEach(b=>b.addEventListener('click',()=>{const c=b.closest('[data-pve]');post('/api/review',{email:c.dataset.pve,act:b.dataset.pvp==='ok'?'profile_ok':'profile_no',note:c.querySelector('.pv-note')?.value||''},(b.dataset.pvp==='ok'?'Анкета подтверждена: ':'Изменения анкеты отклонены: ')+c.querySelector('b').textContent)}));
+  v.querySelectorAll('[data-pvall]').forEach(b=>b.addEventListener('click',()=>{const c=b.closest('[data-pve]');post('/api/review',{email:c.dataset.pve,act:'all_ok'},'Всё подтверждено: '+c.querySelector('b').textContent)}));
+  const ia=v.querySelector('[data-pvinvall]');if(ia)ia.addEventListener('click',async()=>{if(!ia.dataset.sure){ia.dataset.sure=1;ia.textContent='Отправить приглашения?';return}ia.disabled=true;const j=await post('/api/review/invite',{all:true});if(j)toast(`Приглашений отправлено: ${j.sent}${j.noEmail?` · без e-mail: ${j.noEmail}`:''}`);ia.disabled=false;ia.textContent='Пригласить всех с e-mail';delete ia.dataset.sure});
+}
+function pitBlock(m){if(m.kind==='staff'||!S.pv)return'';const x=S.pv.all.find(f=>f.mid===m.id);
+  if(x)return `<section class="card"><h2>My PIT</h2><div style="display:flex;align-items:center;gap:.6rem;flex-wrap:wrap">${x.verified?'<span class="pill ok">✓ Verified</span>':'<span class="pill warn">не подтверждён</span>'}<span class="muted small">${esc(x.email)}${x.invited&&!x.profile.consentData?' · приглашён, ещё не вошёл':''}</span><span style="flex:1"></span><button class="btn sm" data-pitopen="1">Анкета бойца${x.pending||x.pendingItems?` · на проверке ${(x.pending?1:0)+x.pendingItems}`:''}</button></div></section>`;
+  const em=String(m.email||'').trim();
+  return `<section class="card"><h2>My PIT</h2><div style="display:flex;align-items:center;gap:.6rem;flex-wrap:wrap"><span class="muted small">${em?'Боец ещё не в My PIT.':'Нет e-mail — добавьте его в карточку, чтобы пригласить. Или боец сам зарегистрируется по QR.'}</span><span style="flex:1"></span>${em?`<button class="btn sm gold w-only" data-pitinv="${esc(m.id)}">Пригласить в My PIT</button>`:''}</div></section>`}
+document.addEventListener('click',async e=>{const op=e.target.closest('[data-pitopen]');if(op){S.open=null;$('#ovHost').innerHTML='';S.tab='pv';render();scrollTo(0,0);return}
+  const iv=e.target.closest('[data-pitinv]');if(iv){iv.disabled=true;try{const r=await fetch('/api/review/invite',{method:'POST',headers:{'content-type':'application/json'},credentials:'same-origin',body:JSON.stringify({mid:iv.dataset.pitinv})});const j=await r.json();toast(j.sent?'Приглашение отправлено':'Не отправлено: проверьте e-mail');if(j.sent)audit('Приглашение в My PIT');await loadPv()}catch(x){toast('Не отправлено')}iv.disabled=false}});
+
 /* ===== Уведомления CRM: продление, неоплата, пакеты, ДР, пробные, регистрации, заморозки, события ===== */
 const NREAD_K='pit.crm.nread';let NREAD={};try{NREAD=JSON.parse(localStorage.getItem(NREAD_K)||'{}')}catch(e){}
 const saveNR=()=>{try{const d=today(),o={};for(const k in NREAD)if(NREAD[k]>=d)o[k]=NREAD[k];NREAD=o;localStorage.setItem(NREAD_K,JSON.stringify(o))}catch(e){}};
@@ -1024,6 +1074,7 @@ function notes(){const out=[],td=today(),tm=addDays(td,1),M=S.members.filter(m=>
   const add=(key,pri,icon,t,sub,go)=>out.push({key,pri,icon,t,sub,go});
   const vis=new Set(),lastVis={};for(const d in S.visits){(S.visits[d].ids||[]).forEach(id=>{if(!lastVis[id]||lastVis[id]<d)lastVis[id]=d})}
   (S.leads||[]).filter(pitPending).forEach(x=>add('reg:'+x.id,1,'🆕','Регистрация в My PIT ждёт одобрения',x.name+(x.match?' · похоже на '+x.match.name:''),{lead:x.id}));
+  ((S.pv&&S.pv.todo)||[]).forEach(x=>add('pv:'+x.email+':'+x.updated,1,'🪪','Анкета бойца на проверке',x.name+(x.pending?' · изменения анкеты':'')+(x.pendingItems?` · достижений: ${x.pendingItems}`:''),{pv:1}));
   (S.freezes||[]).filter(r=>r.status==='pending').forEach(r=>{const m=S.members.find(z=>z.id===r.mid);add('frz:'+r.id,1,'❄️','Запрос заморозки',(m?m.name:'Боец')+' · '+fmtD(r.start)+' — '+fmtD(r.end),{m:r.mid})});
   M.forEach(m=>{if(frozenNow(m))return;const d=daysLeft(m.end),lv=lastVis[m.id];
     if(d!=null&&d<0&&lv&&lv>m.end)add('debt:'+m.id+':'+lv,1,'⚠️','Ходит без оплаты',`${m.name} · абонемент истёк ${fmtD(m.end)}, был ${fmtD(lv)}`,{m:m.id});
@@ -1044,7 +1095,7 @@ function renderNtf(){let p=$('.ntf');const L=notes();if(!p){p=document.createEle
   p.querySelectorAll('[data-nr]').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation();NREAD[b.dataset.nr]=until;saveNR();updBell()}));
   const na=p.querySelector('[data-nall]');if(na)na.addEventListener('click',()=>{L.forEach(x=>NREAD[x.key]=until);saveNR();updBell()});
   p.querySelectorAll('[data-nk]').forEach(r=>{const go=()=>{const x=L.find(z=>z.key===r.dataset.nk);if(!x)return;NREAD[x.key]=until;saveNR();closeNtf();
-    if(x.go.m){S.open=x.go.m;S.drMode='view';renderDrawer()}else if(x.go.lead){S.tab='leads';render();S.ov={type:'lead',id:x.go.lead};renderOv()}else if(x.go.ev){S.tab='events';render();S.ov={type:'event',id:x.go.ev};renderOv()}updBell()};
+    if(x.go.m){S.open=x.go.m;S.drMode='view';renderDrawer()}else if(x.go.lead){S.tab='leads';render();S.ov={type:'lead',id:x.go.lead};renderOv()}else if(x.go.ev){S.tab='events';render();S.ov={type:'event',id:x.go.ev};renderOv()}else if(x.go.pv){S.tab='pv';render();scrollTo(0,0)}updBell()};
     r.addEventListener('click',go);r.addEventListener('keydown',e=>{if(e.key==='Enter')go()})})}
 function closeNtf(){const p=$('.ntf');if(p)p.remove();$('#bell').setAttribute('aria-expanded','false')}
 $('#bell').addEventListener('click',e=>{e.stopPropagation();if($('.ntf'))closeNtf();else{renderNtf();$('#bell').setAttribute('aria-expanded','true')}});
@@ -1052,7 +1103,7 @@ document.addEventListener('click',e=>{const p=$('.ntf');if(p&&!p.contains(e.targ
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeNtf()});
 
 document.querySelectorAll('.tabs button').forEach(b=>b.addEventListener('click',()=>{S.tab=b.dataset.tab;try{localStorage.setItem('mowgli.tab',S.tab)}catch(e){}render();scrollTo(0,0)}));
-try{let t=localStorage.getItem('mowgli.tab');if(t==='fin'||t==='shop')t='cash';if(['today','members','leads','cash','events','sched','rep','plans'].includes(t))S.tab=t}catch(e){}
+try{let t=localStorage.getItem('mowgli.tab');if(t==='fin'||t==='shop')t='cash';if(['today','members','leads','pv','cash','events','sched','rep','plans'].includes(t))S.tab=t}catch(e){}
 function setThm(d){document.documentElement.classList.toggle("dk",d);const b=$("#thm");b.textContent=d?"☀":"☾";b.setAttribute("aria-label",d?"Светлая тема":"Тёмная тема");try{localStorage.setItem("mowgli.theme",d?"dark":"light")}catch(e){}}
 let DK=false;try{DK=localStorage.getItem("mowgli.theme")==="dark"}catch(e){}setThm(DK);$("#thm").addEventListener("click",()=>{DK=!DK;setThm(DK)});
 render();
