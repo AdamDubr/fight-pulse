@@ -285,9 +285,9 @@ const FLB={name:'ФИО',last:'Фамилия',first:'Имя',email:'E-mail',pho
 /* ===== рендер ===== */
 /* фоновые обновления (синхронизация, анкеты) не перерисовывают форму, которую сейчас заполняют */
 const DIRTY={view:false,ov:false};
-const markDirty=e=>{const t=e.target;if(!t||!t.closest||t.type==='search')return;if(t.closest('#ovHost'))DIRTY.ov=true;else if(t.closest('#view'))DIRTY.view=true};document.addEventListener('input',markDirty,true);document.addEventListener('change',markDirty,true);
+const markDirty=e=>{const t=e.target;if(!t||!t.closest||t.type==='search')return;if(t.closest('#ovHost'))DIRTY.ov=true;else if(t.closest('#view'))DIRTY.view=true};document.addEventListener('input',markDirty,true);document.addEventListener('change',markDirty,true);document.addEventListener('submit',e=>{const t=e.target;if(t&&t.closest){if(t.closest('#ovHost'))setTimeout(()=>DIRTY.ov=false,0);else if(t.closest('#view'))setTimeout(()=>DIRTY.view=false,0)}},true);
 const busy=sel=>{const h=$(sel),a=document.activeElement;return!!(h&&a&&h.contains(a)&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)&&a.type!=='search')};
-const ovForm=()=>{if(S.open)return S.open==='new'||(!!S.drMode&&S.drMode!=='view');const h=$('#ovHost');return!!(h&&h.querySelector('form'))};
+const ovForm=()=>S.open?S.open==='new'||(!!S.drMode&&S.drMode!=='view'):false;
 function renderBg(){const skipV=DIRTY.view||busy('#view'),skipO=DIRTY.ov||busy('#ovHost')||ovForm();
   if(!skipV)return render({keepOv:skipO,bg:true});
   try{updBell()}catch(e){}
@@ -299,7 +299,7 @@ function render(o){
   document.querySelectorAll('.tabs button').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.tab===S.tab)));
   const v=$('#view');const sy=scrollY;
   v.innerHTML=({today:vToday,members:vMembers,leads:vLeads,cash:vCash,events:vEvents,sched:vSched,pv:vPv,rep:vReports,plans:vSettings})[S.tab]();
-  bindView(v);if(S.tab==='sched')bindSched(v);if(S.tab==='pv')bindPv(v);scrollTo(0,sy);
+  bindView(v);if(S.tab==='sched')bindSched(v);if(S.tab==='pv')bindPv(v);if(S.tab==='leads')fillWho(v);scrollTo(0,sy);
   if(o&&o.keepOv)return;
   const d=$('#ovHost .dr'),st=d?d.scrollTop:0;
   if(S.open)renderDrawer();else if(S.ov)renderOv();
@@ -785,9 +785,29 @@ function awayList(){const n=SET().retDays,ref=TRACK0>today()?today():TRACK0;
 
 /* ---------- заявки и пробные ---------- */
 const pitPending=x=>!!(x&&x.pit&&!x.approved&&!x.rejected&&(x.status||'new')==='new');
-const LSTAT=[['new','Новая','info'],['booked','Записан на пробное','warn'],['done','Пробное прошёл','gold'],['bought','Купил абонемент','ok'],['lost','Отказ','bad']];
+const LSTAT=[['new','Новая','info'],['booked','Записан на пробное','warn'],['done','Пробное прошёл','gold'],['think','Думает','gold'],['bought','Купил абонемент','ok'],['lost','Отказ','bad']];
 const LSRC=['PIT · регистрация','Instagram','Google / карты','Рекомендация','Мимо проходил','Сайт','Другое'];
 const LLOST=['Дорого','Не подошло расписание','Далеко','Не понравилось','Не пришёл на пробное','Другое'];
+const LTHINK=['Далеко','Не понравилось','Дорого','Не подошло расписание','Хочет подумать','Позже / после отпуска','Другое'];
+const LCH=['WhatsApp','Звонок','Instagram','Telegram','SMS','E-mail','Лично'];
+const fillWho=root=>{const ws=[...root.querySelectorAll('[data-who]')].filter(e=>e.dataset.who);if(!ws.length)return;const fb=()=>ws.forEach(e=>{if(!e.textContent)e.textContent=e.dataset.who.split('@')[0]});
+  if(USER&&USER.profiles)USER.profiles([...new Set(ws.map(e=>e.dataset.who))]).then(ps=>ws.forEach(e=>{const n=ps[e.dataset.who]?.name;e.textContent=n||e.dataset.who.split('@')[0]})).catch(fb);else fb()};
+const leadOpen=x=>['new','booked','done','think'].includes(x.status||'new');
+function touchHTML(x){const T=(x.touches||[]).slice().reverse(),td=today(),late=x.nextAt&&x.nextAt<td;
+  return`<section class="card"><h2>Напоминания клиенту${T.length?' · '+T.length:''}</h2>
+   ${x.nextAt?`<p style="margin:0 0 .6rem">🔔 Следующее напоминание: <b style="${late?'color:var(--bad)':''}">${fmtD(x.nextAt)}${late?' · просрочено':x.nextAt===td?' · сегодня':''}</b></p>`:'<p class="note" style="margin:0 0 .6rem">Дата следующего напоминания не назначена.</p>'}
+   ${T.length?`<div class="list" style="margin-bottom:.7rem">${T.map(t=>`<div class="row" style="grid-template-columns:minmax(0,1fr) auto;cursor:default"><span class="nm">${esc(t.ch||'')}${t.text?' · '+esc(t.text):''}<small>${(()=>{const d=new Date(t.at);return isNaN(d)?'':fmtD(iso(d))+' '+pad(d.getHours())+':'+pad(d.getMinutes())})()} <span data-who="${esc(t.by||'')}"></span>${t.next?' · следующее на '+fmtD(t.next):''}</small></span>${t.kind==='think'?'<span class="pill gold">думает</span>':''}</div>`).join('')}</div>`:''}
+   <form class="form w-only" id="ltouch"><label class="f">Канал<select id="lt_c">${LCH.map(c=>`<option>${c}</option>`).join('')}</select></label>
+    <label class="f">Следующее напоминание<input type="date" id="lt_n" value="${addDays(td,7)}"></label>
+    <label class="f full">Что отправили / ответ клиента<input type="text" id="lt_t" maxlength="300" placeholder="Напомнили о скидке на первый месяц, ответил: подумает до выходных"></label>
+    <div class="acts full"><button class="btn gold" type="submit">Отметить напоминание</button><button class="btn sm" type="button" data-ltnone>Без следующего</button></div></form></section>`}
+function leadStats(){const since=addDays(today(),-30),by={},td=today();
+  S.leads.forEach(x=>{(x.touches||[]).forEach(t=>{if(String(t.at).slice(0,10)<since)return;const k=t.by||'—',o=by[k]||(by[k]={n:0,leads:new Set(),bought:new Set()});o.n++;o.leads.add(x.id);if(x.status==='bought')o.bought.add(x.id)})});
+  const late=S.leads.filter(x=>leadOpen(x)&&x.nextAt&&x.nextAt<td),think=S.leads.filter(x=>x.status==='think'),nosched=S.leads.filter(x=>x.status==='think'&&!x.nextAt);
+  const rows=Object.entries(by).sort((a,b)=>b[1].n-a[1].n);
+  return`<section class="card"><h2>Работа с заявками · 30 дней</h2>
+   <div class="kpis" style="margin-bottom:.7rem"><div class="kpi gold"><b>${think.length}</b><span>думают</span></div><div class="kpi ${late.length?'bad':'ok'}"><b>${late.length}</b><span>просрочено напоминаний</span></div><div class="kpi ${nosched.length?'warn':''}"><b>${nosched.length}</b><span>думают без даты напоминания</span></div></div>
+   ${rows.length?`<table class="pv-t"><thead><tr><th>Сотрудник</th><th>Напоминаний</th><th>Клиентов</th><th>Купили</th><th>Конверсия</th></tr></thead><tbody>${rows.map(([k,o])=>`<tr><td><span data-who="${esc(k==='—'?'':k)}">${k==='—'?'—':''}</span></td><td class="num">${o.n}</td><td class="num">${o.leads.size}</td><td class="num">${o.bought.size}</td><td class="num">${o.leads.size?Math.round(o.bought.size/o.leads.size*100):0}%</td></tr>`).join('')}</tbody></table>`:'<p class="note" style="margin:0">Напоминаний за 30 дней ещё не было.</p>'}</section>`}
 const lst=k=>LSTAT.find(x=>x[0]===k)||LSTAT[0];
 function vLeads(){const L=S.leads.slice().sort((a,b)=>String(b.ts).localeCompare(String(a.ts))),f=S.lflt||'open',
   F={open:x=>!['bought','lost'].includes(x.status),all:()=>true,...Object.fromEntries(LSTAT.map(([k])=>[k,x=>x.status===k]))},
@@ -797,7 +817,7 @@ function vLeads(){const L=S.leads.slice().sort((a,b)=>String(b.ts).localeCompare
    <button class="btn gold w-only" data-act="leadnew">+ Заявка</button></div>
   <div class="kpis"><div class="kpi"><b>${c('new')}</b><span>новые заявки</span></div><div class="kpi warn"><b>${c('booked')}</b><span>записаны на пробное</span></div><div class="kpi gold"><b>${c('done')}</b><span>были на пробном, думают</span></div><div class="kpi ok"><b>${c('bought')}</b><span>купили абонемент</span></div><div class="kpi"><b>${conv}%</b><span>конверсия за 30 дней</span></div></div>
   <div class="chips">${[['open','В работе'],['all','Все'],...LSTAT.map(x=>[x[0],x[1]])].map(([k,t])=>`<button class="chip" data-lflt="${k}" aria-pressed="${f===k}">${t}</button>`).join('')}</div>
-  <section class="card" style="padding:.6rem"><div class="list">${R.map(x=>{const st=pitPending(x)?['p','Ждёт одобрения','gold']:lst(x.status);return`<button class="row" data-lead="${x.id}" style="grid-template-columns:minmax(0,1fr) auto"><span class="nm">${esc(x.name)}<small>${esc(x.disc||'—')} · ${x.kind==='ind'?'индивидуальное':'группа'} · ${esc(x.source||'')}${x.trialDate?' · пробное '+fmtD(x.trialDate):''}${pitPending(x)?(()=>{const b=bestMatch(x);return b?` · <b style="color:var(--gold)">≈ ${esc(b.m.name)} (${b.n} совп.)</b>`:x.match?' · похоже на '+esc(x.match.name):''})():''}</small></span><span class="pill ${st[2]}">${st[1]}</span></button>`}).join('')||'<div class="empty">Заявок нет. Добавьте первую через «+ Заявка» — например, звонок или сообщение в Instagram.</div>'}</div></section>`}
+  <section class="card" style="padding:.6rem"><div class="list">${R.map(x=>{const st=pitPending(x)?['p','Ждёт одобрения','gold']:lst(x.status);return`<button class="row" data-lead="${x.id}" style="grid-template-columns:minmax(0,1fr) auto"><span class="nm">${esc(x.name)}<small>${esc(x.disc||'—')} · ${x.kind==='ind'?'индивидуальное':'группа'} · ${esc(x.source||'')}${x.trialDate?' · пробное '+fmtD(x.trialDate):''}${x.status==='think'&&x.thinkReason?' · '+esc(x.thinkReason):''}${leadOpen(x)&&x.nextAt?` · <b style="color:${x.nextAt<today()?'var(--bad)':'var(--gold)'}">🔔 ${fmtD(x.nextAt)}</b>`:''}${pitPending(x)?(()=>{const b=bestMatch(x);return b?` · <b style="color:var(--gold)">≈ ${esc(b.m.name)} (${b.n} совп.)</b>`:x.match?' · похоже на '+esc(x.match.name):''})():''}</small></span><span class="pill ${st[2]}">${st[1]}</span></button>`}).join('')||'<div class="empty">Заявок нет. Добавьте первую через «+ Заявка» — например, звонок или сообщение в Instagram.</div>'}</div></section>${leadStats()}`}
 function leadDrawer(){const host=$('#ovHost'),x=S.ov.id==='new'?{status:'new',kind:'group',disc:'MMA',source:'Instagram'}:S.leads.find(l=>l.id===S.ov.id);if(!x){ovClose();return}
   const s=SET(),price=x.kind==='ind'?s.trialInd:s.trialGroup,st=lst(x.status),isNew=S.ov.id==='new';
   const form=`<form class="card form" id="lf"><label class="f">Имя и фамилия<input type="text" id="l_n" value="${esc(x.name||'')}" required></label>
@@ -814,7 +834,16 @@ function leadDrawer(){const host=$('#ovHost'),x=S.ov.id==='new'?{status:'new',ki
     if(x.status==='booked')act=`<section class="card"><h2>Пробное ${fmtD(x.trialDate)} · ${lira(price)}</h2><form class="form" id="ldone"><label class="f">Способ оплаты<select id="ld_m">${methodOpts('cash')}</select></label><div class="acts" style="align-self:end"><button class="btn gold" type="submit">Пришёл и оплатил</button></div></form>
       <div class="acts" style="margin-top:.6rem"><button class="btn sm" type="button" data-lmove="new">Перенести</button><button class="btn sm danger" type="button" data-lnoshow="1">Не пришёл</button></div></section>`;
     if(x.status==='done')act=`<section class="card"><h2>Решение после пробного</h2><div class="acts"><button class="btn gold adm-only" type="button" data-lbuy="1">Купил абонемент → завести бойца</button></div></section>`;
-    if(['new','booked','done'].includes(x.status))act+=`<section class="card"><h2>Отказ</h2><div class="acts">${LLOST.map(r=>`<button class="btn sm" type="button" data-llost="${esc(r)}">${esc(r)}</button>`).join('')}</div></section>`;
+    if(x.status==='think')act=`<section class="card" style="border-color:var(--gold)"><h2>Думает${x.thinkReason?' · '+esc(x.thinkReason):''}</h2><p class="note" style="margin:0 0 .6rem">С ${fmtD(x.thinkAt||'')}. Напоминайте о клубе и отмечайте каждое касание ниже — по ним видно работу менеджера.</p>
+      <form class="form" id="lbook"><label class="f">Записать на пробное<input type="date" id="lb_d" value="${addDays(today(),1)}"></label><div class="acts" style="align-self:end"><button class="btn gold" type="submit">Записать</button></div></form>
+      ${x.trialDone?'<div class="acts" style="margin-top:.6rem"><button class="btn gold adm-only" type="button" data-lbuy="1">Купил абонемент → завести бойца</button></div>':''}</section>`;
+    if(['new','booked','done'].includes(x.status))act+=`<details class="card"><summary style="cursor:pointer;font-weight:800;font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)">Думает — не готов сейчас</summary>
+      <form class="form" id="lthink" style="margin-top:.6rem"><label class="f">Причина<select id="lk_r">${LTHINK.map(r=>`<option>${esc(r)}</option>`).join('')}</select></label>
+      <label class="f">Напомнить о нас<input type="date" id="lk_d" value="${addDays(today(),7)}" required></label>
+      <label class="f full">Комментарий<input type="text" id="lk_t" maxlength="300" placeholder="Например: живёт в Коньяалты, подумает о расписании"></label>
+      <div class="acts full"><button class="btn gold" type="submit">Перевести в «Думает»</button></div></form></details>`;
+    if(leadOpen(x))act+=touchHTML(x);
+    if(['new','booked','done','think'].includes(x.status))act+=`<section class="card"><h2>Отказ</h2><div class="acts">${LLOST.map(r=>`<button class="btn sm" type="button" data-llost="${esc(r)}">${esc(r)}</button>`).join('')}</div></section>`;
     if(x.status==='bought'&&x.mid)act=`<section class="card"><h2>Стал бойцом</h2><button class="btn" type="button" data-lmember="${x.mid}">Открыть карточку бойца</button></section>`;
     if(x.status==='lost')act=`<section class="card"><h2>Отказ: ${esc(x.lostReason||'')}</h2><button class="btn sm" type="button" data-lmove="new">Вернуть в работу</button></section>`;
     if(pitPending(x)){const opts=S.members.slice().sort((a,b)=>String(a.name).localeCompare(String(b.name),'ru')).map(m=>`<option value="${esc(m.id)}" ${x.match&&x.match.id===m.id?'selected':''}>${esc(m.name)}${m.phone?' · '+esc(m.phone):''}</option>`).join('');
@@ -836,7 +865,7 @@ function leadDrawer(){const host=$('#ovHost'),x=S.ov.id==='new'?{status:'new',ki
     if(isNew){d.status='new';d.ts=new Date().toISOString();d.by=ME||null}
     const ref=isNew?DB.collection('leads').doc():DB.doc('leads/'+x.id);
     if(await write(()=>ref.set(d),isNew?'Заявка: '+name:'Заявка сохранена')){S.ov={type:'lead',id:ref.id};renderOv()}});
-  const up=(patch,msg)=>write(()=>DB.doc('leads/'+x.id).update(patch),msg+': '+x.name);
+  const up=async(patch,msg)=>{const ok=await write(()=>DB.doc('leads/'+x.id).update(patch),msg+': '+x.name);if(ok&&S.ov&&S.ov.id===x.id){DIRTY.ov=false;renderOv()}return ok};
   const apv={approved:true,approvedAt:today(),approvedBy:ME||null};
   const linkTo=mid=>{const m=S.members.find(z=>z.id===mid);if(!m)return;up({...apv,status:'bought',mid,boughtAt:today(),match:{id:mid,name:m.name}},'Привязан к карточке '+m.name)};
   host.querySelectorAll('[data-papp]').forEach(b=>b.addEventListener('click',()=>{const k=b.dataset.papp;
@@ -850,6 +879,13 @@ function leadDrawer(){const host=$('#ovHost'),x=S.ov.id==='new'?{status:'new',ki
     if(await write(()=>DB.collection('payments').doc().set({kind:'trial',lid:x.id,name:x.name,sum:price,date:today(),method,what:'Пробное · '+(x.kind==='ind'?'индивидуальное':'группа'),src:'pit'})))up({status:'done',trialPaid:price,trialDone:today()},'Пробное оплачено '+lira(price))});
   host.querySelectorAll('[data-lmove]').forEach(b=>b.addEventListener('click',()=>up({status:'new'},'Заявка возвращена в работу')));
   const ns=host.querySelector('[data-lnoshow]');if(ns)ns.addEventListener('click',()=>up({status:'lost',lostReason:'Не пришёл на пробное'},'Не пришёл на пробное'));
+  const tk=$('#lthink',host);if(tk)tk.addEventListener('submit',e=>{e.preventDefault();const r=$('#lk_r',host).value,d=$('#lk_d',host).value,t=$('#lk_t',host).value.trim();if(!d){toast('Укажите дату напоминания');return}
+    const now=new Date().toISOString();up({status:'think',thinkReason:r,thinkAt:today(),nextAt:d,touches:[...(x.touches||[]),{at:now,by:ME||null,ch:'Решение',text:r+(t?' · '+t:''),next:d,kind:'think'}]},'Думает ('+r+'), напомнить '+fmtD(d))});
+  const tf2=$('#ltouch',host);if(tf2){const save=(next)=>{const t={at:new Date().toISOString(),by:ME||null,ch:$('#lt_c',host).value,text:$('#lt_t',host).value.trim(),next:next||null};
+      up({touches:[...(x.touches||[]),t],nextAt:next||null},'Напоминание ('+t.ch+')'+(next?', следующее '+fmtD(next):''))};
+    tf2.addEventListener('submit',e=>{e.preventDefault();save($('#lt_n',host).value)});
+    const nn=$('[data-ltnone]',host);if(nn)nn.addEventListener('click',()=>save(null))}
+  fillWho(host);
   host.querySelectorAll('[data-llost]').forEach(b=>b.addEventListener('click',()=>up({status:'lost',lostReason:b.dataset.llost},'Отказ ('+b.dataset.llost+')')));
   const by=host.querySelector('[data-lbuy]');if(by)by.addEventListener('click',()=>{const w=x.name.trim().split(/\s+/);S.prefill={last:w.length>1?w.pop():'',first:w.join(' ')||x.name,phone:x.phone,disc:x.disc,discs:discsOf(x),plan:x.kind==='ind'?(discsOf(x).some(d=>['Бокс','Кикбоксинг'].includes(d))?'ind10b':'ind10m'):((/дет|\b([4-9]|1[0-7])\s*лет/i.test(x.age||'')&&discsOf(x).includes('MMA'))||discsOf(x).includes('Дети · MMA')?'kids12':'grp12')};S.prefillLead=x.id;S.ov=null;S.open='new';renderDrawer()});
   const lm=host.querySelector('[data-lmember]');if(lm)lm.addEventListener('click',()=>{S.ov=null;S.open=lm.dataset.lmember;S.drMode='view';renderDrawer()});
@@ -1240,6 +1276,7 @@ function notes(){const out=[],td=today(),tm=addDays(td,1),M=S.members.filter(m=>
     if(m.left!=null&&m.left<=1&&(d==null||d>=0))add('left:'+m.id+':'+m.left,2,'🎟️',m.left<=0?'Занятия в пакете кончились':'Осталось 1 занятие',m.name,{m:m.id});
     if(m.freeze&&m.freeze.end&&(m.freeze.end===td||m.freeze.end===tm))add('fend:'+m.id+':'+m.freeze.end,3,'🔓','Заканчивается заморозка',`${m.name} · ${fmtD(m.freeze.end)}`,{m:m.id});
     if(/^\d{4}-\d{2}-\d{2}$/.test(m.dob||'')){const md=m.dob.slice(5);if(md===td.slice(5)||md===tm.slice(5))add('bd:'+m.id+':'+td.slice(0,4)+md,3,'🎂',md===td.slice(5)?'День рождения сегодня':'День рождения завтра',m.name,{m:m.id})}});
+  (S.leads||[]).forEach(x=>{if(leadOpen(x)&&x.nextAt&&x.nextAt<=td)add('lnext:'+x.id+':'+x.nextAt+(x.nextAt<td?':'+td:''),x.nextAt<td?1:2,'🔔',x.nextAt<td?'Просрочено напоминание клиенту':'Сегодня напомнить о клубе',x.name+(x.thinkReason?' · '+x.thinkReason:'')+(x.phone?' · '+x.phone:''),{lead:x.id})});
   (S.leads||[]).forEach(x=>{if(x.status==='booked'&&(x.trialDate===td||x.trialDate===tm))add('trial:'+x.id+':'+x.trialDate,2,'🥊',x.trialDate===td?'Пробное сегодня':'Пробное завтра',x.name+(x.phone?' · '+x.phone:''),{lead:x.id});
     if(x.status==='new'&&!pitPending(x)&&x.ts&&Date.now()-new Date(x.ts)>864e5)add('lnew:'+x.id,2,'📞','Заявка без ответа больше суток',x.name+(x.phone?' · '+x.phone:''),{lead:x.id})});
   (S.events||[]).forEach(e=>{const d=daysLeft(e.date);if(d!=null&&d>=0&&d<=3)add('ev:'+e.id+':'+e.date,3,'📅',d===0?'Событие сегодня':`Событие через ${d} дн.`,`${e.title||''} · ${fmtD(e.date)}`,{ev:e.id})});
