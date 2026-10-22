@@ -294,6 +294,23 @@ export async function myRoutes(req, env, path, email, staff) {
     const d = new Date().toISOString().slice(0, 10), v = await getDoc(env, 'visits', d);
     return json({ date: d, ids: v && Array.isArray(v.ids) ? v.ids : [] });
   }
+  // карточка бойца из Зала (Arena): изменения → модерация клубом (pending) → сохранено
+  if (path === '/api/my/card' && req.method === 'POST') {
+    const f = await env.DB.prepare('SELECT data,pending,mid,verified FROM fighters WHERE email=?').bind(email).first();
+    if (!f || !f.mid || !f.verified) return json({ error: 'forbidden' }, 403);
+    const b = await req.json().catch(() => ({})), n = v => Math.max(0, Math.min(999, parseInt(v, 10) || 0)), st = ['orthodox', 'southpaw', 'switch'];
+    const c = {
+      nick: clean(b.nick, 40), weight: clean(b.weight, 20), stance: st.includes(b.stance) ? b.stance : '', city: clean(b.city, 60), belt: clean(b.belt, 40), bio: clean(b.bio, 400),
+      rec: b.rec ? { w: n(b.rec.w), l: n(b.rec.l), d: n(b.rec.d), ko: n(b.rec.ko), sub: n(b.rec.sub) } : null,
+      med: b.med ? { g: n(b.med.g), s: n(b.med.s), b: n(b.med.b) } : null,
+      titles: Array.isArray(b.titles) ? b.titles.map(x => clean(x, 120)).filter(Boolean).slice(0, 8) : null,
+    };
+    const d = JSON.parse(f.data), pend = f.pending ? JSON.parse(f.pending) : {}, emp = x => x == null || x === '' || (Array.isArray(x) && !x.length) || (typeof x === 'object' && !Array.isArray(x) && Object.values(x).every(v => !v)), same = (x, y) => (emp(x) && emp(y)) || JSON.stringify(x ?? '') === JSON.stringify(y ?? '');
+    for (const k of Object.keys(c)) { if (c[k] == null) continue; if (same(c[k], d[k])) delete pend[k]; else pend[k] = c[k] }
+    const pj = Object.keys(pend).length ? JSON.stringify(pend) : null;
+    await env.DB.prepare('UPDATE fighters SET pending=?,note=NULL,updated=? WHERE email=?').bind(pj, t, email).run();
+    return json({ ok: true, pending: pj ? pend : null });
+  }
   // режим бойца для сотрудника: привязать свою реальную карточку из CRM к своему входу
   if (path === '/api/my/staffpick' && req.method === 'GET') {
     if (!staff) return json({ error: 'forbidden' }, 403);
