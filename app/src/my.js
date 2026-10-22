@@ -47,6 +47,19 @@ async function getDoc(env, col, id) {
   if (!r || r.deleted) return null; try { return JSON.parse(r.data) } catch (e) { return null }
 }
 
+
+// ближайшие занятия клуба для самостоятельной записи на пробное (14 дней, только будущие)
+const isoTR = d => new Date(d.getTime() + 3 * 3600e3).toISOString().slice(0, 10); // Анталья, UTC+3
+async function trialSlots(env, days = 14) {
+  const sc = (await getDoc(env, 'club', 'schedule')) || {}, cls = sc.classes || [], co = sc.coaches || [], out = [];
+  const nowTR = new Date(Date.now() + 3 * 3600e3), hhmm = nowTR.toISOString().slice(11, 16), td = nowTR.toISOString().slice(0, 10);
+  for (let i = 0; i < days; i++) {
+    const d = new Date(Date.parse(td + 'T12:00:00Z') + i * 864e5), ds = d.toISOString().slice(0, 10), dw = d.getUTCDay() || 7;
+    for (const c of cls) { if (!(c.dow || []).includes(dw)) continue; if (ds === td && String(c.time) <= hhmm) continue;
+      const k = co.find(z => z.k === c.coach); out.push({ cls: c.id, date: ds, time: c.time, disc: c.disc, dur: c.dur || 60, coach: k ? k.n : null }) }
+  }
+  return out.sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));
+}
 // пробное занятие: дата, время, группа, тренер — из заявки и расписания клуба
 async function trialInfo(env, l) {
   if (!l || l.status !== 'booked' || !l.trialDate) return null;
@@ -127,6 +140,7 @@ async function view(env, email) {
   }
   const tl = lead && lead.status === 'booked' ? lead : (!f.mid ? await leadByEmail(env, email) : null);
   out.trial = await trialInfo(env, tl);
+  if (!f.mid && lead && !lead.rejected && ['new', 'booked', 'think', 'done'].includes(lead.status || 'new')) out.slots = await trialSlots(env);
   if (lead) out.lead = { status: lead.rejected ? 'rejected' : (!lead.approved && (lead.status || 'new') === 'new') ? 'pending' : (lead.status || 'new'), trialDate: lead.trialDate || null };
   const it = await env.DB.prepare('SELECT * FROM fighter_items WHERE email=? ORDER BY created DESC').bind(email).all();
   out.items = (it.results || []).map(itemOut);
@@ -169,6 +183,25 @@ export async function myRoutes(req, env, path, email, staff) {
   }
   if (req.method !== 'POST') return json({ error: 'not_found' }, 404);
   const cur = await env.DB.prepare('SELECT * FROM fighters WHERE email=?').bind(email).first();
+
+  if (path === '/api/my/trial') {
+    if (!cur || !cur.lead) return json({ error: 'profile' }, 403);
+    const l = await getDoc(env, 'leads', cur.lead);
+    if (!l || l.rejected || !['new', 'booked', 'think', 'done'].includes(l.status || 'new')) return json({ error: 'closed' }, 409);
+    const b = await req.json().catch(() => ({})), at = new Date().toISOString();
+    const touch = text => [...(Array.isArray(l.touches) ? l.touches : []), { at, by: email, ch: 'My PIT', text }];
+    if (b.cancel === true) {
+      if (l.status !== 'booked') return json({ error: 'not_booked' }, 409);
+      await env.DB.batch([putDoc(env, 'leads', cur.lead, { ...l, status: 'new', trialDate: null, trialClass: null, trialTime: null, trialDisc: null, trialBy: null, trialAt: at, touches: touch('Клиент отменил запись на пробное ' + (l.trialDate || '')) }, 'pit:' + email)]);
+      return json({ ok: true, ...(await view(env, email)) });
+    }
+    const sl = (await trialSlots(env, 21)).find(z => z.cls === String(b.cls || '') && z.date === String(b.date || ''));
+    if (!sl) return json({ error: 'slot' }, 400);
+    const nl = { ...l, status: 'booked', trialDate: sl.date, trialClass: sl.cls, trialTime: sl.time, trialDisc: sl.disc, trialBy: 'client', trialAt: at, trialNotified: { at, to: email, ch: 'email' }, touches: touch(`Клиент сам выбрал пробное: ${sl.date} ${sl.time} · ${sl.disc}`) };
+    await env.DB.batch([putDoc(env, 'leads', cur.lead, nl, 'pit:' + email)]);
+    try { const tI = await trialInfo(env, nl); if (tI) await env.EMAIL.send(trialMail(email, String(l.name || '').trim().split(/\s+/)[0], CLUBS.mowgli.name, tI)) } catch (e) { }
+    return json({ ok: true, ...(await view(env, email)) });
+  }
 
   if (path === '/api/my/photo') {
     if (!cur) return json({ error: 'profile' }, 403);
