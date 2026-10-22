@@ -593,10 +593,11 @@ function vSched(){const {classes,coaches}=SCH(),co=k=>coaches.find(c=>c.k===k)?.
   <section class="card"><h2 style="margin:0 0 .7rem;font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)">Неделя</h2>
    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,11rem),1fr));gap:.6rem">${byDay.map(x=>`<div style="border:1px solid var(--line);border-radius:.6rem;padding:.6rem;min-width:0"><b style="font-size:.82rem">${x.d}</b>
     ${x.list.map(c=>`<div style="display:flex;gap:.4rem;align-items:baseline;margin-top:.45rem;font-size:.84rem"><b class="num">${esc(c.time)}</b><span style="min-width:0">${esc(c.disc)}<small style="display:block;color:var(--muted);font-size:.72rem">${esc(co(c.coach))}${c.dur?' · '+c.dur+' мин':''}</small></span></div>`).join('')||'<div style="color:var(--muted);font-size:.78rem;margin-top:.4rem">—</div>'}</div>`).join('')}</div></section>
+  ${trialsHTML()}
   <section class="card"><h2 style="margin:0 0 .7rem;font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)">Группы · ${classes.length}</h2>
    <div class="gcards">${classes.slice().sort((a,b)=>String(a.time).localeCompare(String(b.time))).map(c=>{const ids=gIds(c),cap=c.cap||SET().groupCap||0,full=cap&&ids.length>=cap;
      return`<div class="gcard" role="button" tabindex="0" data-gopen="${esc(c.id)}"><img class="glogo" src="${gLogo(c.disc)}" alt=""><b>${esc(c.disc)} · ${esc(c.time)}</b><small>${(c.dow||[]).map(d=>SDAYS[d-1]).join(', ')} · ${esc(co(c.coach))}${c.dur?' · '+c.dur+' мин':''}</small>
-      <span class="pill ${full?'warn':ids.length?'ok':'info'}">${ids.length}${cap?' / '+cap:''} ${plural(ids.length,'боец','бойца','бойцов')}</span>${gAv(ids)}
+      <span class="pill ${full?'warn':ids.length?'ok':'info'}">${ids.length}${cap?' / '+cap:''} ${plural(ids.length,'боец','бойца','бойцов')}</span>${trialsOf(c).length?`<span class="pill warn">+${trialsOf(c).length} пробн. · ${fmtD(trialsOf(c)[0].trialDate).slice(0,5)}</span>`:''}${gAv(ids)}
       <span class="acts adm-only"><button class="btn sm w-only" type="button" data-sed="${esc(c.id)}">Изменить</button><button class="btn sm danger w-only" type="button" data-sdel="${esc(c.id)}">Удалить</button></span></div>`}).join('')||'<div class="empty">Групп пока нет. Добавьте первую ниже.</div>'}</div>
    ${(()=>{const E=S.schEdit?classes.find(c=>c.id===S.schEdit):null,e=E||{dow:[],time:'19:00',dur:60,disc:'MMA',coach:coaches[0]&&coaches[0].k,cap:null};
    return `<form class="card form w-only adm-only" id="schf" style="margin-top:.8rem;background:var(--panel-2)${E?';border-color:var(--gold)':''}">
@@ -640,11 +641,24 @@ function vGroup(c,co){const ids=gIds(c),cap=c.cap||SET().groupCap||0,inG=new Set
   return`<button class="btn sm" data-gback style="margin-bottom:.7rem;width:auto;display:inline-flex">‹ Все группы</button>
   <div class="head"><div style="display:flex;gap:.9rem;align-items:center"><img class="glogo" src="${gLogo(c.disc)}" alt="" style="width:4.2rem;height:4.2rem"><div><h1>${esc(c.disc)} · ${esc(c.time)}</h1><p class="sub">${(c.dow||[]).map(d=>SDAYS[d-1]).join(', ')} · ${esc(co(c.coach))}${c.dur?' · '+c.dur+' мин':''}</p></div></div>
    <span class="pill ${cap&&ids.length>=cap?'warn':'ok'}" style="font-size:.8rem">${ids.length}${cap?' / '+cap:''} ${plural(ids.length,'боец','бойца','бойцов')}</span></div>
+  ${trialsOf(c).length?`<section class="card" style="border-color:var(--warn)"><h2>Пробные · ${trialsOf(c).length}</h2><div class="list">${trialsOf(c).map(x=>`<button class="row" type="button" data-trial="${esc(x.id)}" style="grid-template-columns:minmax(0,1fr) auto"><span class="nm">${esc(x.name)}<small>${fmtD(x.trialDate)}${x.phone?' · '+esc(x.phone):''}${x.age?' · '+esc(x.age):''}</small></span><span class="pill warn">пробное</span></button>`).join('')}</div></section>`:''}
   <section class="card"><h2>Состав группы</h2><div class="list">${ids.map(id=>{const m=S.members.find(x=>x.id===id),st=status(m);
     return`<div class="row" style="grid-template-columns:auto minmax(0,1fr) auto"><span class="gav"><i style="background:${avc(id)}">${esc(ini(m.name))}</i></span><button class="nm" data-open="${esc(id)}" style="background:none;border:0;padding:0;text-align:left;font:inherit;color:inherit;cursor:pointer">${esc(m.name)}<small>${esc(m.disc||'')} · ${esc(tf(m.plan)?.name||'—')}${m.end?' · до '+fmtD(m.end):''}</small></button><span class="pill ${st.c}">${esc(st.t)}</span></div>`}).join('')||'<div class="empty">Пока нет активных бойцов с этой дисциплиной.</div>'}</div></section>
   <p class="note" style="margin:.2rem 0 0">Состав собирается автоматически: в группу попадают активные бойцы, у которых в карточке отмечена дисциплина «${esc(c.disc)}». Добавить или убрать бойца — изменить дисциплины в его карточке (администратор).</p>`}
 function bindGroup(v){const bk=$('[data-gback]',v);if(bk)bk.addEventListener('click',()=>{S.grp=null;render();scrollTo(0,0)})}
+
+/* ===== Пробные занятия в расписании: заявка «записан на пробное» привязана к группе на дату ===== */
+const dowOf=d=>{const x=new Date(d+'T12:00:00').getDay();return x||7};
+function trialOpts(x,d){const L=d?SCH().classes.filter(c=>(c.dow||[]).includes(dowOf(d))).sort((a,b)=>String(a.time).localeCompare(String(b.time))):[];
+  const want=discsOf(x),best=L.find(c=>want.includes(c.disc))||L[0];
+  return (L.length?L.map(c=>`<option value="${esc(c.id)}" ${best&&c.id===best.id?'selected':''}>${esc(c.time)} · ${esc(c.disc)}</option>`).join(''):'')+`<option value="" ${L.length?'':'selected'}>${L.length?'Без группы':'В этот день групп нет'}</option>`}
+const trialsUp=()=>(S.leads||[]).filter(x=>x.status==='booked'&&x.trialDate&&x.trialDate>=today()).sort((a,b)=>(a.trialDate+(a.trialTime||'')).localeCompare(b.trialDate+(b.trialTime||'')));
+const trialsOf=c=>trialsUp().filter(x=>x.trialClass===c.id);
+function trialsHTML(){const T=trialsUp(),co=SCH().coaches;
+  return`<section class="card"><h2 style="margin:0 0 .7rem;font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)">Пробные занятия · ${T.length}</h2>
+   <div class="list">${T.map(x=>{const c=SCH().classes.find(z=>z.id===x.trialClass);return`<button class="row" type="button" data-trial="${esc(x.id)}" style="grid-template-columns:minmax(0,1fr) auto"><span class="nm">${esc(x.name)}<small>${fmtD(x.trialDate)}${c?' · '+esc(c.time)+' · '+esc(c.disc)+' · '+esc(co.find(k=>k.k===c.coach)?.n||''):x.trialTime?' · '+esc(x.trialTime):' · группа не выбрана'}${x.phone?' · '+esc(x.phone):''}</small></span><span class="pill warn">${x.trialDate===today()?'сегодня':'пробное'}</span></button>`}).join('')||'<div class="empty">Записей на пробное нет. Запись — в «Заявках»: «Записать на пробное» с выбором группы.</div>'}</div></section>`}
 function bindSched(v){
+  v.querySelectorAll('[data-trial]').forEach(b=>b.addEventListener('click',()=>{S.tab='leads';render();S.ov={type:'lead',id:b.dataset.trial};renderOv()}));
   if(S.grp&&SCH().classes.some(c=>c.id===S.grp)){bindGroup(v);return}
   v.querySelectorAll('[data-gopen]').forEach(x=>{const go=e=>{if(e.target.closest('button'))return;S.grp=x.dataset.gopen;render();scrollTo(0,0)};x.addEventListener('click',go);x.addEventListener('keydown',e=>{if(e.key==='Enter')go(e)})});
   const f=$('#schf',v);if(f)f.addEventListener('submit',e=>{e.preventDefault();const dow=[...f.querySelectorAll('input[name=sd]:checked')].map(x=>+x.value);if(!dow.length){toast('Отметьте дни');return}
@@ -831,12 +845,12 @@ function leadDrawer(){const host=$('#ovHost'),x=S.ov.id==='new'?{status:'new',ki
     <div class="acts full"><button class="btn ${isNew?'gold':''}" type="submit">${isNew?'Создать заявку':'Сохранить'}</button></div></form>`;
   let act='';
   if(!isNew){
-    if(x.status==='new')act=`<form class="card form" id="lbook"><h2 class="full">Записать на пробное</h2><label class="f">Дата пробного<input type="date" id="lb_d" value="${addDays(today(),1)}"></label><div class="acts" style="align-self:end"><button class="btn gold" type="submit">Записать</button></div></form>`;
+    if(x.status==='new')act=`<form class="card form" id="lbook"><h2 class="full">Записать на пробное</h2><label class="f">Дата пробного<input type="date" id="lb_d" value="${addDays(today(),1)}"></label><label class="f">Группа<select id="lb_c">${trialOpts(x,addDays(today(),1))}</select></label><div class="acts" style="align-self:end"><button class="btn gold" type="submit">Записать</button></div></form>`;
     if(x.status==='booked')act=`<section class="card"><h2>Пробное ${fmtD(x.trialDate)} · ${lira(price)}</h2><form class="form" id="ldone"><label class="f">Способ оплаты<select id="ld_m">${methodOpts('cash')}</select></label><div class="acts" style="align-self:end"><button class="btn gold" type="submit">Пришёл и оплатил</button></div></form>
       <div class="acts" style="margin-top:.6rem"><button class="btn sm" type="button" data-lmove="new">Перенести</button><button class="btn sm danger" type="button" data-lnoshow="1">Не пришёл</button></div></section>`;
     if(x.status==='done')act=`<section class="card"><h2>Решение после пробного</h2><div class="acts"><button class="btn gold adm-only" type="button" data-lbuy="1">Купил абонемент → завести бойца</button></div></section>`;
     if(x.status==='think')act=`<section class="card" style="border-color:var(--gold)"><h2>Думает${x.thinkReason?' · '+esc(x.thinkReason):''}</h2><p class="note" style="margin:0 0 .6rem">С ${fmtD(x.thinkAt||'')}. Напоминайте о клубе и отмечайте каждое касание ниже — по ним видно работу менеджера.</p>
-      <form class="form" id="lbook"><label class="f">Записать на пробное<input type="date" id="lb_d" value="${addDays(today(),1)}"></label><div class="acts" style="align-self:end"><button class="btn gold" type="submit">Записать</button></div></form>
+      <form class="form" id="lbook"><label class="f">Записать на пробное<input type="date" id="lb_d" value="${addDays(today(),1)}"></label><label class="f">Группа<select id="lb_c">${trialOpts(x,addDays(today(),1))}</select></label><div class="acts" style="align-self:end"><button class="btn gold" type="submit">Записать</button></div></form>
       ${x.trialDone?'<div class="acts" style="margin-top:.6rem"><button class="btn gold adm-only" type="button" data-lbuy="1">Купил абонемент → завести бойца</button></div>':''}</section>`;
     if(['new','booked','done'].includes(x.status))act+=`<details class="card"><summary style="cursor:pointer;font-weight:800;font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)">Думает — не готов сейчас</summary>
       <form class="form" id="lthink" style="margin-top:.6rem"><label class="f">Причина<select id="lk_r">${LTHINK.map(r=>`<option>${esc(r)}</option>`).join('')}</select></label>
@@ -877,7 +891,9 @@ function leadDrawer(){const host=$('#ovHost'),x=S.ov.id==='new'?{status:'new',ki
     if(k==='link')linkTo(b.dataset.mid);else if(k==='new')up(apv,'Заявка одобрена');
     else if(k==='reject'){if(!b.dataset.sure){b.dataset.sure=1;b.textContent='Точно отклонить?';return}up({approved:false,rejected:true,status:'lost',lostReason:'Отклонена клубом'},'Заявка отклонена')}}));
   const pl=$('#plink',host);if(pl)pl.addEventListener('submit',e=>{e.preventDefault();const mid=$('#pl_m',host).value;if(!mid){toast('Выберите бойца');return}linkTo(mid)});
-  const lb=$('#lbook',host);if(lb)lb.addEventListener('submit',e=>{e.preventDefault();up({status:'booked',trialDate:$('#lb_d',host).value},'Записан на пробное '+fmtD($('#lb_d',host).value))});
+  const lb=$('#lbook',host);if(lb){const ld=$('#lb_d',host),lc=$('#lb_c',host);ld.addEventListener('change',()=>{lc.innerHTML=trialOpts(x,ld.value)});
+    lb.addEventListener('submit',e=>{e.preventDefault();const d=ld.value,c=SCH().classes.find(z=>z.id===lc.value);if(!d){toast('Укажите дату');return}
+      up({status:'booked',trialDate:d,trialClass:c?c.id:null,trialTime:c?c.time:null,trialDisc:c?c.disc:null},'Записан на пробное '+fmtD(d)+(c?' · '+c.disc+' '+c.time:''))})}
   const ld=$('#ldone',host);if(ld)ld.addEventListener('submit',async e=>{e.preventDefault();const method=$('#ld_m',host).value;
     if(await write(()=>DB.collection('payments').doc().set({kind:'trial',lid:x.id,name:x.name,sum:price,date:today(),method,what:'Пробное · '+(x.kind==='ind'?'индивидуальное':'группа'),src:'pit'})))up({status:'done',trialPaid:price,trialDone:today()},'Пробное оплачено '+lira(price))});
   host.querySelectorAll('[data-lmove]').forEach(b=>b.addEventListener('click',()=>up({status:'new'},'Заявка возвращена в работу')));

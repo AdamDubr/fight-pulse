@@ -232,6 +232,10 @@ async function arenaReal(req, env, opt = {}) {
   const mx = await env.DB.prepare('SELECT COALESCE(MAX(seq),0) AS s FROM docs').first();
   const sch = await env.DB.prepare("SELECT data FROM docs WHERE col='club' AND id='schedule' AND deleted=0").first();
   const ev = await env.DB.prepare("SELECT id,data FROM docs WHERE col='events' AND deleted=0").all();
+  // пробные занятия (заявки «записан на пробное»): на экраны зала — только имя
+  const tl = await env.DB.prepare("SELECT id,data FROM docs WHERE col='leads' AND deleted=0").all();
+  const trials = {}; const td0 = new Date().toISOString().slice(0, 10);
+  for (const x of tl.results || []) { try { const l = JSON.parse(x.data); if (l.status === 'booked' && l.trialDate && l.trialDate >= td0) trials[x.id] = { d: l.trialDate, cls: l.trialClass || null, t: l.trialTime || null, disc: l.trialDisc || null, n: String(l.name || '').trim().split(/\s+/)[0] || 'Гость' } } catch (e) { } }
   const vs = await env.DB.prepare("SELECT id,data FROM docs WHERE col='visits' AND deleted=0 AND id>=?").bind(new Date(Date.now() - 70 * 864e5).toISOString().slice(0, 10)).all();
   const visits = {}; for (const x of vs.results || []) { try { const v = JSON.parse(x.data); visits[x.id] = { date: v.date || x.id, ids: v.ids || [] } } catch (e) { } }
   const events = {}; for (const x of ev.results || []) { try { const e = JSON.parse(x.data); events[x.id] = { title: e.title, date: e.date, end: e.end || null } } catch (e) { } }
@@ -245,7 +249,7 @@ async function arenaReal(req, env, opt = {}) {
     .sort((a, b) => a.name.localeCompare(b.name, 'ru'));
   const inj = '<script>window.PIT_REAL=' + JSON.stringify(opt.fighter
     ? { club: env.CLUB || 'mowgli', worldOnly: true, fighter: true, back: '/my/', since: 0, members: [], membersAll: [], schedule: sch ? JSON.parse(sch.data) : null, events, visits: {} }
-    : { club: env.CLUB || 'mowgli', ...(opt.world ? { worldOnly: true, back: '/' } : {}), role: opt.role || null, schEdit: opt.role === 'owner' || opt.role === 'admin', since: mx ? mx.s : 0, members, membersAll, schedule: sch ? JSON.parse(sch.data) : null, events, visits }).replace(/</g, '\\u003c') + '</script>';
+    : { club: env.CLUB || 'mowgli', ...(opt.world ? { worldOnly: true, back: '/' } : {}), role: opt.role || null, schEdit: opt.role === 'owner' || opt.role === 'admin', since: mx ? mx.s : 0, members, membersAll, schedule: sch ? JSON.parse(sch.data) : null, events, visits, trials }).replace(/</g, '\\u003c') + '</script>';
   const html = (await res.text()).replace('<meta charset="utf-8">', '<meta charset="utf-8">' + inj);
   return new Response(html, { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' } });
 }

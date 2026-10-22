@@ -3625,8 +3625,10 @@ function schUpcoming(who,lim){schedInit();const now=Date.now(),out=[];
       const [h,mi]=c.time.split(':').map(Number),st=new Date(dt);st.setHours(h,mi,0,0);const en=st.getTime()+90*60e3;
       if(en>now&&out.length<lim)out.push({c,st:st.getTime(),en,d})})}
   return out}
+// пробные на конкретное занятие (дата + группа из CRM)
+function schTrials(o){if(!REAL)return[];const T=(window.PIT_REAL||{}).trials||{},ds=isoD(new Date(o.st));return Object.values(T).filter(t=>t.d===ds&&(t.cls?t.cls===o.c.id:(t.t===o.c.time)))}
 function schFrameHTML(){const who=schWho(),adm=ROLE.v==='admin',L=schUpcoming(who,6),now=Date.now(),wd=['вс','пн','вт','ср','чт','пт','сб'];
-  const cnt=disc=>disc==='Все группы'?ATHLETES.length:ATHLETES.filter(a=>a.disc===disc).length;
+  const cnt=disc=>disc==='Все группы'?ATHLETES.length:ATHLETES.filter(a=>REAL?aInCls(a,disc):a.disc===disc).length;
   const lbl=o=>o.d===0?'Сегодня':o.d===1?'Завтра':wd[new Date(o.st).getDay()]+' '+new Date(o.st).getDate()+'.'+String(new Date(o.st).getMonth()+1).padStart(2,'0');
   const stt=o=>{if(now>=o.st)return`<b class="sc-live">● идёт · до ${new Date(o.en).toTimeString().slice(0,5)}</b>`;const m=Math.round((o.st-now)/60e3);
     return m<=180?`<b class="sc-soon">через ${m>=60?Math.floor(m/60)+' ч ':''}${m%60} мин</b>`:''};
@@ -3635,10 +3637,11 @@ function schFrameHTML(){const who=schWho(),adm=ROLE.v==='admin',L=schUpcoming(wh
      ${adm?`<div class="sc-seg sc-coach" role="group" aria-label="Тренер"><button data-scco="all" aria-pressed="${SCH_UI.co==='all'}">ВСЕ</button>${SCH_CO.map(c=>`<button data-scco="${c.k}" aria-pressed="${SCH_UI.co===c.k}">${esc(c.n.split(' ')[0])}</button>`).join('')}</div>`
        :`<div class="sc-seg" role="group" aria-label="Чьи занятия"><button data-scall="0" aria-pressed="${!SCH_UI.all}">МОИ</button><button data-scall="1" aria-pressed="${SCH_UI.all}">ВСЕ</button></div>`}</div>
    <div class="sc-row">${L.map(o=>{const k=o.st+'|'+o.c.disc,op=SCH_UI.open===k;return`<button type="button" class="sc-c${now>=o.st?' on':''}${op?' open':''}" data-sco="${k}" aria-expanded="${op}" style="--sc:${SCH_COL[o.c.disc]||'#e8c35a'}"><div class="sc-d"><span>${lbl(o)}</span><b class="num">${o.c.time}</b></div>
-     <div class="sc-g">${esc(o.c.disc)}</div><small>${cnt(o.c.disc)} бойцов${who?'':' · '+esc(coName(o.c.coach))}</small>${stt(o)}<i class="sc-more">${op?'Свернуть ▴':'Состав ▾'}</i></button>`}).join('')||'<div class="muted small">На ближайшую неделю занятий нет — добавьте в «Расписании».</div>'}</div>
+     <div class="sc-g">${esc(o.c.disc)}</div><small>${cnt(o.c.disc)} бойцов${schTrials(o).length?' · <b style="color:#ffc93c">+'+schTrials(o).length+' пробн.</b>':''}${who?'':' · '+esc(coName(o.c.coach))}</small>${stt(o)}<i class="sc-more">${op?'Свернуть ▴':'Состав ▾'}</i></button>`}).join('')||'<div class="muted small">На ближайшую неделю занятий нет — добавьте в «Расписании».</div>'}</div>
    ${(()=>{const o=L.find(x=>SCH_UI.open===x.st+'|'+x.c.disc);if(!o)return'';
      const F=ATHLETES.filter(a=>o.c.disc==='Все группы'||(REAL?aInCls(a,o.c.disc):a.disc===o.c.disc)).map(a=>({a,r:ratingOf(a.id)})).sort((x,y)=>y.r.R-x.r.R);
      return`<div class="sc-det" style="--sc:${SCH_COL[o.c.disc]||'#e8c35a'}"><div class="sc-dh"><b>${esc(o.c.disc)} · ${lbl(o)} ${o.c.time}</b><span class="muted small">${esc(coName(o.c.coach))} · ${F.length} бойцов · сортировка по PIT</span><button type="button" class="sc-x" data-scx aria-label="Свернуть состав">✕</button></div>
+      ${schTrials(o).length?`<div class="sc-fl" style="margin-bottom:.4rem">${schTrials(o).map(t=>`<div class="sc-f" style="cursor:default;border-color:#ffc93c66"><span class="sc-fn"><b>${esc(t.n)}</b><small style="color:#ffc93c;font-weight:800;letter-spacing:.08em">ПРОБНОЕ ЗАНЯТИЕ</small></span></div>`).join('')}</div>`:''}
       <div class="sc-fl">${F.map(({a,r})=>{const m=metrics.get(a.id),st=metrics.status(m),on=st==='live'||st==='stale';
         return`<button type="button" class="sc-f" data-scf="${a.id}" title="Открыть карточку бойца"><img src="${(CAB[a.id]&&CAB[a.id].person.photo)||avatar(a.id)}" alt=""><span class="sc-fn"><b>${esc(a.name)}</b>${u18Badge(a)}<small>${a.kg?a.kg+' кг':'вес —'} · ${esc(r.cat)}</small></span>
          <span class="sc-fr2" style="--tc:${r.tc}"><b class="num">${PITM}${r.R}</b><small>${esc(r.tn)} · #${r.rank} из ${r.of}</small></span><i class="sc-on${on?' y':''}" title="${on?'датчик на связи':'нет в зале'}"></i></button>`}).join('')}</div>
@@ -3654,10 +3657,10 @@ const saveSched=()=>{if(REAL){pitSaveSched();return}try{localStorage.setItem('fp
 /* ===== Связь с PIT CRM: расписание, события, бойцы — сразу после изменений в CRM ===== */
 function pitSched(){const R=window.PIT_REAL||{},sc=R.schedule||{};
   if(Array.isArray(sc.coaches)&&sc.coaches.length)SCH_CO.splice(0,SCH_CO.length,...sc.coaches.map(c=>({k:c.k,n:c.n})));
-  return{classes:(sc.classes||[]).map(c=>({id:c.id,dow:c.dow||[],time:c.time,disc:c.disc,coach:c.coach||(SCH_CO[0]&&SCH_CO[0].k),dur:c.dur||null,cap:c.cap||null})),
+  return{classes:(sc.classes||[]).map(c=>({id:c.id,dow:(c.dow||[]).map(x=>x%7),time:c.time,disc:c.disc,coach:c.coach||(SCH_CO[0]&&SCH_CO[0].k),dur:c.dur||null,cap:c.cap||null})),
     events:Object.entries(R.events||{}).filter(([,e])=>e&&e.date).map(([id,e])=>({id,d:e.date,name:e.title||e.name||'Событие'})).sort((a,b)=>a.d.localeCompare(b.d))}}
 async function pitSaveSched(){const R=window.PIT_REAL||(window.PIT_REAL={});if(REAL&&!R.schEdit){toast('Расписание меняет администратор в CRM');return}
-  const data={...(R.schedule||{}),classes:SCHED.classes.map(c=>({ids:(((R.schedule||{}).classes||[]).find(o=>o.id&&o.id===c.id)||{}).ids||c.ids||[],id:c.id||('c'+Date.now().toString(36)+Math.random().toString(36).slice(2,5)),dow:c.dow,time:c.time,disc:c.disc,coach:c.coach,dur:c.dur||60,cap:c.cap||null})),coaches:SCH_CO.map(c=>({k:c.k,n:c.n})),updatedAt:new Date().toISOString()};
+  const data={...(R.schedule||{}),classes:SCHED.classes.map(c=>({ids:(((R.schedule||{}).classes||[]).find(o=>o.id&&o.id===c.id)||{}).ids||c.ids||[],id:c.id||('c'+Date.now().toString(36)+Math.random().toString(36).slice(2,5)),dow:(c.dow||[]).map(x=>x===0?7:x),time:c.time,disc:c.disc,coach:c.coach,dur:c.dur||60,cap:c.cap||null})),coaches:SCH_CO.map(c=>({k:c.k,n:c.n})),updatedAt:new Date().toISOString()};
   R.schedule=data;
   // события зала ⇄ CRM «События»
   R.events=R.events||{};const keep=new Set();
@@ -3689,6 +3692,7 @@ function pitLive(){if(!REAL)return;const R=window.PIT_REAL;let since=R.since||0,
         if(d.c==='club'&&d.i==='schedule'){R.schedule=d.d||{};sch=true}
         else if(d.c==='events'){R.events=R.events||{};if(d.d)R.events[d.i]=d.d;else delete R.events[d.i];sch=true}
         else if(d.c==='members'){if(d.d)mem.set(d.i,{id:d.i,...d.d});else mem.delete(d.i);mch=true;const x=(R.membersAll||[]).find(z=>z.id===d.i);if(x&&d.d)x.left=d.d.left??null}
+        else if(d.c==='leads'){R.trials=R.trials||{};const l=d.d;if(l&&l.status==='booked'&&l.trialDate&&l.trialDate>=dAdd(0))R.trials[d.i]={d:l.trialDate,cls:l.trialClass||null,t:l.trialTime||null,disc:l.trialDisc||null,n:String(l.name||'').trim().split(/\s+/)[0]||'Гость'};else delete R.trials[d.i];sch=true}
         else if(d.c==='visits'){R.visits=R.visits||{};if(d.d)R.visits[d.i]=d.d;else delete R.visits[d.i];vch=true}}
       since=j.since||since;
       if(sch)SCHED=pitSched();
