@@ -13,6 +13,15 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=Unbounded:wght@700;800&display=swap">
 <style>
 :root{--bg:#0d0f12;--panel:#15181d;--panel-2:#1b1f25;--line:#262a31;--line-2:#363b44;--fg:#f3f1ec;--muted:#a3a19b;--gold:#e8c35a;--gold-2:#f3dc95;--ok:#3ddc84;--warn:#ffc93c;--bad:#ff5a6e;--info:#7ab8ff;color-scheme:dark}
+html[data-theme=light]{--bg:#f4f1ea;--panel:#ffffff;--panel-2:#f7f4ee;--line:#e3ded2;--line-2:#d3cdbf;--fg:#15171b;--muted:#6b675e;--gold:#b98f1f;--gold-2:#e8c35a;color-scheme:light}
+html[data-theme=light] body{background:radial-gradient(120% 60% at 50% -10%,#efe4c4 0,var(--bg) 55%)}
+html[data-theme=light] .btn.gold{color:#16130a}
+.thm{background:none;border:1px solid var(--line-2);color:var(--fg);border-radius:.5rem;width:2rem;height:2rem;display:grid;place-items:center;font-size:.95rem;cursor:pointer;flex:none;position:relative}
+.thm.hint{border-color:var(--gold);animation:thmHint 1.2s ease-in-out 4}
+.thm.hint::after{content:'';position:absolute;inset:-6px;border-radius:.8rem;border:2px solid var(--gold);opacity:0;animation:thmRing 1.2s ease-out 4}
+@keyframes thmHint{50%{box-shadow:0 0 0 4px #e8c35a55,0 0 18px #e8c35a99;transform:scale(1.08)}}
+@keyframes thmRing{0%{opacity:.9;transform:scale(.85)}100%{opacity:0;transform:scale(1.35)}}
+@media (prefers-reduced-motion:reduce){.thm.hint,.thm.hint::after{animation:none}.thm.hint{box-shadow:0 0 0 3px #e8c35a77}}
 *{box-sizing:border-box}html,body{overflow-x:clip}
 body{margin:0;min-height:100vh;background:radial-gradient(120% 60% at 50% -10%,#1d1a12 0,var(--bg) 55%);color:var(--fg);font:15px/1.5 'Montserrat',system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased}
 .wrap{max-width:640px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
@@ -92,6 +101,7 @@ body.hasnav{padding-bottom:calc(76px + env(safe-area-inset-bottom,0px))}
 <body>
 <header><div class="wrap">
   <div class="brand"><svg viewBox="0 0 100 124" aria-hidden="true"><path d="M8 44L50 12 92 44V62L50 30 8 62Z"/><path d="M8 74L50 42 92 74V92L50 60 8 92Z" opacity=".7"/><path d="M8 104L50 72 92 104V122L50 90 8 122Z" opacity=".45"/></svg><b>MY <span>PIT</span></b></div>
+  <button class="thm" id="thm" type="button" aria-label="Day / night">☀</button>
   <div class="lang" role="group" aria-label="Language"><button data-l="ru">RU</button><button data-l="en">EN</button><button data-l="tr">TR</button></div>
   <a class="btn sm ghost" href="/auth/logout?next=/my/" data-t="out">Выйти</a>
 </div></header>
@@ -462,6 +472,11 @@ function render(){applyLang();if(!D)return;const v=$('#v');document.body.classLi
   v.innerHTML=who+home();document.body.classList.toggle('hasnav',!!D.access);bindTabs();bindInbox();if(D.access&&TAB!=='home')return;bindHome();
   $('#ed').onclick=()=>{EDIT=true;PICK=D.profile.club;render();window.scrollTo({top:0})};
   $('#dl').onclick=async e=>{const b=e.currentTarget;if(!b.dataset.sure){b.dataset.sure=1;b.textContent=t('delSure');return}b.disabled=true;try{await api({method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({delete:true})});location.replace('/login?next=%2Fmy%2F')}catch(err){b.disabled=false}}}
+/* тема: всегда открывается ночная; переключатель день/ночь подсвечивается один раз */
+(()=>{const b=$('#thm'),set=l=>{document.documentElement.dataset.theme=l?'light':'dark';b.textContent=l?'☾':'☀';b.setAttribute('aria-pressed',String(l))};set(false);
+  b.onclick=()=>{set(document.documentElement.dataset.theme!=='light');b.classList.remove('hint');try{localStorage.setItem('pit.thmHint','1')}catch(e){}};
+  let seen=false;try{seen=!!localStorage.getItem('pit.thmHint')}catch(e){}
+  if(!seen){b.classList.add('hint');setTimeout(()=>{b.classList.remove('hint');try{localStorage.setItem('pit.thmHint','1')}catch(e){}},5200)}})();
 applyLang();
 api().then(j=>{D=j;let sv=null;try{sv=localStorage.getItem('pit.lang')}catch(e){}if(!T[sv]&&D.profile&&T[D.profile.lang]&&D.profile.lang!==L){L=D.profile.lang}render()}).catch(e=>{if(e.message!=='auth')$('#v').innerHTML='<p class="msg bad">'+esc(t('err').server)+'</p>'});
 </script>

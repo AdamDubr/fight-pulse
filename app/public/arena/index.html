@@ -2146,6 +2146,7 @@ html.light .a-stage{--fg:#ffffff;--muted:#a6a6a6;--dim:#8a8a8a;--line:#202020;--
 html.light .a-stage .st-word{filter:blur(3px)!important}
 html.light .a-stage [style*="color:"],html.light body.m-on .m-holo3d .mh-ov [style*="color:"]{filter:brightness(1.6) saturate(1.2)}
 .demo,.top #demoBadge{display:none!important}
+body.real #cabTabs [data-sec=sub],body.real #cabTabs [data-sec=progress]{display:none!important}
 body.real .tabs [data-view=league],body.real .tabs [data-view=card],body.real .tabs [data-view=world]{display:none!important}
 body.real #admTabs [data-adm=league],body.real #admTabs [data-adm=fin],body.real #admTabs [data-adm=imp]{display:none!important}
 body.world-only #mNav,body.world-only #mAva,body.world-only #mTPill{display:none!important}
@@ -2587,9 +2588,7 @@ const ATHLETES_DEMO=[
 ].map(a=>({...a,public:true,absent:REAL?false:[5,13,19].includes(a.id)}));
 function pitRoster(){
   const hrMaxOf=age=>Math.round(208-.7*age); // Tanaka et al., 2001
-  const out=[];const adam=ATHLETES_DEMO.find(a=>a.id===1);
-  const ms=PIT_REAL.members||[];const hasAdam=ms.some(m=>/^адам\b/i.test(m.first||m.name||''));
-  if(adam&&!hasAdam)out.push({...adam,name:'Адам AI',nick:'Адам AI',sensor:'—',sim:{id:'НЕТ ДАТЧИКА·1',int:.6,rec:.012,bat:100},public:true,absent:false});
+  const out=[];const ms=PIT_REAL.members||[];
   ms.forEach(m=>{const id=out.length+1,age=m.age||25,dl=(Array.isArray(m.discs)&&m.discs.length?m.discs:String(m.disc||'MMA').split(/\s*[,+]\s*/)).filter(d=>d&&d!=='—');
     out.push({id,mid:m.id,fit:.6,nick:m.first||m.name,name:m.name,disc:dl[0]||'MMA',discs:dl.length?dl:['MMA'],kids:m.kind==='kids'||!!m.kidish,age,kg:m.kg||null,sex:m.sex||'m',hrMax:m.hrMax||hrMaxOf(age),hrRest:60,sensor:'—',
       sim:{id:'НЕТ ДАТЧИКА·'+id,int:.6,rec:.012,bat:100},coach:m.kind==='staff',public:m.consentPublic==='yes'||m.consentPublic===true,absent:false,end:m.end||'',start:m.start||'',plan:m.plan||'',left:m.left??null,dob:m.dob||''})});
@@ -4489,7 +4488,7 @@ function cabReal(a){const b=cabDemo(a);
 let CAB={};ATHLETES.forEach(a=>CAB[a.id]=REAL?cabReal(a):cabDemo(a));
 try{const s=localStorage.getItem((REAL?'fp.cab.v3.real':'fp.cab.v3'));if(s){const o=JSON.parse(s);for(const k in o)if(CAB[k])CAB[k]=Object.assign(CAB[k],o[k])}}catch(e){}
 ATHLETES.forEach(a=>{if(!U18(a))return;const n=CAB[a.id].nut;if(n&&n.mode==='Весогонка'){n.mode='Поддержание';n.cut=null}});
-for(const k in PHOTO_DEMO)if(CAB[k]&&!CAB[k].person.photo&&(!REAL||(+k===1&&!byId.get(1).mid))){CAB[k].person.photo=PHOTO_DEMO[k];CAB[k].person.photoChk={w:1122,h:1402,res:true,bg:true,face:true,center:true}}
+for(const k in PHOTO_DEMO)if(CAB[k]&&!CAB[k].person.photo&&(!REAL||(+k===1&&!(byId.get(1)||{mid:1}).mid))){CAB[k].person.photo=PHOTO_DEMO[k];CAB[k].person.photoChk={w:1122,h:1402,res:true,bg:true,face:true,center:true}}
 const saveCab=()=>{try{localStorage.setItem((REAL?'fp.cab.v3.real':'fp.cab.v3'),JSON.stringify(CAB))}catch(e){toast('Не удалось сохранить: хранилище браузера заполнено')}};
 /* ===== Подписки: тариф приложения FREE / PRO + услуги клуба и тренера (все цены — только USD) ===== */
 /* My PIT: регистрация бесплатная; PRO продаёт клуб с верификацией бойца, цену ставит клуб (не дороже $29/мес, $300/год). Здесь — цена клуба Mowgli (демо). */
@@ -4760,7 +4759,7 @@ function secProfile(a,C){const p=C.person,ro=RO(),minor=a.age<18;
       <label><input type="checkbox" checked disabled> Обработка персональных данных (KVKK / GDPR)</label>
       <label><input type="checkbox" class="cs" data-k="public" ${a.public?'checked':''} ${ro}> Показ имени и пульса на экранах зала</label>
       <label><input type="checkbox" class="cs" data-k="med" ${C.med.consent?'checked':''} ${ro}> Передача медданных тренеру (отдельное согласие)</label>
-      ${minor?`<label class="cs-ok"><input type="checkbox" checked disabled> <b>U18 · ${ageCatT(a)}</b> — согласие законного представителя получено (демо, ${fmtD(dAdd(-30-a.id))})</label>`:''}
+      ${minor?`<label class="cs-ok"><input type="checkbox" checked disabled> <b>U18 · ${ageCatT(a)}</b> — согласие законного представителя${REAL?' — фиксируется в карточке клуба (CRM)':` получено (демо, ${fmtD(dAdd(-30-a.id))})`}</label>`:''}
       <div class="muted small">Удалить аккаунт и все данные можно по запросу; сроки хранения задаёт клуб.</div></div></div></div>${ajpPanel(a)}`;
   ajpBind(a,CB());
   CB().querySelectorAll('[data-f]').forEach(i=>i.addEventListener('change',()=>{p[i.dataset.f]=i.value;saveCab();if(i.dataset.f==='fio')renderCab()}));
