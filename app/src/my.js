@@ -60,6 +60,9 @@ async function trialSlots(env, days = 14) {
   }
   return out.sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));
 }
+
+// полная анкета члена клуба: фото, вес, город (+ родитель для U18 уже обязателен при регистрации)
+function fullMissing(p, photo) { const m = []; if (!photo) m.push('photo'); if (!p.weight) m.push('weight'); if (!p.city) m.push('city'); return m }
 // пробное занятие: дата, время, группа, тренер — из заявки и расписания клуба
 async function trialInfo(env, l) {
   if (!l || l.status !== 'booked' || !l.trialDate) return null;
@@ -123,12 +126,7 @@ async function view(env, email) {
   let lead = null;
   if (f.lead) lead = await getDoc(env, 'leads', f.lead);
   if (!f.mid && lead && lead.mid && (lead.approved || lead.status === 'bought')) { f.mid = lead.mid; await env.DB.prepare('UPDATE fighters SET mid=? WHERE email=?').bind(lead.mid, email).run() }
-  // одобрение регистрации в «Заявках» = подтверждение анкеты клубом
-  if (!f.verified && lead && lead.approved && !lead.rejected) {
-    const t = Date.now();
-    await env.DB.prepare('UPDATE fighters SET verified=1,ver_by=?,ver_at=? WHERE email=?').bind(lead.approvedBy || 'club', t, email).run();
-    out.verified = true; out.verAt = t;
-  }
+  // одобрение регистрации даёт пробное; членство в клубе (✓ Verified) — после покупки абонемента и проверки полной анкеты в «Анкетах»
   if (f.mid) {
     const m = await getDoc(env, 'members', f.mid);
     if (m) {
@@ -141,6 +139,11 @@ async function view(env, email) {
   const tl = lead && lead.status === 'booked' ? lead : (!f.mid ? await leadByEmail(env, email) : null);
   out.trial = await trialInfo(env, tl);
   if (!f.mid && lead && !lead.rejected && ['new', 'booked', 'think', 'done'].includes(lead.status || 'new')) out.slots = await trialSlots(env);
+  // шаги клиента: регистрация → пробное → абонемент → полная анкета → проверка клубом → доступ ко всему клубу и My PIT World
+  out.missing = fullMissing(profile, out.photo);
+  out.submitted = profile.submittedAt || null;
+  out.access = !!(f.mid && f.verified);
+  if (out.access) out.schedule = await trialSlots(env, 7);
   if (lead) out.lead = { status: lead.rejected ? 'rejected' : (!lead.approved && (lead.status || 'new') === 'new') ? 'pending' : (lead.status || 'new'), trialDate: lead.trialDate || null };
   const it = await env.DB.prepare('SELECT * FROM fighter_items WHERE email=? ORDER BY created DESC').bind(email).all();
   out.items = (it.results || []).map(itemOut);
@@ -183,6 +186,15 @@ export async function myRoutes(req, env, path, email, staff) {
   }
   if (req.method !== 'POST') return json({ error: 'not_found' }, 404);
   const cur = await env.DB.prepare('SELECT * FROM fighters WHERE email=?').bind(email).first();
+
+  if (path === '/api/my/submit') {
+    if (!cur) return json({ error: 'profile' }, 403);
+    if (!cur.mid) return json({ error: 'no_member' }, 409);
+    const d = JSON.parse(cur.data), miss = fullMissing(d, d.photo ? 1 : 0);
+    if (miss.length) return json({ error: 'incomplete', missing: miss }, 400);
+    await env.DB.prepare('UPDATE fighters SET data=?,note=NULL,updated=? WHERE email=?').bind(JSON.stringify({ ...d, submittedAt: new Date().toISOString() }), t, email).run();
+    return json({ ok: true, ...(await view(env, email)) });
+  }
 
   if (path === '/api/my/trial') {
     if (!cur || !cur.lead) return json({ error: 'profile' }, 403);
@@ -335,8 +347,9 @@ export async function reviewRoutes(req, env, path, me) {
         photo: photoUrl((pend && pend.photo) || d.photo), items, pendingItems: items.filter(i => i.status === 'pending').length, updated: f.updated,
       };
     });
-    const todo = list.filter(x => (x.verified && x.pending) || x.pendingItems);
-    return json({ todo, all: list, counts: { todo: todo.length, items: todo.reduce((a, x) => a + x.pendingItems, 0), verified: list.filter(x => x.verified).length } });
+    list.forEach(x => { x.full = !x.verified && !!x.mid && !!x.profile.submittedAt });
+    const todo = list.filter(x => (x.verified && x.pending) || x.pendingItems || x.full);
+    return json({ todo, all: list, counts: { full: todo.filter(x => x.full).length, todo: todo.length, items: todo.reduce((a, x) => a + x.pendingItems, 0), verified: list.filter(x => x.verified).length } });
   }
 
   if (path === '/api/review' && req.method === 'POST') {
@@ -350,7 +363,8 @@ export async function reviewRoutes(req, env, path, me) {
     const f = await env.DB.prepare('SELECT * FROM fighters WHERE email=? AND club=?').bind(String(b.email || ''), club).first();
     if (!f) return json({ error: 'not_found' }, 404);
     if (b.act === 'profile_no') {
-      await env.DB.prepare('UPDATE fighters SET pending=NULL,note=?,updated=? WHERE email=?').bind(note || 'Изменения не подтверждены клубом', t, f.email).run();
+      const dd = JSON.parse(f.data); delete dd.submittedAt;
+      await env.DB.prepare('UPDATE fighters SET data=?,pending=NULL,note=?,updated=? WHERE email=?').bind(JSON.stringify(dd), note || 'Изменения не подтверждены клубом', t, f.email).run();
       return json({ ok: true });
     }
     if (b.act === 'profile_ok' || b.act === 'all_ok') {
@@ -361,7 +375,7 @@ export async function reviewRoutes(req, env, path, me) {
       if (f.mid) {
         const m = await getDoc(env, 'members', f.mid);
         if (m) {
-          const upd = { ...m, last: d.last, first: d.first, name: `${d.last} ${d.first}`.trim(), dob: d.dob || m.dob, phone: d.phone || m.phone, email: m.email || f.email, disc: d.disc || m.disc };
+          const upd = { ...m, last: d.last, first: d.first, name: `${d.first} ${d.last}`.trim(), dob: d.dob || m.dob, phone: d.phone || m.phone, email: m.email || f.email };
           if (d.parent && d.parent.name) upd.parent = { ...(m.parent || {}), name: d.parent.name, phone: d.parent.phone };
           if (d.consentPublic != null) upd.consentPublic = d.consentPublic ? 'yes' : 'no';
           st.push(putDoc(env, 'members', f.mid, upd, by));

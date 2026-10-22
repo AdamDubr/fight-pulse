@@ -264,6 +264,11 @@ export default {
     if (path === '/world' || path === '/world/') {
       const w = await whoami(req, env);
       if (!w) return new Response(null, { status: 302, headers: { location: '/login?next=%2Fworld%2F' } });
+      if (!w.role) {
+        // боец: My PIT World открывается после проверки анкеты клубом (член клуба)
+        const f = await env.DB.prepare('SELECT mid,verified FROM fighters WHERE email=?').bind(w.email).first().catch(() => null);
+        if (!f || !f.mid || !f.verified) return new Response(null, { status: 302, headers: { location: '/my/?locked=world' } });
+      }
       return arenaReal(req, env, { asset: true, world: true, fighter: !w.role });
     }
     if (path.startsWith('/auth/')) {
