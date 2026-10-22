@@ -215,8 +215,12 @@ function bindForm(){const dob=$('#r_dob'),u=()=>{const a=ageOf(dob.value);$('#u1
 
 function trialCard(){const x=D.trial;if(!x||!x.date)return'';const td=new Date(),iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'),tm=new Date(td.getTime()+864e5);
   const rel=x.date===iso(td)?t('trToday'):x.date===iso(tm)?t('trTom'):'';
-  const rows=[[t('trD'),fd(x.date)+(rel?' · '+rel:'')],[t('trT'),x.time||'—'],[t('trG'),x.disc?dn(x.disc):''],[t('trC'),x.coach||'']].filter(r=>r[1]);
-  return`<section class="card" style="border-color:var(--gold,#e8c35a);box-shadow:0 0 0 1px #e8c35a33"><h2 style="margin:0 0 .6rem">🥊 ${t('trH')}</h2><div class="kv">${rows.map(r=>`<div><b>${esc(r[1])}</b><span>${esc(r[0])}</span></div>`).join('')}</div><p class="note" style="margin:.7rem 0 0">${t('trN')}</p>
+  const dd=new Date(x.date+'T12:00:00'),loc=L==='en'?'en-GB':L==='tr'?'tr-TR':'ru-RU',dl0=dd.toLocaleDateString(loc,{weekday:'long',day:'numeric',month:'long'}),dl=rel?dl0:dl0.charAt(0).toLocaleUpperCase(loc)+dl0.slice(1);
+  const row=(k,v)=>v?`<div style="display:flex;gap:.8rem;align-items:baseline;padding:.45rem 0;border-top:1px solid #ffffff14"><span style="flex:0 0 5.5rem;opacity:.65;font-size:.85rem">${esc(k)}</span><b style="flex:1;min-width:0;overflow-wrap:normal;word-break:normal;hyphens:none">${esc(v)}</b></div>`:'';
+  return`<section class="card" style="border-color:var(--gold,#e8c35a);box-shadow:0 0 0 1px #e8c35a33"><h2 style="margin:0 0 .7rem">🥊 ${t('trH')}</h2>
+   <div style="font-size:1.35rem;font-weight:800;line-height:1.25;margin:0 0 .5rem">${rel?`<span style="color:#e8c35a">${esc(rel)}</span> · `:''}${esc(dl)}${x.time?` · <span class="num">${esc(x.time)}</span>`:''}</div>
+   ${row(t('trG'),x.disc?dn(x.disc):'')}${row(t('trC'),x.coach||'')}
+   <p class="note" style="margin:.7rem 0 0">${t('trN')}</p>
    ${D.slots?`<div class="acts" style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.8rem"><button class="btn" type="button" data-slchg>${t('slChg')}</button><button class="btn" type="button" data-slcancel style="color:#ff6b6b">${t('slCancel')}</button></div>`:''}</section>`}
 let SLF=null,SLOPEN=false,SLDAYS=7;
 function slotPicker(){const S2=D.slots;if(!S2||D.member)return'';if(D.trial&&!SLOPEN)return'';
