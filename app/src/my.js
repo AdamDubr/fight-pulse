@@ -90,6 +90,10 @@ function profileToMember(m, d, email) {
   upd.myPit = { email, at: new Date().toISOString() };
   return upd;
 }
+
+// полная анкета выдаётся члену клуба: найденный и объединённый боец из базы клуба — сразу;
+// новый клиент (карточка создана продажей из заявки) — после подписания договора и оплаты (нет долга)
+function fullOpenOf(m) { return !!m && (!m.lead || (!!m.contractAt && !m.due)) }
 // полная анкета члена клуба: фото, вес, город (+ родитель для U18 уже обязателен при регистрации)
 function fullMissing(p, photo) { const m = []; if (!photo) m.push('photo'); if (!p.weight) m.push('weight'); if (!p.city) m.push('city'); return m }
 // пробное занятие: дата, время, группа, тренер — из заявки и расписания клуба
@@ -135,12 +139,21 @@ async function accLang(env, email, lead) {
 
 // приветствие после одобрения регистрации клубом: письмо на языке аккаунта + просьба заполнить полную анкету
 const WL = {
-  ru: { subj: c => `Добро пожаловать в ${c}!`, h: (n, c) => `${n ? n + ', д' : 'Д'}обро пожаловать в ${c}!`, p1: 'Клуб одобрил вашу регистрацию в PIT RATING.', p2: 'Следующий шаг — <b>полная анкета</b>: фото, вес, город. Это важно: только по полной анкете клуб ставит отметку ✓ Verified, и после неё открываются все возможности — расписание и услуги клуба, My PIT World и ваш профиль бойца в мировом рейтинге.', btn: 'Заполнить анкету' },
-  en: { subj: c => `Welcome to ${c}!`, h: (n, c) => `${n ? n + ', w' : 'W'}elcome to ${c}!`, p1: 'The club has approved your registration in PIT RATING.', p2: 'Next step — your <b>full profile</b>: photo, weight, city. This matters: the club gives the ✓ Verified mark only for a complete profile, and it unlocks everything — club schedule and services, My PIT World and your fighter profile in the world rating.', btn: 'Complete profile' },
-  tr: { subj: c => `${c}'e hoş geldiniz!`, h: (n, c) => `${n ? n + ', ' : ''}${c}'e hoş geldiniz!`, p1: 'Kulüp PIT RATING kaydınızı onayladı.', p2: 'Sonraki adım — <b>tam profiliniz</b>: fotoğraf, kilo, şehir. Bu önemli: kulüp ✓ Verified işaretini yalnızca tam profile verir ve bununla her şey açılır — kulüp programı ve hizmetleri, My PIT World ve dünya reytingindeki sporcu profiliniz.', btn: 'Profili doldur' },
+  ru: { subj: c => `Добро пожаловать в ${c}!`, h: (n, c) => `${n ? n + ', д' : 'Д'}обро пожаловать в ${c}!`,
+    member: ['Клуб подтвердил вашу регистрацию и нашёл вас в базе бойцов клуба.', 'Следующий шаг — <b>полная анкета</b>: фото, вес, город. Это важно: только по полной анкете клуб ставит отметку ✓ Verified, и после неё открываются все возможности — расписание и услуги клуба, My PIT World и ваш профиль бойца в мировом рейтинге.', 'Заполнить анкету'],
+    new: ['Клуб одобрил вашу регистрацию в PIT RATING.', 'Запишитесь на пробное занятие в приложении. После пробного администратор оформит договор и абонемент — тогда откроется полная анкета члена клуба.', 'Открыть My PIT'],
+    full: ['Договор подписан, абонемент оплачен — вы член клуба!', 'Остался последний шаг — <b>полная анкета</b>: фото, вес, город. Это важно: только по ней клуб ставит отметку ✓ Verified и открывает все возможности — расписание и услуги клуба, My PIT World и профиль бойца в мировом рейтинге.', 'Заполнить анкету'] },
+  en: { subj: c => `Welcome to ${c}!`, h: (n, c) => `${n ? n + ', w' : 'W'}elcome to ${c}!`,
+    member: ['The club confirmed your registration and found you in its fighter base.', 'Next step — your <b>full profile</b>: photo, weight, city. This matters: the club gives the ✓ Verified mark only for a complete profile, and it unlocks everything — club schedule and services, My PIT World and your fighter profile in the world rating.', 'Complete profile'],
+    new: ['The club has approved your registration in PIT RATING.', 'Book a trial class in the app. After the trial the admin will set up your contract and membership — then the full club member profile opens.', 'Open My PIT'],
+    full: ['Contract signed, membership paid — you are a club member!', 'One last step — your <b>full profile</b>: photo, weight, city. This matters: only then does the club give the ✓ Verified mark and unlock everything — club schedule and services, My PIT World and your fighter profile in the world rating.', 'Complete profile'] },
+  tr: { subj: c => `${c}'e hoş geldiniz!`, h: (n, c) => `${n ? n + ', ' : ''}${c}'e hoş geldiniz!`,
+    member: ['Kulüp kaydınızı onayladı ve sizi kulübün sporcu kayıtlarında buldu.', 'Sonraki adım — <b>tam profiliniz</b>: fotoğraf, kilo, şehir. Bu önemli: kulüp ✓ Verified işaretini yalnızca tam profile verir ve bununla her şey açılır — kulüp programı ve hizmetleri, My PIT World ve dünya reytingindeki sporcu profiliniz.', 'Profili doldur'],
+    new: ['Kulüp PIT RATING kaydınızı onayladı.', 'Uygulamadan deneme dersine kaydolun. Deneme dersinden sonra yönetici sözleşmenizi ve üyeliğinizi düzenleyecek — ardından kulüp üyeliği için tam profil açılır.', "My PIT'i aç"],
+    full: ['Sözleşme imzalandı, üyelik ödendi — artık kulüp üyesisiniz!', 'Son adım — <b>tam profiliniz</b>: fotoğraf, kilo, şehir. Bu önemli: kulüp ✓ Verified işaretini yalnızca tam profile verir ve her şeyi açar — kulüp programı ve hizmetleri, My PIT World ve dünya reytingindeki sporcu profiliniz.', 'Profili doldur'] },
 };
-function welcomeMail(to, name, clubName, lang) {
-  const L = WL[lang] || WL.ru, esc = v => String(v || '').replace(/[<>&"]/g, '');
+function welcomeMail(to, name, clubName, lang, kind) {
+  const L0 = WL[lang] || WL.ru, K = L0[kind] || L0.member, L = { ...L0, p1: K[0], p2: K[1], btn: K[2] }, esc = v => String(v || '').replace(/[<>&"]/g, '');
   const html = `<!doctype html><html><body style="margin:0;background:#f4f1ea;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#15171b">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="padding:32px 12px"><tr><td align="center">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:460px;background:#fff;border:1px solid #e3ded2;border-radius:14px;overflow:hidden">
@@ -154,12 +167,14 @@ function welcomeMail(to, name, clubName, lang) {
 export async function notifyWelcome(req, env, me) {
   const ok = o => new Response(JSON.stringify(o), { headers: { 'content-type': 'application/json' } });
   if (!me || !['owner', 'admin'].includes(me.role)) return new Response(JSON.stringify({ error: 'forbidden' }), { status: 403, headers: { 'content-type': 'application/json' } });
-  const b = await req.json().catch(() => ({})), l = b.id ? await getDoc(env, 'leads', String(b.id)) : null;
-  if (!l) return ok({ sent: false, reason: 'not_found' });
-  const to = String(l.email || (l.reg && l.reg.email) || '').trim().toLowerCase();
+  const b = await req.json().catch(() => ({})), kind = ['member', 'new', 'full'].includes(b.kind) ? b.kind : 'member';
+  let l = b.id ? await getDoc(env, 'leads', String(b.id)) : null, to = '';
+  if (!l && b.mid) { const fr = await env.DB.prepare('SELECT email,lead FROM fighters WHERE mid=?').bind(String(b.mid)).first(); if (fr) { to = fr.email; l = fr.lead ? await getDoc(env, 'leads', fr.lead) : null } }
+  if (!l && !to) return ok({ sent: false, reason: 'not_found' });
+  to = to || String(l.email || (l.reg && l.reg.email) || '').trim().toLowerCase();
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(to)) return ok({ sent: false, reason: 'no_email' });
-  const nm = (l.reg && l.reg.first) || String(l.name || '').trim().split(/\s+/)[0];
-  try { await env.EMAIL.send(welcomeMail(to, nm, CLUBS.mowgli.name, await accLang(env, to, l))); return ok({ sent: true, to }) } catch (e) { return ok({ sent: false, reason: 'send_failed' }) }
+  const nm = l ? ((l.reg && l.reg.first) || String(l.name || '').trim().split(/\s+/)[0]) : '';
+  try { await env.EMAIL.send(welcomeMail(to, nm, CLUBS.mowgli.name, await accLang(env, to, l), kind)); return ok({ sent: true, to, kind }) } catch (e) { return ok({ sent: false, reason: 'send_failed' }) }
 }
 // уведомить клиента о записи на пробное (письмо); вызывает CRM после записи
 export async function notifyTrial(req, env, me) {
@@ -213,9 +228,11 @@ async function view(env, email) {
     if (f.verified) { const m0 = await getDoc(env, 'members', f.mid); if (m0) await env.DB.batch([putDoc(env, 'members', f.mid, profileToMember(m0, profile, email), 'pit:' + email)]) }
   }
   // одобрение регистрации даёт пробное; членство в клубе (✓ Verified) — после покупки абонемента и проверки полной анкеты в «Анкетах»
+  out.fullOpen = false;
   if (f.mid) {
     const m = await getDoc(env, 'members', f.mid);
     if (m) {
+      out.fullOpen = fullOpenOf(m); out.contractOk = !!m.contractAt; out.paidOk = !m.due;
       const v = await env.DB.prepare("SELECT data FROM docs WHERE col='visits' AND deleted=0").all();
       let total = 0, month = 0; const ym = new Date().toISOString().slice(0, 7);
       for (const x of v.results || []) { try { const d = JSON.parse(x.data); if (Array.isArray(d.ids) && d.ids.includes(f.mid)) { total++; if (String(d.date || '').startsWith(ym)) month++ } } catch (e) { } }
@@ -287,6 +304,7 @@ export async function myRoutes(req, env, path, email, staff) {
 
   if (path === '/api/my/submit') {
     if (!cur) return json({ error: 'profile' }, 403);
+    if (!cur.mid || !fullOpenOf(await getDoc(env, 'members', cur.mid))) return json({ error: 'not_member' }, 409);
     const d = JSON.parse(cur.data), miss = fullMissing(d, d.photo ? 1 : 0);
     if (miss.length) return json({ error: 'incomplete', missing: miss }, 400);
     await env.DB.prepare('UPDATE fighters SET data=?,note=NULL,updated=? WHERE email=?').bind(JSON.stringify({ ...d, submittedAt: new Date().toISOString() }), t, email).run();

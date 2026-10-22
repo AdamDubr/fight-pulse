@@ -459,6 +459,7 @@ function renderDrawer(){
     body=`<div class="acts w-only">${todayIds().has(m.id)?'<span class="pill ok">✓ отмечен сегодня</span>':`<button class="btn gold" data-visit="${m.id}">Пришёл сегодня</button>`}
         ${m.kind!=='staff'?`<button class="btn" data-dr="renew">Продлить</button><button class="btn" data-dr="change">Сменить абонемент</button>`:''}<button class="btn" data-dr="edit">Изменить</button></div>
       ${dueBlock(m)}
+      ${fullGate(m)}
       ${myPitData(m)}
       ${m&&m.kind!=='staff'&&memGroups(m).length?`<section class="card"><h2>Группы</h2><div class="chips">${memGroups(m).map(c=>`<span class="chip" style="cursor:default">${esc(c.disc)} · ${esc(c.time)} · ${(c.dow||[]).map(d=>SDAYS[d-1]).join('/')}</span>`).join('')}</div></section>`:''}
       ${pitBlock(m)}
@@ -713,7 +714,7 @@ function sellHTML(x){const want=discsOf(x),pl=leadPlan(x),kid=tf(pl)?.kind==='ki
   return`<details class="card adm-only" id="sellbox" ${x.status==='done'?'open':''}><summary style="cursor:pointer;font-weight:800;font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold)">💳 Продать абонемент и добавить в группу</summary>
    <form class="form" id="sellf" style="margin-top:.7rem"><div id="sellrows" style="grid-column:1/-1;display:grid;gap:.6rem">${sellRow(0,d,cls,pl)}</div>
     <div class="acts full"><button class="btn sm" type="button" data-rowadd>+ Добавить абонемент</button></div>
-    <label class="f">Оплата<select id="sl_m">${methodOpts('cash')}<option value="debt">Не оплачено — в долг</option></select></label>
+    <label class="f" style="flex-direction:row;align-items:center;gap:.5rem"><input type="checkbox" id="sl_ctr"> Договор подписан</label><label class="f">Оплата<select id="sl_m">${methodOpts('cash')}<option value="debt">Не оплачено — в долг</option></select></label>
     <label class="f" id="sl_dl" hidden>Обещал оплатить<input type="date" id="sl_due" value="${addDays(today(),3)}"></label>
     <div class="acts full"><button class="btn gold" type="submit">Продать и добавить в группу</button><span class="note" id="sl_tot"></span></div></form></details>`}
 function bindSell(host,x,apv){const f=$('#sellf',host);if(!f)return;const box=$('#sellrows',host),sm=$('#sl_m',host);
@@ -736,13 +737,14 @@ function bindSell(host,x,apv){const f=$('#sellf',host);if(!f)return;const box=$(
     const method=sm.value,total=rows.reduce((a,r)=>a+r.sum,0),dl=[...new Set(rows.map(r=>r.disc))],P=rows[0],t=tf(P.plan);
     const rg=x.reg||{},w=String(x.name||'').trim().split(/\s+/),last=rg.last||(w.length>1?w.pop():''),first=rg.first||w.join(' ')||x.name,id=newId();
     const subs=rows.slice(1).map(r=>({plan:r.plan,disc:r.disc,cls:r.cls,price:tf(r.plan)?.price??null,start:r.start,end:r.end,left:tf(r.plan)?.sessions??null}));
-    const doc={name:[first,last].filter(Boolean).join(' '),first,last,phone:x.phone||rg.phone||'',email:x.email||rg.email||'',dob:rg.dob||'',parent:rg.parent||null,disc:dl.join(', '),discs:dl,plan:P.plan,kind:t?.kind||'group',price:t?.price??null,start:P.start,end:P.end,left:t?.sessions??null,cls:P.cls,...(subs.length?{subs}:{}),note:x.note||'',src:'pit',lead:x.id,createdAt:new Date().toISOString(),
+    const doc={name:[first,last].filter(Boolean).join(' '),first,last,phone:x.phone||rg.phone||'',email:x.email||rg.email||'',dob:rg.dob||'',parent:rg.parent||null,disc:dl.join(', '),discs:dl,plan:P.plan,kind:t?.kind||'group',price:t?.price??null,start:P.start,end:P.end,left:t?.sessions??null,cls:P.cls,...(subs.length?{subs}:{}),note:x.note||'',src:'pit',lead:x.id,createdAt:new Date().toISOString(),...($('#sl_ctr',host)&&$('#sl_ctr',host).checked?{contractAt:today()}:{}),
       ...(method==='debt'&&total>0?{due:{sum:total,date:$('#sl_due',host).value||addDays(today(),3),since:today(),plan:P.plan,what:rows.length>1?'Абонементы ('+rows.length+')':'Абонемент',note:''}}:{})};
     const PF=S.pv&&S.pv.all&&doc.email?S.pv.all.find(f=>f.email===String(doc.email).toLowerCase()):null;
     if(PF&&PF.verified){const d=PF.profile||{};for(const k of ['weight','city','belt','stance','dob'])if(d[k])doc[k]=d[k];if(d.photo)doc.myPhoto=d.photo;if(d.parent&&d.parent.name)doc.parent={...(doc.parent||{}),name:d.parent.name,phone:d.parent.phone};if(d.consentPublic!=null)doc.consentPublic=d.consentPublic?'yes':'no';doc.myPit={email:PF.email,at:new Date().toISOString()}}
     if(!await write(()=>DB.doc('members/'+id).set(doc)))return;
     if(method!=='debt')for(const r of rows)if(r.sum>0)await write(()=>DB.collection('payments').doc().set({kind:'sub',mid:id,name:doc.name,sum:r.sum,date:today(),ts:new Date().toISOString(),plan:r.plan,method,what:'Абонемент · '+(tf(r.plan)?.name||r.plan)+' · '+r.disc,src:'pit'}));
     await write(()=>DB.doc('leads/'+x.id).update({...(x.pit?apv:{}),status:'bought',mid:id,boughtAt:today()}),`Продано: ${doc.name} · ${rows.map(r=>(tf(r.plan)?.name||r.plan)+' ('+r.disc+')').join(' + ')}${method==='debt'?' · не оплачено':''}`);
+    if(x.pit){if(doc.contractAt&&!doc.due)pitMail({id:x.id,kind:'full'},'Бойцу открыта полная анкета (письмо)');else toast('Полная анкета откроется бойцу после '+[!doc.contractAt?'подписания договора':'',doc.due?'оплаты':''].filter(Boolean).join(' и '),6000)}
     ovClose();S.tab='members';render();S.open=id;S.drMode='view';renderDrawer()})}
 function trialOpts(x,d){const all=SCH().classes.slice().sort((a,b)=>String(a.disc).localeCompare(String(b.disc),'ru')||String(a.time).localeCompare(String(b.time)));
   const dw=d?dowOf(d):0,day=all.filter(c=>(c.dow||[]).includes(dw)),other=all.filter(c=>!(c.dow||[]).includes(dw));
@@ -893,6 +895,7 @@ function bindDrawer(host,m){bindDue(host,m);bindSubs(host,m);
         toast('Пока вы редактировали, другой сотрудник изменил: '+cf.map(k=>FLB[k]||k).join(', ')+'. Нажмите «Сохранить» ещё раз, чтобы записать ваши значения.',8000);return}
       op=()=>DB.doc('members/'+id).update(patch)}
     const ok=await write(op,(S.open==='new'?'Боец добавлен: ':'Карточка сохранена: ')+name);
+    if(ok&&m&&m.lead&&!fullReady(m)&&fullReady({...m,...doc}))pitMail({mid:m.id,kind:'full'},'Бойцу открыта полная анкета (письмо)');
     if(ok&&pay==='debt'&&t&&t.price>0)await write(()=>DB.doc('members/'+id).update({due:{sum:t.price,date:addDays(today(),3),since:today(),plan,what:'Абонемент',note:''}}),'Отмечено: не оплачено');
     if(ok&&pay&&pay!=='debt'&&t&&t.price>0)await write(()=>DB.collection('payments').doc().set({mid:id,name,sum:t.price,date:doc.start,plan,method:pay,src:'pit'}));
     if(ok&&S.prefillLead){const lid=S.prefillLead;S.prefillLead=null;S.prefill=null;await write(()=>DB.doc('leads/'+lid).update({status:'bought',mid:id,boughtAt:today()}),'Заявка закрыта: купил абонемент')}
@@ -1050,14 +1053,14 @@ function leadDrawer(){const host=$('#ovHost'),x=S.ov.id==='new'?{status:'new',ki
     if(await write(()=>ref.set(d),isNew?'Заявка: '+name:'Заявка сохранена')){S.ov={type:'lead',id:ref.id};renderOv()}});
   const up=async(patch,msg)=>{const ok=await write(()=>DB.doc('leads/'+x.id).update(patch),msg+': '+x.name);if(ok&&S.ov&&S.ov.id===x.id){DIRTY.ov=false;renderOv()}return ok};
   const apv={approved:true,approvedAt:today(),approvedBy:ME||null};
-  const welcome=()=>{if(!x.pit)return;fetch('/api/notify/welcome',{method:'POST',headers:{'content-type':'application/json'},credentials:'same-origin',body:JSON.stringify({id:x.id})}).then(r=>r.json()).then(j=>toast(j.sent?'Бойцу отправлено приветствие и просьба заполнить полную анкету: '+j.to:'Приветствие не отправлено — у бойца нет e-mail',5000)).catch(()=>{})};
+  const welcome=kind=>{if(!x.pit)return;pitMail({id:x.id,kind},kind==='new'?'Новому клиенту отправлено приветствие (анкета откроется после договора и оплаты)':'Бойцу из базы клуба отправлено приветствие и полная анкета')};
   const linkTo=mid=>{const m=S.members.find(z=>z.id===mid);if(!m)return;up({...apv,status:'bought',mid,boughtAt:today(),match:{id:mid,name:m.name}},'Привязан к карточке '+m.name)};
   host.querySelectorAll('[data-papp]').forEach(b=>b.addEventListener('click',()=>{const k=b.dataset.papp;
     if(k==='merge'){const m=S.members.find(z=>z.id===b.dataset.mid);if(!m)return;const F=mergePlan(x,m),patch=Object.fromEntries(F.map(f=>[f[0],f[2]]));
-      (async()=>{if(Object.keys(patch).length&&!await write(()=>DB.doc('members/'+m.id).update(patch)))return;linkTo(m.id);welcome()})();return}
-    if(k==='link'){linkTo(b.dataset.mid);welcome()}else if(k==='new')up(apv,'Заявка одобрена').then(ok=>{if(ok)welcome()});
+      (async()=>{if(Object.keys(patch).length&&!await write(()=>DB.doc('members/'+m.id).update(patch)))return;linkTo(m.id);welcome('member')})();return}
+    if(k==='link'){linkTo(b.dataset.mid);welcome('member')}else if(k==='new')up(apv,'Заявка одобрена').then(ok=>{if(ok)welcome('new')});
     else if(k==='reject'){if(!b.dataset.sure){b.dataset.sure=1;b.textContent='Точно отклонить?';return}up({approved:false,rejected:true,status:'lost',lostReason:'Отклонена клубом'},'Заявка отклонена')}}));
-  const pl=$('#plink',host);if(pl)pl.addEventListener('submit',e=>{e.preventDefault();const mid=$('#pl_m',host).value;if(!mid){toast('Выберите бойца');return}linkTo(mid);welcome()});
+  const pl=$('#plink',host);if(pl)pl.addEventListener('submit',e=>{e.preventDefault();const mid=$('#pl_m',host).value;if(!mid){toast('Выберите бойца');return}linkTo(mid);welcome('member')});
   const lb=$('#lbook',host);if(lb){const ld=$('#lb_d',host),lc=$('#lb_c',host);
     const syncD=()=>{const c=SCH().classes.find(z=>z.id===lc.value);if(c&&!(c.dow||[]).includes(dowOf(ld.value||today()))){ld.value=nextDay(c,today());lc.innerHTML=trialOpts({...x,trialClass:c.id},ld.value)}};
     syncD();ld.addEventListener('change',()=>{const c=SCH().classes.find(z=>z.id===lc.value),ok=c&&(c.dow||[]).includes(dowOf(ld.value));lc.innerHTML=trialOpts({...x,trialClass:ok?c.id:null},ld.value);syncD()});lc.addEventListener('change',syncD);
@@ -1434,6 +1437,11 @@ function myPitData(m){if(!m||m.kind==='staff'||!(m.myPhoto||m.weight||m.city||m.
   const row=(k,v)=>v?`<dt>${k}</dt><dd>${esc(v)}</dd>`:'';
   return`<section class="card"><h2>Анкета бойца · My PIT</h2><div style="display:flex;gap:1rem;align-items:flex-start;flex-wrap:wrap">${m.myPhoto?`<img src="/api/my/photo/${esc(m.myPhoto)}" alt="" style="width:7rem;height:7rem;border-radius:1rem;object-fit:cover;flex:none">`:''}
    <dl class="kv" style="flex:1;min-width:12rem;margin:0">${row('Вес / категория',m.weight?m.weight+(/кг|kg/i.test(m.weight)?'':' кг'):'')}${row('Город',m.city)}${row('Пояс / ранг',m.belt)}${row('Стойка',STN[m.stance]||m.stance)}${m.myPit?`<dt>Проверено</dt><dd>${fmtD(String(m.myPit.at).slice(0,10))} · ${esc(m.myPit.email||'')}</dd>`:''}</dl></div></section>`}
+/* ===== Письма бойцу My PIT: member — найден в базе (сразу полная анкета), new — новый клиент, full — договор и оплата есть, анкета открыта ===== */
+function pitMail(body,okMsg){return fetch('/api/notify/welcome',{method:'POST',headers:{'content-type':'application/json'},credentials:'same-origin',body:JSON.stringify(body)}).then(r=>r.json()).then(j=>{if(j.sent)toast(okMsg+': '+j.to,5000);return j}).catch(()=>null)}
+const fullReady=m=>!!m&&(!m.lead||(!!m.contractAt&&!m.due));
+function fullGate(m){if(!m||!m.lead||fullReady(m))return'';return`<section class="card" style="border-color:var(--gold)"><h2>Полная анкета My PIT · ждёт</h2><p style="margin:0 0 .4rem">Новый клиент получит полную анкету члена клуба, когда будут выполнены оба условия:</p>
+  <div>${m.contractAt?'✅':'⬜'} Договор подписан${m.contractAt?' · '+fmtD(m.contractAt):' — укажите дату в «Изменить» → «Договор подписан»'}</div><div>${!m.due?'✅':'⬜'} Абонемент оплачен${m.due?' — сейчас отмечено «не оплачено»':''}</div></section>`}
 /* ===== Не оплатил: долг с обещанной датой (напоминание в колокольчике) ===== */
 function dueBlock(m){if(!m||m.kind==='staff')return'';const D=m.due,td=today();
   if(!D)return`<details class="card w-only duef" style="padding:.6rem 1rem"><summary style="cursor:pointer;font-weight:700;font-size:.86rem">💳 Отметить: не оплатил</summary>
@@ -1458,7 +1466,7 @@ function bindDue(host,m){if(!m)return;
   const pf=$('#duepay',host);if(!pf)return;
   pf.addEventListener('submit',async e=>{e.preventDefault();const D=m.due||{},sum=Math.max(0,+$('#dp_s',host).value||0),method=$('#dp_m',host).value;
     let ok=true;if(sum>0)ok=await write(()=>DB.collection('payments').doc().set({kind:'sub',mid:m.id,name:m.name,sum,date:today(),ts:new Date().toISOString(),plan:D.plan||m.plan||null,method,what:(D.what||'Абонемент')+' · долг от '+fmtD(D.since||today()),src:'pit'}));
-    if(ok&&await write(()=>DB.doc('members/'+m.id).update({due:null}),`Оплачено: ${m.name} · ${lira(sum)}`))renderDrawer()});
+    if(ok&&await write(()=>DB.doc('members/'+m.id).update({due:null}),`Оплачено: ${m.name} · ${lira(sum)}`)){if(m.lead&&m.contractAt)pitMail({mid:m.id,kind:'full'},'Бойцу открыта полная анкета (письмо)');renderDrawer()}});
   const mv=$('[data-duemove]',host);if(mv)mv.addEventListener('click',async()=>{const d=$('#dp_d',host).value;if(!d){toast('Укажите дату');return}
     if(await write(()=>DB.doc('members/'+m.id).update({due:{...m.due,date:d}}),`${m.name}: оплата перенесена на ${fmtD(d)}`))renderDrawer()});
   const dl=$('[data-duedel]',host);if(dl)dl.addEventListener('click',async()=>{if(!dl.dataset.sure){dl.dataset.sure=1;dl.textContent='Точно снять?';return}
