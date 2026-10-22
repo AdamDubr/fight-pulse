@@ -1050,13 +1050,14 @@ function leadDrawer(){const host=$('#ovHost'),x=S.ov.id==='new'?{status:'new',ki
     if(await write(()=>ref.set(d),isNew?'Заявка: '+name:'Заявка сохранена')){S.ov={type:'lead',id:ref.id};renderOv()}});
   const up=async(patch,msg)=>{const ok=await write(()=>DB.doc('leads/'+x.id).update(patch),msg+': '+x.name);if(ok&&S.ov&&S.ov.id===x.id){DIRTY.ov=false;renderOv()}return ok};
   const apv={approved:true,approvedAt:today(),approvedBy:ME||null};
+  const welcome=()=>{if(!x.pit)return;fetch('/api/notify/welcome',{method:'POST',headers:{'content-type':'application/json'},credentials:'same-origin',body:JSON.stringify({id:x.id})}).then(r=>r.json()).then(j=>toast(j.sent?'Бойцу отправлено приветствие и просьба заполнить полную анкету: '+j.to:'Приветствие не отправлено — у бойца нет e-mail',5000)).catch(()=>{})};
   const linkTo=mid=>{const m=S.members.find(z=>z.id===mid);if(!m)return;up({...apv,status:'bought',mid,boughtAt:today(),match:{id:mid,name:m.name}},'Привязан к карточке '+m.name)};
   host.querySelectorAll('[data-papp]').forEach(b=>b.addEventListener('click',()=>{const k=b.dataset.papp;
     if(k==='merge'){const m=S.members.find(z=>z.id===b.dataset.mid);if(!m)return;const F=mergePlan(x,m),patch=Object.fromEntries(F.map(f=>[f[0],f[2]]));
-      (async()=>{if(Object.keys(patch).length&&!await write(()=>DB.doc('members/'+m.id).update(patch)))return;linkTo(m.id)})();return}
-    if(k==='link')linkTo(b.dataset.mid);else if(k==='new')up(apv,'Заявка одобрена');
+      (async()=>{if(Object.keys(patch).length&&!await write(()=>DB.doc('members/'+m.id).update(patch)))return;linkTo(m.id);welcome()})();return}
+    if(k==='link'){linkTo(b.dataset.mid);welcome()}else if(k==='new')up(apv,'Заявка одобрена').then(ok=>{if(ok)welcome()});
     else if(k==='reject'){if(!b.dataset.sure){b.dataset.sure=1;b.textContent='Точно отклонить?';return}up({approved:false,rejected:true,status:'lost',lostReason:'Отклонена клубом'},'Заявка отклонена')}}));
-  const pl=$('#plink',host);if(pl)pl.addEventListener('submit',e=>{e.preventDefault();const mid=$('#pl_m',host).value;if(!mid){toast('Выберите бойца');return}linkTo(mid)});
+  const pl=$('#plink',host);if(pl)pl.addEventListener('submit',e=>{e.preventDefault();const mid=$('#pl_m',host).value;if(!mid){toast('Выберите бойца');return}linkTo(mid);welcome()});
   const lb=$('#lbook',host);if(lb){const ld=$('#lb_d',host),lc=$('#lb_c',host);
     const syncD=()=>{const c=SCH().classes.find(z=>z.id===lc.value);if(c&&!(c.dow||[]).includes(dowOf(ld.value||today()))){ld.value=nextDay(c,today());lc.innerHTML=trialOpts({...x,trialClass:c.id},ld.value)}};
     syncD();ld.addEventListener('change',()=>{const c=SCH().classes.find(z=>z.id===lc.value),ok=c&&(c.dow||[]).includes(dowOf(ld.value));lc.innerHTML=trialOpts({...x,trialClass:ok?c.id:null},ld.value);syncD()});lc.addEventListener('change',syncD);

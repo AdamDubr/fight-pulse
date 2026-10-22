@@ -132,6 +132,35 @@ async function accLang(env, email, lead) {
   try { const fr = await env.DB.prepare('SELECT data FROM fighters WHERE email=?').bind(email).first(); if (fr) { const l = JSON.parse(fr.data).lang; if (ML[l]) return l } } catch (e) { }
   return lead && ML[lead.lang] ? lead.lang : 'ru';
 }
+
+// приветствие после одобрения регистрации клубом: письмо на языке аккаунта + просьба заполнить полную анкету
+const WL = {
+  ru: { subj: c => `Добро пожаловать в ${c}!`, h: (n, c) => `${n ? n + ', д' : 'Д'}обро пожаловать в ${c}!`, p1: 'Клуб одобрил вашу регистрацию в PIT RATING.', p2: 'Следующий шаг — <b>полная анкета</b>: фото, вес, город. Это важно: только по полной анкете клуб ставит отметку ✓ Verified, и после неё открываются все возможности — расписание и услуги клуба, My PIT World и ваш профиль бойца в мировом рейтинге.', btn: 'Заполнить анкету' },
+  en: { subj: c => `Welcome to ${c}!`, h: (n, c) => `${n ? n + ', w' : 'W'}elcome to ${c}!`, p1: 'The club has approved your registration in PIT RATING.', p2: 'Next step — your <b>full profile</b>: photo, weight, city. This matters: the club gives the ✓ Verified mark only for a complete profile, and it unlocks everything — club schedule and services, My PIT World and your fighter profile in the world rating.', btn: 'Complete profile' },
+  tr: { subj: c => `${c}'e hoş geldiniz!`, h: (n, c) => `${n ? n + ', ' : ''}${c}'e hoş geldiniz!`, p1: 'Kulüp PIT RATING kaydınızı onayladı.', p2: 'Sonraki adım — <b>tam profiliniz</b>: fotoğraf, kilo, şehir. Bu önemli: kulüp ✓ Verified işaretini yalnızca tam profile verir ve bununla her şey açılır — kulüp programı ve hizmetleri, My PIT World ve dünya reytingindeki sporcu profiliniz.', btn: 'Profili doldur' },
+};
+function welcomeMail(to, name, clubName, lang) {
+  const L = WL[lang] || WL.ru, esc = v => String(v || '').replace(/[<>&"]/g, '');
+  const html = `<!doctype html><html><body style="margin:0;background:#f4f1ea;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#15171b">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="padding:32px 12px"><tr><td align="center">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:460px;background:#fff;border:1px solid #e3ded2;border-radius:14px;overflow:hidden">
+<tr><td style="background:#111418;padding:24px 28px"><div style="color:#f4f1ea;font-size:22px;font-weight:800;letter-spacing:1px">${esc(clubName)}</div><div style="color:#e8c35a;font-size:11px;letter-spacing:2px;font-weight:700">PIT RATING</div></td></tr>
+<tr><td style="padding:28px"><div style="font-size:18px;font-weight:800;margin:0 0 12px">${esc(L.h(name, clubName))}</div>
+<p style="font-size:14px;line-height:1.55;margin:0 0 12px">${L.p1}</p><p style="font-size:14px;line-height:1.55;margin:0 0 20px">${L.p2}</p>
+<a href="https://app.pitrating.com/my/" style="display:inline-block;background:#e8c35a;color:#141414;text-decoration:none;font-weight:800;padding:12px 22px;border-radius:10px">${L.btn}</a></td></tr>
+<tr><td style="padding:14px 28px;border-top:1px solid #efeae0;font-size:11px;color:#8b877d">PIT RATING · pitrating.com</td></tr></table></td></tr></table></body></html>`;
+  return { to, from: { email: 'noreply@pitrating.com', name: clubName }, subject: L.subj(clubName), html, text: `${L.h(name, clubName)} ${L.p1} ${L.p2.replace(/<[^>]+>/g, '')} https://app.pitrating.com/my/` };
+}
+export async function notifyWelcome(req, env, me) {
+  const ok = o => new Response(JSON.stringify(o), { headers: { 'content-type': 'application/json' } });
+  if (!me || !['owner', 'admin'].includes(me.role)) return new Response(JSON.stringify({ error: 'forbidden' }), { status: 403, headers: { 'content-type': 'application/json' } });
+  const b = await req.json().catch(() => ({})), l = b.id ? await getDoc(env, 'leads', String(b.id)) : null;
+  if (!l) return ok({ sent: false, reason: 'not_found' });
+  const to = String(l.email || (l.reg && l.reg.email) || '').trim().toLowerCase();
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(to)) return ok({ sent: false, reason: 'no_email' });
+  const nm = (l.reg && l.reg.first) || String(l.name || '').trim().split(/\s+/)[0];
+  try { await env.EMAIL.send(welcomeMail(to, nm, CLUBS.mowgli.name, await accLang(env, to, l))); return ok({ sent: true, to }) } catch (e) { return ok({ sent: false, reason: 'send_failed' }) }
+}
 // уведомить клиента о записи на пробное (письмо); вызывает CRM после записи
 export async function notifyTrial(req, env, me) {
   if (!me || !['owner', 'admin', 'trainer'].includes(me.role)) return new Response(JSON.stringify({ error: 'forbidden' }), { status: 403, headers: { 'content-type': 'application/json' } });
@@ -161,7 +190,7 @@ const VERIFY_FIELDS = ['last', 'first', 'dob', 'phone', 'disc', 'kind', 'note', 
 export async function worldMe(env, email) {
   await ensure(env);
   const v = await view(env, email);
-  if (!v.profile || !v.access) return null;
+  if (!v.profile || !v.world) return null;
   const p = v.profile, ok = (v.items || []).filter(i => i.status === 'ok');
   const comps = ok.filter(i => i.kind === 'comp').map(i => i.data).sort((a, b) => String(b.date).localeCompare(String(a.date)));
   return {
@@ -202,6 +231,8 @@ async function view(env, email) {
   out.missing = fullMissing(profile, out.photo);
   out.submitted = profile.submittedAt || null;
   out.access = !!(f.mid && f.verified);
+  out.world = !!f.verified;
+  out.approved = !!(lead && lead.approved && !lead.rejected) || !!f.mid;
   if (out.access) { out.schedule = await trialSlots(env, 14); out.clubInfo = await clubInfo(env, f.club) }
   if (lead) out.lead = { status: lead.rejected ? 'rejected' : (!lead.approved && (lead.status || 'new') === 'new') ? 'pending' : (lead.status || 'new'), trialDate: lead.trialDate || null };
   const it = await env.DB.prepare('SELECT * FROM fighter_items WHERE email=? ORDER BY created DESC').bind(email).all();

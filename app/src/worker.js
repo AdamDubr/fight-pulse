@@ -1,7 +1,7 @@
 // PIT RATING — app.pitrating.com
 // Вход: собственный (код на e-mail → сессия), на переходный период также Cloudflare Access. Роли: owner | admin | trainer.
 import { authRoutes, sessionEmail, sessionsOf, revokeAll } from './auth.js';
-import { myRoutes, reviewRoutes, notifyTrial, worldMe } from './my.js';
+import { myRoutes, reviewRoutes, notifyTrial, notifyWelcome, worldMe } from './my.js';
 import { worldRoutes } from './world.js';
 // Данные: D1 (документы коллекций), файлы: R2.
 
@@ -66,6 +66,7 @@ async function api(req, env, me, path) {
   if (path === '/api/me') return json(me);
   if (path === '/api/review' || path.startsWith('/api/review/')) return reviewRoutes(req, env, path, me);
   if (path === '/api/notify/trial' && req.method === 'POST') return notifyTrial(req, env, me);
+  if (path === '/api/notify/welcome' && req.method === 'POST') return notifyWelcome(req, env, me);
 
   // Синхронизация: все изменения после seq
   if (path === '/api/sync' && req.method === 'GET') {
@@ -267,7 +268,7 @@ export default {
       if (!w.role) {
         // боец: My PIT World открывается после проверки анкеты клубом (член клуба)
         const f = await env.DB.prepare('SELECT mid,verified FROM fighters WHERE email=?').bind(w.email).first().catch(() => null);
-        if (!f || !f.mid || !f.verified) return new Response(null, { status: 302, headers: { location: '/my/?locked=world' } });
+        if (!f || !f.verified) return new Response(null, { status: 302, headers: { location: '/my/?locked=world' } });
       }
       let me = null; if (!w.role) { try { me = await worldMe(env, w.email) } catch (e) { me = null } }
       return arenaReal(req, env, { asset: true, world: true, fighter: !w.role, me });
