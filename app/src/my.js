@@ -284,6 +284,29 @@ export async function myRoutes(req, env, path, email, staff) {
   const t = Date.now();
   if (path === '/api/my' && req.method === 'GET') return json({ ...(await view(env, email)), staff: staff || null });
 
+  // режим бойца для сотрудника: привязать свою реальную карточку из CRM к своему входу
+  if (path === '/api/my/staffpick' && req.method === 'GET') {
+    if (!staff) return json({ error: 'forbidden' }, 403);
+    const r = await env.DB.prepare("SELECT id,data FROM docs WHERE col='members' AND deleted=0").all();
+    const L = (r.results || []).map(x => { let m = {}; try { m = JSON.parse(x.data) } catch (e) { } return { id: x.id, name: m.first && m.last ? m.first + ' ' + m.last : (m.name || ''), disc: m.disc || '', email: String(m.email || '').toLowerCase(), staff: m.kind === 'staff' } })
+      .filter(x => x.name && !x.staff).sort((a, b) => a.name.localeCompare(b.name, 'ru'));
+    return json({ items: L.map(({ staff: _s, email: e, ...x }) => ({ ...x, mine: e === email })) });
+  }
+  if (path === '/api/my/staffbind' && req.method === 'POST') {
+    if (!staff) return json({ error: 'forbidden' }, 403);
+    const b = await req.json().catch(() => ({})), mid = String(b.mid || ''), m = mid ? await getDoc(env, 'members', mid) : null;
+    if (!m || m.kind === 'staff') return json({ error: 'not_found' }, 404);
+    const ex = await env.DB.prepare('SELECT email FROM fighters WHERE email=?').bind(email).first();
+    if (ex) await env.DB.prepare('UPDATE fighters SET mid=?, verified=1, ver_by=COALESCE(ver_by,?), ver_at=COALESCE(ver_at,?), updated=? WHERE email=?').bind(mid, email, t, t, email).run();
+    else {
+      const parts = String(m.name || '').trim().split(/\s+/), last = m.last || (parts.length > 1 ? parts[parts.length - 1] : '') || '', first = m.first || (parts.length > 1 ? parts.slice(0, -1).join(' ') : parts[0]) || '';
+      const d = { last, first, dob: m.dob || '', phone: m.phone || '', disc: m.disc || 'MMA', kind: m.kind === 'ind' ? 'ind' : 'group', club: env.CLUB || 'mowgli', lang: 'ru', consentData: true, consentAt: new Date(t).toISOString(), invitedBy: email, createdAt: new Date(t).toISOString() };
+      for (const k of ['weight', 'city', 'belt', 'stance']) if (m[k]) d[k] = m[k];
+      await env.DB.prepare('INSERT INTO fighters(email,data,club,mid,created,updated,verified,ver_by,ver_at,invited) VALUES(?,?,?,?,?,?,1,?,?,1)').bind(email, JSON.stringify(d), env.CLUB || 'mowgli', mid, t, t, email, t).run();
+    }
+    return json(await view(env, email).then(v => ({ ...v, staff })));
+  }
+
   // фото анкеты: владелец и сотрудники клуба
   const pm = path.match(/^\/api\/my\/photo\/([a-f0-9]{32})$/);
   if (pm && req.method === 'GET') {
