@@ -336,6 +336,17 @@ export async function myRoutes(req, env, path, email, staff) {
     await env.DB.prepare('UPDATE fighters SET pending=?,note=NULL,updated=? WHERE email=?').bind(pj, t, email).run();
     return json({ ok: true, pending: pj ? pend : null });
   }
+  // тест для сотрудника: вернуть СВОЙ кабинет бойца к состоянию «новая регистрация, одобрена клубом, анкета не заполнена»
+  // (фото, вес, город, отправка анкеты снимаются; копия прежних значений — в data._bak; карточка CRM не меняется)
+  if (path === '/api/my/staffreset' && req.method === 'POST') {
+    if (!staff) return json({ error: 'forbidden' }, 403);
+    const f = await env.DB.prepare('SELECT data,mid FROM fighters WHERE email=?').bind(email).first();
+    if (!f || !f.mid) return json({ error: 'no_card' }, 404);
+    const d = JSON.parse(f.data), bak = {}; for (const k of ['photo', 'weight', 'city', 'submittedAt']) if (d[k] != null) bak[k] = d[k];
+    for (const k of ['photo', 'weight', 'city', 'submittedAt']) delete d[k]; d._bak = { ...(d._bak || {}), ...bak, at: new Date(t).toISOString() };
+    await env.DB.prepare('UPDATE fighters SET data=?, verified=0, ver_by=NULL, ver_at=NULL, pending=NULL, created=?, updated=? WHERE email=?').bind(JSON.stringify(d), t, t, email).run();
+    return json({ ...(await view(env, email)), staff });
+  }
   // режим бойца для сотрудника: привязать свою реальную карточку из CRM к своему входу
   if (path === '/api/my/staffpick' && req.method === 'GET') {
     if (!staff) return json({ error: 'forbidden' }, 403);
