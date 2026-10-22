@@ -287,7 +287,7 @@ const FLB={name:'ФИО',last:'Фамилия',first:'Имя',email:'E-mail',pho
 const DIRTY={view:false,ov:false};
 const markDirty=e=>{const t=e.target;if(!t||!t.closest||t.type==='search')return;if(t.closest('#ovHost'))DIRTY.ov=true;else if(t.closest('#view'))DIRTY.view=true};document.addEventListener('input',markDirty,true);document.addEventListener('change',markDirty,true);
 const busy=sel=>{const h=$(sel),a=document.activeElement;return!!(h&&a&&h.contains(a)&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)&&a.type!=='search')};
-const ovForm=()=>{const h=$('#ovHost');return!!(h&&h.querySelector('form'))};
+const ovForm=()=>{if(S.open)return S.open==='new'||(!!S.drMode&&S.drMode!=='view');const h=$('#ovHost');return!!(h&&h.querySelector('form'))};
 function renderBg(){const skipV=DIRTY.view||busy('#view'),skipO=DIRTY.ov||busy('#ovHost')||ovForm();
   if(!skipV)return render({keepOv:skipO,bg:true});
   try{updBell()}catch(e){}
@@ -347,8 +347,8 @@ function vToday(){
 }
 function rowMini(m,s){return`<button class="row" data-open="${m.id}" style="grid-template-columns:minmax(0,1fr) auto"><span class="nm">${esc(m.name)}<small>${esc(tf(m.plan)?.name||m.pkg||'—')} · до ${fmtD(m.end)}${m.left!=null?' · ост. '+m.left:''}</small></span><span class="pill ${s.c}">${esc(s.t)}</span></button>`}
 
-const FLT=[['all','Все'],['active','Активные'],['today','Пришли сегодня'],['soon','Скоро продление'],['exp','Истекли'],['group','Группы'],['kids','Дети'],['ind','Индивидуальные'],['staff','Безлимит'],['nodoc','Без договора'],['nocons','Нет согласия'],['noem','Нет экстренного контакта'],['u18','U18'],['frozen','Заморожены']];
-function fltFn(k){const ids=todayIds();return({all:()=>true,active:m=>m.kind!=='staff'&&!['exp','none'].includes(status(m).k),today:m=>ids.has(m.id),soon:m=>status(m).k==='soon',exp:m=>['exp','none'].includes(status(m).k),group:m=>m.kind==='group',kids:m=>m.kind==='kids',ind:m=>m.kind==='ind',staff:m=>m.kind==='staff',nodoc:m=>!m.contractAt,nocons:m=>m.consentData!=='yes',noem:m=>!(m.emergency&&m.emergency.phone),u18:m=>isMinor(m),frozen:m=>frozenNow(m)})[k]}
+const FLT=[['all','Все'],['active','Активные'],['today','Пришли сегодня'],['soon','Скоро продление'],['exp','Истекли'],['group','Группы'],['kids','Дети'],['ind','Индивидуальные'],['staff','Безлимит'],['debt','Не оплатили'],['nodoc','Без договора'],['nocons','Нет согласия'],['noem','Нет экстренного контакта'],['u18','U18'],['frozen','Заморожены']];
+function fltFn(k){const ids=todayIds();return({all:()=>true,active:m=>m.kind!=='staff'&&!['exp','none'].includes(status(m).k),today:m=>ids.has(m.id),soon:m=>status(m).k==='soon',exp:m=>['exp','none'].includes(status(m).k),group:m=>m.kind==='group',kids:m=>m.kind==='kids',ind:m=>m.kind==='ind',staff:m=>m.kind==='staff',debt:m=>!!m.due,nodoc:m=>!m.contractAt,nocons:m=>m.consentData!=='yes',noem:m=>!(m.emergency&&m.emergency.phone),u18:m=>isMinor(m),frozen:m=>frozenNow(m)})[k]}
 function vMembers(){
   const le=loadingOrEmpty(),q=S.q.trim().toLocaleLowerCase('tr'),
     L=S.members.filter(fltFn(S.flt)).filter(m=>!q||(m.name+' '+phoneDigits(m.phone)+' '+(m.disc||'')).toLocaleLowerCase('tr').includes(q)).sort((a,b)=>a.name.localeCompare(b.name,'tr'));
@@ -359,7 +359,7 @@ function vMembers(){
   <section class="card" style="padding:.6rem">
     <div class="lh"><span>Боец</span><span>Абонемент</span><span>До</span><span>Осталось</span><span>Статус</span><span></span></div>
     <div class="list">${L.map(m=>{const s=status(m),d=daysLeft(m.end);return`<div class="row" role="button" tabindex="0" data-open="${m.id}">
-      <span class="nm">${esc(m.name)}<small>${esc(m.disc||'—')}${m.kind==='kids'?' · дети':''}</small></span>
+      <span class="nm">${esc(m.name)}<small>${esc(m.disc||'—')}${m.kind==='kids'?' · дети':''}${m.due?` · <b style="color:var(--bad)">💳 не оплачено${m.due.date?' · до '+fmtD(m.due.date):''}</b>`:''}</small></span>
       <span class="tf">${esc(tf(m.plan)?.name||m.pkg||'—')}</span>
       <span class="c3 num ${d!=null&&d<0?'':''}">${m.kind==='staff'?'—':fmtD(m.end)}</span>
       <span class="c4 num">${m.left==null?'∞':m.left}</span>
@@ -445,6 +445,7 @@ function renderDrawer(){
       pays=S.payments.filter(p=>p.mid===m.id).sort((a,b)=>String(b.date).localeCompare(String(a.date))),wa=phoneDigits(m.phone),pm=m.parent&&m.parent.mid?S.members.find(x=>x.id===m.parent.mid):null,kids=S.members.filter(x=>x.parent&&x.parent.mid===m.id),dia=S.diary.filter(d=>d.mid===m.id).sort((a,b)=>String(b.ts).localeCompare(String(a.ts)));
     body=`<div class="acts w-only">${todayIds().has(m.id)?'<span class="pill ok">✓ отмечен сегодня</span>':`<button class="btn gold" data-visit="${m.id}">Пришёл сегодня</button>`}
         ${m.kind!=='staff'?`<button class="btn" data-dr="renew">Продлить</button><button class="btn" data-dr="change">Сменить абонемент</button>`:''}<button class="btn" data-dr="edit">Изменить</button></div>
+      ${dueBlock(m)}
       ${m&&m.kind!=='staff'&&memGroups(m).length?`<section class="card"><h2>Группы</h2><div class="chips">${memGroups(m).map(c=>`<span class="chip" style="cursor:default">${esc(c.disc)} · ${esc(c.time)} · ${(c.dow||[]).map(d=>SDAYS[d-1]).join('/')}</span>`).join('')}</div></section>`:''}
       ${pitBlock(m)}
       <section class="card"><h2>Абонемент</h2><dl class="kv">
@@ -528,7 +529,7 @@ function formHTML(m){return`<form class="card form" id="mf" autocomplete="off">
   <label class="f">Начало<input type="date" id="f_start" value="${esc(m.start||today())}"></label>
   <label class="f">Окончание<input type="date" id="f_end" value="${esc(m.end||addMonth(m.start||today()))}"></label>
   <label class="f">Осталось занятий (пусто — без лимита)<input type="number" id="f_left" min="0" value="${m.left??(S.open==='new'?(tf(m.plan)?.sessions??''):'')}"></label>
-  <label class="f">Оплата при создании<select id="f_pay"><option value="">Не вносить</option><option value="cash" ${S.open==='new'?'selected':''}>Наличные</option><option value="card">Карта</option><option value="iban">Перевод</option><option value="online">Онлайн (приложение)</option></select></label>
+  <label class="f">Оплата при создании<select id="f_pay"><option value="">Не вносить</option><option value="debt">Не оплачено — в долг</option><option value="cash" ${S.open==='new'?'selected':''}>Наличные</option><option value="card">Карта</option><option value="iban">Перевод</option><option value="online">Онлайн (приложение)</option></select></label>
   <label class="f full">Заметка<input type="text" id="f_note" value="${esc(m.note||'')}"></label>
   <div class="acts full"><button class="btn gold" type="submit">Сохранить</button><button class="btn" type="button" data-dr="${S.open==='new'?'close':'view'}">Отмена</button></div>
   ${S.open==='new'?'':'<p class="note full" style="margin:0">Оплата при изменении вносится, только если выбрать способ.</p>'}</form>`}
@@ -560,7 +561,7 @@ function renewHTML(m){const t=tf(m.plan)||tariffs()[0],from=m.end&&daysLeft(m.en
   <label class="f">Начало<input type="date" id="r_start" value="${from}"></label>
   <label class="f">Окончание<input type="date" id="r_end" value="${addMonth(from)}"></label>
   <label class="f">Сумма, ₺<input type="number" id="r_sum" min="0" step="100" value="${t.price}"></label>
-  <label class="f">Способ оплаты<select id="r_m">${methodOpts('cash')}</select></label>
+  <label class="f">Способ оплаты<select id="r_m">${methodOpts('cash')}<option value="debt">Не оплачено — в долг</option></select></label><label class="f" id="r_dl" hidden>Обещал оплатить<input type="date" id="r_due" value="${addDays(today(),3)}"></label>
   <p class="note full" style="margin:0">Остаток занятий станет равен числу занятий тарифа. Оплата запишется в «Кассу».</p>
   <div class="acts full"><button class="btn gold" type="submit">Продлить и записать оплату</button><button class="btn" type="button" data-dr="view">Отмена</button></div></form>`}
 
@@ -679,7 +680,7 @@ function bindView(v){
   v.querySelectorAll('[data-expdel]').forEach(b=>b.addEventListener('click',()=>{if(b.dataset.sure){write(()=>DB.doc('expenses/'+b.dataset.expdel).delete(),'Расход удалён')}else{b.dataset.sure='1';b.textContent='Удалить?';b.classList.add('danger')}}));
   bindMods(v);bindCash(v);
 }
-function bindDrawer(host,m){
+function bindDrawer(host,m){bindDue(host,m);
   host.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',e=>{if(e.target===b){S.open=null;S.prefill=null;S.prefillLead=null;host.innerHTML=''}}));
   host.querySelectorAll('[data-dr]').forEach(b=>b.addEventListener('click',()=>{const k=b.dataset.dr;
     if(k==='close'){S.open=null;host.innerHTML='';return}
@@ -689,6 +690,7 @@ function bindDrawer(host,m){
   host.querySelectorAll('[data-visit]').forEach(b=>b.addEventListener('click',()=>markVisit(b.dataset.visit)));
   host.querySelectorAll('[data-copy]').forEach(b=>b.addEventListener('click',()=>{navigator.clipboard.writeText(b.dataset.copy).then(()=>toast('Телефон скопирован'),()=>toast(b.dataset.copy))}));
   const fp=$('#f_plan',host);if(fp)fp.addEventListener('change',()=>{const t=tf(fp.value);if(t){$('#f_left',host).value=t.sessions??'';if(t.kind==='kids')discSet('f_disc',host,['Дети · MMA'])}});
+  const rmm=$('#r_m',host);if(rmm)rmm.addEventListener('change',()=>{$('#r_dl',host).hidden=rmm.value!=='debt'});
   const rp=$('#r_plan',host);if(rp)rp.addEventListener('change',()=>{$('#r_sum',host).value=tf(rp.value)?.price??0});
   const rs=$('#r_start',host);if(rs)rs.addEventListener('change',()=>{$('#r_end',host).value=addMonth(rs.value)});
   const fs=$('#f_start',host);if(fs&&S.open==='new')fs.addEventListener('change',()=>{$('#f_end',host).value=addMonth(fs.value)});
@@ -713,7 +715,8 @@ function bindDrawer(host,m){
         toast('Пока вы редактировали, другой сотрудник изменил: '+cf.map(k=>FLB[k]||k).join(', ')+'. Нажмите «Сохранить» ещё раз, чтобы записать ваши значения.',8000);return}
       op=()=>DB.doc('members/'+id).update(patch)}
     const ok=await write(op,(S.open==='new'?'Боец добавлен: ':'Карточка сохранена: ')+name);
-    if(ok&&pay&&t&&t.price>0)await write(()=>DB.collection('payments').doc().set({mid:id,name,sum:t.price,date:doc.start,plan,method:pay,src:'pit'}));
+    if(ok&&pay==='debt'&&t&&t.price>0)await write(()=>DB.doc('members/'+id).update({due:{sum:t.price,date:addDays(today(),3),since:today(),plan,what:'Абонемент',note:''}}),'Отмечено: не оплачено');
+    if(ok&&pay&&pay!=='debt'&&t&&t.price>0)await write(()=>DB.collection('payments').doc().set({mid:id,name,sum:t.price,date:doc.start,plan,method:pay,src:'pit'}));
     if(ok&&S.prefillLead){const lid=S.prefillLead;S.prefillLead=null;S.prefill=null;await write(()=>DB.doc('leads/'+lid).update({status:'bought',mid:id,boughtAt:today()}),'Заявка закрыта: купил абонемент')}
     if(ok){S.open=id;S.drMode='view';renderDrawer()}});
   const cf=$('#cf',host);if(cf){const cp=$('#c_plan',host),upd=()=>{$('#c_calc',host).innerHTML=changeCalcHTML(m,cp.value);const t=tf(cp.value);if(t&&t.kind==='kids')discSet('c_disc',host,['Дети · MMA'])};cp.addEventListener('change',upd);upd();
@@ -726,7 +729,8 @@ function bindDrawer(host,m){
     const plan=$('#r_plan',host).value,t=tf(plan),start=$('#r_start',host).value,end=$('#r_end',host).value,sum=Math.max(0,+$('#r_sum',host).value||0),method=$('#r_m',host).value;
     if(!start||!end||end<start){toast('Проверьте даты периода');return}
     const ok=await write(()=>DB.doc('members/'+m.id).update({plan,kind:t?.kind||m.kind,price:t?.price??null,start,end,left:t?.sessions??null,frozen:false}));
-    if(ok&&sum>0)await write(()=>DB.collection('payments').doc().set({kind:'sub',mid:m.id,name:m.name,sum,date:today(),ts:new Date().toISOString(),plan,method,what:'Абонемент',src:'pit'}),'Продлено до '+fmtD(end));
+    if(ok&&method==='debt'&&sum>0)await write(()=>DB.doc('members/'+m.id).update({due:{sum,date:$('#r_due',host).value||addDays(today(),3),since:today(),plan,what:'Абонемент',note:''}}),'Продлено до '+fmtD(end)+' · не оплачено');
+    else if(ok&&sum>0)await write(()=>DB.collection('payments').doc().set({kind:'sub',mid:m.id,name:m.name,sum,date:today(),ts:new Date().toISOString(),plan,method,what:'Абонемент',src:'pit'}),'Продлено до '+fmtD(end));
     if(ok){S.drMode='view';renderDrawer()}});
   const fst=host.querySelector('#f_last');if(fst&&S.open==='new')fst.focus();
   const df=$('#dform',host);if(df)df.addEventListener('submit',async e=>{e.preventDefault();const t=$('#dtext',host).value.trim();if(!t){toast('Напишите текст записи');return}
@@ -1156,12 +1160,45 @@ document.addEventListener('click',async e=>{const op=e.target.closest('[data-pit
 /* ===== Уведомления CRM: продление, неоплата, пакеты, ДР, пробные, регистрации, заморозки, события ===== */
 const NREAD_K='pit.crm.nread';let NREAD={};try{NREAD=JSON.parse(localStorage.getItem(NREAD_K)||'{}')}catch(e){}
 const saveNR=()=>{try{const d=today(),o={};for(const k in NREAD)if(NREAD[k]>=d)o[k]=NREAD[k];NREAD=o;localStorage.setItem(NREAD_K,JSON.stringify(o))}catch(e){}};
+
+/* ===== Не оплатил: долг с обещанной датой (напоминание в колокольчике) ===== */
+function dueBlock(m){if(!m||m.kind==='staff')return'';const D=m.due,td=today();
+  if(!D)return`<details class="card w-only duef" style="padding:.6rem 1rem"><summary style="cursor:pointer;font-weight:700;font-size:.86rem">💳 Отметить: не оплатил</summary>
+    <form class="form" id="duenew" style="margin-top:.6rem"><label class="f">Сумма, ₺<input type="number" id="du_s" min="0" step="50" value="${esc(String(tf(m.plan)?.price??m.price??''))}"></label>
+    <label class="f">Обещал оплатить<input type="date" id="du_d" value="${addDays(td,3)}" required></label>
+    <label class="f full">Комментарий<input type="text" id="du_n" maxlength="200" placeholder="Например: оплатит после зарплаты"></label>
+    <div class="acts full"><button class="btn gold" type="submit">Сохранить и напомнить</button></div></form></details>`;
+  const late=D.date&&D.date<td,dd=D.date?Math.round((new Date(td)-new Date(D.date))/864e5):0;
+  return`<section class="card" style="border-color:var(--bad)"><h2>💳 Не оплачено</h2>
+   <p style="margin:0 0 .5rem;font-size:.95rem"><b>${lira(D.sum)}</b>${D.what?' · '+esc(D.what):''} · ${D.date?(late?`<b style="color:var(--bad)">обещал до ${fmtD(D.date)}, просрочено ${dd} дн.</b>`:D.date===td?'<b>обещал оплатить сегодня</b>':'обещал оплатить до <b>'+fmtD(D.date)+'</b>'):'дата не указана'}${D.since?` <span class="muted small">· отмечено ${fmtD(D.since)}</span>`:''}</p>
+   ${D.note?`<p class="note" style="margin:0 0 .5rem">${esc(D.note)}</p>`:''}
+   <form class="w-only" id="duepay" style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:flex-end">
+    <label class="f fin-only" style="min-width:9rem">Способ<select id="dp_m">${methodOpts('cash')}</select></label>
+    <label class="f fin-only" style="min-width:7rem">Сумма, ₺<input type="number" id="dp_s" min="0" step="50" value="${esc(String(D.sum||''))}"></label>
+    <button class="btn gold fin-only" type="submit">✓ Оплатил</button>
+    <label class="f" style="min-width:9rem">Новая дата<input type="date" id="dp_d" value="${esc(D.date||addDays(td,3))}"></label>
+    <button class="btn" type="button" data-duemove>Перенести</button>
+    <button class="btn sm danger adm-only" type="button" data-duedel>Снять отметку</button></form></section>`}
+function bindDue(host,m){if(!m)return;
+  const nf=$('#duenew',host);if(nf)nf.addEventListener('submit',async e=>{e.preventDefault();const sum=Math.max(0,+$('#du_s',host).value||0),date=$('#du_d',host).value;if(!date){toast('Укажите дату оплаты');return}
+    const ok=await write(()=>DB.doc('members/'+m.id).update({due:{sum,date,since:today(),plan:m.plan||null,what:'Абонемент',note:$('#du_n',host).value.trim()}}),`Не оплачено: ${m.name} · обещал до ${fmtD(date)}`);if(ok)renderDrawer()});
+  const pf=$('#duepay',host);if(!pf)return;
+  pf.addEventListener('submit',async e=>{e.preventDefault();const D=m.due||{},sum=Math.max(0,+$('#dp_s',host).value||0),method=$('#dp_m',host).value;
+    let ok=true;if(sum>0)ok=await write(()=>DB.collection('payments').doc().set({kind:'sub',mid:m.id,name:m.name,sum,date:today(),ts:new Date().toISOString(),plan:D.plan||m.plan||null,method,what:(D.what||'Абонемент')+' · долг от '+fmtD(D.since||today()),src:'pit'}));
+    if(ok&&await write(()=>DB.doc('members/'+m.id).update({due:null}),`Оплачено: ${m.name} · ${lira(sum)}`))renderDrawer()});
+  const mv=$('[data-duemove]',host);if(mv)mv.addEventListener('click',async()=>{const d=$('#dp_d',host).value;if(!d){toast('Укажите дату');return}
+    if(await write(()=>DB.doc('members/'+m.id).update({due:{...m.due,date:d}}),`${m.name}: оплата перенесена на ${fmtD(d)}`))renderDrawer()});
+  const dl=$('[data-duedel]',host);if(dl)dl.addEventListener('click',async()=>{if(!dl.dataset.sure){dl.dataset.sure=1;dl.textContent='Точно снять?';return}
+    if(await write(()=>DB.doc('members/'+m.id).update({due:null}),`Снята отметка «не оплачено»: ${m.name}`))renderDrawer()})}
 function notes(){const out=[],td=today(),tm=addDays(td,1),M=S.members.filter(m=>m.kind!=='staff');
   const add=(key,pri,icon,t,sub,go)=>out.push({key,pri,icon,t,sub,go});
   const vis=new Set(),lastVis={};for(const d in S.visits){(S.visits[d].ids||[]).forEach(id=>{if(!lastVis[id]||lastVis[id]<d)lastVis[id]=d})}
   (S.leads||[]).filter(pitPending).forEach(x=>add('reg:'+x.id,1,'🆕','Регистрация в My PIT ждёт одобрения',x.name+(x.match?' · похоже на '+x.match.name:''),{lead:x.id}));
   ((S.pv&&S.pv.todo)||[]).forEach(x=>add('pv:'+x.email+':'+x.updated,1,'🪪','Анкета бойца на проверке',x.name+(x.pending?' · изменения анкеты':'')+(x.pendingItems?` · достижений: ${x.pendingItems}`:''),{pv:1}));
   (S.freezes||[]).filter(r=>r.status==='pending').forEach(r=>{const m=S.members.find(z=>z.id===r.mid);add('frz:'+r.id,1,'❄️','Запрос заморозки',(m?m.name:'Боец')+' · '+fmtD(r.start)+' — '+fmtD(r.end),{m:r.mid})});
+  M.forEach(m=>{const D=m.due;if(D&&D.date){if(D.date<td)add('due:'+m.id+':'+D.date+':'+td,1,'💳','Просрочена оплата',`${m.name} · ${lira(D.sum)} · обещал до ${fmtD(D.date)}`,{m:m.id});
+      else if(D.date===td)add('due:'+m.id+':'+D.date,1,'💳','Сегодня обещал оплатить',`${m.name} · ${lira(D.sum)}`,{m:m.id});
+      else if(D.date===tm)add('due:'+m.id+':'+D.date,2,'💳','Завтра обещал оплатить',`${m.name} · ${lira(D.sum)}`,{m:m.id})}});
   M.forEach(m=>{if(frozenNow(m))return;const d=daysLeft(m.end),lv=lastVis[m.id];
     if(d!=null&&d<0&&lv&&lv>m.end)add('debt:'+m.id+':'+lv,1,'⚠️','Ходит без оплаты',`${m.name} · абонемент истёк ${fmtD(m.end)}, был ${fmtD(lv)}`,{m:m.id});
     else if(d!=null&&d<0&&d>=-7)add('exp:'+m.id+':'+m.end,2,'⏰','Абонемент истёк — продлить',`${m.name} · ${fmtD(m.end)}`,{m:m.id});
