@@ -227,6 +227,43 @@ body[data-role=fighter] #view-fight .panel:has(#fStart){display:none!important}
 .wl section{display:flex;flex-direction:column;gap:1rem;scroll-margin-top:1rem}
 .wl-hero{position:relative;min-height:30rem;border-radius:1.2rem;overflow:hidden;border:1px solid #e8c35a44;background:radial-gradient(70% 90% at 75% 40%,#2a2108 0,#0a0a0a 70%);display:grid!important;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);align-items:center;padding:2.4rem 2.6rem;gap:1rem}
 .wl-map{position:absolute;inset:0;opacity:.9;pointer-events:none}
+
+/* телеметрия вокруг фигуры (главная My PIT World) */
+.wl-figw{position:relative;z-index:1;justify-self:center;align-self:center}
+.wl-figw .wl-fig{display:block}
+.wl-tele{position:absolute;top:0;bottom:0;left:-95%;right:-95%;pointer-events:none;font-family:var(--font-data,inherit)}
+.tl-svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.tl-ln{fill:none;stroke:#e8c35a;stroke-width:1.2;vector-effect:non-scaling-stroke;stroke-dasharray:3 3;opacity:.7;animation:tlFlow 1.6s linear infinite}
+.tl-ln.b{stroke:#5aa9ff;animation-duration:2.1s}.tl-ln.c{stroke:#4ade80;animation-duration:2.6s}
+@keyframes tlFlow{to{stroke-dashoffset:-12}}
+.tl-dot{position:absolute;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:#e8c35a;box-shadow:0 0 12px #e8c35a}
+.tl-dot.arm{background:#4ade80;box-shadow:0 0 12px #4ade80}
+.tl-dot b{position:absolute;inset:-6px;border-radius:50%;border:2px solid currentColor;color:#e8c35a;animation:tlRing 1.6s ease-out infinite}.tl-dot.arm b{color:#4ade80}
+@keyframes tlRing{from{transform:scale(.6);opacity:1}to{transform:scale(2.4);opacity:0}}
+.wl-tele .tl-c{display:block!important;position:absolute;width:30%;min-width:9.5rem;max-width:12.5rem;background:rgba(10,10,12,.78);border:1px solid #e8c35a55;border-radius:.7rem;padding:.45rem .6rem;color:#f4f1ea;backdrop-filter:blur(4px);box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.wl-tele .tl-c.l{left:0}.wl-tele .tl-c.r{right:0}.wl-tele .tl-v,.wl-tele .tl-bars,.wl-tele .tl-zone{display:flex!important}.wl-tele .tl-ecg{display:block!important;width:100%!important}
+.tl-c small{display:block;font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;color:#e8c35a;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tl-v{display:flex;align-items:baseline;gap:.3rem;margin-top:.1rem;white-space:nowrap}.tl-v b{font-size:1.35rem;font-weight:800;line-height:1.1}.tl-v span{font-size:.66rem;color:#bdb8ad}
+.tl-heart{font-style:normal;color:#ff5a5f;margin-left:auto;animation:tlBeat .37s ease-in-out infinite alternate}
+@keyframes tlBeat{to{transform:scale(1.3)}}
+.tl-ecg{display:block;width:100%;height:1.2rem;margin-top:.15rem}.tl-ecg path{fill:none;stroke:#ff5a5f;stroke-width:1.6;vector-effect:non-scaling-stroke;stroke-dasharray:140;animation:tlEcg 1.8s linear infinite}
+@keyframes tlEcg{from{stroke-dashoffset:140}to{stroke-dashoffset:-140}}
+.tl-bars{display:flex;align-items:flex-end;gap:2px;height:1.1rem;margin-top:.2rem}.tl-bars i{flex:1;height:var(--h);background:#5aa9ff;border-radius:1px;animation:tlBar 1.5s ease-in-out infinite alternate}
+@keyframes tlBar{to{height:calc(var(--h) * .55)}}
+.tl-zone{display:flex;gap:2px;margin-top:.25rem}.tl-zone i{flex:1;height:.35rem;border-radius:1px;background:#3a3a3a}.tl-zone i:nth-child(1).on,.tl-zone i:nth-child(1){background:#9aa0a6}.tl-zone i:nth-child(2){background:#4ade80}.tl-zone i:nth-child(3){background:#5aa9ff}.tl-zone i:nth-child(4){background:#ffc93c;box-shadow:0 0 8px #ffc93c}.tl-zone i:nth-child(5){background:#ff5a5f55}
+.tl-prog{height:.35rem;border-radius:1rem;background:#2b2b2b;margin-top:.25rem;overflow:hidden}.tl-prog i{display:block;height:100%;background:linear-gradient(90deg,#e8c35a,#ffc93c);border-radius:1rem}.tl-prog.g i{background:linear-gradient(90deg,#2fd27a,#4ade80)}
+.tl-flow{position:absolute;left:50%;bottom:-2.3rem;transform:translateX(-50%);display:flex;align-items:center;gap:.35rem;white-space:nowrap;font-size:.62rem;font-weight:700;letter-spacing:.04em;color:#e8c35a}
+.tl-flow span{border:1px solid #e8c35a66;border-radius:2rem;padding:.15rem .5rem;background:rgba(10,10,12,.6)}
+.tl-flow i{position:relative;width:1.4rem;height:2px;background:#e8c35a44;overflow:hidden}.tl-flow i::after{content:'';position:absolute;top:0;left:-40%;width:40%;height:100%;background:#e8c35a;animation:tlRun 1.2s linear infinite}
+@keyframes tlRun{to{left:100%}}
+.tl-note{position:absolute;left:50%;bottom:-3.6rem;transform:translateX(-50%);margin:0;white-space:nowrap;font-size:.58rem;letter-spacing:.06em;color:#bdb8ad;text-transform:uppercase}
+.wl.light .tl-c{background:rgba(255,253,246,.88);color:#1b1a17;border-color:#c9a64a88}.wl.light .tl-v span,.wl.light .tl-note{color:#6d685d}.wl.light .tl-flow span{background:rgba(255,253,246,.85)}.wl.light .tl-prog{background:#e6dfcc}.wl.light .tl-zone i:nth-child(5){background:#ff5a5f44}
+@media (max-width:1200px){.wl-tele{left:-70%!important;right:-70%!important}}
+@media (max-width:1300px){.wl-tele{left:-80%;right:-80%}.wl-tele .tl-c{min-width:8.4rem;max-width:10.5rem;padding:.4rem .5rem}.wl-tele .tl-c small{font-size:.54rem}.tl-v b{font-size:1.15rem}.tl-flow{font-size:.56rem}}
+.wl-m .wl-tele .tl-c,.wl-m .wl-tele .tl-svg,.wl-m .wl-tele .tl-flow,.wl-m .wl-tele .tl-note{display:none}
+.wl-m .wl-figw{position:absolute;right:-2.5rem;bottom:0;z-index:0}.wl-m .wl-figw .wl-fig{position:static}
+.wl-m .tl-dot{opacity:.6}
+@media (prefers-reduced-motion:reduce){.tl-ln,.tl-dot b,.tl-heart,.tl-ecg path,.tl-bars i,.tl-flow i::after{animation:none}}
 /* карта и точки клубов не заходят на фигуру бойца (иначе маркеры попадают на корпус и пах) */
 .wl-hero>.wl-map{-webkit-mask-image:radial-gradient(ellipse 13% 46% at 76% 50%,transparent 0,transparent 72%,#000 100%);mask-image:radial-gradient(ellipse 13% 46% at 76% 50%,transparent 0,transparent 72%,#000 100%)}
 @media (max-width:900px){.wl-hero>.wl-map{-webkit-mask-image:none;mask-image:none}}
@@ -5425,6 +5462,31 @@ function rankHTML(){const R=clubRanks(),top=R.cl[0].sc,topc=R.ct[0].sc,tab=WLD.r
 const wxy=n=>[(n.lon+180)/2.6,(78-n.lat)/2.6];
 function rkPin(n,x,y){const c=clubRanks().byK[n.ck];if(!c)return'';const w=c.r>9?6.4:5.6,px=x-w/2+(n.pdx||0),py=y+(n.pdy??-3.9);
   return `<g class="rk-pin ${c.me?'me':''} ${c.r<=3?'t':''}"><title>#${c.r} в мире · ${esc(c.n)}</title><rect x="${px.toFixed(1)}" y="${py.toFixed(1)}" width="${w}" height="2.5" rx="1.25"/><text x="${(px+w/2).toFixed(1)}" y="${(py+1.8).toFixed(1)}" text-anchor="middle">${RCTRY[c.cc][0]} ${c.r}</text></g>`}
+/* Телеметрия вокруг фигуры бойца на главной My PIT World: что и чем мы снимаем (пример значений) */
+function teleHTML(){
+  // точки на теле в % от фигуры: грудь (нагрудный датчик), плечо (оптический датчик на руке)
+  const P={chest:[50,24],arm:[31,30]},X=x=>95+x,Y=y=>y;
+  const L=(cx,cy,tx,ty,c)=>`<path class="tl-ln ${c||''}" d="M${X(cx)} ${Y(cy)}C${(X(cx)+tx)/2} ${Y(cy)} ${(X(cx)+tx)/2} ${ty} ${tx} ${ty}"/>`;
+  const ecg='M0 10H14L17 7L20 10H24L26 13L29 1L32 18L35 10H44L47 8L50 10H60L62 13L65 1L68 18L71 10H80L83 7L86 10H100';
+  return `<div class="wl-tele" aria-label="Пример телеметрии бойца">
+   <svg class="tl-svg" viewBox="0 0 290 100" preserveAspectRatio="none" aria-hidden="true">
+    ${L(...P.chest,87,14)}${L(...P.chest,87,46,'b')}${L(...P.arm,87,78,'c')}${L(...P.chest,203,16)}${L(...P.chest,203,48,'b')}${L(...P.chest,203,80,'c')}
+   </svg>
+   <i class="tl-dot" style="left:${(X(P.chest[0])/290*100).toFixed(2)}%;top:${P.chest[1]}%"><b></b></i>
+   <i class="tl-dot arm" style="left:${(X(P.arm[0])/290*100).toFixed(2)}%;top:${P.arm[1]}%"><b></b></i>
+   <div class="tl-c l" style="top:4%"><small>Пульс · нагрудный датчик</small><div class="tl-v"><b class="tl-hr">164</b><span>уд/мин</span><em class="tl-heart">♥</em></div>
+     <svg class="tl-ecg" viewBox="0 0 100 20" preserveAspectRatio="none" aria-hidden="true"><path d="${ecg}"/></svg></div>
+   <div class="tl-c l" style="top:37%"><small>RR-интервалы · HRV</small><div class="tl-v"><b class="tl-rr">366</b><span>мс · RMSSD 38</span></div><div class="tl-bars">${Array.from({length:14},(_,i)=>`<i style="--h:${(30+((i*37)%55))}%;animation-delay:${(i*.11).toFixed(2)}s"></i>`).join('')}</div></div>
+   <div class="tl-c l" style="top:69%"><small>Датчик на руке · движение</small><div class="tl-v"><b class="tl-acc">2.4</b><span>g · акселерометр</span></div></div>
+   <div class="tl-c r" style="top:6%"><small>Пульсовая зона</small><div class="tl-v"><b>Z4</b><span class="tl-pct">88% HRmax</span></div><div class="tl-zone">${[1,2,3,4,5].map(z=>`<i class="${z===4?'on':''}"></i>`).join('')}</div></div>
+   <div class="tl-c r" style="top:38%"><small>Нагрузка тренировки</small><div class="tl-v"><b class="tl-trimp">71</b><span>TRIMP / 130</span></div><div class="tl-prog"><i style="width:55%"></i></div></div>
+   <div class="tl-c r" style="top:70%"><small>Запас сил · расчёт</small><div class="tl-v"><b>72%</b><span>восстановление 60 с</span></div><div class="tl-prog g"><i style="width:72%"></i></div></div>
+   <div class="tl-flow"><span>Датчик</span><i></i><span>BLE-шлюз зала</span><i></i><span>PIT RATING</span><i></i><span>экраны · My PIT</span></div>
+   <p class="tl-note">пример телеметрии · измерения датчика и расчёты PIT в реальном времени</p>
+  </div>`}
+setInterval(()=>{const hr=document.querySelector('.tl-hr');if(!hr)return;const t=Date.now()/1000,v=Math.round(160+8*Math.sin(t/3.1)+3*Math.sin(t*1.7));hr.textContent=v;
+  const rr=document.querySelector('.tl-rr');if(rr)rr.textContent=Math.round(60000/v+6*Math.sin(t*2.3));const a=document.querySelector('.tl-acc');if(a)a.textContent=(1.6+1.1*Math.abs(Math.sin(t*1.3))).toFixed(1);
+  const p=document.querySelector('.tl-pct');if(p)p.textContent=Math.round(v/186*100)+'% HRmax';const h=document.querySelector('.tl-heart');if(h)h.style.animationDuration=(60/v).toFixed(2)+'s'},1000);
 function mapSVG(big){const [ox,oy]=wxy(WNODES[0]);
   const arcs=WNODES.slice(1).map((n,i)=>{const [x,y]=wxy(n),mx=(ox+x)/2,my=Math.min(oy,y)-Math.abs(x-ox)*.22-2;return `<path class="wl-arc" style="animation-delay:${(i*.35).toFixed(2)}s" d="M${ox.toFixed(1)} ${oy.toFixed(1)}Q${mx.toFixed(1)} ${my.toFixed(1)} ${x.toFixed(1)} ${y.toFixed(1)}"/>`}).join('');
   const nodes=WNODES.map((n,i)=>{const [x,y]=wxy(n),col=n.k==='me'?'#e8c35a':n.k==='camp'?'#4ade80':n.k==='ev'?'#ff5a5f':'#5aa9ff',r=n.k==='me'?1.3:.9;
@@ -5447,7 +5509,7 @@ function worldHTML(m){const a=byId.get(cardId)||ATHLETES[0],rt=ratingOf(a.id);
       <p class="wl-punch">Расти в рейтинге. Бросай вызов. Выходи на бой.<span>Бесплатно для бойца · только честные данные клуба</span></p>
       <div class="wl-cta"><button type="button" class="wl-b1" data-go="map">Найти клуб на карте</button><button type="button" class="wl-b2" data-go="me">Мои вызовы</button><button type="button" class="wl-b2" data-go="rank">Рейтинги</button></div>
       <div class="wl-chips wl-chips1"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8.3-7 10-4-1.7-7-5.5-7-10V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg>Verified-рейтинг</span><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 11V7.5a3.5 3.5 0 0 1 7 0V9h1.5A2.5 2.5 0 0 1 18 11.5V14a6 6 0 0 1-6 6h-1a4 4 0 0 1-4-4z"/><path d="M7 13h6M14 9v3"/></svg>Бои с согласия тренеров</span><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2.5"/><path d="M10.5 10v5l4-2.5z"/><path d="M8 3l4 3 4-3"/></svg>Трансляции в My PIT</span></div></div>
-    <img class="wl-fig" src="${WIMG.hero}" alt="">
+    <div class="wl-figw"><img class="wl-fig" src="${WIMG.hero}" alt="">${teleHTML()}</div>
   </section>
   <nav class="wl-toc" aria-label="Разделы My PIT">${[['me','Твой PIT'],['rank','Рейтинги'],['cup','Кубок клубов'],['tour','Турниры'],['rew','Награды'],['reg','Регламент'],['ajp','AJP Tour'],['map','Карта']].map(([k,t])=>`<button type="button" data-go="${k}">${t}</button>`).join('')}</nav>
   <section class="wl-me" data-sec="me">
