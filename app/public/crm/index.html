@@ -271,6 +271,7 @@ function status(m){
 }
 const todayIds=()=>new Set((S.visits[today()]||{}).ids||[]);
 
+const FLB={name:'ФИО',last:'Фамилия',first:'Имя',email:'E-mail',phone:'Телефон',dob:'Дата рождения',plan:'Абонемент',start:'Начало',end:'Окончание',left:'Осталось занятий',disc:'Направление',parent:'Родитель',emergency:'Экстренный контакт',consentData:'Согласие на данные',photoConsent:'Согласие на фото',consentPublic:'Показ на экранах',consentMsg:'Сообщения',contractAt:'Договор',note:'Заметка',price:'Цена',kind:'Тип'};
 /* ===== рендер ===== */
 /* фоновые обновления (синхронизация, анкеты) не перерисовывают форму, которую сейчас заполняют */
 const DIRTY={view:false,ov:false};
@@ -555,7 +556,7 @@ function renewHTML(m){const t=tf(m.plan)||tariffs()[0],from=m.end&&daysLeft(m.en
 
 /* ===== действия ===== */
 let DB=null;
-function toast(t){let e=$('#toastEl');if(!e){e=document.createElement('div');e.id='toastEl';e.className='toast';e.setAttribute('role','status');document.body.appendChild(e)}e.textContent=t;e.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>e.hidden=true,2600)}
+function toast(t,ms){let e=$('#toastEl');if(!e){e=document.createElement('div');e.id='toastEl';e.className='toast';e.setAttribute('role','status');document.body.appendChild(e)}e.textContent=t;e.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>e.hidden=true,ms||2600)}
 async function write(fn,ok){if(!DB){toast('База недоступна в этом окне');return false}
   try{await fn();if(ok){toast(ok);audit(ok)}return true}catch(e){if(e&&e.code==='invalid_argument'&&!S.canWriteChecked){S.canWrite=false;render();toast('У вас доступ только для просмотра')}else toast('Не сохранилось: '+(e&&e.message||'ошибка базы'));return false}}
 async function markVisit(id){const m=S.members.find(x=>x.id===id);if(!m)return;const d=today(),cur=(S.visits[d]||{}).ids||[];if(cur.includes(id))return;
@@ -697,7 +698,17 @@ function bindDrawer(host,m){
     const dob=v('#f_dob'),emergency={name:v('#f_en'),rel:v('#f_er'),phone:v('#f_ep')},parent={...Object.fromEntries(Object.entries(m&&m.parent||{}).filter(([k])=>k!=='kimlik')),name:v('#f_pn'),rel:v('#f_pr'),phone:v('#f_pp'),mid:$('#f_pm',host).value||null};
     if(isMinor({kind:tf($('#f_plan',host).value)?.kind,dob})&&(!parent.name||!parent.phone)){toast('U18: укажите имя и телефон родителя');$('#f_pn',host).focus();return}
     const doc={...base,name,last,first,email:v('#f_mail'),contractAt:v('#f_ctr')||null,consentData:$('#f_cd',host).value,photoConsent:$('#f_pc',host).value,consentMsg:$('#f_cm',host).value,consentPublic:$('#f_cpub',host).value,dob,emergency,parent,phone:$('#f_phone',host).value.trim(),disc:$('#f_disc',host).value,plan,kind:t?.kind||'group',price:t?.price??null,start:$('#f_start',host).value,end:t?.kind==='staff'?null:$('#f_end',host).value,left:lv===''?null:Math.max(0,+lv),note:$('#f_note',host).value.trim(),src:m?.src||'pit',createdAt:m?.createdAt||new Date().toISOString()};
-    const ok=await write(()=>DB.doc('members/'+id).set(doc),(S.open==='new'?'Боец добавлен: ':'Карточка сохранена: ')+name);
+    // одновременная работа: пишем только изменённые поля; если их же успел поменять другой — предупреждаем
+    let op=()=>DB.doc('members/'+id).set(doc);
+    if(m&&S.open!=='new'){const nz=x=>{if(x==null||x==='')return null;if(Array.isArray(x))return x.length?x:null;if(typeof x==='object'){const o={};for(const k of Object.keys(x).sort()){const v=nz(x[k]);if(v!=null)o[k]=v}return Object.keys(o).length?o:null}return x},J=x=>JSON.stringify(nz(x)),cur=S.members.find(x=>x.id===m.id)||m;
+      const patch={};for(const k of Object.keys(doc))if(J(doc[k])!==J(m[k]))patch[k]=doc[k];
+      if(!Object.keys(patch).length){toast('Нет изменений');S.drMode='view';render();return}
+      const cf=Object.keys(patch).filter(k=>J(cur[k])!==J(m[k]));
+      const sb=mf.querySelector('[type=submit]');
+      if(cf.length&&!mf.dataset.force){mf.dataset.force=1;if(sb)sb.textContent='Всё равно сохранить мои';
+        toast('Пока вы редактировали, другой сотрудник изменил: '+cf.map(k=>FLB[k]||k).join(', ')+'. Нажмите «Сохранить» ещё раз, чтобы записать ваши значения.',8000);return}
+      op=()=>DB.doc('members/'+id).update(patch)}
+    const ok=await write(op,(S.open==='new'?'Боец добавлен: ':'Карточка сохранена: ')+name);
     if(ok&&pay&&t&&t.price>0)await write(()=>DB.collection('payments').doc().set({mid:id,name,sum:t.price,date:doc.start,plan,method:pay,src:'pit'}));
     if(ok&&S.prefillLead){const lid=S.prefillLead;S.prefillLead=null;S.prefill=null;await write(()=>DB.doc('leads/'+lid).update({status:'bought',mid:id,boughtAt:today()}),'Заявка закрыта: купил абонемент')}
     if(ok){S.open=id;S.drMode='view';renderDrawer()}});
