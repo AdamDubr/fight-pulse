@@ -858,7 +858,9 @@ function leadDrawer(){const host=$('#ovHost'),x=S.ov.id==='new'?{status:'new',ki
         <form class="form adm-only" id="plink" style="margin-top:.7rem"><label class="f">Это уже наш боец — привязать к карточке<select id="pl_m"><option value="">— выберите бойца —</option>${opts}</select></label><div class="acts" style="align-self:end"><button class="btn" type="submit">Привязать</button></div></form>
         <div class="acts" style="margin-top:.7rem"><button class="btn sm danger adm-only" type="button" data-papp="reject">Отклонить</button></div></section>`}
   }
-  host.innerHTML=ovShell(isNew?'Новая заявка':x.name,isNew?'':`<span class="pill ${st[2]}">${st[1]}</span>`,act+form+(isNew?'':`<p class="note">Заявка от ${fmtD(String(x.ts).slice(0,10))}${x.trialPaid?` · пробное оплачено ${lira(x.trialPaid)}`:''}</p>`));
+  host.innerHTML=ovShell(isNew?'Новая заявка':x.name,isNew?'':`<span class="pill ${st[2]}">${st[1]}</span>`,act+form+(isNew?'':`<p class="note">Заявка от ${fmtD(String(x.ts).slice(0,10))}${x.trialPaid?` · пробное оплачено ${lira(x.trialPaid)}`:''}</p><div class="acts adm-only" style="margin-top:.4rem"><button class="btn sm danger" type="button" data-ldel>Удалить заявку</button></div>`));
+  const ldl=$('[data-ldel]',host);if(ldl)ldl.addEventListener('click',async()=>{if(!ldl.dataset.sure){ldl.dataset.sure=1;ldl.textContent='Удалить навсегда? Нажмите ещё раз';return}
+    if(await write(()=>DB.doc('leads/'+x.id).delete(),'Заявка удалена: '+x.name)){ovClose();render()}});
   ovBindClose(host);
   const lf=$('#lf',host);lf.addEventListener('submit',async e=>{e.preventDefault();const name=$('#l_n',host).value.trim();if(!name){toast('Укажите имя');return}
     const d={...(isNew?{}:Object.fromEntries(Object.entries(x).filter(([k])=>k!=='id'))),name,phone:$('#l_p',host).value.trim(),disc:discGet('l_d',host).join(', ')||'MMA',discs:discGet('l_d',host),kind:$('#l_k',host).value,source:$('#l_s',host).value,age:$('#l_a',host).value.trim(),note:$('#l_note',host).value.trim()};
