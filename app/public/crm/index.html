@@ -656,13 +656,14 @@ function fmtList(){const s=SET();return[
   ['Пробное · группа — '+lira(s.trialGroup),[['group','Пробное · группа (направление ниже)'],...DISCS.map(d=>['tg:'+d,'Пробное · '+d+' · группа'])]],
   ['Пробное · индивидуальное — '+lira(s.trialInd),[['ind','Пробное · индивидуальное'],...DISCS.filter(d=>!/^Дети/.test(d)).map(d=>['ti:'+d,'Пробное · '+d+' · индивидуальное'])]],
   ['Абонементы',tariffs().filter(t=>t.kind!=='staff').map(t=>['t:'+t.key,t.name+' — '+lira(t.price)])],
-  ['Услуги',services().filter(v=>!/^Пробное/i.test(v[0])).map(v=>['s:'+v[0],v[0]+(+v[1]?' — '+lira(+v[1]):'')])]]}
+  ...services().filter(v=>/разов|персональ/i.test(v[0])).map(v=>[v[0]+(+v[1]?' — '+lira(+v[1]):''),[['s:'+v[0],v[0]+' (направление ниже)'],...DISCS.filter(d=>!/персональ/i.test(v[0])||!/^Дети/.test(d)).map(d=>['s:'+v[0]+'|'+d,v[0]+' · '+d])]]),
+  ['Услуги',services().filter(v=>!/^Пробное|разов|персональ/i.test(v[0])).map(v=>['s:'+v[0],v[0]+(+v[1]?' — '+lira(+v[1]):'')])]]}
 const fmtOpts=x=>{const cur=x.fmt||(x.kind==='ind'?'ind':'group');return fmtList().map(([g,L])=>`<optgroup label="${esc(g)}">${L.map(([k,t])=>`<option value="${esc(k)}" ${k===cur?'selected':''}>${esc(t)}</option>`).join('')}</optgroup>`).join('')};
 function fmtVal(v){let kind='group',name='';
   if(v==='ind'){kind='ind';name='Пробное · индивидуальное'}else if(v==='group')name='Пробное · группа';
   else if(v.startsWith('tg:')||v.startsWith('ti:')){kind=v[1]==='i'?'ind':'group';name='Пробное · '+v.slice(3)+(kind==='ind'?' · индивидуальное':' · группа');return{kind,fmt:v,fmtName:name,_d:v.slice(3)}}
   else if(v.startsWith('t:')){const t=tf(v.slice(2));kind=t&&t.kind==='ind'?'ind':'group';name=t?t.name:v}
-  else if(v.startsWith('s:')){name=v.slice(2);kind=/персональн|индивид/i.test(name)?'ind':'group'}
+  else if(v.startsWith('s:')){const [sn,sd]=v.slice(2).split('|');name=sn+(sd?' · '+sd:'');kind=/персональн|индивид/i.test(sn)?'ind':'group';if(sd)return{kind,fmt:v,fmtName:name,_d:sd}}
   return{kind,fmt:v,fmtName:name}}
 const fmtTxt=x=>x.fmtName||(x.kind==='ind'?'индивидуальное':'группа');
 /* ===== Продажа абонемента прямо из заявки: боец + абонемент + оплата/долг + группа ===== */
@@ -894,7 +895,7 @@ function leadDrawer(){const host=$('#ovHost'),x=S.ov.id==='new'?{status:'new',ki
     <div class="acts full"><button class="btn ${isNew?'gold':''}" type="submit">${isNew?'Создать заявку':'Сохранить'}</button></div></form>`;
   let act='',mid='',tail='';
   if(!isNew){
-    if(x.status==='new')act=`<form class="card form" id="lbook"><h2 class="full">Записать на пробное</h2><label class="f">Дата пробного<input type="date" id="lb_d" value="${addDays(today(),1)}"></label><label class="f">Группа<select id="lb_c">${trialOpts(x,addDays(today(),1))}</select></label><div class="acts" style="align-self:end"><button class="btn gold" type="submit">Записать</button></div></form>`;
+    if(x.status==='new')act=`<form class="card form" id="lbook"><h2 class="full">${/^s:Разов/.test(x.fmt||'')?'Записать на разовое занятие':'Записать на пробное'}</h2><label class="f">Дата пробного<input type="date" id="lb_d" value="${addDays(today(),1)}"></label><label class="f">Группа<select id="lb_c">${trialOpts(x,addDays(today(),1))}</select></label><div class="acts" style="align-self:end"><button class="btn gold" type="submit">Записать</button></div></form>`;
     if(x.status==='booked')act=`<section class="card"><h2>Пробное ${fmtD(x.trialDate)} · ${lira(price)}</h2><form class="form" id="ldone"><label class="f">Способ оплаты<select id="ld_m">${methodOpts('cash')}</select></label><div class="acts" style="align-self:end"><button class="btn gold" type="submit">Пришёл и оплатил</button></div></form>
       <div class="acts" style="margin-top:.6rem"><button class="btn sm" type="button" data-lmove="new">Перенести</button><button class="btn sm danger" type="button" data-lnoshow="1">Не пришёл</button></div></section>`;
     if(x.status==='done')act=`<section class="card"><h2>Решение после пробного</h2><div class="acts"><button class="btn gold adm-only" type="button" data-lbuy="1">Купил абонемент → завести бойца</button></div></section>`;
@@ -1094,6 +1095,7 @@ function saleDrawer(){const host=$('#ovHost'),k=S.ov.kind||'sub',SV=services(),c
       <div class="acts full"><button class="btn gold" type="submit">Продать абонемент</button></div></form>`
    :k==='service'?`<form class="card form" id="sf">
       <label class="f full">Услуга<select id="sv_n">${SV.map(([n,p],i)=>`<option value="${i}">${esc(n)}${+p?' — '+lira(p):''}</option>`).join('')}</select></label>
+      <label class="f" id="sv_dl">Направление<select id="sv_ds"><option value="">—</option>${DISCS.map(d=>`<option>${esc(d)}</option>`).join('')}</select></label>
       <label class="f">Сумма, ₺<input type="number" id="sv_sum" min="0" step="50" value="${+SV[0][1]||''}" required></label><label class="f">Оплата<select id="sv_pm">${methodOpts('cash')}</select></label>
       <label class="f">Кому<select id="sv_m">${memOpts(S.ov.mid,'Гость')}</select></label><label class="f" id="sv_gl">Имя гостя<input type="text" id="sv_g" maxlength="80"></label>
       <label class="f">Дата<input type="date" id="sv_d" value="${today()}"></label><label class="f">Комментарий<input type="text" id="sv_c" maxlength="200"></label>
@@ -1117,9 +1119,10 @@ function saleDrawer(){const host=$('#ovHost'),k=S.ov.kind||'sub',SV=services(),c
       const ok=await write(()=>DB.doc('members/'+m.id).update({plan,kind:t?.kind||m.kind,price:t?.price??null,start,end:t?.kind==='staff'?null:end,left:t?.sessions??null,frozen:false}));
       if(ok&&await write(()=>DB.collection('payments').doc().set({kind:'sub',mid:m.id,name:m.name,sum,date:today(),ts:new Date().toISOString(),plan,method,what:'Абонемент',src:'pit'}),`Абонемент: ${m.name} · ${lira(sum)}`))ovClose()})}
   else if(k==='service'){const sv=$('#sv_n',host),smm=$('#sv_m',host),gl=$('#sv_gl',host),tg=()=>{gl.hidden=!!smm.value};smm.addEventListener('change',tg);tg();
-    sv.addEventListener('change',()=>{$('#sv_sum',host).value=+SV[+sv.value][1]||''});
+    const dtg=()=>{$('#sv_dl',host).hidden=!/разов|персональ|пробн|индивид/i.test(SV[+sv.value][0])};dtg();
+    sv.addEventListener('change',()=>{$('#sv_sum',host).value=+SV[+sv.value][1]||'';dtg()});
     f.addEventListener('submit',async e=>{e.preventDefault();const sum=Math.max(0,Math.round(+$('#sv_sum',host).value||0));if(!sum){toast('Укажите сумму');return}
-      const m=S.members.find(x=>x.id===smm.value),name=m?m.name:($('#sv_g',host).value.trim()||'Гость'),what=SV[+sv.value][0];
+      const m=S.members.find(x=>x.id===smm.value),name=m?m.name:($('#sv_g',host).value.trim()||'Гость'),what=SV[+sv.value][0]+($('#sv_dl',host).hidden||!$('#sv_ds',host).value?'':' · '+$('#sv_ds',host).value);
       if(await write(()=>DB.collection('payments').doc().set({kind:'service',what,note:$('#sv_c',host).value.trim(),mid:m?m.id:null,name,sum,date:$('#sv_d',host).value||today(),ts:new Date().toISOString(),method:$('#sv_pm',host).value,src:'pit'}),`Услуга: ${what} · ${lira(sum)}`))ovClose()})}
   else f.addEventListener('submit',async e=>{e.preventDefault();const its=items.map(x=>({pid:x.p.id,name:x.p.name,qty:x.q,price:+x.p.price||0,cost:+x.p.cost||0}));if(!its.length)return;
     const mid=$('#sh_m',host).value,m=S.members.find(x=>x.id===mid),sum=its.reduce((a,i)=>a+i.qty*i.price,0);
