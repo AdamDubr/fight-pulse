@@ -59,6 +59,25 @@ export async function msgRoutes(req, env, path, me) {
   return json({ error: 'not_found' }, 404);
 }
 
+// перевод текстов клуба (карточки тренеров и т.п.) с кэшем в D1: ru → en/tr; при ошибке — исходный текст
+export async function trTexts(env, list, to, from = 'ru') {
+  const out = list.map(() => null);
+  if (!env.AI || !LANGS.includes(to) || to === from || !list.length) return out;
+  await env.DB.prepare('CREATE TABLE IF NOT EXISTS tcache (k TEXT PRIMARY KEY, out TEXT NOT NULL)').run();
+  const key = t => to + ':' + t, uniq = [...new Set(list.filter(t => t && /[А-яЁё]/.test(t)))];
+  const got = {};
+  for (let i = 0; i < uniq.length; i += 80) {
+    const part = uniq.slice(i, i + 80), r = await env.DB.prepare(`SELECT k,out FROM tcache WHERE k IN (${part.map(() => '?').join(',')})`).bind(...part.map(key)).all();
+    for (const x of r.results || []) got[x.k] = x.out;
+  }
+  const miss = uniq.filter(t => got[key(t)] == null).slice(0, 40), t0 = Date.now();
+  for (const t of miss) {
+    if (Date.now() - t0 > 12000) break;   // не держим страницу: остальное переведётся при следующем открытии
+    try { const o = await translate(env, t, from, to); if (o) { got[key(t)] = o; await env.DB.prepare('INSERT OR REPLACE INTO tcache(k,out) VALUES(?,?)').bind(key(t), o).run() } } catch (e) { break }
+  }
+  return list.map(t => (t && got[key(t)]) || null);
+}
+
 // входящие бойца: текст на языке аккаунта (иначе — что есть)
 export async function inbox(env, email, lang) {
   await ensure(env);

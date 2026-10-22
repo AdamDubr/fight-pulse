@@ -178,7 +178,7 @@ Object.assign(T.tr,{editH:'Sporcu profili',editP:'Değişiklikler kulüp onayın
 const DISC_T={en:{'Бокс':'Boxing','Кикбоксинг':'Kickboxing','Муай-тай':'Muay Thai','Борьба':'Wrestling','Функционал':'Functional','Капоэйра':'Capoeira'},tr:{'Бокс':'Boks','Кикбоксинг':'Kickboks','Муай-тай':'Muay Thai','Борьба':'Güreş','Функционал':'Fonksiyonel','Капоэйра':'Capoeira'}};
 const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 let L=(()=>{try{const s=localStorage.getItem('pit.lang');if(T[s])return s}catch(e){}const n=(navigator.language||'ru').slice(0,2);return T[n]?n:'en'})();
-const t=k=>T[L][k],dn=d=>(DISC_T[L]||{})[d]||d;
+const KID_T={en:'Kids',tr:'Çocuk'},t=k=>T[L][k],dn=d=>{d=String(d||'');const m=d.match(/^Дети\s*·\s*(.+)$/);if(m&&L!=='ru')return (KID_T[L]||'Kids')+' · '+dn(m[1]);if(d==='Все группы'&&L!=='ru')return L==='tr'?'Tüm gruplar':'All groups';return (DISC_T[L]||{})[d]||d};
 const fd=d=>{if(!d)return'—';const x=new Date(d+(d.length===10?'T12:00:00':''));return isNaN(x)?d:x.toLocaleDateString({ru:'ru-RU',en:'en-GB',tr:'tr-TR'}[L],{day:'numeric',month:'long',year:'numeric'})};
 const ageOf=d=>{if(!/^\d{4}-\d{2}-\d{2}$/.test(d||''))return null;const b=new Date(d+'T12:00:00'),n=new Date();let a=n.getFullYear()-b.getFullYear();if(n<new Date(n.getFullYear(),b.getMonth(),b.getDate()))a--;return a};
 let D=null,EDIT=false,PICK=null,GL=null,FD=null;

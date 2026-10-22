@@ -9,7 +9,7 @@ const enc = new TextEncoder();
 const sha = async s => [...new Uint8Array(await crypto.subtle.digest('SHA-256', enc.encode(s)))].map(x => x.toString(16).padStart(2, '0')).join('');
 const digits = p => String(p || '').replace(/\D/g, '');
 const samePhone = (a, b) => { a = digits(a); b = digits(b); return a.length >= 9 && b.length >= 9 && a.slice(-10) === b.slice(-10) };
-import { inbox, markRead } from './msg.js';
+import { inbox, markRead, trTexts } from './msg.js';
 const DISCS = ['MMA', 'Бокс', 'BJJ', 'Кикбоксинг', 'Капоэйра'];
 export const CLUBS = { mowgli: { id: 'mowgli', name: 'Mowgli Fight Club', city: 'Анталья', cityEn: 'Antalya', country: 'TR', lat: 36.8381506, lon: 30.5904377, addr: 'Sarısu, 131. Sk., 07130 Konyaaltı/Antalya, Türkiye', placeId: 'ChIJZUYTFaCVwxQRSgx4mbk5waQ', hours: 'Пн–Сб 09:00–22:00', logo: '/brand/clubs/mowgli.png', discs: ['MMA', 'BJJ', 'Бокс', 'Кикбоксинг', 'Капоэйра'], proFree: true } };
 const LEVELS = ['club', 'city', 'regional', 'national', 'international', 'pro'];
@@ -64,7 +64,7 @@ async function trialSlots(env, days = 14) {
 
 
 // «Мой клуб» для членов клуба: тренеры с фото и регалиями, честная статистика клуба (без выдуманного рейтинга)
-async function clubInfo(env, club) {
+async function clubInfo(env, club, lang) {
   const sc = (await getDoc(env, 'club', 'schedule')) || {}, cls = sc.classes || [];
   const coaches = (sc.coaches || []).map(c => ({ n: c.n, photo: c.photo ? '/api/my/cphoto/' + c.photo : null, discs: c.discs && c.discs.length ? c.discs : [...new Set(cls.filter(x => x.coach === c.k).map(x => x.disc))], titles: c.titles || [], exp: c.exp || [], bio: c.bio || '', nick: c.nick || '', role: c.role || '', record: c.record || '', links: (c.links || []).filter(u => /^https?:\/\//.test(u)).slice(0, 5), groups: cls.filter(x => x.coach === c.k).length }));
   const td = new Date().toISOString().slice(0, 10);
@@ -74,7 +74,21 @@ async function clubInfo(env, club) {
   const it = await env.DB.prepare("SELECT i.data FROM fighter_items i JOIN fighters f ON f.email=i.email WHERE f.club=? AND i.status='ok' AND i.kind='comp'").bind(club).all();
   const med = { g: 0, s: 0, b: 0 }, comps = (it.results || []).length;
   for (const x of it.results || []) { try { const d = JSON.parse(x.data); if (d.rtype !== 'bout') { if (d.pos === '1') med.g++; else if (d.pos === '2') med.s++; else if (d.pos === '3') med.b++ } } catch (e) { } }
+  // карточки тренеров — на языке аккаунта (имена — латиницей, тексты — автоперевод с кэшем)
+  if (lang && lang !== 'ru') { try { await trCoaches(env, coaches, lang) } catch (e) { } }
   return { ...(CLUBS[club] || {}), coaches, stats: { active, verified: ver ? ver.n : 0, comps, med, groups: cls.length } };
+}
+const TRL = { а: 'a', б: 'b', в: 'v', г: 'g', д: 'd', е: 'e', ё: 'yo', ж: 'zh', з: 'z', и: 'i', й: 'y', к: 'k', л: 'l', м: 'm', н: 'n', о: 'o', п: 'p', р: 'r', с: 's', т: 't', у: 'u', ф: 'f', х: 'kh', ц: 'ts', ч: 'ch', ш: 'sh', щ: 'shch', ъ: '', ы: 'y', ь: '', э: 'e', ю: 'yu', я: 'ya' };
+export const translit = s => String(s || '').replace(/[А-яЁё]/g, ch => { const lo = ch.toLowerCase(), r = TRL[lo] ?? ch; return ch === lo ? r : r.charAt(0).toUpperCase() + r.slice(1) }).replace(/Dzhalyal/g, 'Jalal').replace(/Dzh/g, 'J');
+async function trCoaches(env, coaches, lang) {
+  const items = [];
+  for (const c of coaches) {
+    c.n = translit(c.n);
+    for (const k of ['role', 'bio', 'record']) if (c[k]) items.push([c, k, null]);
+    for (const k of ['titles', 'exp']) (c[k] || []).forEach((x, i) => items.push([c, k, i]));
+  }
+  const out = await trTexts(env, items.map(([c, k, i]) => i == null ? c[k] : c[k][i]), lang);
+  items.forEach(([c, k, i], j) => { if (!out[j]) return; if (i == null) c[k] = out[j]; else c[k] = c[k].map((x, n) => n === i ? out[j] : x) });
 }
 
 // анкета My PIT → карточка бойца CRM (после проверки админом): всё, что заполнил боец
@@ -214,6 +228,7 @@ export async function worldMe(env, email) {
     club: v.club ? { name: v.club.name, logo: v.club.logo, city: v.club.city, cityEn: v.club.cityEn } : null, verAt: v.verAt || null,
     clubs: ok.filter(i => i.kind === 'club').map(i => i.data), comps, titles: ok.filter(i => i.kind === 'title').map(i => i.data),
     visits: v.member && v.member.visits ? v.member.visits : null,
+    lang: ['ru', 'en', 'tr'].includes(p.lang) ? p.lang : 'ru',
   };
 }
 async function view(env, email) {
@@ -255,7 +270,7 @@ async function view(env, email) {
   out.world = !!f.verified;
   try { out.inbox = await inbox(env, email, ['ru', 'en', 'tr'].includes(profile.lang) ? profile.lang : 'ru') } catch (e) { out.inbox = [] }
   out.approved = !!(lead && lead.approved && !lead.rejected) || !!f.mid;
-  if (out.access) { out.schedule = await trialSlots(env, 62); out.clubInfo = await clubInfo(env, f.club) }
+  if (out.access) { const lg = ['ru', 'en', 'tr'].includes(profile.lang) ? profile.lang : 'ru'; out.schedule = await trialSlots(env, 62); if (lg !== 'ru') out.schedule = out.schedule.map(x => x.coach ? { ...x, coach: translit(x.coach) } : x); out.clubInfo = await clubInfo(env, f.club, lg) }
   if (lead) out.lead = { status: lead.rejected ? 'rejected' : (!lead.approved && (lead.status || 'new') === 'new') ? 'pending' : (lead.status || 'new'), trialDate: lead.trialDate || null };
   const it = await env.DB.prepare('SELECT * FROM fighter_items WHERE email=? ORDER BY created DESC').bind(email).all();
   out.items = (it.results || []).map(itemOut);
