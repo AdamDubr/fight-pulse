@@ -1536,6 +1536,9 @@ button.sc-c:focus-visible{outline:2px solid var(--sc);outline-offset:2px}
  body.m-force-desk.rf:not(.m-tv) .s-nav{grid-template-columns:repeat(5,1fr)}
  body.rf #toCrm,body.rf #roleSel,body.rf .protgl{display:none!important}
  body.real .s-nav .s-fin{display:none!important}
+ body.world-real .wl [data-sec=ajp],body.world-real .wl [data-sec=map],body.world-real .wl [data-sec=rank],body.world-real .wl [data-sec=cup],body.world-real .wl [data-sec=tour],body.world-real .wl [data-sec=rew],body.world-real .wl [data-sec=reg],body.world-real .wl-cta,body.world-real .wl-toc,body.world-real .wl-figw{display:none!important}
+ body:not(.world-real) .wl-soon{display:none}
+ body.world-real .wl>:not(.wl-hero):not(.wl-me):not(.wl-soon){display:none!important}
  body.m-force-desk.real:not(.m-tv)[data-role=admin] .s-nav{grid-template-columns:repeat(6,1fr)}
  #gridCards .card{position:relative}
  .fe-auto{display:flex;flex-direction:column;gap:2px;padding:.55rem .7rem;border:1px dashed var(--line);border-radius:.5rem}.fe-auto b{font-size:.95rem}.fe-auto small{color:#8a8a8a;font-size:.72rem}
@@ -2600,8 +2603,8 @@ const ATHLETES_DEMO=[
 function pitRoster(){
   const hrMaxOf=age=>Math.round(208-.7*age); // Tanaka et al., 2001
   const out=[];const ms=PIT_REAL.members||[];const VER=new Set(PIT_REAL.ver||[]);
-  ms.forEach(m=>{const id=out.length+1,age=m.age||25,dl=(Array.isArray(m.discs)&&m.discs.length?m.discs:String(m.disc||'MMA').split(/\s*[,+]\s*/)).filter(d=>d&&d!=='—');
-    out.push({id,mid:m.id,fit:.6,nick:m.first||m.name,name:m.name,disc:dl[0]||'MMA',discs:dl.length?dl:['MMA'],kids:m.kind==='kids'||!!m.kidish,age,kg:m.kg||null,sex:m.sex||'m',hrMax:m.hrMax||hrMaxOf(age),hrRest:60,sensor:'—',
+  ms.forEach(m=>{const id=out.length+1,ageK=!!m.age,age=m.age||25,dl=(Array.isArray(m.discs)&&m.discs.length?m.discs:String(m.disc||'MMA').split(/\s*[,+]\s*/)).filter(d=>d&&d!=='—');
+    out.push({id,mid:m.id,fit:.6,nick:m.first||m.name,name:m.name,disc:dl[0]||'MMA',discs:dl.length?dl:['MMA'],kids:m.kind==='kids'||!!m.kidish,age,kg:m.kg||null,sex:m.sex||'m',ageK,hrMax:m.hrMax||hrMaxOf(age),hrRest:60,sensor:'—',
       sim:{id:'НЕТ ДАТЧИКА·'+id,int:.6,rec:.012,bat:100},coach:m.kind==='staff',ver:VER.has(m.id),public:m.consentPublic==='yes'||m.consentPublic===true,absent:false,end:m.end||'',start:m.start||'',plan:m.plan||'',left:m.left??null,dob:m.dob||''})});
   return out}
 const ATHLETES=REAL?pitRoster():WORLD?ATHLETES_DEMO.map(a=>a.id===1?{...a,name:'Адам AI',nick:'Адам AI'}:a):ATHLETES_DEMO;
@@ -3940,7 +3943,7 @@ function admSched(B){schedInit();if(REAL&&!(window.PIT_REAL||{}).schEdit){admSch
     <label class="fe"><span>Дата</span><input type="date" id="evD" value="${dAdd(14)}"></label>
     <label class="fe" style="min-width:16rem"><span>Название</span><input id="evN" placeholder="Турнир, аттестация, спарринги…"></label>
     <button class="btn primary" id="evAdd">+ СОБЫТИЕ</button></div>
-   <div class="muted small" style="margin-top:.6rem">Расписание хранится в этом браузере (демо). В продукте — календарь клуба с напоминаниями бойцам.</div>`;
+   <div class="muted small" style="margin-top:.6rem">${REAL?'Расписание — из PIT CRM, обновляется само. Меняет администратор клуба.':'Расписание хранится в этом браузере (демо). В продукте — календарь клуба с напоминаниями бойцам.'}</div>`;
   $('#moP').onclick=()=>{ADM.mo--;admSched(B)};$('#moN').onclick=()=>{ADM.mo++;admSched(B)};
   $('#scAdd').onclick=()=>{const dow=[...B.querySelectorAll('.scD:checked')].map(i=>+i.value);if(!dow.length){toast('Отметьте дни недели');return}
     SCHED.classes.push({dow,time:$('#scT').value||'19:00',disc:$('#scG').value,coach:$('#scC').value});saveSched();admSched(B)};
@@ -4555,7 +4558,7 @@ const PHOTO_DEMO={1:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYE
 function cabReal(a){const b=cabDemo(a);
   return{...b,person:{...b.person,fio:a.name,dob:a.dob||'',phone:'',city:'',emName:'',emPhone:'',photo:null},
     sub:{plan:a.plan||'—',start:a.start||'',end:a.end||'',limit:a.left??null,used:0,frozen:false,price:0,pays:[]},
-    bio:{...b.bio,fat:null,bp:'—'},med:{consent:true,certUntil:null,contra:[],inj:[]},tasks:[],
+    bio:{h:null,w:[{d:isoD(TODAY),v:(window.PIT_REAL&&PIT_REAL.meCard&&a.mid===PIT_REAL.me&&parseFloat(String(PIT_REAL.meCard.weight||'').replace(',','.')))||null}],fat:null,hrRest:null,bp:''},med:{consent:true,certUntil:null,contra:[],inj:[]},tasks:[],
     nut:{...b.nut,mode:'Поддержание',kcal:NUTKCAL['Поддержание'],plan:NUTPLANS['Поддержание'],cut:null,upd:null,week:undefined,meals:mealsDemo('Поддержание',a.id),assigned:false}}}  // режим питания и весогонку назначает только тренер; по умолчанию — без курса
 let CAB={};ATHLETES.forEach(a=>CAB[a.id]=REAL?cabReal(a):cabDemo(a));
 try{const s=localStorage.getItem((REAL?'fp.cab.v4.real':'fp.cab.v3'));if(s){const o=JSON.parse(s);for(const k in o)if(CAB[k])CAB[k]=Object.assign(CAB[k],o[k])}}catch(e){}
@@ -4878,24 +4881,24 @@ function secSub(a,C){const s=C.sub,left=dLeft(s.end),tot=Math.max(1,Math.round((
 // ---------- ЗДОРОВЬЕ ----------
 function secHealth(a,C){const b=C.bio,m=C.med,coach=cab.role==='coach',ro=RO();
   if(coach&&!m.consent){CB().innerHTML=`<div class="panel"><div class="ph-title"><span class="label">Здоровье</span></div><div class="lockd">Спортсмен не дал согласие на передачу медицинских данных тренеру. Видна только отметка о допуске: <b style="margin-left:.3rem">${dLeft(m.certUntil)>=0?'допуск действует':'допуск истёк'}</b></div></div>`;return}
-  const w=b.w[b.w.length-1].v,bmi=w/((b.h/100)**2),cl=dLeft(m.certUntil),mm=metrics.get(a.id);
+  const w=b.w[b.w.length-1].v,bmi=w&&b.h?w/((b.h/100)**2):null,cl=m.certUntil?dLeft(m.certUntil):null,mm=metrics.get(a.id),V=x=>x==null||x===''||Number.isNaN(x)?'—':esc(String(x));
   CB().innerHTML=`<div class="cgrid2">
    <div class="panel"><div class="ph-title"><span class="label">Биометрия</span><span class="tag">видит тренер</span></div>
     <div class="bio">
-     <div><small>РОСТ</small><b class="num">${b.h}</b><em>см</em><span class="tag">ВВОД</span></div>
-     <div><small>ВЕС</small><b class="num">${w}</b><em>кг</em><span class="tag">ВВОД</span></div>
-     <div><small>ИМТ</small><b class="num">${bmi.toFixed(1)}</b><em></em><span class="tag calc">РАСЧЁТ</span></div>
-     <div><small>% ЖИРА</small><b class="num">${b.fat}</b><em>%</em><span class="tag">ВВОД</span></div>
-     <div><small>ПУЛЬС ПОКОЯ</small><b class="num">${b.hrRest}</b><em>уд/мин</em><span class="tag meas">ДАТЧИК</span></div>
-     <div><small>HRmax</small><b class="num">${a.hrMax}</b><em>уд/мин</em><span class="tag">${mm.max>=a.hrMax?'ДАТЧИК':'ТЕСТ/ФОРМУЛА'}</span></div>
-     <div><small>ДАВЛЕНИЕ</small><b class="num">${esc(b.bp)}</b><em></em><span class="tag">ВВОД</span></div></div>
+     <div><small>РОСТ</small><b class="num">${V(b.h)}</b><em>см</em><span class="tag">ВВОД</span></div>
+     <div><small>ВЕС</small><b class="num">${V(w)}</b><em>кг</em><span class="tag">ВВОД</span></div>
+     <div><small>ИМТ</small><b class="num">${bmi?bmi.toFixed(1):'—'}</b><em></em><span class="tag calc">РАСЧЁТ</span></div>
+     <div><small>% ЖИРА</small><b class="num">${V(b.fat)}</b><em>%</em><span class="tag">ВВОД</span></div>
+     <div><small>ПУЛЬС ПОКОЯ</small><b class="num">${V(b.hrRest)}</b><em>уд/мин</em><span class="tag meas">ДАТЧИК</span></div>
+     <div><small>HRmax</small><b class="num">${REAL&&!a.ageK&&!(mm.max>=a.hrMax)?'—':a.hrMax}</b><em>уд/мин</em><span class="tag">${mm.max>=a.hrMax?'ДАТЧИК':'ТЕСТ/ФОРМУЛА'}</span></div>
+     <div><small>ДАВЛЕНИЕ</small><b class="num">${V(b.bp)}</b><em></em><span class="tag">ВВОД</span></div></div>
     <canvas class="mini" id="cvW" aria-label="Вес за 12 недель"></canvas>
-    ${ro?'':`<div class="fe-grid two" style="margin-top:.6rem">${['Рост, см|h','% жира|fat','Давление|bp'].map(s=>{const[l,k]=s.split('|');return`<label class="fe"><span>${l}</span><input data-b="${k}" value="${esc(b[k])}"></label>`}).join('')}
-      <label class="fe"><span>Вес сегодня, кг</span><input type="number" step=".1" id="bW" value="${w}"></label></div>`}
+    ${ro?'':`<div class="fe-grid two" style="margin-top:.6rem">${['Рост, см|h','% жира|fat','Давление|bp'].map(s=>{const[l,k]=s.split('|');return`<label class="fe"><span>${l}</span><input data-b="${k}" value="${esc(b[k]??'')}"></label>`}).join('')}
+      <label class="fe"><span>Вес сегодня, кг</span><input type="number" step=".1" id="bW" value="${w??''}"></label></div>`}
     <div class="muted small">ИМТ у спортсменов с большой мышечной массой завышает оценку — ориентир, не диагноз.</div></div>
    <div class="panel"><div class="ph-title"><span class="label">Допуск и ограничения</span><span class="tag">${m.consent?'передаётся тренеру':'только спортсмен'}</span></div>
-    <div class="cert ${cl<0?'bad':cl<=14?'warn':'ok'}"><b>Медицинский допуск</b><span>${cl<0?`истёк ${fmtD(m.certUntil)} — к спаррингам не допускать до продления`:`действует до ${fmtD(m.certUntil)}${cl<=14?` · осталось ${dd(cl)}`:''}`}</span></div>
-    ${ro?'':`<label class="fe" style="margin:.5rem 0"><span>Справка действует до</span><input type="date" id="mCert" value="${m.certUntil}"></label>`}
+    ${cl==null?'<div class="cert warn"><b>Медицинский допуск</b><span>справка не внесена — укажите дату ниже</span></div>':`<div class="cert ${cl<0?'bad':cl<=14?'warn':'ok'}"><b>Медицинский допуск</b><span>${cl<0?`истёк ${fmtD(m.certUntil)} — к спаррингам не допускать до продления`:`действует до ${fmtD(m.certUntil)}${cl<=14?` · осталось ${dd(cl)}`:''}`}</span></div>`}
+    ${ro?'':`<label class="fe" style="margin:.5rem 0"><span>Справка действует до</span><input type="date" id="mCert" value="${m.certUntil||''}"></label>`}
     <div class="label" style="margin:.8rem 0 .4rem">Временные ограничения (травмы)</div>
     ${m.inj.length?m.inj.map((t,i)=>`<div class="inj ${dLeft(t.until)<0?'old':''}"><b>${esc(t.restr)}</b><span>${esc(t.what)} · до ${fmtD(t.until)}${dLeft(t.until)<0?' (снято)':''}</span>${ro?'':`<button class="iconbtn" data-di="${i}">✕</button>`}</div>`).join(''):'<div class="muted small">Нет активных ограничений</div>'}
     ${ro?'':`<div class="fe-grid two" style="margin-top:.5rem"><label class="fe"><span>Что случилось</span><input id="iW" placeholder="Например: ушиб ребра"></label><label class="fe"><span>Ограничение</span><input id="iR" placeholder="Без спаррингов в партере"></label>
@@ -5670,6 +5673,7 @@ function worldHTML(m){const a=byId.get(cardId)||ATHLETES[0],rt=ratingOf(a.id);
       <div class="wl-chips wl-chips1"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8.3-7 10-4-1.7-7-5.5-7-10V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg>Verified-рейтинг</span><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 11V7.5a3.5 3.5 0 0 1 7 0V9h1.5A2.5 2.5 0 0 1 18 11.5V14a6 6 0 0 1-6 6h-1a4 4 0 0 1-4-4z"/><path d="M7 13h6M14 9v3"/></svg>Бои с согласия тренеров</span><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2.5"/><path d="M10.5 10v5l4-2.5z"/><path d="M8 3l4 3 4-3"/></svg>Трансляции в My PIT</span></div><p class="wl-legend"><i class="g"></i>клуб PIT · Mowgli, Анталья <i class="b"></i>мировые центры единоборств — сеть PIT растёт</p></div>
     <div class="wl-figw"><img class="wl-fig" src="${WIMG.hero}" alt="">${teleHTML()}</div>
   </section>
+  <section class="wl-soon" style="margin:1rem 0;padding:1rem 1.1rem;border:1px dashed #e8c35a77;border-radius:1rem"><b style="display:block;margin-bottom:.3rem">Сеть PIT World только запускается</b><span style="opacity:.8;font-size:.9rem">Рейтинги, турниры, кубок клубов и карта сети появятся здесь, когда к PIT подключатся клубы и пройдут первые турниры сезона. Сейчас — ваша анкета и данные, подтверждённые клубом.</span></section>
   <nav class="wl-toc" aria-label="Разделы My PIT">${[['me','Твой PIT'],['rank','Рейтинги'],['cup','Кубок клубов'],['tour','Турниры'],['rew','Награды'],['reg','Регламент'],['ajp','AJP Tour'],['map','Карта']].map(([k,t])=>`<button type="button" data-go="${k}">${t}</button>`).join('')}</nav>
   ${WME?meRealHTML():`  <section class="wl-me" data-sec="me">
     <div class="wl-mecard"><img src="${CAB[a.id].person.photo||avatar(a.id)}" alt=""><div class="wl-mew"><small>ТВОЙ PIT</small><b>${esc(a.name)} <span class="m-ver">✓ Verified</span></b><span>Mowgli Fight Club · Анталья · <em class="rk-mine" data-go="rank">клуб #${clubRanks().me.r} мира</em></span></div>
@@ -5743,7 +5747,7 @@ function roleCards(cls){return `<div class="rc-wrap ${cls||''}">${ROLES.map(x=>`
    Демо: доступен снимок профиля 483040 (Имран). ===== */
 function ajpCheck(a,P){const tr={imran:'имран'},fn=P.name.split(' ')[0];
   return [['Имя',a.name,fn,a.name.toLowerCase()===(tr[fn.toLowerCase()]||fn.toLowerCase())],['Клуб','Mowgli Fight Club',P.team,/mowgli/i.test(P.team)||a.ajp===P.pid],['Возраст',a.age,P.age,Math.abs(a.age-P.age)<=1],['Вес',a.kg+' кг',P.weight+' кг',Math.abs(a.kg-P.weight)<=2],['Дисциплина',a.disc,P.disc,/bjj/i.test(a.disc)]]}
-function ajpPanel(a){const X=EXT[a.id]&&EXT[a.id].ajp,S=X&&AJP_SNAP[X.pid],rl=cupRole(),staff=rl!=='fighter';
+function ajpPanel(a){if(REAL)return'';const X=EXT[a.id]&&EXT[a.id].ajp,S=X&&AJP_SNAP[X.pid],rl=cupRole(),staff=rl!=='fighter';
   const steps=(k)=>['Ссылка','Публичная страница','Сверка ФИО и клуба','Согласие бойца','Подтверждение тренера'].map((t,i)=>`<span class="${i<k?'on':i===k?'cur':''}">${i<k?'✓ ':''}${t}</span>`).join('');
   if(!X||!S)return `<div class="panel aj-imp"><div class="ph-title"><span class="label">AJP Tour · связанный профиль</span><span class="tag">импорт публичных данных</span></div>
     <p class="muted small">Вставьте ссылку на профиль ajptour.com или ID — PIT загрузит открытые данные: клуб, пояс, вес, страна, медали, рекорд побед, результаты турниров и рейтинг AJP. Ничего закрытого (почта, телефон, оплаты) не импортируется.</p>
@@ -5818,7 +5822,7 @@ function applyRole(r){if(r)ROLE.v=r;try{localStorage.setItem('fp.role',ROLE.v)}c
 $('#roleSel').addEventListener('change',e=>applyRole(e.target.value));
 setTimeout(async()=>{applyRole();
   /* My PIT World — отдельная страница сообщества (/world/): без пульта зала, для сотрудников и бойцов */
-  if(WORLD){document.body.classList.add('world-only');document.getElementById('fpGate')?.remove();$('#roleGate').hidden=true;
+  if(WORLD){document.body.classList.add('world-only');if(window.PIT_REAL)document.body.classList.add('world-real');document.getElementById('fpGate')?.remove();$('#roleGate').hidden=true;
     const h=document.getElementById('toHome');if(h){h.hidden=false;h.href=PIT_REAL.back||'/';h.title=PIT_REAL.fighter?'My PIT':'Главное меню PIT'}
     if(!PIT_REAL.fighter){const c=document.getElementById('toCrm');if(c)c.hidden=false}
     applyRole('admin');setView('world');MOB.tab='world';MOB.sub=null;const wb=document.getElementById('mWBack');if(wb){wb.hidden=false;wb.href=PIT_REAL.back||'/';wb.textContent=PIT_REAL.fighter?'← My PIT':'← PIT'}if(MOB.on)renderMobile();return}
