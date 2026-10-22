@@ -1526,19 +1526,23 @@ button.sc-c:focus-visible{outline:2px solid var(--sc);outline-offset:2px}
 /* нижнее меню персонала на телефоне */
 .s-nav{display:none}
 @media (max-width:760px){
- body.m-force-desk:not(.m-tv):not([data-role=fighter]) .s-nav{display:grid;position:fixed;left:0;right:0;bottom:0;z-index:60;grid-template-columns:repeat(7,1fr);align-items:start;box-sizing:border-box;height:calc(60px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);background:#0a0a0a;padding:6px 4px env(safe-area-inset-bottom,0px)}
+ body.m-force-desk:not(.m-tv):is(:not([data-role=fighter]),.rf) .s-nav{display:grid;position:fixed;left:0;right:0;bottom:0;z-index:60;grid-template-columns:repeat(7,1fr);align-items:start;box-sizing:border-box;height:calc(60px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);background:#0a0a0a;padding:6px 4px env(safe-area-inset-bottom,0px)}
  body.m-force-desk:not(.m-tv)[data-role=coach] .s-nav{grid-template-columns:repeat(6,1fr)}
  body.m-tv[data-role=fighter] .f-nav{display:grid;position:fixed;left:0;right:0;bottom:0;z-index:60;grid-template-columns:repeat(7,1fr);align-items:start;box-sizing:border-box;height:calc(60px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);background:#0a0a0a;padding:6px 4px env(safe-area-inset-bottom,0px)}
  body.m-tv[data-role=fighter] #mobBtn{display:none!important}
  body.m-tv[data-role=fighter] main{padding-bottom:calc(60px + env(safe-area-inset-bottom,0px))!important;box-sizing:border-box}
  body[data-role=coach] .s-nav .s-fin{display:none}
- body.m-force-desk:not(.m-tv):not([data-role=fighter]) .top .tabs{display:none!important}
- body.m-force-desk:not(.m-tv):not([data-role=fighter]) #mobBtn{display:none!important}
- body.m-force-desk:not(.m-tv):not([data-role=fighter]) #app{padding-bottom:0}
- body.m-force-desk:not(.m-tv):not([data-role=fighter]) main{padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))!important;box-sizing:border-box}
- body.m-force-desk:not(.m-tv):not([data-role=fighter]) main>.view:not(.wld-view){flex:0 0 auto!important;height:auto!important}
- body.m-force-desk:not(.m-tv):not([data-role=fighter]) #view-card .cab,body.m-force-desk:not(.m-tv):not([data-role=fighter]) #view-card .cab-main,body.m-force-desk:not(.m-tv):not([data-role=fighter]) #view-card .fc-stage{height:auto!important;max-height:none!important;overflow:visible!important}
- body.m-force-desk:not(.m-tv):not([data-role=fighter]) #cabTabs.cab-tiles{display:grid!important;grid-template-columns:repeat(auto-fit,minmax(0,1fr))!important;width:100%!important;justify-content:stretch!important}
+ body.rf .s-nav .s-co,body.rf .s-nav .s-fin{display:none!important}
+ body.m-force-desk.rf:not(.m-tv) .s-nav{grid-template-columns:repeat(5,1fr)}
+ body.rf #toCrm,body.rf #roleSel,body.rf .protgl{display:none!important}
+ body.real #aRate,body.real .frate,body.real .m-rt,body.real .rtx{display:none!important}
+ body.m-force-desk:not(.m-tv):is(:not([data-role=fighter]),.rf) .top .tabs{display:none!important}
+ body.m-force-desk:not(.m-tv):is(:not([data-role=fighter]),.rf) #mobBtn{display:none!important}
+ body.m-force-desk:not(.m-tv):is(:not([data-role=fighter]),.rf) #app{padding-bottom:0}
+ body.m-force-desk:not(.m-tv):is(:not([data-role=fighter]),.rf) main{padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))!important;box-sizing:border-box}
+ body.m-force-desk:not(.m-tv):is(:not([data-role=fighter]),.rf) main>.view:not(.wld-view){flex:0 0 auto!important;height:auto!important}
+ body.m-force-desk:not(.m-tv):is(:not([data-role=fighter]),.rf) #view-card .cab,body.m-force-desk:not(.m-tv):is(:not([data-role=fighter]),.rf) #view-card .cab-main,body.m-force-desk:not(.m-tv):is(:not([data-role=fighter]),.rf) #view-card .fc-stage{height:auto!important;max-height:none!important;overflow:visible!important}
+ body.m-force-desk:not(.m-tv):is(:not([data-role=fighter]),.rf) #cabTabs.cab-tiles{display:grid!important;grid-template-columns:repeat(auto-fit,minmax(0,1fr))!important;width:100%!important;justify-content:stretch!important}
 }
 .s-nav button{position:relative;background:none;border:0;color:#6d6d6d;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:9.6px;overflow:hidden;text-overflow:ellipsis;font-weight:600;padding:4px 0;min-width:0;letter-spacing:-.02em;font-family:inherit;cursor:pointer;white-space:nowrap}
 .s-nav svg{width:24px;height:24px}.f-nav svg{fill:currentColor}.f-nav button{font-size:9px;letter-spacing:-.04em}
@@ -3678,7 +3682,7 @@ async function pitMarkVisit(a){const R=window.PIT_REAL;if(!R||!a||!a.mid||pitVis
     await post({op:'push',col:'audit',id:d,field:'items',value:{ts:new Date().toISOString(),by:'Arena',text:'Посещение: '+a.name+' (Arena)',mid:a.mid},base:{date:d,items:[]}})}
   catch(e){v.ids=v.ids.filter(x=>x!==a.mid);try{toast('Не записалось в CRM — нет связи')}catch(_){}}}
 function pitSig(list){return list.map(m=>[m.id,m.name,m.disc,m.kind,m.end,m.frozen?1:0,m.consentPublic].join('|')).sort().join('\n')}
-function pitLive(){if(!REAL)return;const R=window.PIT_REAL;let since=R.since||0,busy=false,pend=false;
+function pitLive(){if(!REAL||window.PIT_REAL.fighterArena)return;const R=window.PIT_REAL;let since=R.since||0,busy=false,pend=false;
   const mem=new Map((R.membersAll||[]).map(m=>[m.id,m]));const sig0=pitSig(R.members||[]);
   const today=()=>new Date().toISOString().slice(0,10);
   const active=()=>[...mem.values()].filter(m=>m&&m.name&&!m.frozen&&(m.kind==='staff'||!m.end||m.end>=today()));
@@ -3708,6 +3712,7 @@ function sNavSync(){const n=document.getElementById('sNav');if(!n)return;const v
   n.querySelectorAll('[data-sv]').forEach(b=>b.setAttribute('aria-current',b.dataset.sv===k?'page':'false'));
   const l=n.querySelector('.s-col');if(l)l.textContent=ROLE.v==='admin'?'Клуб':'Тренер'}
 document.getElementById('sNav').addEventListener('click',e=>{const b=e.target.closest('[data-sv]');if(!b)return;const v=b.dataset.sv;
+  if(document.body.classList.contains('rf')&&v==='world'){location.href='/my/';return}
   if(v==='fin'){ADM.tab='fin';setView('coach');renderAdm()}else{if(v==='coach'&&ADM.tab==='fin')ADM.tab='mon';setView(v);if(v==='coach')renderAdm()}
   sNavSync();window.scrollTo(0,0);const m=document.querySelector('main');if(m)m.scrollTop=0});
 function renderAdm(){const co=$('.coach'),B=$('#admBody');
@@ -4306,11 +4311,11 @@ function renderCard(){
   {let fs=$('#fcSel');if(!fs){fs=document.createElement('select');fs.id='fcSel';fs.setAttribute('aria-label','Спортсмен');$('#fcList').before(fs);fs.addEventListener('change',()=>{cardId=+fs.value;renderCab()})}fs.innerHTML=ATHLETES.map(x=>`<option value="${x.id}" ${x.id===cardId?'selected':''}>${String(x.id).padStart(2,'0')} · ${esc(x.name)} · ${esc(x.disc)}${U18(x)?' · U18':''}</option>`).join('')}
   const a=byId.get(cardId),P=PROF[cardId],pro=P.pro,rt=ratingOf(cardId),lock=t=>`<div class="lockd"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10V8a5 5 0 0 1 10 0v2h1v11H6V10zm2 0h6V8a3 3 0 0 0-6 0z" fill="currentColor"/></svg>${t}<i class="pro">PRO</i></div>`;
   $('#fCard').innerHTML=`<div class="fc-frame"></div><img class="fc-bg" src="${$('.st-mascot').src}" alt="" aria-hidden="true">
-   <header class="fc-top"><img src="${$('.club-logo').src}" alt="Mowgli Fight Club"><span class="demo">DEMO</span>${pro?'<i class="pro big">PRO</i>':''}</header>
+   <header class="fc-top"><img src="${$('.club-logo').src}" alt="Mowgli Fight Club">${REAL?'':'<span class="demo">DEMO</span>'}${pro?'<i class="pro big">PRO</i>':''}</header>
    <div class="fc-id"><span class="fc-num">${String(a.id).padStart(2,'0')}</span><span class="fc-disc">${esc(a.disc)} · ${esc(P.cls)}</span></div>
-   <img class="fc-photo" src="${(CAB[cardId]&&CAB[cardId].person.photo)||avatar(cardId)}" alt="Фото ${esc(a.name)}"><div class="fc-nl" style="--tc:${rt.tc}"><h2 class="fc-name">${esc(a.name)}</h2><span class="fc-rg"><span class="fc-r1 num">${PITM}<small class="fc-pit">PIT</small>${rt.R}</span><em class="fc-tch">${rt.tn}</em></span></div>
-   <div class="fc-tier">${rt.next?`до класса ${rt.next[1]} — ещё ${rt.next[0]-rt.R} PIT`:'высший класс'}</div>${a.nick!==a.name?`<div class="fc-nick">«${esc(a.nick)}»</div>`:''}
-   <div class="fc-rate" style="--tc:${rt.tc}"><span>PIT RATING</span><i>#${rt.rank} из ${rt.of} в своём весе${U18(a)?' · U18':''}</i><small>тренировки ${pitParts(a.id).train} · турниры ${pitParts(a.id).tour}</small></div>
+   <img class="fc-photo" src="${(CAB[cardId]&&CAB[cardId].person.photo)||avatar(cardId)}" alt="Фото ${esc(a.name)}"><div class="fc-nl" style="--tc:${rt.tc}"><h2 class="fc-name">${esc(a.name)}</h2>${REAL?'':`<span class="fc-rg"><span class="fc-r1 num">${PITM}<small class="fc-pit">PIT</small>${rt.R}</span><em class="fc-tch">${rt.tn}</em></span>`}</div>
+   ${REAL?'':`<div class="fc-tier">${rt.next?`до класса ${rt.next[1]} — ещё ${rt.next[0]-rt.R} PIT`:'высший класс'}</div>`}${a.nick!==a.name?`<div class="fc-nick">«${esc(a.nick)}»</div>`:''}
+   ${REAL?`<div class="fc-rate"><span>PIT RATING</span><i>появится после первых турниров сезона</i></div>`:`<div class="fc-rate" style="--tc:${rt.tc}"><span>PIT RATING</span><i>#${rt.rank} из ${rt.of} в своём весе${U18(a)?' · U18':''}</i><small>тренировки ${pitParts(a.id).train} · турниры ${pitParts(a.id).tour}</small></div>`}
    ${pro?`<div class="fc-rec"><div><b class="num">${P.rec.w}</b><small>ПОБЕД</small></div><span>–</span><div><b class="num">${P.rec.l}</b><small>ПОРАЖ.</small></div><span>–</span><div><b class="num">${P.rec.d}</b><small>НИЧЬИ</small></div></div>
      <div class="fc-recd">${P.rec.ko} KO/TKO · ${P.rec.sub} сабмишн · ${Math.max(0,P.rec.w-P.rec.ko-P.rec.sub)} решением</div>
      ${P.rank!=='—'?`<div class="fc-belt"><i style="--bc:${BELTS[P.rank]||'#3a3a3a'}"></i>${esc(P.rank)} пояс BJJ</div>`:''}
@@ -5743,6 +5748,12 @@ setTimeout(async()=>{applyRole();
     const h=document.getElementById('toHome');if(h){h.hidden=false;h.href=PIT_REAL.back||'/';h.title=PIT_REAL.fighter?'My PIT':'Главное меню PIT'}
     if(!PIT_REAL.fighter){const c=document.getElementById('toCrm');if(c)c.hidden=false}
     applyRole('admin');setView('world');MOB.tab='world';MOB.sub=null;const wb=document.getElementById('mWBack');if(wb){wb.hidden=false;wb.href=PIT_REAL.back||'/';wb.textContent=PIT_REAL.fighter?'← My PIT':'← PIT'}if(MOB.on)renderMobile();return}
+  /* Зал бойца: член клуба с PRO / ✓ Verified — Arena в роли бойца со своей карточкой */
+  if(REAL&&PIT_REAL.fighterArena){document.getElementById('fpGate')?.remove();$('#roleGate').hidden=true;document.body.classList.add('rf');
+    const mine=ATHLETES.find(a=>a.mid===PIT_REAL.me);MOB.me=mine?mine.id:1;if(mine){mine.public=true;if(PROF[mine.id])PROF[mine.id].pro=true}try{localStorage.setItem('fp.me.real',MOB.me)}catch(e){}
+    const h=document.getElementById('toHome');if(h){h.hidden=false;h.href='/my/';h.title='My PIT'}
+    MOB.frame=false;MOB.on=false;document.body.classList.remove('m-on','m-frame','m-tv');document.body.classList.add('m-force-desk');
+    applyRole('fighter');cardId=MOB.me;cab.role='athlete';setView('arena');{const i=ATHLETES.indexOf(mine);if(i>=0)try{select(i,true);ui.pinned=true;A.pinBtn&&A.pinBtn.setAttribute('aria-pressed','true')}catch(e){}}sNavSync();return}
   /* вход PIT: если открыто внутри app.pitrating.com с сессией — без демо-логина, роль из системы клуба */
   try{const r=await fetch('/api/me',{cache:'no-store'});if(r.ok){const me=await r.json();const map={owner:'admin',admin:'admin',trainer:'coach'};
     if(map[me.role]){document.getElementById('fpGate')?.remove();['toHome','toCrm'].forEach(i=>{const e=document.getElementById(i);if(e)e.hidden=false});enterRole(map[me.role]);return}}}catch(e){}
