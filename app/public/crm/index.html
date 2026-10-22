@@ -272,14 +272,27 @@ function status(m){
 const todayIds=()=>new Set((S.visits[today()]||{}).ids||[]);
 
 /* ===== рендер ===== */
-function render(){
+/* фоновые обновления (синхронизация, анкеты) не перерисовывают форму, которую сейчас заполняют */
+const DIRTY={view:false,ov:false};
+document.addEventListener('input',e=>{const t=e.target;if(!t||t.type==='search')return;if(t.closest('#ovHost'))DIRTY.ov=true;else if(t.closest('#view'))DIRTY.view=true},true);
+const busy=sel=>{const h=$(sel),a=document.activeElement;return!!(h&&a&&h.contains(a)&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)&&a.type!=='search')};
+const ovForm=()=>{const h=$('#ovHost');return!!(h&&h.querySelector('form'))};
+function renderBg(){const skipV=DIRTY.view||busy('#view'),skipO=DIRTY.ov||busy('#ovHost')||ovForm();
+  if(!skipV)return render({keepOv:skipO,bg:true});
+  try{updBell()}catch(e){}
+  if(!skipO){const d=$('#ovHost .dr'),st=d?d.scrollTop:0;if(S.open)renderDrawer();else if(S.ov)renderOv();const d2=$('#ovHost .dr');if(d2)d2.scrollTop=st}}
+function render(o){
+  if(!o||!o.keepOv)DIRTY.ov=false;DIRTY.view=false;
   try{updBell()}catch(e){}
   document.body.classList.toggle('ro',!S.canWrite);
   document.querySelectorAll('.tabs button').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.tab===S.tab)));
   const v=$('#view');const sy=scrollY;
   v.innerHTML=({today:vToday,members:vMembers,leads:vLeads,cash:vCash,events:vEvents,sched:vSched,pv:vPv,rep:vReports,plans:vSettings})[S.tab]();
   bindView(v);if(S.tab==='sched')bindSched(v);if(S.tab==='pv')bindPv(v);scrollTo(0,sy);
+  if(o&&o.keepOv)return;
+  const d=$('#ovHost .dr'),st=d?d.scrollTop:0;
   if(S.open)renderDrawer();else if(S.ov)renderOv();
+  const d2=$('#ovHost .dr');if(d2&&o&&o.bg)d2.scrollTop=st;
 }
 function loadingOrEmpty(){
   if(!S.ready.m)return`<div class="card empty">Загружаю базу клуба…</div>`;
@@ -1086,7 +1099,7 @@ function bindMods(v){
 
 /* ===== Анкеты бойцов My PIT: проверка клубом, ✓ Verified, приглашения ===== */
 S.pv=null;
-async function loadPv(){try{const r=await fetch('/api/review',{cache:'no-store',credentials:'same-origin'});if(!r.ok)return;S.pv=await r.json();const n=S.pv.counts.todo,b=$('#pvN');if(b){b.hidden=!n;b.textContent=n}if(S.tab==='pv'||S.open)render();else updBell()}catch(e){}}
+async function loadPv(){try{const r=await fetch('/api/review',{cache:'no-store',credentials:'same-origin'});if(!r.ok)return;S.pv=await r.json();const n=S.pv.counts.todo,b=$('#pvN');if(b){b.hidden=!n;b.textContent=n}if(S.tab==='pv'||S.open)renderBg();else updBell()}catch(e){}}
 setTimeout(loadPv,800);setInterval(()=>{if(!document.hidden)loadPv()},30000);
 const PVF={last:'Фамилия',first:'Имя',dob:'Дата рождения',phone:'Телефон',disc:'Направление',kind:'Формат',note:'Комментарий',weight:'Вес / категория',stance:'Стойка',belt:'Пояс / ранг',city:'Город',photo:'Фото',parent:'Родитель'};
 const PVST={orthodox:'Ортодокс',southpaw:'Левша',switch:'Свитч'},PVLV={club:'клубный',city:'городской',regional:'региональный',national:'национальный',international:'международный',pro:'профессиональный'};
@@ -1175,7 +1188,7 @@ render();
   if((window.PIT_ME||{}).role==='trainer'&&['cash','rep','plans'].includes(S.tab)){S.tab='today';render()}
   try{ASSETS=await claude.use('assets')}catch(e){ASSETS=null}
   try{const u=await claude.use('user');USER=u;if(u){try{ME=await u.id()}catch(e){}const w=await u.can('data.write');if(w===false)S.canWrite=false}}catch(e){}
-  let tm=null;const rr=()=>{clearTimeout(tm);tm=setTimeout(render,60)};
+  let tm=null;const rr=()=>{clearTimeout(tm);tm=setTimeout(renderBg,60)};
   const err=e=>{$('#st').textContent='Нет связи с базой';console.warn(e)};
   db.collection('members').onSnapshot(s=>{S.members=s.docs.map(d=>({id:d.id,...d.data()}));S.ready.m=true;$('#st').textContent='Онлайн · бойцов: '+S.members.length;rr()},err);
   db.collection('payments').onSnapshot(s=>{S.payments=s.docs.map(d=>({id:d.id,...d.data()}));S.ready.p=true;rr()},err);
