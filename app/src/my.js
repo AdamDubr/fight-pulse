@@ -9,8 +9,8 @@ const enc = new TextEncoder();
 const sha = async s => [...new Uint8Array(await crypto.subtle.digest('SHA-256', enc.encode(s)))].map(x => x.toString(16).padStart(2, '0')).join('');
 const digits = p => String(p || '').replace(/\D/g, '');
 const samePhone = (a, b) => { a = digits(a); b = digits(b); return a.length >= 9 && b.length >= 9 && a.slice(-10) === b.slice(-10) };
-const DISCS = ['MMA', 'Бокс', 'BJJ', 'Кикбоксинг', 'Муай-тай', 'Борьба', 'Функционал', 'Капоэйра'];
-export const CLUBS = { mowgli: { id: 'mowgli', name: 'Mowgli Fight Club', city: 'Анталья', cityEn: 'Antalya', country: 'TR', lat: 36.8969, lon: 30.7133, logo: '/brand/clubs/mowgli.png', discs: ['MMA', 'BJJ', 'Бокс', 'Муай-тай', 'Борьба', 'Функционал'] } };
+const DISCS = ['MMA', 'Бокс', 'BJJ', 'Кикбоксинг', 'Капоэйра'];
+export const CLUBS = { mowgli: { id: 'mowgli', name: 'Mowgli Fight Club', city: 'Анталья', cityEn: 'Antalya', country: 'TR', lat: 36.8969, lon: 30.7133, logo: '/brand/clubs/mowgli.png', discs: ['MMA', 'BJJ', 'Бокс', 'Кикбоксинг', 'Капоэйра'] } };
 const LEVELS = ['club', 'city', 'regional', 'national', 'international', 'pro'];
 const KINDS = ['comp', 'title', 'club', 'link'];
 

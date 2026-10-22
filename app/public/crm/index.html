@@ -242,9 +242,9 @@ const DEF_TARIFFS=[
  {key:'ind10m',name:'Индивидуальные MMA/BJJ · 10 сеансов',price:15000,sessions:10,kind:'ind',disc:['MMA','BJJ']},
  {key:'ind10b',name:'Индивидуальные Бокс/Кикбоксинг · 10 сеансов',price:12000,sessions:10,kind:'ind',disc:['Бокс','Кикбоксинг']},
  {key:'ind8',name:'Индивидуальные · 8 сеансов',price:10000,sessions:8,kind:'ind',disc:['Бокс','Кикбоксинг']},
- {key:'free',name:'Безлимит · все дисциплины, без оплаты',price:0,sessions:null,kind:'group',disc:['MMA','BJJ','Бокс','Муай-тай','Кикбоксинг','Борьба','Функционал','Капоэйра']},
+ {key:'free',name:'Безлимит · все дисциплины, без оплаты',price:0,sessions:null,kind:'group',disc:['MMA','BJJ','Бокс','Кикбоксинг','Капоэйра']},
  {key:'staff',name:'Сотрудник / тренер · без оплаты',price:0,sessions:null,kind:'staff',disc:[]}];
-const DISCS=['MMA','Дети · MMA','BJJ','Бокс','Муай-тай','Кикбоксинг','Борьба','Функционал','Капоэйра'];
+const DISCS=['MMA','Дети · MMA','BJJ','Бокс','Кикбоксинг','Капоэйра'];
 /* несколько дисциплин у бойца: discs — список, disc — строка «MMA, BJJ» для показа и совместимости */
 const discsOf=m=>Array.isArray(m&&m.discs)&&m.discs.length?m.discs:String(m&&m.disc||'').split(/\s*[,+]\s*/).filter(d=>d&&d!=='—');
 const discPick=(id,m,free)=>{const cur=discsOf(m),all=[...new Set([...DISCS,...cur])],ro=!free&&!canAdm();
@@ -582,7 +582,7 @@ function csvSave(name,rows){const csv='﻿'+rows.map(r=>r.map(x=>{x=String(x??''
 
 /* ===== Расписание групп: общий источник для CRM, экранов зала (Arena) и записи бойцов ===== */
 const SDAYS=['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
-const SDISC=['MMA','BJJ','Бокс','Муай-тай','Кикбоксинг','Борьба','Функционал','Капоэйра','Дети · MMA'];
+const SDISC=['MMA','BJJ','Бокс','Кикбоксинг','Капоэйра','Дети · MMA'];
 const SCO0=[{k:'mowgli',n:'Джалял «MOWGLI»'}];
 const SCH=()=>{const d=S.sched||{};return{classes:Array.isArray(d.classes)?d.classes:[],coaches:Array.isArray(d.coaches)&&d.coaches.length?d.coaches:SCO0}};
 const saveSch=(x,msg)=>write(()=>DB.doc('club/schedule').set({...SCH(),...x,updatedAt:new Date().toISOString()}),msg);
