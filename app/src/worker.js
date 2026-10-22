@@ -57,7 +57,8 @@ async function whoami(req, env) {
 }
 const canCol = (me, col) => me.role === 'owner' || me.role === 'admin' || (me.role === 'trainer' && !FIN_COLS.has(col));
 // тренер пишет в журнал действий, но не читает его
-const canWriteCol = (me, col) => canCol(me, col) || (me.role === 'trainer' && col === 'audit');
+// настройки клуба и расписание (col 'club') меняют только владелец и администратор
+const canWriteCol = (me, col) => col === 'club' ? (me.role === 'owner' || me.role === 'admin') : canCol(me, col) || (me.role === 'trainer' && col === 'audit');
 
 /* ---------- API ---------- */
 async function api(req, env, me, path) {
@@ -237,7 +238,7 @@ async function arenaReal(req, env, opt = {}) {
     .sort((a, b) => a.name.localeCompare(b.name, 'ru'));
   const inj = '<script>window.PIT_REAL=' + JSON.stringify(opt.fighter
     ? { club: env.CLUB || 'mowgli', worldOnly: true, fighter: true, back: '/my/', since: 0, members: [], membersAll: [], schedule: sch ? JSON.parse(sch.data) : null, events, visits: {} }
-    : { club: env.CLUB || 'mowgli', ...(opt.world ? { worldOnly: true, back: '/' } : {}), since: mx ? mx.s : 0, members, membersAll, schedule: sch ? JSON.parse(sch.data) : null, events, visits }).replace(/</g, '\\u003c') + '</script>';
+    : { club: env.CLUB || 'mowgli', ...(opt.world ? { worldOnly: true, back: '/' } : {}), role: opt.role || null, schEdit: opt.role === 'owner' || opt.role === 'admin', since: mx ? mx.s : 0, members, membersAll, schedule: sch ? JSON.parse(sch.data) : null, events, visits }).replace(/</g, '\\u003c') + '</script>';
   const html = (await res.text()).replace('<meta charset="utf-8">', '<meta charset="utf-8">' + inj);
   return new Response(html, { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' } });
 }
@@ -292,7 +293,7 @@ export default {
       if (!o) return new Response('Not found', { status: 404 });
       return new Response(o.body, { headers: { 'content-type': o.httpMetadata?.contentType || 'application/octet-stream', 'cache-control': 'private, max-age=3600' } });
     }
-    if (path === '/arena/' || path === '/arena/index.html') return arenaReal(req, env);
+    if (path === '/arena/' || path === '/arena/index.html') return arenaReal(req, env, { role: me && me.role });
     // Тренеру касса и отчёты недоступны на уровне данных (FIN_COLS), интерфейс прячет их сам
     return env.ASSETS.fetch(req);
   }

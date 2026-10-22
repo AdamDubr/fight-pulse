@@ -3656,7 +3656,7 @@ function pitSched(){const R=window.PIT_REAL||{},sc=R.schedule||{};
   if(Array.isArray(sc.coaches)&&sc.coaches.length)SCH_CO.splice(0,SCH_CO.length,...sc.coaches.map(c=>({k:c.k,n:c.n})));
   return{classes:(sc.classes||[]).map(c=>({id:c.id,dow:c.dow||[],time:c.time,disc:c.disc,coach:c.coach||(SCH_CO[0]&&SCH_CO[0].k),dur:c.dur||null,cap:c.cap||null})),
     events:Object.entries(R.events||{}).filter(([,e])=>e&&e.date).map(([id,e])=>({id,d:e.date,name:e.title||e.name||'Событие'})).sort((a,b)=>a.d.localeCompare(b.d))}}
-async function pitSaveSched(){const R=window.PIT_REAL||(window.PIT_REAL={});
+async function pitSaveSched(){const R=window.PIT_REAL||(window.PIT_REAL={});if(REAL&&!R.schEdit){toast('Расписание меняет администратор в CRM');return}
   const data={...(R.schedule||{}),classes:SCHED.classes.map(c=>({id:c.id||('c'+Date.now().toString(36)+Math.random().toString(36).slice(2,5)),dow:c.dow,time:c.time,disc:c.disc,coach:c.coach,dur:c.dur||60,cap:c.cap||null})),coaches:SCH_CO.map(c=>({k:c.k,n:c.n})),updatedAt:new Date().toISOString()};
   R.schedule=data;
   // события зала ⇄ CRM «События»
@@ -3877,7 +3877,13 @@ function admGroupDetail(B,g){
   B.querySelectorAll('[data-gs]').forEach(x=>x.onclick=()=>assign('Сон: '+x.dataset.gs));
   B.querySelectorAll('.rost-c').forEach(b2=>b2.addEventListener('click',()=>{ADM.tab='roster';ADM.sel=+b2.dataset.id;renderAdm()}))}
 // ---- РАСПИСАНИЕ: месяц, занятия по дням недели, соревнования ----
-function admSched(B){schedInit();const base=new Date(TODAY.getFullYear(),TODAY.getMonth()+ADM.mo,1),Y=base.getFullYear(),M=base.getMonth();
+function admSchedRO(B){const D=['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
+  B.innerHTML=`<div class="ph-title"><span class="label">Расписание клуба</span></div>
+   <div class="schl">${SCHED.classes.slice().sort((x,y)=>x.time.localeCompare(y.time)).map(c=>`<span>${D.filter((_,k)=>c.dow.includes(k)).join('/')} ${c.time} · ${esc(c.disc)} · <i style="font-style:normal;opacity:.7">${esc(coName(c.coach))}</i></span>`).join('')||'<span class="muted small">Занятий нет</span>'}</div>
+   <div class="label" style="margin:.8rem 0 .3rem">Соревнования и события</div>
+   <div class="schl">${SCHED.events.slice().sort((x,y)=>x.d.localeCompare(y.d)).map(e=>`<span>🏆 ${fmtD(e.d)} · ${esc(e.name)}</span>`).join('')||'<span class="muted small">Нет событий</span>'}</div>
+   <div class="muted small" style="margin-top:.6rem">Группы и события меняет администратор клуба в CRM → «Расписание».</div>`}
+function admSched(B){schedInit();if(REAL&&!(window.PIT_REAL||{}).schEdit){admSchedRO(B);return}const base=new Date(TODAY.getFullYear(),TODAY.getMonth()+ADM.mo,1),Y=base.getFullYear(),M=base.getMonth();
   const first=(new Date(Y,M,1).getDay()+6)%7,days=new Date(Y,M+1,0).getDate(),tdISO=isoD(TODAY);
   const DISCS=[...new Set(ATHLETES.map(a=>a.disc))];
   let cells='';for(let i=0;i<first;i++)cells+='<div class="cal-c off"></div>';
