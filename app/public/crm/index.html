@@ -651,17 +651,17 @@ function vGroup(c,co){const ids=gIds(c),cap=c.cap||SET().groupCap||0,inG=new Set
 function bindGroup(v){const bk=$('[data-gback]',v);if(bk)bk.addEventListener('click',()=>{S.grp=null;render();scrollTo(0,0)})}
 
 
-/* ===== Уведомление клиента о пробном: письмо + карточка в My PIT; без e-mail — WhatsApp ===== */
+/* ===== Уведомление клиента о пробном: письмо + карточка в My PIT (без внешних мессенджеров) ===== */
 async function notifyTrialC(id){try{const r=await fetch('/api/notify/trial',{method:'POST',headers:{'content-type':'application/json'},credentials:'same-origin',body:JSON.stringify({id})});const j=await r.json();
   if(j.sent){await write(()=>DB.doc('leads/'+id).update({trialNotified:{at:new Date().toISOString(),to:j.to,ch:'email'}}));toast('Клиенту отправлено письмо и показано в My PIT: '+j.to,5000)}
-  else toast(j.reason==='no_email'?'У клиента нет e-mail — сообщите в WhatsApp (кнопка в заявке)':'Письмо не отправлено — сообщите клиенту в WhatsApp',6000);
-  if(S.ov&&S.ov.id===id)renderOv()}catch(e){toast('Письмо не отправлено — сообщите клиенту в WhatsApp')}}
+  else toast(j.reason==='no_email'?'У клиента нет e-mail — позвоните ему или попросите зарегистрироваться в My PIT':'Письмо не отправлено — позвоните клиенту',6000);
+  if(S.ov&&S.ov.id===id)renderOv()}catch(e){toast('Письмо не отправлено — позвоните клиенту')}}
 function trialMsg(x){const c=SCH().classes.find(z=>z.id===x.trialClass),co=c&&SCH().coaches.find(k=>k.k===c.coach),d=new Date(x.trialDate+'T12:00:00'),dn=['вс','пн','вт','ср','чт','пт','сб'][d.getDay()];
   return`Здравствуйте${x.name?', '+String(x.name).split(/\s+/)[0]:''}! Вы записаны на пробное занятие в Mowgli Fight Club: ${fmtD(x.trialDate)} (${dn})${c?' в '+c.time+', группа '+c.disc:x.trialTime?' в '+x.trialTime:''}${co?', тренер '+co.n:''}. Возьмите форму, воду и полотенце, приходите за 10 минут. До встречи!`}
 const waNum=p=>{let d=String(p||'').replace(/\D/g,'');if(d.startsWith('00'))d=d.slice(2);if(/^0\d{10}$/.test(d))d='90'+d.slice(1);else if(/^5\d{9}$/.test(d))d='90'+d;else if(/^8\d{10}$/.test(d))d='7'+d.slice(1);return d.length>=10?d:''};
 function trialNotifyHTML(x){const wa=waNum(x.phone),N=x.trialNotified;
-  return`<div class="acts" style="margin-top:.6rem;align-items:center">${N?`<span class="pill ok">✓ уведомлён ${N.ch==='email'?'по e-mail':'в WhatsApp'} ${fmtD(String(N.at).slice(0,10))}</span>`:'<span class="pill warn">клиент ещё не уведомлён</span>'}
-   <button class="btn sm" type="button" data-tnotify>${N?'Отправить ещё раз':'Уведомить по e-mail'}</button>${wa?`<a class="btn sm" data-twa href="https://wa.me/${wa}?text=${encodeURIComponent(trialMsg(x))}" target="_blank" rel="noopener">WhatsApp</a>`:''}</div>`}
+  return`<div class="acts" style="margin-top:.6rem;align-items:center">${N?`<span class="pill ok">✓ уведомлён ${N.ch==='email'?'по e-mail':''} ${fmtD(String(N.at).slice(0,10))}</span>`:'<span class="pill warn">клиент ещё не уведомлён</span>'}
+   <button class="btn sm" type="button" data-tnotify>${N?'Отправить ещё раз':'Уведомить по e-mail'}</button></div>`}
 /* ===== Пробные занятия в расписании: заявка «записан на пробное» привязана к группе на дату ===== */
 const dowOf=d=>{const x=new Date(d+'T12:00:00').getDay();return x||7};
 
@@ -905,7 +905,7 @@ const LSTAT=[['new','Новая','info'],['booked','Записан на проб
 const LSRC=['PIT · регистрация','Instagram','Google / карты','Рекомендация','Мимо проходил','Сайт','Другое'];
 const LLOST=['Дорого','Не подошло расписание','Далеко','Не понравилось','Не пришёл на пробное','Другое'];
 const LTHINK=['Далеко','Не понравилось','Дорого','Не подошло расписание','Хочет подумать','Позже / после отпуска','Другое'];
-const LCH=['WhatsApp','Звонок','Instagram','Telegram','SMS','E-mail','Лично'];
+const LCH=['Звонок','My PIT','E-mail','SMS','Instagram','Лично'];
 const fillWho=root=>{const ws=[...root.querySelectorAll('[data-who]')].filter(e=>e.dataset.who);if(!ws.length)return;const fb=()=>ws.forEach(e=>{if(!e.textContent)e.textContent=e.dataset.who.split('@')[0]});
   if(USER&&USER.profiles)USER.profiles([...new Set(ws.map(e=>e.dataset.who))]).then(ps=>ws.forEach(e=>{const n=ps[e.dataset.who]?.name;e.textContent=n||e.dataset.who.split('@')[0]})).catch(fb);else fb()};
 const leadOpen=x=>['new','booked','done','think'].includes(x.status||'new');
@@ -1006,7 +1006,6 @@ function leadDrawer(){const host=$('#ovHost'),x=S.ov.id==='new'?{status:'new',ki
   const ns=host.querySelector('[data-lnoshow]');if(ns)ns.addEventListener('click',()=>up({status:'lost',lostReason:'Не пришёл на пробное'},'Не пришёл на пробное'));
   bindSell(host,x,apv);
   const tn=$('[data-tnotify]',host);if(tn)tn.addEventListener('click',()=>{tn.disabled=true;notifyTrialC(x.id)});
-  const twa=$('[data-twa]',host);if(twa)twa.addEventListener('click',()=>{write(()=>DB.doc('leads/'+x.id).update({trialNotified:{at:new Date().toISOString(),ch:'whatsapp'}}),'Пробное: сообщение в WhatsApp')});
   const tk=$('#lthink',host);if(tk)tk.addEventListener('submit',e=>{e.preventDefault();const r=$('#lk_r',host).value,d=$('#lk_d',host).value,t=$('#lk_t',host).value.trim();if(!d){toast('Укажите дату напоминания');return}
     const now=new Date().toISOString();up({status:'think',thinkReason:r,thinkAt:today(),nextAt:d,touches:[...(x.touches||[]),{at:now,by:ME||null,ch:'Решение',text:r+(t?' · '+t:''),next:d,kind:'think'}]},'Думает ('+r+'), напомнить '+fmtD(d))});
   const tf2=$('#ltouch',host);if(tf2){const save=(next)=>{const t={at:new Date().toISOString(),by:ME||null,ch:$('#lt_c',host).value,text:$('#lt_t',host).value.trim(),next:next||null};
