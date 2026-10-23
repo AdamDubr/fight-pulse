@@ -117,6 +117,46 @@ function profileToMember(m, d, email) {
 
 // полная анкета выдаётся члену клуба: найденный и объединённый боец из базы клуба — сразу;
 // новый клиент (карточка создана продажей из заявки) — после подписания договора и оплаты (нет долга)
+// одна анкета: заполнена при регистрации → одобрение регистрации клубом (или привязка к карточке) сразу даёт ✓ Verified
+async function autoVerify(env, f, lead) {
+  if (!f || (f.ver_by && f.ver_by !== 'pro')) return false;
+  let d; try { d = JSON.parse(f.data) } catch (e) { return false }
+  if (!d.submittedAt) return false;
+  if (!(f.mid || (lead && lead.approved && !lead.rejected))) return false;
+  const t = Date.now(), by = (lead && lead.approvedBy) || 'club', st = [env.DB.prepare('UPDATE fighters SET verified=1,ver_by=?,ver_at=?,note=NULL,updated=? WHERE email=?').bind(by, t, t, f.email)];
+  if (f.mid) { const m = await getDoc(env, 'members', f.mid); if (m) st.push(putDoc(env, 'members', f.mid, profileToMember(m, d, f.email), by)) }
+  await env.DB.batch(st); f.verified = 1; f.ver_by = by; f.ver_at = t; return true;
+}
+// Регистрация в один шаг (решение 23.10.2026): одна анкета → сразу карточка бойца в CRM (найденная по e-mail/телефону или новая),
+// доступ к Залу, расписанию, всем функциям и My PIT World. Клуб видит новую заявку в CRM; медали и правки анкеты по-прежнему проверяет админ.
+async function autoActivate(env, f, email, opts) {
+  if (!f || (f.verified && f.mid && f.ver_by && f.ver_by !== 'pro')) return false;
+  let d; try { d = JSON.parse(f.data) } catch (e) { return false }
+  if (!d.consentData || !d.first || !d.last) return false;
+  const lead = f.lead ? await getDoc(env, 'leads', f.lead) : null;
+  if (lead && lead.rejected) return false;
+  const st = [], t = Date.now(), iso = now(), by = 'pit:' + email;
+  let mid = f.mid || (lead && lead.mid) || null, hit = null, isNew = false;
+  if (!mid) hit = await findMember(env, email, d.phone);
+  // совпадение только по телефону (без e-mail) принимаем, если совпадает и имя — иначе ребёнок с телефоном родителя попал бы в карточку родителя
+  if (hit && String(hit.m.email || '').toLowerCase() !== email) { const nm = x => String(x || '').toLowerCase().replace(/[^a-zа-яёçğıöşü]/gi, ''), mn = nm(hit.m.first && hit.m.last ? hit.m.first + hit.m.last : hit.m.name); if (!(nm(d.first) && mn.includes(nm(d.first)))) hit = null }
+  if (!mid && hit) mid = hit.id;
+  const m0 = mid ? (hit ? hit.m : await getDoc(env, 'members', mid)) : null;
+  if (mid && m0) st.push(putDoc(env, 'members', mid, profileToMember(m0, d, email), by));
+  else {
+    isNew = true; mid = mid || ('pm' + (await sha(email + ':member')).slice(0, 14));
+    const base = { name: `${d.first} ${d.last}`.trim(), first: d.first, last: d.last, phone: d.phone || '', email, dob: d.dob || '', parent: d.parent && d.parent.name ? d.parent : null, disc: d.disc || 'MMA', discs: [d.disc || 'MMA'], kind: 'group', want: d.kind || 'group', note: d.note || '', src: 'pit', pitLead: f.lead || null, createdAt: iso };
+    st.push(putDoc(env, 'members', mid, profileToMember(base, d, email), by));
+  }
+  if (lead) st.push(putDoc(env, 'leads', f.lead, { ...lead, approved: true, approvedAt: lead.approvedAt || iso.slice(0, 10), approvedBy: lead.approvedBy || 'auto', mid, match: lead.match || (hit ? { id: hit.id, name: hit.m.first && hit.m.last ? hit.m.first + ' ' + hit.m.last : hit.m.name } : null), auto: isNew ? 'new' : 'linked' }, by));
+  const vb = f.ver_by && f.ver_by !== 'pro' ? f.ver_by : 'auto';
+  if (!d.submittedAt) d.submittedAt = iso;
+  st.push(env.DB.prepare('UPDATE fighters SET data=?,mid=?,verified=1,ver_by=?,ver_at=COALESCE(ver_at,?),note=NULL,updated=? WHERE email=?').bind(JSON.stringify(d), mid, vb, t, t, email));
+  await env.DB.batch(st);
+  Object.assign(f, { mid, verified: 1, ver_by: vb, ver_at: f.ver_at || t, data: JSON.stringify(d) });
+  if (opts && opts.mail) { try { await env.EMAIL.send(welcomeMail(email, d.first, CLUBS.mowgli.name, await accLang(env, email, lead), isNew ? 'newOk' : 'memberOk', !!CLUBS.mowgli.proFree)) } catch (e) { } }
+  return true;
+}
 function fullOpenOf(m) { return !!m && (!m.lead || (!!m.contractAt && !m.due)) }
 // полная анкета члена клуба: фото, вес, город (+ родитель для U18 уже обязателен при регистрации)
 function fullMissing(p, photo) { const m = []; if (!photo) m.push('photo'); if (!p.weight) m.push('weight'); if (!p.city) m.push('city'); return m }
@@ -166,14 +206,23 @@ const WL = {
   ru: { pro: c => `✦ Для вас уже включена подписка <b>PIT PRO</b> — клуб ${c} позаботился об этом.`, subj: c => `Добро пожаловать в ${c}!`, h: (n, c) => `${n ? n + ', д' : 'Д'}обро пожаловать в ${c}!`,
     member: ['Клуб подтвердил вашу регистрацию и нашёл вас в базе бойцов клуба.', 'Следующий шаг — <b>полная анкета</b>: фото, вес, город. Это важно: только по полной анкете клуб ставит отметку ✓ Verified, и после неё открываются все возможности — расписание и услуги клуба, My PIT World и ваш профиль бойца в мировом рейтинге.', 'Заполнить анкету'],
     new: ['Клуб одобрил вашу регистрацию в PIT RATING.', 'Запишитесь на пробное занятие в приложении. После пробного администратор оформит договор и абонемент — тогда откроется полная анкета члена клуба.', 'Открыть My PIT'],
+    memberOk: ['Клуб подтвердил вашу регистрацию и анкету — вы в базе бойцов клуба, ✓ Verified.', 'Вам открыты расписание и услуги клуба, My PIT World и ваш профиль бойца в мировом рейтинге.', 'Открыть My PIT'],
+    newOk: ['Клуб подтвердил вашу регистрацию и анкету — ✓ Verified.', 'Запишитесь на пробное занятие в приложении. После пробного администратор оформит договор и абонемент — и откроются все услуги клуба.', 'Открыть My PIT'],
+    fullOk: ['Договор подписан, абонемент оплачен — вы член клуба!', 'Ваша анкета уже подтверждена: расписание и услуги клуба, My PIT World и профиль в мировом рейтинге открыты.', 'Открыть My PIT'],
     full: ['Договор подписан, абонемент оплачен — вы член клуба!', 'Остался последний шаг — <b>полная анкета</b>: фото, вес, город. Это важно: только по ней клуб ставит отметку ✓ Verified и открывает все возможности — расписание и услуги клуба, My PIT World и профиль бойца в мировом рейтинге.', 'Заполнить анкету'] },
   en: { pro: c => `✦ Your <b>PIT PRO</b> subscription is already active — courtesy of ${c}.`, subj: c => `Welcome to ${c}!`, h: (n, c) => `${n ? n + ', w' : 'W'}elcome to ${c}!`,
     member: ['The club confirmed your registration and found you in its fighter base.', 'Next step — your <b>full profile</b>: photo, weight, city. This matters: the club gives the ✓ Verified mark only for a complete profile, and it unlocks everything — club schedule and services, My PIT World and your fighter profile in the world rating.', 'Complete profile'],
     new: ['The club has approved your registration in PIT RATING.', 'Book a trial class in the app. After the trial the admin will set up your contract and membership — then the full club member profile opens.', 'Open My PIT'],
+    memberOk: ['The club confirmed your registration and profile — you are in the club fighter base, ✓ Verified.', 'Club schedule and services, My PIT World and your fighter profile in the world rating are open for you.', 'Open My PIT'],
+    newOk: ['The club confirmed your registration and profile — ✓ Verified.', 'Book a trial class in the app. After the trial the admin sets up your contract and membership — and all club services open.', 'Open My PIT'],
+    fullOk: ['Contract signed, membership paid — you are a club member!', 'Your profile is already confirmed: club schedule and services, My PIT World and your world-rating profile are open.', 'Open My PIT'],
     full: ['Contract signed, membership paid — you are a club member!', 'One last step — your <b>full profile</b>: photo, weight, city. This matters: only then does the club give the ✓ Verified mark and unlock everything — club schedule and services, My PIT World and your fighter profile in the world rating.', 'Complete profile'] },
   tr: { pro: c => `✦ <b>PIT PRO</b> aboneliğiniz zaten aktif — ${c} sizin için düşündü.`, subj: c => `${c}'e hoş geldiniz!`, h: (n, c) => `${n ? n + ', ' : ''}${c}'e hoş geldiniz!`,
     member: ['Kulüp kaydınızı onayladı ve sizi kulübün sporcu kayıtlarında buldu.', 'Sonraki adım — <b>tam profiliniz</b>: fotoğraf, kilo, şehir. Bu önemli: kulüp ✓ Verified işaretini yalnızca tam profile verir ve bununla her şey açılır — kulüp programı ve hizmetleri, My PIT World ve dünya reytingindeki sporcu profiliniz.', 'Profili doldur'],
     new: ['Kulüp PIT RATING kaydınızı onayladı.', 'Uygulamadan deneme dersine kaydolun. Deneme dersinden sonra yönetici sözleşmenizi ve üyeliğinizi düzenleyecek — ardından kulüp üyeliği için tam profil açılır.', "My PIT'i aç"],
+    memberOk: ['Kulüp kaydınızı ve profilinizi onayladı — kulübün sporcu kayıtlarındasınız, ✓ Verified.', 'Kulüp programı ve hizmetleri, My PIT World ve dünya reytingindeki sporcu profiliniz size açık.', "My PIT'i aç"],
+    newOk: ['Kulüp kaydınızı ve profilinizi onayladı — ✓ Verified.', 'Uygulamadan deneme dersine kaydolun. Deneme dersinden sonra yönetici sözleşmenizi ve üyeliğinizi düzenler — ve tüm kulüp hizmetleri açılır.', "My PIT'i aç"],
+    fullOk: ['Sözleşme imzalandı, üyelik ödendi — artık kulüp üyesisiniz!', 'Profiliniz zaten onaylı: kulüp programı ve hizmetleri, My PIT World ve dünya reytingi profiliniz açık.', "My PIT'i aç"],
     full: ['Sözleşme imzalandı, üyelik ödendi — artık kulüp üyesisiniz!', 'Son adım — <b>tam profiliniz</b>: fotoğraf, kilo, şehir. Bu önemli: kulüp ✓ Verified işaretini yalnızca tam profile verir ve her şeyi açar — kulüp programı ve hizmetleri, My PIT World ve dünya reytingindeki sporcu profiliniz.', 'Profili doldur'] },
 };
 function welcomeMail(to, name, clubName, lang, kind, pro) {
@@ -198,7 +247,9 @@ export async function notifyWelcome(req, env, me) {
   to = to || String(l.email || (l.reg && l.reg.email) || '').trim().toLowerCase();
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(to)) return ok({ sent: false, reason: 'no_email' });
   const nm = l ? ((l.reg && l.reg.first) || String(l.name || '').trim().split(/\s+/)[0]) : '';
-  try { await env.EMAIL.send(welcomeMail(to, nm, CLUBS.mowgli.name, await accLang(env, to, l), kind, !!CLUBS.mowgli.proFree)); return ok({ sent: true, to, kind }) } catch (e) { return ok({ sent: false, reason: 'send_failed' }) }
+  // анкета заполнена при регистрации → одобрение регистрации = подтверждение анкеты, письмо без «заполните анкету»
+  let kk = kind; try { const fr = await env.DB.prepare('SELECT data FROM fighters WHERE email=?').bind(to).first(); if (fr && JSON.parse(fr.data).submittedAt) kk = kind + 'Ok' } catch (e) { }
+  try { await env.EMAIL.send(welcomeMail(to, nm, CLUBS.mowgli.name, await accLang(env, to, l), kk, !!CLUBS.mowgli.proFree)); return ok({ sent: true, to, kind }) } catch (e) { return ok({ sent: false, reason: 'send_failed' }) }
 }
 // уведомить клиента о записи на пробное (письмо); вызывает CRM после записи
 export async function notifyTrial(req, env, me) {
@@ -244,6 +295,7 @@ async function view(env, email, uiLang) {
   const f = await env.DB.prepare('SELECT * FROM fighters WHERE email=?').bind(email).first();
   const base = { email, clubs: Object.values(CLUBS), discs: DISCS, levels: LEVELS };
   if (!f) return { ...base, profile: null };
+  await autoActivate(env, f, email);
   const profile = JSON.parse(f.data), out = { ...base, profile, club: CLUBS[f.club] || null, verified: !!f.verified, pending: f.pending ? JSON.parse(f.pending) : null, note: f.note || null, verAt: f.ver_at || null };
   out.photo = photoUrl((out.pending && out.pending.photo) || profile.photo);
   let lead = null;
@@ -252,7 +304,7 @@ async function view(env, email, uiLang) {
     f.mid = lead.mid; await env.DB.prepare('UPDATE fighters SET mid=? WHERE email=?').bind(lead.mid, email).run();
     if (f.verified) { const m0 = await getDoc(env, 'members', f.mid); if (m0) await env.DB.batch([putDoc(env, 'members', f.mid, profileToMember(m0, profile, email), 'pit:' + email)]) }
   }
-  // одобрение регистрации даёт пробное; членство в клубе (✓ Verified) — после покупки абонемента и проверки полной анкеты в «Анкетах»
+  if (await autoVerify(env, f, lead)) { out.verified = true; out.verAt = f.ver_at }
   out.fullOpen = false;
   if (f.mid) {
     const m = await getDoc(env, 'members', f.mid);
@@ -277,7 +329,7 @@ async function view(env, email, uiLang) {
   out.pro = !gate && !!(f.mid && CLUBS[f.club] && CLUBS[f.club].proFree);
   if (out.pro && !f.verified) { const t0 = Date.now(); await env.DB.prepare("UPDATE fighters SET verified=1, ver_by='pro', ver_at=? WHERE email=?").bind(t0, email).run(); f.verified = 1; out.verified = true; out.verAt = t0 }
   out.access = !!(f.mid && f.verified) && !gate;
-  out.world = !!f.verified && !gate;
+  out.world = !!f.verified && !gate && !!f.mid;
   try { out.inbox = await inbox(env, email, ['ru', 'en', 'tr'].includes(profile.lang) ? profile.lang : 'ru') } catch (e) { out.inbox = [] }
   out.approved = !!(lead && lead.approved && !lead.rejected) || !!f.mid;
   if (out.access) { const lg = uiLang || (['ru', 'en', 'tr'].includes(profile.lang) ? profile.lang : 'ru'); out.schedule = await trialSlots(env, 62); if (lg !== 'ru') out.schedule = out.schedule.map(x => x.coach ? { ...x, coach: translit(x.coach) } : x); out.clubInfo = await clubInfo(env, f.club, lg) }
@@ -400,7 +452,8 @@ export async function myRoutes(req, env, path, email, staff) {
 
   if (path === '/api/my/submit') {
     if (!cur) return json({ error: 'profile' }, 403);
-    if (!cur.mid || (!needsAnketa(cur) && !fullOpenOf(await getDoc(env, 'members', cur.mid)))) return json({ error: 'not_member' }, 409);
+    if (!cur.mid && !cur.lead) return json({ error: 'not_member' }, 409);
+    if (cur.mid && !needsAnketa(cur) && !fullOpenOf(await getDoc(env, 'members', cur.mid))) return json({ error: 'not_member' }, 409);
     const d = JSON.parse(cur.data), miss = fullMissing(d, d.photo ? 1 : 0);
     if (miss.length) return json({ error: 'incomplete', missing: miss }, 400);
     await env.DB.prepare('UPDATE fighters SET data=?,note=NULL,updated=? WHERE email=?').bind(JSON.stringify({ ...d, submittedAt: new Date().toISOString() }), t, email).run();
@@ -436,7 +489,9 @@ export async function myRoutes(req, env, path, email, staff) {
     const id = crypto.randomUUID().replace(/-/g, '');
     await env.FILES.put(id, buf, { httpMetadata: { contentType: type } });
     await env.DB.prepare('INSERT INTO files(id,type,size,by,at) VALUES(?,?,?,?,?)').bind(id, type, buf.byteLength, email, now()).run();
-    if (cur.verified && !needsAnketa(cur)) { const p = cur.pending ? JSON.parse(cur.pending) : {}; p.photo = id; await env.DB.prepare('UPDATE fighters SET pending=?,updated=? WHERE email=?').bind(JSON.stringify(p), t, email).run() }
+    const first = cur.ver_by === 'auto' && !JSON.parse(cur.data).photo;
+    if (first && cur.mid) { const m = await getDoc(env, 'members', cur.mid); if (m) await env.DB.batch([putDoc(env, 'members', cur.mid, { ...m, myPhoto: id }, 'pit:' + email)]) }
+    if (cur.verified && !needsAnketa(cur) && !first) { const p = cur.pending ? JSON.parse(cur.pending) : {}; p.photo = id; await env.DB.prepare('UPDATE fighters SET pending=?,updated=? WHERE email=?').bind(JSON.stringify(p), t, email).run() }
     else { const d = JSON.parse(cur.data); d.photo = id; await env.DB.prepare('UPDATE fighters SET data=?,updated=? WHERE email=?').bind(JSON.stringify(d), t, email).run() }
     return json({ ok: true, ...(await view(env, email)), staff: staff || null });
   }
@@ -512,16 +567,17 @@ export async function myRoutes(req, env, path, email, staff) {
       name: first + ' ' + last, phone, email, disc, kind, age: String(age), source: 'PIT · регистрация', status: 'new', by: 'PIT',
       note: (minor ? `U18 · родитель: ${parent.name}, ${parent.phone}. ` : '') + (fields.note || ''), ts: now(), pit: true, approved: false,
       match: hit ? { id: hit.id, name: hit.m.first && hit.m.last ? hit.m.first + ' ' + hit.m.last : hit.m.name } : null,
-      reg: { first, last, dob, phone, email, parent }, lang: consents.lang,
+      reg: { first, last, dob, phone, email, parent, weight: fields.weight, city: fields.city, stance: fields.stance, belt: fields.belt }, lang: consents.lang,
     }, 'pit:' + email));
   } else if (lead && !(cur && cur.verified && !needsAnketa(cur))) {
     const l = await getDoc(env, 'leads', lead);
-    if (l && (l.status || 'new') === 'new') stmts.push(putDoc(env, 'leads', lead, { ...l, name: first + ' ' + last, phone, disc, kind, age: String(age), reg: { first, last, dob, phone, email, parent } }, 'pit:' + email));
+    if (l && (l.status || 'new') === 'new') stmts.push(putDoc(env, 'leads', lead, { ...l, name: first + ' ' + last, phone, disc, kind, age: String(age), reg: { first, last, dob, phone, email, parent, weight: fields.weight, city: fields.city, stance: fields.stance, belt: fields.belt } }, 'pit:' + email));
   }
   stmts.push(env.DB.prepare(`INSERT INTO fighters(email,data,club,mid,lead,created,updated,pending) VALUES(?,?,?,?,?,?,?,?)
     ON CONFLICT(email) DO UPDATE SET data=excluded.data,club=excluded.club,mid=excluded.mid,lead=excluded.lead,updated=excluded.updated,pending=excluded.pending`)
     .bind(email, JSON.stringify(data), club, mid, lead, cur?.created || t, t, pending ? JSON.stringify(pending) : null));
   await env.DB.batch(stmts);
+  if (!cur || !cur.verified || !cur.mid) { const fr = await env.DB.prepare('SELECT * FROM fighters WHERE email=?').bind(email).first(); if (fr) await autoActivate(env, fr, email, { mail: !cur }) }
   return json({ ok: true, ...(await view(env, email)), staff: staff || null });
 }
 
@@ -551,6 +607,16 @@ export async function reviewRoutes(req, env, path, me) {
     const its = await env.DB.prepare("SELECT i.* FROM fighter_items i JOIN fighters f ON f.email=i.email WHERE f.club=? ORDER BY i.created DESC").bind(club).all();
     const byE = {};
     for (const r of its.results || []) (byE[r.email] = byE[r.email] || []).push(itemOut(r));
+    // одна анкета: одобренная регистрация с анкетой → сразу ✓ Verified; неодобренная — ждёт в «Заявках», в «Анкеты» не попадает
+    const waitLead = new Set();
+    for (const f of fs.results || []) {
+      if (f.ver_by && f.ver_by !== 'pro') continue;
+      let d = {}; try { d = JSON.parse(f.data) } catch (e) { }
+      if (!d.submittedAt) continue;
+      if (await autoActivate(env, f, f.email)) continue;
+      const l = !f.mid && f.lead ? await getDoc(env, 'leads', f.lead) : null;
+      if (!f.mid && l && !l.approved && !l.rejected) waitLead.add(f.email);
+    }
     const list = (fs.results || []).map(f => {
       const d = JSON.parse(f.data), pend = f.pending ? JSON.parse(f.pending) : null, items = byE[f.email] || [];
       return {
@@ -558,7 +624,7 @@ export async function reviewRoutes(req, env, path, me) {
         photo: photoUrl((pend && pend.photo) || d.photo), items, pendingItems: items.filter(i => i.status === 'pending').length, updated: f.updated,
       };
     });
-    list.forEach(x => { x.full = (!x.verified || x.needAnketa) && !!x.profile.submittedAt; if (x.needAnketa) x.verified = false });
+    list.forEach(x => { x.needAnketa = needsAnketa((fs.results || []).find(f => f.email === x.email)); x.full = (!x.verified || x.needAnketa) && !!x.profile.submittedAt && !waitLead.has(x.email); if (x.needAnketa) x.verified = false });
     const todo = list.filter(x => (x.verified && x.pending) || x.pendingItems || x.full);
     return json({ todo, all: list, counts: { full: todo.filter(x => x.full).length, todo: todo.length, items: todo.reduce((a, x) => a + x.pendingItems, 0), verified: list.filter(x => x.verified).length } });
   }
@@ -582,6 +648,8 @@ export async function reviewRoutes(req, env, path, me) {
       const d = { ...JSON.parse(f.data), ...(f.pending ? JSON.parse(f.pending) : {}) };
       const st = [env.DB.prepare('UPDATE fighters SET data=?,pending=NULL,verified=1,ver_by=?,ver_at=?,note=NULL,updated=? WHERE email=?').bind(JSON.stringify(d), by, t, t, f.email)];
       if (b.act === 'all_ok') st.push(env.DB.prepare("UPDATE fighter_items SET status='ok',note=NULL,mod_by=?,mod_at=?,updated=? WHERE email=? AND status='pending'").bind(by, t, t, f.email));
+      // подтверждение анкеты = одобрение регистрации (одно действие админа)
+      if (!f.mid && f.lead) { const l = await getDoc(env, 'leads', f.lead); if (l && !l.approved && !l.rejected) st.push(putDoc(env, 'leads', f.lead, { ...l, approved: true, approvedAt: new Date().toISOString().slice(0, 10), approvedBy: by }, by)) }
       // подтверждённые данные переносим в карточку бойца CRM
       if (f.mid) {
         const m = await getDoc(env, 'members', f.mid);
