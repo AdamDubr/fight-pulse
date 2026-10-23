@@ -186,6 +186,11 @@ label.f{display:flex;flex-direction:column;gap:.25rem;font-size:.74rem;font-weig
 .msbar{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin-bottom:.9rem}
 .mssec{display:flex;align-items:baseline;gap:.6rem;margin:1.3rem 0 .7rem;font-weight:900;font-size:1.05rem;letter-spacing:.06em;text-transform:uppercase}.mssec:first-child{margin-top:.2rem}.mssec::after{content:"";flex:1;height:1px;background:var(--line);align-self:center}.mssec small{color:var(--muted);font-weight:600;letter-spacing:0;text-transform:none;font-size:.78rem}
 .ms .pc .bd.mw{background:#fff;color:#000}
+.msrow{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(12.5rem,14rem);gap:.8rem;overflow-x:auto;padding:.1rem .1rem .7rem;scroll-snap-type:x proximity;scrollbar-width:thin}
+.msrow>.pc{scroll-snap-align:start}
+.mssec .more{margin-left:auto;order:3;font-size:.74rem;font-weight:700;letter-spacing:.04em;text-transform:none;background:none;border:1px solid var(--line);color:var(--fg);border-radius:2rem;padding:.25rem .7rem;cursor:pointer}.mssec .more:hover{border-color:#fff}
+.mssec.withmore::after{order:2}
+@media (max-width:620px){.msrow{grid-auto-columns:minmax(10.5rem,46%)}}
 @media (max-width:900px){.mscats{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media (max-width:620px){.mshero{padding:1rem;gap:.9rem}.mshero img{height:3.4rem}.mshero h1{font-size:1.4rem}}
 .ctiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.7rem;margin:.2rem 0 1rem}
@@ -1432,7 +1437,7 @@ function storeFront(){const cat=S.scat||'all',q=S.sq2||'',mw=!!S.smw;
   return`<div class="ms"><section class="mshero"><img src="/brand/clubs/mowgli.png" alt="Mowgli Fight Club"><div><h1>MOWGLI <span>STORE</span></h1><p>Экипировка, одежда, спортпит и бар для бойцов Mowgli Fight Club</p></div><div class="lines"></div></section>
    <div class="mscats">${['all',...PCATS].map(c=>`<button class="mscat" type="button" data-scat="${esc(c)}" aria-pressed="${cat===c}"><span class="ci">${SCI[c]||SCI.all}</span><b>${c==='all'?'Все':esc(c)}</b><small>${cnt(c)} товаров</small></button>`).join('')}</div>
    <div class="msbar"><label class="f" style="flex:1;min-width:12rem;max-width:26rem;margin:0"><input type="search" id="sq2" value="${esc(q)}" placeholder="Поиск по магазину…"></label><button class="chip" type="button" data-smw aria-pressed="${mw}">★ Только бренд MOWGLI</button></div>
-   ${groups.map(g=>`<div class="mssec">${esc(g)} <small>${G.get(g).length}</small></div><div class="pgrid">${G.get(g).map(pcard).join('')}</div>`).join('')||`<div class="card empty">${cnt(cat)?'Ничего не найдено.':'В этой категории пока нет товаров. Добавьте их: Склад → «+ Товар».'}</div>`}
+   ${groups.map(g=>cat==='all'?`<div class="mssec withmore">${esc(g)} <small>${G.get(g).length}</small><button class="more" type="button" data-scat="${esc(g)}">Все ${esc(g.toLowerCase())} →</button></div><div class="msrow">${G.get(g).map(pcard).join('')}</div>`:`<div class="mssec">${esc(g)} <small>${G.get(g).length}</small></div><div class="pgrid">${G.get(g).map(pcard).join('')}</div>`).join('')||`<div class="card empty">${cnt(cat)?'Ничего не найдено.':'В этой категории пока нет товаров. Добавьте их: Склад → «+ Товар».'}</div>`}
    ${cartIt.length?`<div class="cartbar"><span>🛒 ${cartIt.reduce((a,x)=>a+x.q,0)} шт · ${lira(cartSum)} <small style="font-weight:500;opacity:.8">${cartIt.map(x=>esc(x.p.name)+' × '+x.q).join(', ')}</small></span><span style="display:flex;gap:.5rem"><button class="btn sm" type="button" data-cartx style="background:transparent;color:inherit;border-color:currentColor">Очистить</button><button class="btn" type="button" data-cartgo>Оформить продажу</button></span></div>`:''}</div>`}
 function storeSales(){const months=[...new Set([today().slice(0,7),...S.shopsales.map(x=>String(x.date).slice(0,7)),...S.shopbuys.map(x=>String(x.date).slice(0,7))])].filter(x=>/^\d{4}-\d\d$/.test(x)).sort().reverse();
   const mk=S.smonth&&months.includes(S.smonth)?S.smonth:months[0],[y,mo]=mk.split('-');
