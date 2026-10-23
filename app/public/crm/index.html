@@ -1243,6 +1243,19 @@ function eventDrawer(){const host=$('#ovHost'),isNew=S.ov.id==='new',e=isNew?{ty
 const ECATS=['Нужды клуба','Аренда','Коммунальные платежи','Зарплаты тренеров','Зарплата администратора','Налоги и документы','Реклама','Прочее','Закупка · что купили'];
 /* статьи дохода зала → вид оплаты */
 const IARTS=[['Абонементы · групповые','sub'],['Абонементы · индивидуальные','sub'],['Пробные занятия','trial'],['Разовые занятия','service'],['Услуги','service'],['События и семинары','event'],['Бар / вода (зал)','service'],['Прочий доход','service']];
+/* свои статьи расхода клуба (добавляет администратор): club/settings.ecats = [{name, note}] */
+const myCats=()=>(Array.isArray(SET().ecats)?SET().ecats:[]).filter(c=>c&&c.name);
+const ecats=()=>[...ECATS,...myCats().map(c=>c.name).filter(n=>!ECATS.includes(n))];
+const NEWCAT='＋ Своя статья расхода…';
+const catNote=n=>(myCats().find(c=>c.name===n)||{}).note||'';
+const catPicker=(id,sel)=>`<select id="${id}">${ecats().map(c=>`<option ${c===sel?'selected':''}>${esc(c)}</option>`).join('')}<option>${NEWCAT}</option></select><span class="note" data-cnote style="display:block;margin-top:.25rem">${esc(catNote(sel))}</span>
+  <span data-cnew hidden style="display:grid;gap:.4rem;margin-top:.5rem;padding:.6rem;border:1px dashed var(--line);border-radius:.6rem"><input type="text" data-cn maxlength="40" placeholder="Название статьи: например, «Стирка формы»"><input type="text" data-cc maxlength="160" placeholder="Комментарий: что относится к этой статье"><button class="btn sm" type="button" data-cadd>Добавить статью</button></span>`;
+function bindCatPicker(host,id){const sel=$('#'+id,host);if(!sel)return;const box=sel.parentElement,nw=box.querySelector('[data-cnew]'),nt=box.querySelector('[data-cnote]');let prev=sel.value===NEWCAT?ECATS[0]:sel.value;
+  sel.addEventListener('change',()=>{nw.hidden=sel.value!==NEWCAT;nt.textContent=catNote(sel.value);if(sel.value!==NEWCAT)prev=sel.value;else box.querySelector('[data-cn]').focus()});
+  box.querySelector('[data-cadd]').addEventListener('click',async()=>{const name=box.querySelector('[data-cn]').value.trim(),note=box.querySelector('[data-cc]').value.trim();if(!name){toast('Введите название статьи');return}
+    if(ecats().some(c=>c.toLowerCase()===name.toLowerCase())){toast('Такая статья уже есть');return}
+    if(!await write(()=>DB.doc('club/settings').update({ecats:[...myCats(),{name,note,by:ME||null,at:today()}]}),'Новая статья расхода: '+name+(note?' — '+note:'')))return;
+    const o=document.createElement('option');o.textContent=name;sel.insertBefore(o,sel.lastElementChild);sel.value=name;nw.hidden=true;nt.textContent=note;prev=name;sel.dispatchEvent(new Event('change'))})}
 const TO_STORE_IN='→ Продажа товара (Mowgli Store)',TO_STORE_OUT='→ Закупка товара для магазина (Mowgli Store)',TO_OWNER='Дивиденды (владелец)';
 const BUYCATS=['Нужды клуба','Закупка · что купили'];
 const INK={sub:'Абонементы',trial:'Услуги',service:'Услуги',shop:'Товары',event:'События'};
@@ -1551,23 +1564,24 @@ function saleDrawer(){const host=$('#ovHost'),k=S.ov.kind||'sub',SV=services(),c
 /* --- правка любой операции кассы: статья, сумма, дата, способ, пояснение; «Подтвердить» снимает «требует внимания» --- */
 function finDrawer(){const host=$('#ovHost'),inc=S.ov.col==='payments',x=(inc?S.payments:S.expenses).find(z=>z.id===S.ov.id);if(!x){ovClose();return}
   const cur=inc?(x.art||(IARTS.find(a=>a[1]===payKind(x))||[INK[payKind(x)]])[0]):(isOwner(x)?TO_OWNER:x.cat);
-  const opts=inc?[...IARTS.map(a=>a[0]),TO_STORE_IN]:[...ECATS,TO_OWNER,TO_STORE_OUT];if(cur&&!opts.includes(cur))opts.unshift(cur);
+  const opts=inc?[...IARTS.map(a=>a[0]),TO_STORE_IN]:[...ecats(),TO_OWNER,TO_STORE_OUT,NEWCAT];if(cur&&!opts.includes(cur))opts.unshift(cur);
   const sug=(x.suggest||[]).filter(Boolean);
   host.innerHTML=ovShell(inc?'Приход':'Расход',x.review?'⚠ требует внимания':'проверено',`<form class="card form" id="finf">
    ${x.reviewQ?`<p class="full" style="margin:0;padding:.6rem .75rem;border:1px solid var(--warn);border-radius:.6rem;background:var(--warn-bg)">❓ ${esc(x.reviewQ)}</p>`:''}
    ${x.src==='excel'?`<p class="note full" style="margin:0">Из Excel бухгалтерии${x.xnote?`: «${esc(x.xnote)}»`:''}</p>`:''}
-   <label class="f full">Статья<select id="fi_a">${opts.map(o=>`<option ${o===cur?'selected':''}>${esc(o)}</option>`).join('')}</select></label>
+   <div class="f full"><label class="f" style="margin:0" for="fi_a">Статья</label><select id="fi_a">${opts.map(o=>`<option ${o===cur?'selected':''}>${esc(o)}</option>`).join('')}</select>${inc?'':`<span class="note" data-cnote style="display:block;margin-top:.25rem">${esc(catNote(cur))}</span><span data-cnew hidden style="display:grid;gap:.4rem;margin-top:.5rem;padding:.6rem;border:1px dashed var(--line);border-radius:.6rem"><input type="text" data-cn maxlength="40" placeholder="Название статьи"><input type="text" data-cc maxlength="160" placeholder="Комментарий: что относится к этой статье"><button class="btn sm" type="button" data-cadd>Добавить статью</button></span>`}</div>
    ${sug.length?`<div class="full chips" style="margin:0">Подсказка: ${sug.map(g=>`<button class="chip" type="button" data-fsug="${esc(g)}">${esc(g)}</button>`).join('')}</div>`:''}
    <label class="f">Сумма, ₺<input type="number" id="fi_s" min="0" step="1" value="${+x.sum||0}" required></label>
    <label class="f">Дата<input type="date" id="fi_d" value="${esc(x.date||today())}" required></label>
    <label class="f">Способ<select id="fi_m">${methodOpts(x.method||'cash')}</select></label>
    <label class="f full">Пояснение<input type="text" id="fi_n" maxlength="300" value="${esc(inc?(x.what||''):[x.item,x.note].filter(Boolean).join(' · '))}" placeholder="${inc?'за что получили':'на что потратили, кому'}"></label>
    <div class="acts full"><button class="btn gold" type="submit" data-fok="1">Подтвердить</button><button class="btn" type="submit" data-fok="0">Сохранить, разберу позже</button><button class="btn danger" type="button" data-fdel>Удалить</button></div></form>`);
-  ovBindClose(host);let okFlag=true;
+  ovBindClose(host);let okFlag=true;if(!inc)bindCatPicker(host,'fi_a');
   host.querySelectorAll('[data-fsug]').forEach(b=>b.addEventListener('click',()=>{const sel=$('#fi_a',host);if(![...sel.options].some(o=>o.value===b.dataset.fsug)){const o=document.createElement('option');o.textContent=b.dataset.fsug;sel.prepend(o)}sel.value=b.dataset.fsug}));
   host.querySelectorAll('[data-fok]').forEach(b=>b.addEventListener('click',()=>{okFlag=b.dataset.fok==='1'}));
   host.querySelector('[data-fdel]').addEventListener('click',async e=>{const b=e.currentTarget;if(!b.dataset.sure){b.dataset.sure=1;b.textContent='Точно удалить?';return}if(await write(()=>DB.doc(S.ov.col+'/'+x.id).delete(),'Удалено: '+cur+' · '+lira(x.sum)))ovClose()});
   $('#finf',host).addEventListener('submit',async e=>{e.preventDefault();const a=$('#fi_a',host).value,sum=Math.max(0,+$('#fi_s',host).value||0),date=$('#fi_d',host).value,method=$('#fi_m',host).value,n=$('#fi_n',host).value.trim();
+    if(a===NEWCAT){toast('Сначала добавьте статью или выберите из списка');return}
     if(okFlag&&!n&&x.review){toast('Добавьте пояснение');return}
     const rv=okFlag?{review:false,reviewedBy:ME||null,reviewedAt:new Date().toISOString()}:{review:!!x.review};
     const base=Object.fromEntries(Object.entries(x).filter(([k])=>k!=='id'));
@@ -1596,15 +1610,15 @@ function sfinDrawer(){const host=$('#ovHost'),sale=S.ov.col==='shopsales',x=(sal
     if(await write(()=>DB.doc(S.ov.col+'/'+x.id).set(d),'Магазин · '+(ok?'подтверждено ':'сохранено ')+lira(sum)))ovClose()})}
 function expDrawer(){const host=$('#ovHost'),boss=S.ov.type==='boss';
   host.innerHTML=ovShell(boss?'Дивиденды':'Расход',boss?'изъятие владельцем — не расход клуба, но уменьшает кассу':'',`<form class="card form" id="xf">
-    ${boss?'':`<label class="f full">На что<select id="x_c">${ECATS.map(c=>`<option>${c}</option>`).join('')}</select></label>`}
+    ${boss?'':`<div class="f full"><label class="f" style="margin:0" for="x_c">Статья расхода</label>${catPicker('x_c',ECATS[0])}</div>`}
     <label class="f">Сумма, ₺<input type="number" id="x_s" min="0" step="10" required></label><label class="f">${boss?'Откуда':'Оплата'}<select id="x_m">${methodOpts('cash')}</select></label>
     ${boss?'':`<label class="f" id="x_il">Что купили<input type="text" id="x_i" maxlength="120" placeholder="перчатки, лапы, лампы, моющее…"></label><label class="f" id="x_ql">Количество<input type="text" id="x_q" maxlength="30" placeholder="10 шт"></label>`}
     <label class="f">Дата<input type="date" id="x_d" value="${today()}"></label><label class="f">Комментарий<input type="text" id="x_n" maxlength="200"></label>
     ${boss?'':'<label class="f full">Чек или счёт · фото (по желанию)<input type="file" id="x_r" accept="image/*,application/pdf"></label><p class="note full" style="margin:0" id="x_hint" hidden>Товар для продажи в зале лучше провести через Касса → «Приход товара»: остаток увеличится сам.</p>'}
     <div class="acts full"><button class="btn gold" type="submit">${boss?'Записать':'Записать расход'}</button></div></form>`);
   ovBindClose(host);
-  const xc=$('#x_c',host);if(xc){const tg=()=>{const b=BUYCATS.includes(xc.value);$('#x_il',host).hidden=!b;$('#x_ql',host).hidden=!b;$('#x_hint',host).hidden=xc.value!=='Закупка · что купили'};xc.addEventListener('change',tg);tg()}
-  $('#xf',host).addEventListener('submit',async e=>{e.preventDefault();const sum=Math.round(+$('#x_s',host).value||0);if(sum<=0){toast('Укажите сумму');return}
+  bindCatPicker(host,'x_c');const xc=$('#x_c',host);if(xc){const tg=()=>{const b=BUYCATS.includes(xc.value);$('#x_il',host).hidden=!b;$('#x_ql',host).hidden=!b;$('#x_hint',host).hidden=xc.value!=='Закупка · что купили'};xc.addEventListener('change',tg);tg()}
+  $('#xf',host).addEventListener('submit',async e=>{e.preventDefault();const sum=Math.round(+$('#x_s',host).value||0);if(sum<=0){toast('Укажите сумму');return}if(xc&&xc.value===NEWCAT){toast('Сначала добавьте статью или выберите из списка');return}
     const d={date:$('#x_d',host).value||today(),sum,method:$('#x_m',host).value,note:$('#x_n',host).value.trim(),by:ME||null,ts:new Date().toISOString()};
     if(boss){if(await write(()=>DB.collection('expenses').doc().set({...d,kind:'owner',cat:'Дивиденды'}),'Дивиденды: '+lira(sum)))ovClose();return}
     const buy=BUYCATS.includes(xc.value);let receipt=null;const fl=$('#x_r',host).files[0];
