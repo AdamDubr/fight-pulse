@@ -149,6 +149,23 @@ label.f{display:flex;flex-direction:column;gap:.25rem;font-size:.74rem;font-weig
 .bar .track{grid-column:1/-1;height:.5rem;border-radius:1rem;background:var(--line);overflow:hidden}
 .bar .track i{display:block;height:100%;background:var(--gold)}
 .tbl{width:100%;border-collapse:collapse;font-size:.84rem}
+.pvb{position:fixed;inset:0;z-index:90;background:rgba(0,0,0,.62);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:1rem;animation:pvf .18s ease-out}
+.pvm{position:relative;width:min(58rem,100%);max-height:calc(100vh - 2rem);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:1.1rem;box-shadow:0 24px 80px rgba(0,0,0,.45);display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);animation:pvz .26s cubic-bezier(.2,.9,.3,1.2)}
+.pvm .ph{background:#fff;display:flex;align-items:center;justify-content:center;min-height:22rem;cursor:zoom-in}
+.pvm .ph img{width:100%;height:100%;max-height:34rem;object-fit:contain;padding:1.2rem;transition:transform .3s}
+.pvm .ph.zm{cursor:zoom-out}.pvm .ph.zm img{transform:scale(1.7)}
+.pvm .in{padding:1.4rem 1.4rem 1.2rem;display:flex;flex-direction:column;gap:.7rem}
+.pvm .x{position:absolute;top:.7rem;right:.7rem;z-index:2;width:2.2rem;height:2.2rem;border-radius:50%;border:1px solid var(--line);background:var(--panel);color:var(--fg);font-size:1.1rem;cursor:pointer}
+.pvm .tg{display:flex;gap:.4rem;flex-wrap:wrap}.pvm .tg span{font-size:.66rem;font-weight:800;letter-spacing:.08em;padding:.25rem .5rem;border-radius:.35rem;background:var(--panel-2);border:1px solid var(--line);color:var(--muted)}
+.pvm h3{margin:0;font-size:1.3rem;line-height:1.25}
+.pvm .rt{display:flex;align-items:center;gap:.5rem;font-size:.8rem;color:var(--muted)}.pvm .rt .stars{color:var(--gold);letter-spacing:.1em;font-size:1rem}.pvm .rt .stars.e{color:var(--line-2,#555)}
+.pvm .big{font-size:1.7rem;font-weight:800}.pvm .big.z{font-size:1rem;color:var(--muted);font-weight:600}
+.pvm dl{display:grid;grid-template-columns:auto 1fr;gap:.35rem 1rem;margin:0;font-size:.84rem}.pvm dt{color:var(--muted)}.pvm dd{margin:0;font-weight:600}
+.pvm .ds{font-size:.88rem;line-height:1.55;color:var(--fg);white-space:pre-line}
+.pvm .ac{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:auto;padding-top:.4rem}
+@keyframes pvf{from{opacity:0}to{opacity:1}}@keyframes pvz{from{opacity:0;transform:scale(.86) translateY(14px)}to{opacity:1;transform:none}}
+@media (max-width:760px){.pvm{grid-template-columns:1fr}.pvm .ph{min-height:16rem}.pvm .ph img{max-height:22rem}}
+@media (prefers-reduced-motion:reduce){.pvb,.pvm{animation:none}}
 .pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(13.5rem,1fr));gap:.9rem}
 .pgh{grid-column:1/-1;display:flex;align-items:baseline;gap:.5rem;margin:.8rem 0 -.2rem;font-weight:800;font-size:.95rem;letter-spacing:.01em}.pgh:first-child{margin-top:0}.pgh small{color:var(--muted);font-weight:500}
 .pc{display:flex;flex-direction:column;background:var(--panel-2);border:1px solid var(--line);border-radius:.9rem;overflow:hidden;cursor:pointer;text-align:left;padding:0;color:inherit;font:inherit;transition:transform .15s,border-color .15s,box-shadow .15s}
@@ -1233,8 +1250,27 @@ const pfind=(list,q)=>{q=String(q||'').trim().toLowerCase();return!q?list:list.f
 const psorted=list=>list.slice().sort((a,b)=>PCOLL.compare(PCATS.indexOf(a.cat)+'|'+(a.sub||'яяя')+'|'+a.name,PCATS.indexOf(b.cat)+'|'+(b.sub||'яяя')+'|'+b.name));
 function pgrouped(list,row,head){let last='',out='';for(const p of psorted(list)){const g=p.cat+(p.sub?' · '+p.sub:'');if(g!==last){out+=head(g,list.filter(x=>x.cat+(x.sub?' · '+x.sub:'')===g).length);last=g}out+=row(p)}return out}
 const pcard=p=>{const st=+p.stock||0,cls=st<=0?'no':lowStock(p)?'lo':'ok',stt=st<=0?'нет в наличии':lowStock(p)?'мало · '+st:'в наличии · '+st;
-  return`<button class="pc" type="button" data-prod="${p.id}"><div class="im">${p.photo?`<img src="/_blob/${esc(p.photo)}" alt="${esc(p.name)}" loading="lazy">`:'<span class="no">нет фото</span>'}${p.brand?`<span class="bd">${esc(p.brand)}</span>`:''}<span class="st ${cls}">${stt}</span></div>
+  return`<button class="pc" type="button" data-pvo="${p.id}"><div class="im">${p.photo?`<img src="/_blob/${esc(p.photo)}" alt="${esc(p.name)}" loading="lazy">`:'<span class="no">нет фото</span>'}${p.brand?`<span class="bd">${esc(p.brand)}</span>`:''}<span class="st ${cls}">${stt}</span></div>
   <div class="tx"><span class="nm2">${esc(p.name)}</span>${[p.sizes,p.sku].filter(Boolean).length?`<span class="mt">${[p.sizes,p.sku].filter(Boolean).map(esc).join(' · ')}</span>`:''}<span class="pr">${+p.price?`<b>${lira(p.price)}</b>`:'<b class="z">цена не указана</b>'}<span>${esc(p.unit||'шт')}</span></span></div></button>`};
+function prodView(id){const p=S.products.find(x=>x.id===id);if(!p)return;let host=$('#pvHost');if(!host){host=document.createElement('div');host.id='pvHost';document.body.appendChild(host)}
+  const st=+p.stock||0,sold=S.payments.filter(x=>payKind(x)==='shop').reduce((a,x)=>a+(x.items||[]).filter(i=>i.pid===p.id).reduce((b,i)=>b+(+i.qty||0),0),0);
+  const rv=Array.isArray(p.reviews)?p.reviews:[],avg=rv.length?rv.reduce((a,r)=>a+(+r.stars||0),0)/rv.length:0,stars=n=>'★★★★★'.slice(0,Math.round(n))+'☆☆☆☆☆'.slice(0,5-Math.round(n));
+  host.innerHTML=`<div class="pvb" role="dialog" aria-modal="true" aria-label="${esc(p.name)}"><div class="pvm"><button class="x" type="button" data-pvx aria-label="Закрыть">✕</button>
+   <div class="ph" data-pvz>${p.photo?`<img src="/_blob/${esc(p.photo)}" alt="${esc(p.name)}">`:'<span style="color:#999">нет фото</span>'}</div>
+   <div class="in"><div class="tg">${[p.brand,p.sub||p.cat].filter(Boolean).map(x=>`<span>${esc(x)}</span>`).join('')}</div>
+    <h3>${esc(p.name)}</h3>
+    <div class="rt">${rv.length?`<span class="stars">${stars(avg)}</span><b>${avg.toFixed(1)}</b> · ${rv.length} отз.`:'<span class="stars e">☆☆☆☆☆</span>Отзывов пока нет'}${sold?` · продано ${sold} ${esc(p.unit||'шт')}`:''}</div>
+    <div class="big ${+p.price?'':'z'}">${+p.price?lira(p.price):'Цена не указана'}</div>
+    <div><span class="pill ${st<=0?'bad':lowStock(p)?'warn':'ok'}">${st<=0?'Нет в наличии':lowStock(p)?'Мало · '+st+' '+esc(p.unit||'шт'):'В наличии · '+st+' '+esc(p.unit||'шт')}</span></div>
+    <dl>${[['Артикул',p.sku],['Размеры',p.sizes],['Бренд',p.brand],['Категория',p.cat+(p.sub?' · '+p.sub:'')],['Единица',p.unit]].filter(r=>r[1]).map(([a,b])=>`<dt>${a}</dt><dd>${esc(b)}</dd>`).join('')}</dl>
+    ${p.desc?`<div class="ds">${esc(p.desc)}</div>`:''}
+    <div class="ac"><button class="btn gold" type="button" data-pvs ${st>0?'':'disabled'}>Продать</button><button class="btn w-only" type="button" data-pve>Изменить</button></div></div></div></div>`;
+  const close=()=>{host.innerHTML='';document.removeEventListener('keydown',esc_)},esc_=e=>{if(e.key==='Escape')close()};document.addEventListener('keydown',esc_);
+  host.querySelector('.pvb').addEventListener('click',e=>{if(e.target.classList.contains('pvb'))close()});host.querySelector('[data-pvx]').addEventListener('click',close);
+  const z=host.querySelector('[data-pvz]');z.addEventListener('click',()=>z.classList.toggle('zm'));
+  host.querySelector('[data-pve]').addEventListener('click',()=>{close();S.ov={type:'prod',id:p.id};renderOv()});
+  host.querySelector('[data-pvs]').addEventListener('click',()=>{close();S.cart={[p.id]:1};S.ov={type:'sale',kind:'shop'};renderOv()});
+  host.querySelector('[data-pvx]').focus()}
 function shopPart(mode){const P=psorted(S.products);const PV=S.pview||(()=>{try{return localStorage.getItem('mowgli.pview')}catch(e){return null}})()||'grid';
   return`${mode==='stock'?`<section class="card"><div class="head" style="align-items:center"><h2>Товары и остатки</h2><button class="btn gold sm w-only" type="button" data-pnew="1">+ Товар</button></div>
     <div class="chips" style="margin:.2rem 0 .6rem">${['Все',...PCATS.filter(c=>S.products.some(p=>p.cat===c))].map(c=>`<button class="chip" type="button" data-pcat="${esc(c)}" aria-pressed="${(S.pcat||'Все')===c}">${esc(c)} <small>${c==='Все'?S.products.length:S.products.filter(p=>p.cat===c).length}</small></button>`).join('')}</div>
@@ -1411,6 +1447,7 @@ function bindMods(v){
     const mid=$('#s_m',v).value,m=S.members.find(x=>x.id===mid),sum=items.reduce((a,i)=>a+i.qty*i.price,0);
     const ok=await write(()=>DB.collection('payments').doc().set({kind:'shop',items,mid:mid||null,name:m?m.name:'Гость',sum,date:today(),ts:new Date().toISOString(),method:$('#s_pm',v).value,what:'Магазин',src:'pit'}),'Продано на '+lira(sum)+': '+items.map(i=>i.name+' × '+i.qty).join(', '));
     if(ok){for(const i of items){const p=S.products.find(x=>x.id===i.pid);await write(()=>DB.doc('products/'+i.pid).update({stock:Math.max(0,(+p.stock||0)-i.qty)}))}S.cart={};render()}});
+  v.querySelectorAll('[data-pvo]').forEach(b=>b.addEventListener('click',()=>prodView(b.dataset.pvo)));
   v.querySelectorAll('[data-pview]').forEach(b=>b.addEventListener('click',()=>{S.pview=b.dataset.pview;try{localStorage.setItem('mowgli.pview',S.pview)}catch(e){}render()}));
   v.querySelectorAll('[data-pcat]').forEach(b=>b.addEventListener('click',()=>{S.pcat=b.dataset.pcat;render()}));
   const pq=$('#pq',v);if(pq)pq.addEventListener('input',()=>{S.pq=pq.value;render();const j=$('#pq');if(j){j.focus();j.setSelectionRange(j.value.length,j.value.length)}});
