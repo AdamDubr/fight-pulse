@@ -130,7 +130,7 @@ async function autoVerify(env, f, lead) {
 // Регистрация в один шаг (решение 23.10.2026): одна анкета → сразу карточка бойца в CRM (найденная по e-mail/телефону или новая),
 // доступ к Залу, расписанию, всем функциям и My PIT World. Клуб видит новую заявку в CRM; медали и правки анкеты по-прежнему проверяет админ.
 async function autoActivate(env, f, email, opts) {
-  if (!f || (f.verified && f.mid && f.ver_by && f.ver_by !== 'pro')) return false;
+  if (!f || (f.verified && f.mid && !needsAnketa(f))) return false;
   let d; try { d = JSON.parse(f.data) } catch (e) { return false }
   if (!d.consentData || !d.first || !d.last) return false;
   const lead = f.lead ? await getDoc(env, 'leads', f.lead) : null;
@@ -663,6 +663,16 @@ export async function reviewRoutes(req, env, path, me) {
     return json({ error: 'bad_action' }, 400);
   }
 
+  // разовая активация всех, кто застрял на старом пути (регистрация → одобрение → вторая анкета)
+  if (path === '/api/review/activate' && req.method === 'POST') {
+    const fs = await env.DB.prepare('SELECT * FROM fighters WHERE club=?').bind(club).all(), done = [], skip = [];
+    for (const f of fs.results || []) {
+      if (f.verified && f.mid && !needsAnketa(f)) continue;
+      let nm = f.email; try { const d = JSON.parse(f.data); nm = `${d.first || ''} ${d.last || ''}`.trim() || f.email } catch (e) { }
+      if (await autoActivate(env, f, f.email)) done.push({ name: nm, mid: f.mid }); else skip.push(nm);
+    }
+    return json({ ok: true, done, skip });
+  }
   // пригласить бойцов клуба в My PIT: анкета создаётся из карточки CRM (данные клуба уже подтверждены)
   if (path === '/api/review/invite' && req.method === 'POST') {
     const b = await req.json().catch(() => ({}));
