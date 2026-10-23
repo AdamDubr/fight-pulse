@@ -186,6 +186,9 @@ label.f{display:flex;flex-direction:column;gap:.25rem;font-size:.74rem;font-weig
 .msbar{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin-bottom:.9rem}
 .mssec{display:flex;align-items:baseline;gap:.6rem;margin:1.3rem 0 .7rem;font-weight:900;font-size:1.05rem;letter-spacing:.06em;text-transform:uppercase}.mssec:first-child{margin-top:.2rem}.mssec::after{content:"";flex:1;height:1px;background:var(--line);align-self:center}.mssec small{color:var(--muted);font-weight:600;letter-spacing:0;text-transform:none;font-size:.78rem}
 .ms .pc .bd.mw{background:#fff;color:#000}
+.szb{margin-top:.2rem}.szb summary{cursor:pointer;font-weight:700;font-size:.84rem;padding:.45rem .7rem;border:1px solid var(--line);border-radius:.6rem;display:inline-flex;gap:.4rem;align-items:center;list-style:none}.szb summary::-webkit-details-marker{display:none}.szb[open] summary{border-color:var(--gold)}
+.sztb{width:100%;border-collapse:collapse;font-size:.78rem;margin-top:.6rem}.sztb th,.sztb td{padding:.35rem .4rem;border-bottom:1px solid var(--line);text-align:center;white-space:nowrap}.sztb th{font-size:.64rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}.sztb td:first-child{font-weight:800;text-align:left}
+.szb h4{margin:.8rem 0 0;font-size:.78rem;letter-spacing:.06em;text-transform:uppercase}
 .msrow{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(12.5rem,14rem);gap:.8rem;overflow-x:auto;padding:.1rem .1rem .7rem;scroll-snap-type:x proximity;scrollbar-width:thin}
 .msrow>.pc{scroll-snap-align:start}
 .mssec .more{margin-left:auto;order:3;font-size:.74rem;font-weight:700;letter-spacing:.04em;text-transform:none;background:none;border:1px solid var(--line);color:var(--fg);border-radius:2rem;padding:.25rem .7rem;cursor:pointer}.mssec .more:hover{border-color:#fff}
@@ -1354,6 +1357,14 @@ function bindOrders(v){
     if(ok){for(const i of items){const p=S.products.find(x=>x.id===i.pid);if(p)await write(()=>DB.doc('products/'+p.id).update({stock:Math.max(0,(+p.stock||0)-i.qty)}))}
       await ordSet(o,{status:'done',doneAt:new Date().toISOString()},`Заказ №${o.no} закрыт`);S.oform=null;render()}}));
 }
+/* --- размерные сетки: ориентир по международным стандартам спортивной одежды (EN 13402, обхваты тела в см) --- */
+const SZ_TOP={t:'Верх: рашгард, футболка, олимпийка',h:['Размер','INT','EU','US','Обхват груди','Рост'],r:[['XS','XS','44','34','84–89','160–167'],['S','S','46','36','89–94','165–172'],['M','M','48','38','94–100','170–177'],['L','L','50','40','100–106','175–182'],['XL','XL','52','42','106–112','180–187'],['XXL','2XL','54','44','112–118','185–192'],['3XL','3XL','56','46','118–124','188–195']]};
+const SZ_BOT={t:'Низ: шорты MMA, леггинсы, брюки',h:['Размер','EU','US · талия','Обхват талии','Обхват бёдер'],r:[['XS','44','28','68–73','84–89'],['S','46','30','73–78','89–94'],['M','48','32','78–84','94–100'],['L','50','34','84–90','100–106'],['XL','52','36','90–96','106–112'],['XXL','54','38','96–102','112–118'],['3XL','56','40','102–108','118–124']]};
+const SZ_CAP={t:'Кепка',h:['Размер','Обхват головы'],r:[['One size','56–60 · регулируемая застёжка']]};
+const SZ_HOW='Как измерить: грудь — по самым выступающим точкам, лента горизонтально под мышками; талия — по самому узкому месту; бёдра — по самым выступающим точкам ягодиц. Если мерки между размерами, для рашгарда и леггинсов (компрессия) берите меньший, для шорт и костюма — больший.';
+const sizeCharts=p=>{if(p.cat!=='Одежда')return null;const sb=p.sub||'',n=p.name||'';
+  if(/Головн|Кепк/.test(sb+n))return[SZ_CAP];if(/Шорты|Леггинс/.test(n))return[SZ_BOT];if(/Комплект|костюм/i.test(sb+n))return[SZ_TOP,SZ_BOT];return[SZ_TOP]};
+const szHTML=p=>{const C=sizeCharts(p);if(!C)return'';return`<details class="szb"><summary>📏 Размерная сетка</summary>${C.map(c=>`<h4>${esc(c.t)}</h4><div class="scroll"><table class="sztb"><thead><tr>${c.h.map(x=>`<th>${x}</th>`).join('')}</tr></thead><tbody>${c.r.map(r=>`<tr>${r.map(x=>`<td>${x}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`).join('')}${C[0]!==SZ_CAP?`<p class="note" style="margin:.6rem 0 0">Обхваты тела в сантиметрах. ${SZ_HOW}</p>`:''}<p class="note" style="margin:.4rem 0 0">Ориентир по международным стандартам спортивной одежды. Точные мерки уточняйте по лекалам производителя.</p></details>`};
 function prodView(id){const p=S.products.find(x=>x.id===id);if(!p)return;let host=$('#pvHost');if(!host){host=document.createElement('div');host.id='pvHost';document.body.appendChild(host)}
   const st=+p.stock||0,sold=[...S.shopsales,...S.payments.filter(x=>payKind(x)==='shop')].reduce((a,x)=>a+(x.items||[]).filter(i=>i.pid===p.id).reduce((b,i)=>b+(+i.qty||0),0),0);
   const rv=Array.isArray(p.reviews)?p.reviews:[],avg=rv.length?rv.reduce((a,r)=>a+(+r.stars||0),0)/rv.length:0,stars=n=>'★★★★★'.slice(0,Math.round(n))+'☆☆☆☆☆'.slice(0,5-Math.round(n));
@@ -1366,6 +1377,7 @@ function prodView(id){const p=S.products.find(x=>x.id===id);if(!p)return;let hos
     <div><span class="pill ${avail(p).can?'ok':'bad'}">${avail(p).can?'В наличии':'Нет в наличии'}</span> <small class="note">на складе: ${st} ${esc(p.unit||'шт')}${st<=0&&avail(p).can?' · закупается под заказ':''}</small></div>
     <dl>${[['Гарантия',p.warranty||'не указана'],['Артикул',p.sku],['Размеры',p.sizes],['Бренд',p.brand],['Категория',p.cat+(p.sub?' · '+p.sub:'')],['Единица',p.unit]].filter(r=>r[1]).map(([a,b])=>`<dt>${a}</dt><dd>${esc(b)}</dd>`).join('')}</dl>
     ${p.desc?`<div class="ds">${esc(p.desc)}</div>`:''}
+    ${szHTML(p)}
     <div class="ac">${st>0?'<button class="btn gold" type="button" data-pvc>В корзину</button><button class="btn" type="button" data-pvs>Продать сейчас</button>':''}<button class="btn ${st>0?'':'gold'}" type="button" data-pvo2 ${avail(p).can?'':'disabled'}>Оформить заказ</button><button class="btn w-only" type="button" data-pve>Изменить</button></div></div></div></div>`;
   const close=()=>{host.innerHTML='';document.removeEventListener('keydown',esc_)},esc_=e=>{if(e.key==='Escape')close()};document.addEventListener('keydown',esc_);
   host.querySelector('.pvb').addEventListener('click',e=>{if(e.target.classList.contains('pvb'))close()});host.querySelector('[data-pvx]').addEventListener('click',close);
