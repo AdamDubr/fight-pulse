@@ -8,7 +8,7 @@ import { msgRoutes } from './msg.js';
 
 const ROLES = { owner: 3, admin: 2, trainer: 1 };
 // Коллекции, закрытые для тренера (касса, журнал действий)
-const FIN_COLS = new Set(['payments', 'expenses', 'audit', 'orders']);
+const FIN_COLS = new Set(['payments', 'expenses', 'audit', 'orders', 'shopsales', 'shopbuys']);
 const COL_RE = /^[a-z][a-z0-9_]{0,40}$/;
 const ID_RE = /^[A-Za-z0-9_\-.~:@+]{1,200}$/;
 
