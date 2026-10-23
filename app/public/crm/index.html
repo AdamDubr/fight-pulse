@@ -1593,7 +1593,7 @@ function vReports(){const mk=monthKeys(6),kinds=['sub','trial','shop','event'],c
   const wd=[0,0,0,0,0,0,0],hr={};Object.entries(S.visits).forEach(([d,v])=>{if(daysLeft(d)<-56)return;const n=(v.ids||[]).length,w=(new Date(d+'T12:00:00').getDay()+6)%7;wd[w]+=n;Object.values(v.t||{}).forEach(t=>{const h=String(t).slice(0,2);hr[h]=(hr[h]||0)+1})});
   const wmx=Math.max(1,...wd),hk=Object.keys(hr).sort(),hmx=Math.max(1,...Object.values(hr));
   const L=S.leads,l30=L.filter(x=>daysLeft(String(x.ts).slice(0,10))>=-30),fn=[['Заявки',l30.length],['Были на пробном',l30.filter(x=>['done','bought'].includes(x.status)||x.trialPaid).length],['Купили абонемент',l30.filter(x=>x.status==='bought').length]];
-  const top={};S.payments.filter(p=>payKind(p)==='shop'&&String(p.date).startsWith(cur)).forEach(p=>(p.items||[]).forEach(i=>{top[i.name]=top[i.name]||{q:0,s:0,m:0};top[i.name].q+=i.qty;top[i.name].s+=i.qty*i.price;top[i.name].m+=i.qty*(i.price-(i.cost||0))}));
+  const top={};S.shopsales.filter(p=>String(p.date).startsWith(cur)).forEach(p=>(p.items||[]).forEach(i=>{top[i.name]=top[i.name]||{q:0,s:0,m:0};top[i.name].q+=i.qty;top[i.name].s+=i.qty*i.price;top[i.name].m+=i.qty*(i.price-(i.cost||0))}));
   const T=Object.entries(top).sort((a,b)=>b[1].s-a[1].s).slice(0,8);
   const bar=(t,v,mx,c,lab)=>`<div class="bar"><span class="t">${esc(t)}</span><span class="v num">${lab??v}</span><div class="track"><i style="width:${Math.max(2,v/mx*100)}%;${c?'background:'+c:''}"></i></div></div>`;
   const AU=Object.entries(S.audit).sort((a,b)=>b[0].localeCompare(a[0])).flatMap(([,v])=>(v.items||[]).slice().reverse()).slice(0,120);
