@@ -1166,7 +1166,7 @@ function leadDrawer(){const host=$('#ovHost'),x=S.ov.id==='new'?{status:'new',ki
 /* ---------- магазин: товары, остатки, продажи, приход ---------- */
 const PCATS=['Спортпит','Одежда','Снаряжение','Аксессуары','Бар'];
 const lowStock=p=>(+p.stock||0)<=(+p.minStock||0);
-function prodDrawer(){const host=$('#ovHost'),isNew=S.ov.id==='new',p=isNew?{cat:'Экипировка',unit:'шт',stock:0,minStock:2}:S.products.find(x=>x.id===S.ov.id);if(!p){ovClose();return}
+function prodDrawer(){const host=$('#ovHost'),isNew=S.ov.id==='new',p=isNew?{cat:'Снаряжение',unit:'шт',stock:0,minStock:2}:S.products.find(x=>x.id===S.ov.id);if(!p){ovClose();return}
   host.innerHTML=ovShell(isNew?'Новый товар':p.name,isNew?'':esc(p.cat),`<form class="card form" id="pf">
     <div class="f full" style="display:flex;gap:.9rem;align-items:center"><span id="p_ph" style="width:7rem;height:7rem;flex:none;border-radius:.6rem;border:1px solid var(--line);background:var(--panel-2) center/contain no-repeat;${p.photo?`background-image:url('/_blob/${esc(p.photo)}')`:''};display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:.8rem">${p.photo?'':'нет фото'}</span>
       <span style="display:flex;flex-direction:column;gap:.4rem"><label class="btn sm w-only" style="cursor:pointer">${p.photo?'Заменить фото':'Загрузить фото'}<input type="file" id="p_f" accept="image/*" hidden></label>${p.photo?'<button class="btn sm w-only" type="button" id="p_fx">Убрать фото</button>':''}<small class="note">JPG / PNG до 20 МБ</small></span></div>
@@ -1417,7 +1417,7 @@ function bindPick(root){root.querySelectorAll('[data-pk]').forEach(box=>{const h
      <div class="full" style="display:flex;gap:.7rem;align-items:center"><span data-nphv style="width:5rem;height:5rem;flex:none;border-radius:.55rem;border:1px dashed var(--line);background:#fff center/contain no-repeat;display:flex;align-items:center;justify-content:center;color:#999;font-size:.7rem;text-align:center">нет фото</span>
       <span style="display:flex;flex-direction:column;gap:.35rem"><label class="btn sm" style="cursor:pointer">📷 Добавить фото<input type="file" data-nph accept="image/*" capture="environment" hidden></label><small class="note">с телефона можно сразу сфотографировать</small></span></div>
      <label class="f full" style="margin:0">Название<input type="text" data-nn value="${esc(t)}"></label>
-     <label class="f" style="margin:0">Категория<select data-nc>${PCATS.map(c=>`<option ${c==='Экипировка'?'selected':''}>${c}</option>`).join('')}</select></label>
+     <label class="f" style="margin:0">Категория<select data-nc>${PCATS.map(c=>`<option ${c==='Снаряжение'?'selected':''}>${c}</option>`).join('')}</select></label>
      <label class="f" style="margin:0">Подгруппа<input type="text" data-ns list="pkn_sl"><datalist id="pkn_sl">${subs.map(x=>`<option value="${esc(x)}">`).join('')}</datalist></label>
      <label class="f" style="margin:0">Единица<input type="text" data-nu value="шт"></label><label class="f" style="margin:0">Цена продажи, ₺<input type="number" min="0" data-np></label>
      <div class="acts full" style="margin:0"><button class="btn gold sm" type="button" data-nsave>Сохранить и выбрать</button><button class="btn sm" type="button" data-nback>Назад</button></div><small class="note full">Описание, гарантию и размеры можно добавить потом: Склад → «Изменить».</small></div>`;
