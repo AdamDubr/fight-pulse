@@ -1575,7 +1575,7 @@ function finDrawer(){const host=$('#ovHost'),inc=S.ov.col==='payments',x=(inc?S.
    <label class="f">Дата<input type="date" id="fi_d" value="${esc(x.date||today())}" required></label>
    <label class="f">Способ<select id="fi_m">${methodOpts(x.method||'cash')}</select></label>
    <label class="f full">Пояснение<input type="text" id="fi_n" maxlength="300" value="${esc(inc?(x.what||''):[x.item,x.note].filter(Boolean).join(' · '))}" placeholder="${inc?'за что получили':'на что потратили, кому'}"></label>
-   <div class="acts full"><button class="btn gold" type="submit" data-fok="1">Подтвердить</button><button class="btn" type="submit" data-fok="0">Сохранить, разберу позже</button><button class="btn danger" type="button" data-fdel>Удалить</button></div></form>`);
+   <div class="acts full"><button class="btn gold" type="submit" data-fok="1">Подтвердить</button><button class="btn danger" type="button" data-fdel>Удалить</button></div></form>`);
   ovBindClose(host);let okFlag=true;if(!inc)bindCatPicker(host,'fi_a');
   host.querySelectorAll('[data-fsug]').forEach(b=>b.addEventListener('click',()=>{const sel=$('#fi_a',host);if(![...sel.options].some(o=>o.value===b.dataset.fsug)){const o=document.createElement('option');o.textContent=b.dataset.fsug;sel.prepend(o)}sel.value=b.dataset.fsug}));
   host.querySelectorAll('[data-fok]').forEach(b=>b.addEventListener('click',()=>{okFlag=b.dataset.fok==='1'}));
@@ -1600,7 +1600,7 @@ function sfinDrawer(){const host=$('#ovHost'),sale=S.ov.col==='shopsales',x=(sal
    <label class="f full">${sale?'Что продали':'Что закупили'}<input type="text" id="sf_t" maxlength="300" value="${esc(txt)}" placeholder="${sale?'футболка M × 2, вода 0,5 × 5…':'футболки M × 10…'}"></label>
    <label class="f">Сумма, ₺<input type="number" id="sf_s" min="0" value="${+x.sum||0}"></label>${sale?`<label class="f">Себестоимость, ₺<input type="number" id="sf_c" min="0" value="${+x.cost||0}"></label>`:''}
    <label class="f">Дата<input type="date" id="sf_d" value="${esc(x.date||today())}"></label><label class="f">Способ<select id="sf_m">${methodOpts(x.method||'cash')}</select></label>
-   <div class="acts full"><button class="btn gold" type="submit" data-sok="1">Подтвердить</button><button class="btn" type="submit" data-sok="0">Сохранить, разберу позже</button><button class="btn danger" type="button" data-sdel>Удалить</button></div></form>`);
+   <div class="acts full"><button class="btn gold" type="submit" data-sok="1">Подтвердить</button><button class="btn danger" type="button" data-sdel>Удалить</button></div></form>`);
   ovBindClose(host);let ok=true;host.querySelectorAll('[data-sok]').forEach(b=>b.addEventListener('click',()=>{ok=b.dataset.sok==='1'}));
   host.querySelector('[data-sdel]').addEventListener('click',async e=>{const b=e.currentTarget;if(!b.dataset.sure){b.dataset.sure=1;b.textContent='Точно удалить?';return}if(await write(()=>DB.doc(S.ov.col+'/'+x.id).delete(),'Магазин · удалено '+lira(x.sum)))ovClose()});
   $('#sff',host).addEventListener('submit',async e=>{e.preventDefault();const t=$('#sf_t',host).value.trim(),sum=Math.max(0,+$('#sf_s',host).value||0);if(ok&&!t){toast('Опишите товары');return}
