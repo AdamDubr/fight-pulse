@@ -1430,9 +1430,9 @@ function bindPick(root){root.querySelectorAll('[data-pk]').forEach(box=>{const h
       if(S.products.some(p=>p.name.toLowerCase()===name.toLowerCase())){toast('Такой товар уже есть');return}
       const ref=DB.collection('products').doc(),d={name,cat:g('[data-nc]').value,sub:g('[data-ns]').value.trim(),unit:g('[data-nu]').value.trim()||'шт',price:Math.max(0,+g('[data-np]').value||0),cost:0,stock:0,minStock:2,always:true,photo:nph};
       if(await write(()=>ref.set(d),'Товар добавлен: '+name))choose({id:ref.id,...d})})};
-  q.addEventListener('focus',()=>{on=0;draw()});q.addEventListener('input',()=>{hid.value='';on=0;draw()});
+  q.addEventListener('focus',()=>{if(L.querySelector('.pkn'))return;on=0;draw()});q.addEventListener('input',()=>{hid.value='';on=0;draw()});
   q.addEventListener('keydown',e=>{if(L.hidden)return;if(e.key==='ArrowDown'){on=Math.min(list.length-1,on+1);draw();e.preventDefault()}else if(e.key==='ArrowUp'){on=Math.max(0,on-1);draw();e.preventDefault()}else if(e.key==='Enter'&&list[on]&&!L.querySelector('.pkn')){e.preventDefault();choose(list[on])}else if(e.key==='Escape')L.hidden=true});
-  q.addEventListener('blur',()=>setTimeout(()=>{if(!box.contains(document.activeElement)){L.hidden=true;if(!hid.value){const p=S.products.find(x=>x.name===q.value);if(p)choose(p)}}},150))})}
+  q.addEventListener('blur',()=>setTimeout(()=>{if(L.querySelector('.pkn'))return;if(!box.contains(document.activeElement)){L.hidden=true;if(!hid.value){const p=S.products.find(x=>x.name===q.value);if(p)choose(p)}}},150))})}
 /* ================= MOWGLI STORE — отдельный раздел торговли и отдельный учёт ================= */
 const SCI={all:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg>',
  'Спортпит':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M8 3h8v3H8z"/><path d="M7 6h10l1 3v11a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V9z"/><path d="M9 13h6M12 10v6"/></svg>',
