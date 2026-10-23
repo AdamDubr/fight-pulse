@@ -1087,7 +1087,7 @@ function leadDrawer(){const host=$('#ovHost'),x=S.ov.id==='new'?{status:'new',ki
 }
 
 /* ---------- магазин: товары, остатки, продажи, приход ---------- */
-const PCATS=['Экипировка','Бар и вода','Спортпит','Прочее'];
+const PCATS=['Бренд Mowgli','Экипировка','Бар и вода','Спортпит','Прочее'];
 const lowStock=p=>(+p.stock||0)<=(+p.minStock||0);
 function prodDrawer(){const host=$('#ovHost'),isNew=S.ov.id==='new',p=isNew?{cat:'Экипировка',unit:'шт',stock:0,minStock:2}:S.products.find(x=>x.id===S.ov.id);if(!p){ovClose();return}
   host.innerHTML=ovShell(isNew?'Новый товар':p.name,isNew?'':esc(p.cat),`<form class="card form" id="pf">
