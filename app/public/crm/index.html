@@ -1031,7 +1031,7 @@ const ovClose=()=>{S.ov=null;$('#ovHost').innerHTML=''};
 function ovShell(title,sub,body){return`<div class="ov" data-close="1"><aside class="dr" role="dialog" aria-modal="true" aria-label="${esc(title)}">
   <div class="dr-h"><div><h1>${esc(title)}</h1>${sub?`<p class="sub">${sub}</p>`:''}</div><button class="x" data-close="1" aria-label="Закрыть">✕</button></div>${body}</aside></div>`}
 function ovBindClose(host){host.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',e=>{if(e.target===b)ovClose()}))}
-function renderOv(){if(!S.ov)return;({ssale:storeSaleDrawer,lead:leadDrawer,prod:prodDrawer,event:eventDrawer,sale:saleDrawer,exp:expDrawer,boss:expDrawer})[S.ov.type]()}
+function renderOv(){if(!S.ov)return;({fin:finDrawer,sfin:sfinDrawer,ssale:storeSaleDrawer,lead:leadDrawer,prod:prodDrawer,event:eventDrawer,sale:saleDrawer,exp:expDrawer,boss:expDrawer})[S.ov.type]()}
 
 /* ---------- журнал действий ---------- */
 let AUQ=Promise.resolve();
@@ -1240,7 +1240,10 @@ function eventDrawer(){const host=$('#ovHost'),isNew=S.ov.id==='new',e=isNew?{ty
 }
 
 /* ---------- КАССА: минимальная бухгалтерия клуба ---------- */
-const ECATS=['Нужды клуба','Закупка · что купили','Аренда','Коммунальные платежи','Зарплаты тренеров','Реклама','Прочее'];
+const ECATS=['Нужды клуба','Аренда','Коммунальные платежи','Зарплаты тренеров','Зарплата администратора','Налоги и документы','Реклама','Прочее','Закупка · что купили'];
+/* статьи дохода зала → вид оплаты */
+const IARTS=[['Абонементы · групповые','sub'],['Абонементы · индивидуальные','sub'],['Пробные занятия','trial'],['Разовые занятия','service'],['Услуги','service'],['События и семинары','event'],['Бар / вода (зал)','service'],['Прочий доход','service']];
+const TO_STORE_IN='→ Продажа товара (Mowgli Store)',TO_STORE_OUT='→ Закупка товара для магазина (Mowgli Store)',TO_OWNER='Дивиденды (владелец)';
 const BUYCATS=['Нужды клуба','Закупка · что купили'];
 const INK={sub:'Абонементы',trial:'Услуги',service:'Услуги',shop:'Товары',event:'События'};
 const isOwner=x=>x.kind==='owner';
@@ -1255,10 +1258,10 @@ function cashBal(){const s=SET(),from=cashFrom();let c=+s.cashStart||0,b=+s.bank
 function cashMonths(){return[...new Set([today().slice(0,7),...S.payments.map(p=>String(p.date).slice(0,7)),...S.expenses.map(x=>String(x.date).slice(0,7))])].filter(m=>/^\d{4}-\d\d$/.test(m)).sort().reverse()}
 function cashJournal(mk){
   const P=S.payments.filter(p=>String(p.date).startsWith(mk)).map(p=>{const k=payKind(p);return{d:p.date,ts:p.ts||'',dir:1,sum:+p.sum||0,method:p.method,
-    t:INK[k]||'Продажа',sub:[p.name,k==='sub'?(tf(p.plan)?.name||p.what):k==='shop'?(p.items||[]).map(i=>i.name+' × '+i.qty).join(', '):p.what,p.src==='maksisoft'?'из Maksisoft':'',p.credit?'смена, перенесено '+lira(p.credit):''].filter(Boolean).join(' · '),
-    del:(k==='service'||k==='shop'||k==='trial')&&p.src!=='maksisoft'?'p:'+p.id:null}});
+    t:p.art||INK[k]||'Продажа',sub:[p.name,k==='sub'?(tf(p.plan)?.name||p.what):k==='shop'?(p.items||[]).map(i=>i.name+' × '+i.qty).join(', '):p.what,p.src==='maksisoft'?'из Maksisoft':'',p.credit?'смена, перенесено '+lira(p.credit):''].filter(Boolean).join(' · '),
+    del:(k==='service'||k==='shop'||k==='trial')&&p.src!=='maksisoft'?'p:'+p.id:null,ref:'p:'+p.id,rv:!!p.review,art:p.art}});
   const E=S.expenses.filter(x=>String(x.date).startsWith(mk)).map(x=>({d:x.date,ts:x.ts||'',dir:isOwner(x)?0:-1,sum:+x.sum||0,method:x.method,
-    t:isOwner(x)?'Дивиденды':x.cat,sub:[x.item,x.qty,x.supplier,x.note].filter(Boolean).join(' · '),receipt:x.receipt,del:'e:'+x.id}));
+    t:isOwner(x)?'Дивиденды':x.cat,sub:[x.item,x.qty,x.supplier,x.note].filter(Boolean).join(' · '),receipt:x.receipt,del:'e:'+x.id,ref:'e:'+x.id,rv:!!x.review}));
   return[...P,...E].sort((a,b)=>String(b.d).localeCompare(String(a.d))||String(b.ts).localeCompare(String(a.ts)))}
 function vCash(){
   const mode='log',months=cashMonths();if(!S.month||!months.includes(S.month))S.month=months[0];
@@ -1275,6 +1278,9 @@ function vCash(){
   ${!S.ready.p?'<div class="card empty">Загружаю…</div>':`
   <section class="card cashbal"><div><h2>Сейчас в кассе</h2><p class="note" style="margin:.2rem 0 0">с ${fmtD(bal.from)} · начальный остаток — в Настройках</p></div>
     <div class="cb"><b class="num">${lira(bal.c)}</b><span>наличные</span></div><div class="cb"><b class="num">${lira(bal.b)}</b><span>карта и счёт</span></div></section>
+  ${(()=>{const R=[...S.payments.filter(p=>p.review).map(p=>({ref:'p:'+p.id,d:p.date,dir:1,sum:+p.sum||0,t:p.art||INK[payKind(p)]||'Доход',q:p.reviewQ,n:p.what||p.note})),...S.expenses.filter(x=>x.review).map(x=>({ref:'e:'+x.id,d:x.date,dir:isOwner(x)?0:-1,sum:+x.sum||0,t:isOwner(x)?'Дивиденды':x.cat,q:x.reviewQ,n:[x.item,x.note].filter(Boolean).join(' · ')}))].sort((a,b)=>String(a.d).localeCompare(String(b.d)));
+    return R.length?`<section class="card" style="border-color:var(--warn);margin-bottom:1rem"><h2 style="color:var(--warn)">⚠ Требуют внимания · ${R.length}</h2><p class="note" style="margin:.1rem 0 .7rem">Операции без точной статьи или пояснения. Откройте, выберите статью, допишите пояснение и нажмите «Подтвердить».</p>
+     <div class="list">${R.map(r=>`<div class="jr"><span class="num jd">${fmtD(r.d).slice(0,5)}</span><span class="jt"><b>${esc(r.t)}</b>${r.n?`<small>${esc(r.n)}</small>`:''}${r.q?`<small style="color:var(--warn)">❓ ${esc(r.q)}</small>`:''}</span><span class="num js ${r.dir>0?'in':'out'}">${r.dir>0?'+':'−'}${lira(r.sum)}</span><button class="btn sm gold w-only" type="button" data-jed="${r.ref}">Разобрать</button></div>`).join('')}</div></section>`:''})()}
   <div class="head" style="align-items:center"><h2>${mn} ${y}</h2><div class="acts"><select id="fm" aria-label="Месяц" style="width:auto">${months.map(m=>`<option value="${m}" ${m===mk?'selected':''}>${MONTHS[+m.slice(5)-1]} ${m.slice(0,4)}</option>`).join('')}</select><button class="btn sm" data-act="cashcsv">CSV</button></div></div>
   <div class="kpis" style="grid-template-columns:repeat(4,minmax(0,1fr))">
     <div class="kpi ok" style="cursor:default"><b>${lira(inc)}</b><span>приход · ${P.length}</span></div>
@@ -1285,9 +1291,9 @@ function vCash(){
     <section class="card"><h2>Приход</h2><div class="bars">${BI.map(([k,v])=>bar(k,v,mi,'var(--ok)')).join('')||'<div class="note">Продаж за месяц нет</div>'}</div></section>
     <section class="card"><h2>Расход</h2><div class="bars">${BE.map(([k,v])=>bar(k,v,me,'var(--bad)')).join('')||'<div class="note">Расходов за месяц нет</div>'}</div></section></div>
   <section class="card"><h2>Операции · ${J.length}</h2><div class="list">${J.map(j=>`<div class="jr"><span class="num jd">${fmtD(j.d).slice(0,5)}</span>
-      <span class="jt"><b>${esc(j.t)}</b>${j.sub?`<small>${esc(j.sub)}</small>`:''}<small>${METHODS[j.method]||'без способа'}${j.receipt?` · <a href="/_blob/${esc(j.receipt)}" target="_blank" rel="noopener">чек</a>`:''}</small></span>
+      <span class="jt"><b>${esc(j.t)}</b>${j.rv?' <span class="pill warn">требует внимания</span>':''}${j.sub?`<small>${esc(j.sub)}</small>`:''}<small>${METHODS[j.method]||'без способа'}${j.receipt?` · <a href="/_blob/${esc(j.receipt)}" target="_blank" rel="noopener">чек</a>`:''}</small></span>
       <span class="num js ${j.dir>0?'in':j.dir<0?'out':'own'}">${j.dir>0?'+':'−'}${lira(j.sum)}</span>
-      ${j.del?`<button class="btn sm w-only" type="button" data-jdel="${j.del}" aria-label="Удалить">✕</button>`:'<span></span>'}</div>`).join('')||'<div class="empty">Операций за месяц нет</div>'}</div></section>`}`}
+      <button class="btn sm w-only" type="button" data-jed="${j.ref}">Изменить</button></div>`).join('')||'<div class="empty">Операций за месяц нет</div>'}</div></section>`}`}
 const pthumb=p=>p.photo?`<img src="/_blob/${esc(p.photo)}" alt="" loading="lazy" style="width:2.6rem;height:2.6rem;flex:none;object-fit:contain;border-radius:.4rem;border:1px solid var(--line);background:#fff">`:`<span style="width:2.6rem;height:2.6rem;flex:none;border-radius:.4rem;border:1px dashed var(--line)"></span>`;
 const PCOLL=new Intl.Collator('ru',{numeric:true});
 const pmeta=p=>[p.brand,p.sku,p.sizes].filter(Boolean).map(esc).join(' · ');
@@ -1463,12 +1469,13 @@ function storeSales(){const months=[...new Set([today().slice(0,7),...S.shopsale
   const SS=S.shopsales.filter(x=>String(x.date).startsWith(mk)),SB=S.shopbuys.filter(x=>String(x.date).startsWith(mk)),sm=a=>a.reduce((t,x)=>t+(+x.sum||0),0);
   const rev=sm(SS),cogs=SS.reduce((t,x)=>t+(+x.cost||0),0),buys=sm(SB);
   let cash=0,bank=0;S.shopsales.forEach(x=>{const a=accOf(x.method);if(a==='cash')cash+=+x.sum||0;else if(a)bank+=+x.sum||0});S.shopbuys.forEach(x=>{const a=accOf(x.method);if(a==='cash')cash-=+x.sum||0;else if(a)bank-=+x.sum||0});
-  const J=[...SS.map(x=>({d:x.date,ts:x.ts||'',dir:1,sum:+x.sum||0,t:(x.items||[]).map(i=>i.name+' × '+i.qty).join(', '),sub:(x.name||'Гость')+(x.src==='online'?' · онлайн':x.oid?' · по заказу':''),m:x.method})),...SB.map(x=>({d:x.date,ts:x.ts||'',dir:-1,sum:+x.sum||0,t:'Закупка: '+(x.item||'')+(x.qty?' × '+x.qty:''),sub:[x.supplier,x.note].filter(Boolean).join(' · ')||'приход товара',m:x.method}))].sort((a,b)=>String(b.d).localeCompare(String(a.d))||String(b.ts).localeCompare(String(a.ts)));
+  const J=[...SS.map(x=>({ref:'shopsales:'+x.id,rv:!!x.review,d:x.date,ts:x.ts||'',dir:1,sum:+x.sum||0,t:(x.items||[]).map(i=>i.name+' × '+i.qty).join(', '),sub:(x.name||'Гость')+(x.src==='online'?' · онлайн':x.oid?' · по заказу':''),m:x.method})),...SB.map(x=>({ref:'shopbuys:'+x.id,rv:!!x.review,d:x.date,ts:x.ts||'',dir:-1,sum:+x.sum||0,t:'Закупка: '+(x.item||'')+(x.qty?' × '+x.qty:''),sub:[x.supplier,x.note].filter(Boolean).join(' · ')||'приход товара',m:x.method}))].sort((a,b)=>String(b.d).localeCompare(String(a.d))||String(b.ts).localeCompare(String(a.ts)));
   const tile=(t,v,sub,c)=>`<div class="kpi" style="border-left:3px solid ${c}"><span style="font-size:.7rem;letter-spacing:.12em;text-transform:uppercase">${t}</span><b style="color:${c}">${v}</b><span>${sub}</span></div>`;
   return`<section class="card"><div class="head" style="align-items:center"><h2>Учёт магазина · ${MONTHS[+mo-1]} ${y}</h2><select id="smon" style="width:auto">${months.map(k=>`<option value="${k}" ${k===mk?'selected':''}>${MONTHS[+k.slice(5)-1]} ${k.slice(0,4)}</option>`).join('')}</select></div>
    <div class="kpis" style="grid-template-columns:repeat(4,minmax(0,1fr))">${tile('Выручка',lira(rev),SS.length+' продаж','var(--ok)')}${tile('Себестоимость проданного',lira(cogs),'по цене закупки','var(--muted)')}${tile('Валовая прибыль',lira(rev-cogs),rev?Math.round((rev-cogs)/rev*100)+'% наценка в выручке':'—','var(--gold)')}${tile('Закупки',lira(buys),SB.length+' приходов','var(--bad)')}</div>
    <p class="note" style="margin:.8rem 0">Деньги магазина за всё время (продажи − закупки): наличные <b>${lira(cash)}</b> · безнал <b>${lira(bank)}</b>. Касса зала эти суммы не учитывает.</p>
-   <div class="list">${J.map(j=>`<div class="row" style="grid-template-columns:minmax(0,1fr) auto;cursor:default"><span class="nm">${esc(j.t)}<small>${fmtD(j.d)} · ${esc(j.sub)} · ${METHODS[j.m]||'—'}</small></span><span class="num" style="color:${j.dir>0?'var(--ok)':'var(--bad)'};font-weight:700">${j.dir>0?'+':'−'}${lira(j.sum)}</span></div>`).join('')||'<div class="empty">За этот месяц продаж и закупок нет.</div>'}</div></section>`}
+   ${(()=>{const n=[...S.shopsales,...S.shopbuys].filter(x=>x.review).length;return n?`<p style="margin:.4rem 0 .8rem;padding:.6rem .75rem;border:1px solid var(--warn);border-radius:.6rem;background:var(--warn-bg)">⚠ Требуют внимания: <b>${n}</b> — нажмите «Изменить» у отмеченных операций и укажите товары.</p>`:''})()}
+   <div class="list">${J.map(j=>`<div class="row" style="grid-template-columns:minmax(0,1fr) auto auto;cursor:default"><span class="nm">${esc(j.t)}${j.rv?' <span class="pill warn">требует внимания</span>':''}<small>${fmtD(j.d)} · ${esc(j.sub)} · ${METHODS[j.m]||'—'}</small></span><span class="num" style="color:${j.dir>0?'var(--ok)':'var(--bad)'};font-weight:700">${j.dir>0?'+':'−'}${lira(j.sum)}</span><button class="btn sm w-only" type="button" data-sed="${j.ref}">Изменить</button></div>`).join('')||'<div class="empty">За этот месяц продаж и закупок нет.</div>'}</div></section>`}
 function storeSaleDrawer(){const host=$('#ovHost'),cart=S.cart||{};const items=Object.entries(cart).map(([id,q])=>({p:S.products.find(x=>x.id===id),q})).filter(x=>x.p&&x.q>0),tot=items.reduce((a,x)=>a+x.q*(+x.p.price||0),0);
   host.innerHTML=ovShell('Продажа · Mowgli Store','учёт магазина',`<section class="card"><div class="list">${items.map(({p,q})=>`<div class="row" style="grid-template-columns:auto minmax(0,1fr) auto auto auto;cursor:default">${pthumb(p)}<span class="nm">${esc(p.name)}<small>${lira(p.price)} · на складе ${+p.stock||0}</small></span><button class="btn sm" type="button" data-ssub="${p.id}">−</button><span class="num" style="min-width:1.4rem;text-align:center">${q}</span><button class="btn sm" type="button" data-sadd="${p.id}" ${q>=(+p.stock||0)?'disabled':''}>+</button></div>`).join('')||'<div class="empty">Корзина пуста — добавьте товары на витрине.</div>'}</div></section>
    ${items.length?`<form class="card form" id="ssf"><h2 class="full">Итого · ${lira(tot)}</h2><label class="f">Покупатель<select id="ss_m">${memOpts('','Гость')}</select></label><label class="f">Оплата<select id="ss_pm">${methodOpts('cash')}</select></label><div class="acts full"><button class="btn gold" type="submit">Продать · ${lira(tot)}</button></div></form>`:''}`);
@@ -1486,6 +1493,7 @@ function bindStore(v){
   const mwb=v.querySelector('[data-smw]');if(mwb)mwb.addEventListener('click',()=>{S.smw=!S.smw;render()});
   const q=$('#sq2',v);if(q)q.addEventListener('input',()=>{S.sq2=q.value;render();const j=$('#sq2');if(j){j.focus();j.setSelectionRange(j.value.length,j.value.length)}});
   const sm=$('#smon',v);if(sm)sm.addEventListener('change',()=>{S.smonth=sm.value;render()});
+  v.querySelectorAll('[data-sed]').forEach(b=>b.addEventListener('click',()=>{const [col,id]=b.dataset.sed.split(':');S.ov={type:'sfin',col,id};renderOv()}));
 }
 function inForm(P){return`<section class="card"><h2>Приход товара</h2><form class="form w-only" id="inf"><label class="f full">Товар${pickBox('id="i_p"',S.inPid)}</label>
      <label class="f">Количество<input type="number" id="i_q" min="1" value="1"></label><label class="f">Цена закупки за 1, ₺<input type="number" id="i_c" min="0" step="1"></label>
@@ -1540,6 +1548,52 @@ function saleDrawer(){const host=$('#ovHost'),k=S.ov.kind||'sub',SV=services(),c
     const mid=$('#sh_m',host).value,m=S.members.find(x=>x.id===mid),sum=its.reduce((a,i)=>a+i.qty*i.price,0);
     const ok=await write(()=>DB.collection('payments').doc().set({kind:'shop',items:its,mid:mid||null,name:m?m.name:'Гость',sum,date:today(),ts:new Date().toISOString(),method:$('#sh_pm',host).value,what:'Товары',src:'pit'}),'Продано на '+lira(sum)+': '+its.map(i=>i.name+' × '+i.qty).join(', '));
     if(ok){for(const i of its){const p=S.products.find(x=>x.id===i.pid);await write(()=>DB.doc('products/'+i.pid).update({stock:Math.max(0,(+p.stock||0)-i.qty)}))}S.cart={};ovClose()}})}
+/* --- правка любой операции кассы: статья, сумма, дата, способ, пояснение; «Подтвердить» снимает «требует внимания» --- */
+function finDrawer(){const host=$('#ovHost'),inc=S.ov.col==='payments',x=(inc?S.payments:S.expenses).find(z=>z.id===S.ov.id);if(!x){ovClose();return}
+  const cur=inc?(x.art||(IARTS.find(a=>a[1]===payKind(x))||[INK[payKind(x)]])[0]):(isOwner(x)?TO_OWNER:x.cat);
+  const opts=inc?[...IARTS.map(a=>a[0]),TO_STORE_IN]:[...ECATS,TO_OWNER,TO_STORE_OUT];if(cur&&!opts.includes(cur))opts.unshift(cur);
+  const sug=(x.suggest||[]).filter(Boolean);
+  host.innerHTML=ovShell(inc?'Приход':'Расход',x.review?'⚠ требует внимания':'проверено',`<form class="card form" id="finf">
+   ${x.reviewQ?`<p class="full" style="margin:0;padding:.6rem .75rem;border:1px solid var(--warn);border-radius:.6rem;background:var(--warn-bg)">❓ ${esc(x.reviewQ)}</p>`:''}
+   ${x.src==='excel'?`<p class="note full" style="margin:0">Из Excel бухгалтерии${x.xnote?`: «${esc(x.xnote)}»`:''}</p>`:''}
+   <label class="f full">Статья<select id="fi_a">${opts.map(o=>`<option ${o===cur?'selected':''}>${esc(o)}</option>`).join('')}</select></label>
+   ${sug.length?`<div class="full chips" style="margin:0">Подсказка: ${sug.map(g=>`<button class="chip" type="button" data-fsug="${esc(g)}">${esc(g)}</button>`).join('')}</div>`:''}
+   <label class="f">Сумма, ₺<input type="number" id="fi_s" min="0" step="1" value="${+x.sum||0}" required></label>
+   <label class="f">Дата<input type="date" id="fi_d" value="${esc(x.date||today())}" required></label>
+   <label class="f">Способ<select id="fi_m">${methodOpts(x.method||'cash')}</select></label>
+   <label class="f full">Пояснение<input type="text" id="fi_n" maxlength="300" value="${esc(inc?(x.what||''):[x.item,x.note].filter(Boolean).join(' · '))}" placeholder="${inc?'за что получили':'на что потратили, кому'}"></label>
+   <div class="acts full"><button class="btn gold" type="submit" data-fok="1">Подтвердить</button><button class="btn" type="submit" data-fok="0">Сохранить, разберу позже</button><button class="btn danger" type="button" data-fdel>Удалить</button></div></form>`);
+  ovBindClose(host);let okFlag=true;
+  host.querySelectorAll('[data-fsug]').forEach(b=>b.addEventListener('click',()=>{const sel=$('#fi_a',host);if(![...sel.options].some(o=>o.value===b.dataset.fsug)){const o=document.createElement('option');o.textContent=b.dataset.fsug;sel.prepend(o)}sel.value=b.dataset.fsug}));
+  host.querySelectorAll('[data-fok]').forEach(b=>b.addEventListener('click',()=>{okFlag=b.dataset.fok==='1'}));
+  host.querySelector('[data-fdel]').addEventListener('click',async e=>{const b=e.currentTarget;if(!b.dataset.sure){b.dataset.sure=1;b.textContent='Точно удалить?';return}if(await write(()=>DB.doc(S.ov.col+'/'+x.id).delete(),'Удалено: '+cur+' · '+lira(x.sum)))ovClose()});
+  $('#finf',host).addEventListener('submit',async e=>{e.preventDefault();const a=$('#fi_a',host).value,sum=Math.max(0,+$('#fi_s',host).value||0),date=$('#fi_d',host).value,method=$('#fi_m',host).value,n=$('#fi_n',host).value.trim();
+    if(okFlag&&!n&&x.review){toast('Добавьте пояснение');return}
+    const rv=okFlag?{review:false,reviewedBy:ME||null,reviewedAt:new Date().toISOString()}:{review:!!x.review};
+    const base=Object.fromEntries(Object.entries(x).filter(([k])=>k!=='id'));
+    if(a===TO_STORE_IN||a===TO_STORE_OUT){const ref=DB.collection(a===TO_STORE_IN?'shopsales':'shopbuys').doc();
+      const d=a===TO_STORE_IN?{items:[{name:n||'Продажа товара',qty:1,price:sum,cost:0}],name:'Гость',sum,cost:0,date,ts:x.ts||new Date().toISOString(),method,src:x.src||'cash',review:true,reviewQ:'Укажите товары и количество (перенесено из кассы зала)',xnote:x.xnote||null,by:ME||null}
+        :{date,sum,method,item:n||'Закупка товара',qty:null,cost:null,supplier:'',note:'перенесено из кассы зала',review:true,reviewQ:'Какой товар и сколько штук? (перенесено из кассы зала)',xnote:x.xnote||null,by:ME||null,ts:x.ts||new Date().toISOString()};
+      if(await write(()=>ref.set(d),'Перенесено в учёт магазина: '+lira(sum)))if(await write(()=>DB.doc(S.ov.col+'/'+x.id).delete()))ovClose();return}
+    let d;if(inc){const k=(IARTS.find(z=>z[0]===a)||[a,payKind(x)])[1];d={...base,art:a,kind:k,sum,date,method,what:n,...rv}}
+    else d={...base,cat:a===TO_OWNER?'Дивиденды':a,kind:a===TO_OWNER?'owner':(base.kind==='owner'?null:base.kind||null),sum,date,method,item:n,note:'',...rv};
+    if(await write(()=>DB.doc(S.ov.col+'/'+x.id).set(d),(okFlag?'Подтверждено: ':'Сохранено: ')+a+' · '+lira(sum)))ovClose()})}
+/* --- правка операции магазина --- */
+function sfinDrawer(){const host=$('#ovHost'),sale=S.ov.col==='shopsales',x=(sale?S.shopsales:S.shopbuys).find(z=>z.id===S.ov.id);if(!x){ovClose();return}
+  const txt=sale?(x.items||[]).map(i=>i.name+(i.qty>1?' × '+i.qty:'')).join(', '):(x.item||'');
+  host.innerHTML=ovShell(sale?'Продажа магазина':'Закупка магазина',x.review?'⚠ требует внимания':'проверено',`<form class="card form" id="sff">
+   ${x.reviewQ?`<p class="full" style="margin:0;padding:.6rem .75rem;border:1px solid var(--warn);border-radius:.6rem;background:var(--warn-bg)">❓ ${esc(x.reviewQ)}</p>`:''}
+   <label class="f full">${sale?'Что продали':'Что закупили'}<input type="text" id="sf_t" maxlength="300" value="${esc(txt)}" placeholder="${sale?'футболка M × 2, вода 0,5 × 5…':'футболки M × 10…'}"></label>
+   <label class="f">Сумма, ₺<input type="number" id="sf_s" min="0" value="${+x.sum||0}"></label>${sale?`<label class="f">Себестоимость, ₺<input type="number" id="sf_c" min="0" value="${+x.cost||0}"></label>`:''}
+   <label class="f">Дата<input type="date" id="sf_d" value="${esc(x.date||today())}"></label><label class="f">Способ<select id="sf_m">${methodOpts(x.method||'cash')}</select></label>
+   <div class="acts full"><button class="btn gold" type="submit" data-sok="1">Подтвердить</button><button class="btn" type="submit" data-sok="0">Сохранить, разберу позже</button><button class="btn danger" type="button" data-sdel>Удалить</button></div></form>`);
+  ovBindClose(host);let ok=true;host.querySelectorAll('[data-sok]').forEach(b=>b.addEventListener('click',()=>{ok=b.dataset.sok==='1'}));
+  host.querySelector('[data-sdel]').addEventListener('click',async e=>{const b=e.currentTarget;if(!b.dataset.sure){b.dataset.sure=1;b.textContent='Точно удалить?';return}if(await write(()=>DB.doc(S.ov.col+'/'+x.id).delete(),'Магазин · удалено '+lira(x.sum)))ovClose()});
+  $('#sff',host).addEventListener('submit',async e=>{e.preventDefault();const t=$('#sf_t',host).value.trim(),sum=Math.max(0,+$('#sf_s',host).value||0);if(ok&&!t){toast('Опишите товары');return}
+    const base=Object.fromEntries(Object.entries(x).filter(([k])=>k!=='id')),rv=ok?{review:false,reviewedBy:ME||null,reviewedAt:new Date().toISOString()}:{};
+    const d=sale?{...base,items:(base.items&&base.items.length>1&&t===txt)?base.items:[{name:t||'Продажа товара',qty:1,price:sum,cost:+$('#sf_c',host).value||0}],sum,cost:Math.max(0,+$('#sf_c',host).value||0),date:$('#sf_d',host).value,method:$('#sf_m',host).value,...rv}
+      :{...base,item:t,sum,date:$('#sf_d',host).value,method:$('#sf_m',host).value,...rv};
+    if(await write(()=>DB.doc(S.ov.col+'/'+x.id).set(d),'Магазин · '+(ok?'подтверждено ':'сохранено ')+lira(sum)))ovClose()})}
 function expDrawer(){const host=$('#ovHost'),boss=S.ov.type==='boss';
   host.innerHTML=ovShell(boss?'Дивиденды':'Расход',boss?'изъятие владельцем — не расход клуба, но уменьшает кассу':'',`<form class="card form" id="xf">
     ${boss?'':`<label class="f full">На что<select id="x_c">${ECATS.map(c=>`<option>${c}</option>`).join('')}</select></label>`}
@@ -1559,6 +1613,7 @@ function expDrawer(){const host=$('#ovHost'),boss=S.ov.type==='boss';
 function bindCash(v){
   v.querySelectorAll('[data-cmode]').forEach(b=>b.addEventListener('click',()=>{S.cashMode=b.dataset.cmode;render()}));
   v.querySelectorAll('[data-cash]').forEach(b=>b.addEventListener('click',()=>{const t=b.dataset.cash;S.ov=t==='sale'?{type:'sale',kind:'sub'}:{type:t};renderOv()}));
+  v.querySelectorAll('[data-jed]').forEach(b=>b.addEventListener('click',()=>{const [t,id]=b.dataset.jed.split(':');S.ov={type:'fin',col:t==='p'?'payments':'expenses',id};renderOv()}));
   v.querySelectorAll('[data-jdel]').forEach(b=>b.addEventListener('click',async()=>{if(!b.dataset.sure){b.dataset.sure='1';b.textContent='Удалить?';b.classList.add('danger');return}
     const [t,id]=b.dataset.jdel.split(':');
     if(t==='e'){const x=S.expenses.find(z=>z.id===id);await write(()=>DB.doc('expenses/'+id).delete(),'Удалено: '+(x?(x.cat+' · '+lira(x.sum)):'расход'))}
