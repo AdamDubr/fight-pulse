@@ -130,7 +130,7 @@ async function autoVerify(env, f, lead) {
 // Регистрация в один шаг (решение 23.10.2026): одна анкета → сразу карточка бойца в CRM (найденная по e-mail/телефону или новая),
 // доступ к Залу, расписанию, всем функциям и My PIT World. Клуб видит новую заявку в CRM; медали и правки анкеты по-прежнему проверяет админ.
 async function autoActivate(env, f, email, opts) {
-  if (!f || (f.verified && f.mid && !needsAnketa(f))) return false;
+  if (!f || f.ver_by === 'off' || (f.verified && f.mid && !needsAnketa(f))) return false;
   let d; try { d = JSON.parse(f.data) } catch (e) { return false }
   if (!d.consentData || !d.first || !d.last) return false;
   const lead = f.lead ? await getDoc(env, 'leads', f.lead) : null;
@@ -639,6 +639,13 @@ export async function reviewRoutes(req, env, path, me) {
     }
     const f = await env.DB.prepare('SELECT * FROM fighters WHERE email=? AND club=?').bind(String(b.email || ''), club).first();
     if (!f) return json({ error: 'not_found' }, 404);
+    // клуб отключает регистрацию (тест, ошибка): доступ закрыт, карточка CRM отвязана, повторной автоактивации нет
+    if (b.act === 'detach') {
+      const st = [env.DB.prepare("UPDATE fighters SET mid=NULL,verified=0,ver_by='off',ver_at=?,updated=? WHERE email=?").bind(t, t, f.email)];
+      if (f.lead) { const l = await getDoc(env, 'leads', f.lead); if (l) st.push(putDoc(env, 'leads', f.lead, { ...l, approved: false, rejected: true, status: 'lost', lostReason: note || 'Отключено клубом', mid: null }, by)) }
+      await env.DB.batch(st);
+      return json({ ok: true });
+    }
     if (b.act === 'profile_no') {
       const dd = JSON.parse(f.data); delete dd.submittedAt;
       await env.DB.prepare('UPDATE fighters SET data=?,pending=NULL,note=?,updated=? WHERE email=?').bind(JSON.stringify(dd), note || 'Изменения не подтверждены клубом', t, f.email).run();
