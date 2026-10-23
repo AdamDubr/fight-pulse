@@ -283,7 +283,7 @@ html[data-role=trainer] #ldone,html[data-role=trainer] [data-dr=askdel]{display:
 <script>
 "use strict";
 /* ===== данные: db (общая база клуба), без демо ===== */
-const S={leads:[],products:[],events:[],audit:{},settings:null,ov:null,cart:{},freezes:[],expenses:[],expOpen:false,diary:[],members:[],payments:[],visits:{},tariffs:null,ready:{m:false,p:false,v:false,t:false},tab:'today',q:'',flt:'all',ciq:'',month:null,open:null,drMode:'view',canWrite:true};
+const S={orders:[],leads:[],products:[],events:[],audit:{},settings:null,ov:null,cart:{},freezes:[],expenses:[],expOpen:false,diary:[],members:[],payments:[],visits:{},tariffs:null,ready:{m:false,p:false,v:false,t:false},tab:'today',q:'',flt:'all',ciq:'',month:null,open:null,drMode:'view',canWrite:true};
 const DEF_TARIFFS=[
  {key:'grp12',name:'Групповые · 12 занятий',price:4500,sessions:12,kind:'group',disc:['MMA','Бокс','BJJ','Кикбоксинг','Капоэйра']},
  {key:'kids12',name:'Дети MMA · 12 занятий',price:3500,sessions:12,kind:'kids',disc:['MMA']},
@@ -1138,6 +1138,7 @@ function prodDrawer(){const host=$('#ovHost'),isNew=S.ov.id==='new',p=isNew?{cat
     <label class="f">Цена закупки, ₺<input type="number" id="p_co" min="0" value="${p.cost??''}"></label>
     <label class="f">Остаток сейчас<input type="number" id="p_st" min="0" value="${+p.stock||0}"></label>
     <label class="f">Предупреждать при остатке ≤<input type="number" id="p_mi" min="0" value="${+p.minStock||0}"></label>
+    <label class="f full" style="flex-direction:row;align-items:center;gap:.5rem"><input type="checkbox" id="p_al" ${p.always!==false?'checked':''} style="width:auto"> Всегда в наличии для клиентов (закупаем под заказ)</label>
     <label class="f full">Описание<textarea id="p_d" rows="4" placeholder="Что это, для чего, особенности">${esc(p.desc||'')}</textarea></label>
     <div class="acts full"><button class="btn gold" type="submit">Сохранить</button>${isNew?'':'<button class="btn danger" type="button" data-pdel="1">Удалить товар</button>'}</div></form>`);
   ovBindClose(host);let photo=p.photo||'';
@@ -1148,7 +1149,7 @@ function prodDrawer(){const host=$('#ovHost'),isNew=S.ov.id==='new',p=isNew?{cat
       if(!isNew)await write(()=>DB.doc('products/'+p.id).update({photo}),'Фото товара: '+p.name);else toast('Фото загружено — сохраните товар')}catch(e){toast('Не удалось загрузить фото')}pf.value=''});
   const px=$('#p_fx',host);if(px)px.addEventListener('click',async()=>{photo='';setPh();if(!isNew)await write(()=>DB.doc('products/'+p.id).update({photo:''}),'Фото товара убрано: '+p.name)});
   $('#pf',host).addEventListener('submit',async e=>{e.preventDefault();const name=$('#p_n',host).value.trim();if(!name){toast('Укажите название');return}
-    const d={...(isNew?{}:Object.fromEntries(Object.entries(p).filter(([k])=>k!=='id'))),name,cat:$('#p_c',host).value,unit:$('#p_u',host).value.trim()||'шт',price:Math.max(0,+$('#p_pr',host).value||0),cost:Math.max(0,+$('#p_co',host).value||0),stock:Math.max(0,Math.round(+$('#p_st',host).value||0)),minStock:Math.max(0,Math.round(+$('#p_mi',host).value||0)),desc:$('#p_d',host).value.trim(),photo,sub:$('#p_sg',host).value.trim(),brand:$('#p_b',host).value.trim(),sku:$('#p_sku',host).value.trim(),sizes:$('#p_sz',host).value.trim()};
+    const d={...(isNew?{}:Object.fromEntries(Object.entries(p).filter(([k])=>k!=='id'))),name,cat:$('#p_c',host).value,unit:$('#p_u',host).value.trim()||'шт',price:Math.max(0,+$('#p_pr',host).value||0),cost:Math.max(0,+$('#p_co',host).value||0),stock:Math.max(0,Math.round(+$('#p_st',host).value||0)),minStock:Math.max(0,Math.round(+$('#p_mi',host).value||0)),desc:$('#p_d',host).value.trim(),photo,sub:$('#p_sg',host).value.trim(),brand:$('#p_b',host).value.trim(),sku:$('#p_sku',host).value.trim(),sizes:$('#p_sz',host).value.trim(),always:$('#p_al',host).checked};
     const ref=isNew?DB.collection('products').doc():DB.doc('products/'+p.id);
     if(await write(()=>ref.set(d),(isNew?'Товар добавлен: ':'Товар сохранён: ')+name))ovClose()});
   const del=host.querySelector('[data-pdel]');if(del)del.addEventListener('click',()=>{if(!del.dataset.sure){del.dataset.sure='1';del.textContent='Точно удалить?';return}write(()=>DB.doc('products/'+p.id).delete(),'Товар удалён: '+p.name).then(ok=>ok&&ovClose())});
@@ -1226,8 +1227,8 @@ function vCash(){
   const bar=(k,v,mx,c)=>`<div class="bar"><span class="t">${esc(k)}</span><span class="v num">${lira(v)}</span><div class="track"><i style="width:${Math.max(2,v/mx*100)}%;${c?'background:'+c:''}"></i></div></div>`;
   return`<div class="head"><div><h1>Касса</h1><p class="sub">Продажи, расходы клуба и дивиденды владельца. Всё в лирах.</p></div>
     <div class="acts w-only"><button class="btn gold" data-cash="sale">+ Продажа</button><button class="btn" data-cash="exp">+ Расход</button><button class="btn" data-cash="boss">Дивиденды</button></div></div>
-  <div class="chips">${[['log','Касса'],['stock','Товары и остатки'],['in','Приход товара']].map(([k,t])=>`<button class="chip" data-cmode="${k}" aria-pressed="${mode===k}">${t}</button>`).join('')}</div>
-  ${mode!=='log'?shopPart(mode):!S.ready.p?'<div class="card empty">Загружаю…</div>':`
+  <div class="chips">${[['log','Касса'],['orders','Заказы'],['stock','Товары и остатки'],['in','Приход товара']].map(([k,t])=>`<button class="chip" data-cmode="${k}" aria-pressed="${mode===k}">${t}${k==='orders'&&ordOpen().length?` <span class="pill ${S.orders.some(o=>o.status==='new')?'bad':'warn'}" style="margin-left:.3rem">${ordOpen().length}</span>`:''}</button>`).join('')}</div>
+  ${mode==='orders'?ordersPart():mode!=='log'?shopPart(mode):!S.ready.p?'<div class="card empty">Загружаю…</div>':`
   <section class="card cashbal"><div><h2>Сейчас в кассе</h2><p class="note" style="margin:.2rem 0 0">с ${fmtD(bal.from)} · начальный остаток — в Настройках</p></div>
     <div class="cb"><b class="num">${lira(bal.c)}</b><span>наличные</span></div><div class="cb"><b class="num">${lira(bal.b)}</b><span>карта и счёт</span></div></section>
   <div class="head" style="align-items:center"><h2>${mn} ${y}</h2><div class="acts"><select id="fm" aria-label="Месяц" style="width:auto">${months.map(m=>`<option value="${m}" ${m===mk?'selected':''}>${MONTHS[+m.slice(5)-1]} ${m.slice(0,4)}</option>`).join('')}</select><button class="btn sm" data-act="cashcsv">CSV</button></div></div>
@@ -1249,9 +1250,70 @@ const pmeta=p=>[p.brand,p.sku,p.sizes].filter(Boolean).map(esc).join(' · ');
 const pfind=(list,q)=>{q=String(q||'').trim().toLowerCase();return!q?list:list.filter(p=>[p.name,p.sku,p.brand,p.sub,p.cat].some(x=>String(x||'').toLowerCase().includes(q)))};
 const psorted=list=>list.slice().sort((a,b)=>PCOLL.compare(PCATS.indexOf(a.cat)+'|'+(a.sub||'яяя')+'|'+a.name,PCATS.indexOf(b.cat)+'|'+(b.sub||'яяя')+'|'+b.name));
 function pgrouped(list,row,head){let last='',out='';for(const p of psorted(list)){const g=p.cat+(p.sub?' · '+p.sub:'');if(g!==last){out+=head(g,list.filter(x=>x.cat+(x.sub?' · '+x.sub:'')===g).length);last=g}out+=row(p)}return out}
-const pcard=p=>{const st=+p.stock||0,cls=st<=0?'no':lowStock(p)?'lo':'ok',stt=st<=0?'нет в наличии':lowStock(p)?'мало · '+st:'в наличии · '+st;
+const avail=p=>{const st=+p.stock||0;return st>0?{cls:'ok',t:'в наличии · '+st,can:true}:p.always!==false?{cls:'ok',t:'в наличии',can:true}:{cls:'no',t:'нет в наличии',can:false}};
+const pcard=p=>{const A=avail(p),cls=A.cls,stt=A.t;
   return`<button class="pc" type="button" data-pvo="${p.id}"><div class="im">${p.photo?`<img src="/_blob/${esc(p.photo)}" alt="${esc(p.name)}" loading="lazy">`:'<span class="no">нет фото</span>'}${p.brand?`<span class="bd">${esc(p.brand)}</span>`:''}<span class="st ${cls}">${stt}</span></div>
   <div class="tx"><span class="nm2">${esc(p.name)}</span>${[p.sizes,p.sku].filter(Boolean).length?`<span class="mt">${[p.sizes,p.sku].filter(Boolean).map(esc).join(' · ')}</span>`:''}<span class="pr">${+p.price?`<b>${lira(p.price)}</b>`:'<b class="z">цена не указана</b>'}<span>${esc(p.unit||'шт')}</span></span></div></button>`};
+/* --- заказы: клиент заказал → подтвердили звонком → закупили (приход) → выдали и получили оплату --- */
+const OST={new:['Новый','bad'],confirmed:['Подтверждён','warn'],bought:['Закуплен','info'],done:['Выдан · оплачен','ok'],cancel:['Отменён','']};
+const ordOpen=()=>S.orders.filter(o=>!['done','cancel'].includes(o.status));
+const ordNo=()=>Math.max(0,...S.orders.map(o=>+o.no||0))+1;
+const ordSum=o=>(o.items||[]).reduce((a,i)=>a+(+i.qty||0)*(+i.price||0),0);
+function ordersPart(){const fl=S.oflt||'open',L=S.orders.filter(o=>fl==='all'||(fl==='open'?!['done','cancel'].includes(o.status):o.status===fl)).sort((a,b)=>String(b.ts).localeCompare(String(a.ts)));
+  const N=S.ordNew;const P=psorted(S.products);
+  const line=(it,i)=>`<div class="f full" style="display:grid;grid-template-columns:minmax(0,1fr) 5rem 7rem auto;gap:.5rem;align-items:end"><label class="f" style="margin:0">Товар<select data-oi="${i}" data-k="pid">${P.map(p=>`<option value="${p.id}" ${p.id===it.pid?'selected':''}>${esc(p.name)}${+p.price?' — '+lira(p.price):''}</option>`).join('')}</select></label><label class="f" style="margin:0">Кол-во<input type="number" min="1" value="${it.qty||1}" data-oi="${i}" data-k="qty"></label><label class="f" style="margin:0">Размер<input type="text" value="${esc(it.size||'')}" data-oi="${i}" data-k="size" placeholder="L, 12 oz…"></label><button class="btn sm" type="button" data-odel="${i}" ${N.items.length>1?'':'disabled'} aria-label="Убрать">✕</button></div>`;
+  return`<section class="card"><div class="head" style="align-items:center"><h2>Заказы клиентов</h2>${N?'':'<button class="btn gold sm w-only" type="button" data-onew>+ Заказ</button>'}</div>
+   <p class="note" style="margin:.1rem 0 .7rem">Новый → звонок клиенту → Подтверждён → закупили товар (приход и закупка в кассу) → Закуплен → выдали, получили деньги (продажа в кассу).</p>
+   ${N?`<form class="card form" id="ordf" style="margin-bottom:1rem;background:var(--panel-2)"><h2 class="full">Новый заказ</h2>
+     <label class="f">Клиент<select id="o_m">${memOpts(N.mid||'','Новый клиент / гость')}</select></label><label class="f">Имя<input type="text" id="o_n" value="${esc(N.name||'')}" maxlength="80"></label><label class="f">Телефон<input type="tel" id="o_ph" value="${esc(N.phone||'')}" maxlength="30"></label>
+     ${N.items.map(line).join('')}<div class="full"><button class="btn sm" type="button" data-oadd>+ ещё товар</button></div>
+     <label class="f full">Комментарий<input type="text" id="o_c" value="${esc(N.note||'')}" maxlength="300"></label>
+     <div class="acts full"><button class="btn gold" type="submit">Создать заказ</button><button class="btn" type="button" data-ocancel>Отмена</button></div></form>`:''}
+   <div class="chips" style="margin-bottom:.6rem">${[['open','В работе'],['new','Новые'],['confirmed','Подтверждены'],['bought','Закуплены'],['done','Выданы'],['cancel','Отменены'],['all','Все']].map(([k,t])=>`<button class="chip" type="button" data-oflt="${k}" aria-pressed="${fl===k}">${t} <small>${k==='all'?S.orders.length:k==='open'?ordOpen().length:S.orders.filter(o=>o.status===k).length}</small></button>`).join('')}</div>
+   <div class="list">${L.map(ordCard).join('')||'<div class="empty">Заказов нет.</div>'}</div></section>`}
+function ordCard(o){const st=OST[o.status]||OST.new,sum=ordSum(o);
+  const act=o.status==='new'?`<button class="btn gold sm" type="button" data-oact="confirm" data-oid="${o.id}">📞 Позвонил — подтвердить</button><button class="btn sm" type="button" data-oact="cancel" data-oid="${o.id}">Отменить</button>`
+   :o.status==='confirmed'?`<button class="btn gold sm" type="button" data-oact="buy" data-oid="${o.id}">Купил товар — оприходовать</button><button class="btn sm" type="button" data-oact="cancel" data-oid="${o.id}">Отменить</button>`
+   :o.status==='bought'?`<button class="btn gold sm" type="button" data-oact="sell" data-oid="${o.id}">Выдал — получить оплату</button>`:'';
+  const form=S.oform&&S.oform.id===o.id?S.oform.k:null;
+  return`<div class="card" style="margin-bottom:.6rem;background:var(--panel-2)"><div style="display:flex;justify-content:space-between;gap:.6rem;flex-wrap:wrap;align-items:baseline"><b>Заказ №${String(o.no||'').padStart(4,'0')} · ${esc(o.name||'Гость')}${o.phone?` · <a href="tel:${esc(o.phone)}">${esc(o.phone)}</a>`:''}</b><span><span class="pill ${st[1]}">${st[0]}</span> <small class="note">${fmtD(o.date)}${o.src==='shop'?' · онлайн':''}</small></span></div>
+   <div style="margin:.5rem 0;display:flex;flex-direction:column;gap:.35rem">${(o.items||[]).map(i=>{const p=S.products.find(x=>x.id===i.pid);return`<div style="display:flex;gap:.6rem;align-items:center">${p?pthumb(p):''}<span style="flex:1;min-width:0">${esc(i.name)}${i.size?` · <b>${esc(i.size)}</b>`:''} × ${i.qty}</span><span class="num">${+i.price?lira(i.qty*i.price):'—'}${i.cost?` <small class="note">закупка ${lira(i.qty*i.cost)}</small>`:''}</span></div>`}).join('')}</div>
+   <div style="display:flex;justify-content:space-between;gap:.6rem;flex-wrap:wrap;align-items:center"><span>Итого: <b>${sum?lira(sum):'цена не указана'}</b>${o.note?` <small class="note">· ${esc(o.note)}</small>`:''}${o.reason?` <small class="note">· причина: ${esc(o.reason)}</small>`:''}</span><span class="acts w-only" style="margin:0">${act}</span></div>
+   ${form==='buy'?`<form class="form" data-obuy="${o.id}" style="margin-top:.7rem">${(o.items||[]).map((i,n)=>`<label class="f">Закупка за 1 · ${esc(i.name)}${i.size?' ('+esc(i.size)+')':''}, ₺<input type="number" min="0" step="1" data-bc="${n}" value="${(S.products.find(x=>x.id===i.pid)||{}).cost||''}" required></label><label class="f">Цена продажи за 1, ₺<input type="number" min="0" step="1" data-bp="${n}" value="${+i.price||''}" required></label>`).join('')}
+     <label class="f">Где купили<input type="text" data-bs maxlength="80"></label><label class="f">Чем платили<select data-bm>${methodOpts('cash')}</select></label><div class="acts full"><button class="btn gold" type="submit">Оприходовать и записать закупку</button><button class="btn" type="button" data-oclose>Отмена</button></div></form>`:''}
+   ${form==='sell'?`<form class="form" data-osell="${o.id}" style="margin-top:.7rem"><label class="f">Оплата ${lira(sum)}<select data-sm>${methodOpts('cash')}</select></label><div class="acts full"><button class="btn gold" type="submit">Выдать и записать продажу</button><button class="btn" type="button" data-oclose>Отмена</button></div></form>`:''}
+   ${form==='cancel'?`<form class="form" data-ocx="${o.id}" style="margin-top:.7rem"><label class="f full">Причина отмены<input type="text" data-cr maxlength="200" required placeholder="не дозвонились, передумал…"></label><div class="acts full"><button class="btn danger" type="submit">Отменить заказ</button><button class="btn" type="button" data-oclose>Назад</button></div></form>`:''}</div>`}
+async function ordSet(o,patch,msg){const hist=[...(o.hist||[]),{st:patch.status||o.status,ts:new Date().toISOString(),by:ME||null}];return write(()=>DB.doc('orders/'+o.id).update({...patch,hist}),msg)}
+function bindOrders(v){
+  const N=S.ordNew;const on=v.querySelector('[data-onew]');if(on)on.addEventListener('click',()=>{S.ordNew={items:[{pid:(psorted(S.products)[0]||{}).id,qty:1,size:''}]};render()});
+  v.querySelectorAll('[data-oflt]').forEach(b=>b.addEventListener('click',()=>{S.oflt=b.dataset.oflt;render()}));
+  const f=$('#ordf',v);if(f&&N){const keep=()=>{N.mid=$('#o_m',v).value;N.name=$('#o_n',v).value;N.phone=$('#o_ph',v).value;N.note=$('#o_c',v).value;v.querySelectorAll('[data-oi]').forEach(el=>{const it=N.items[+el.dataset.oi];it[el.dataset.k]=el.dataset.k==='qty'?Math.max(1,Math.round(+el.value||1)):el.value})};
+    $('#o_m',v).addEventListener('change',()=>{const m=S.members.find(x=>x.id===$('#o_m',v).value);if(m){$('#o_n',v).value=m.name||'';$('#o_ph',v).value=m.phone||''}});
+    v.querySelector('[data-oadd]').addEventListener('click',()=>{keep();N.items.push({pid:(psorted(S.products)[0]||{}).id,qty:1,size:''});render()});
+    v.querySelectorAll('[data-odel]').forEach(b=>b.addEventListener('click',()=>{keep();N.items.splice(+b.dataset.odel,1);render()}));
+    v.querySelector('[data-ocancel]').addEventListener('click',()=>{S.ordNew=null;render()});
+    f.addEventListener('submit',async e=>{e.preventDefault();keep();const name=(N.name||'').trim();if(!name){toast('Укажите имя клиента');return}
+      const items=N.items.map(it=>{const p=S.products.find(x=>x.id===it.pid);return p?{pid:p.id,name:p.name,qty:it.qty||1,size:(it.size||'').trim(),price:+p.price||0}:null}).filter(Boolean);if(!items.length)return;
+      const no=ordNo(),d={no,date:today(),ts:new Date().toISOString(),src:'crm',mid:N.mid||null,name,phone:(N.phone||'').trim(),items,note:(N.note||'').trim(),status:'new',hist:[{st:'new',ts:new Date().toISOString(),by:ME||null}]};
+      if(await write(()=>DB.collection('orders').doc().set(d),`Заказ №${no}: ${name} — ${items.map(i=>i.name+' × '+i.qty).join(', ')}`)){S.ordNew=null;S.oflt='open';render()}})}
+  v.querySelectorAll('[data-oact]').forEach(b=>b.addEventListener('click',async()=>{const o=S.orders.find(x=>x.id===b.dataset.oid);if(!o)return;const k=b.dataset.oact;
+    if(k==='confirm'){await ordSet(o,{status:'confirmed',confirmedAt:new Date().toISOString()},`Заказ №${o.no} подтверждён звонком`);render();return}
+    S.oform={id:o.id,k};render()}));
+  v.querySelectorAll('[data-oclose]').forEach(b=>b.addEventListener('click',()=>{S.oform=null;render()}));
+  v.querySelectorAll('[data-ocx]').forEach(fm=>fm.addEventListener('submit',async e=>{e.preventDefault();const o=S.orders.find(x=>x.id===fm.dataset.ocx);if(await ordSet(o,{status:'cancel',reason:fm.querySelector('[data-cr]').value.trim()},`Заказ №${o.no} отменён`)){S.oform=null;render()}}));
+  v.querySelectorAll('[data-obuy]').forEach(fm=>fm.addEventListener('submit',async e=>{e.preventDefault();const o=S.orders.find(x=>x.id===fm.dataset.obuy);if(!o)return;
+    const items=(o.items||[]).map((i,n)=>({...i,cost:Math.max(0,+fm.querySelector(`[data-bc="${n}"]`).value||0),price:Math.max(0,+fm.querySelector(`[data-bp="${n}"]`).value||0)}));
+    const sup=fm.querySelector('[data-bs]').value.trim(),meth=fm.querySelector('[data-bm]').value;
+    for(const i of items){const p=S.products.find(x=>x.id===i.pid);if(!p)continue;
+      await write(()=>DB.doc('products/'+p.id).update({stock:(+p.stock||0)+i.qty,cost:i.cost||p.cost||0,price:i.price||p.price||0}));
+      await write(()=>DB.collection('expenses').doc().set({date:today(),cat:'Закупка · что купили',sum:i.qty*i.cost,method:meth,item:p.name+(i.size?' ('+i.size+')':''),qty:i.qty+' '+(p.unit||'шт'),supplier:sup,note:'под заказ №'+o.no,receipt:null,by:ME||null,ts:new Date().toISOString(),pid:p.id,oid:o.id}),`Приход под заказ №${o.no}: ${p.name} +${i.qty}, закупка ${lira(i.qty*i.cost)}`)}
+    if(await ordSet(o,{status:'bought',items,boughtAt:new Date().toISOString(),supplier:sup},`Заказ №${o.no}: товар закуплен`)){S.oform=null;render()}}));
+  v.querySelectorAll('[data-osell]').forEach(fm=>fm.addEventListener('submit',async e=>{e.preventDefault();const o=S.orders.find(x=>x.id===fm.dataset.osell);if(!o)return;
+    const items=(o.items||[]).map(i=>({pid:i.pid,name:i.name+(i.size?' ('+i.size+')':''),qty:i.qty,price:+i.price||0,cost:+i.cost||0})),sum=items.reduce((a,i)=>a+i.qty*i.price,0);
+    const ok=await write(()=>DB.collection('payments').doc().set({kind:'shop',items,mid:o.mid||null,name:o.name||'Гость',sum,date:today(),ts:new Date().toISOString(),method:fm.querySelector('[data-sm]').value,what:'Магазин · заказ №'+o.no,src:'pit',oid:o.id}),`Заказ №${o.no} выдан, оплата ${lira(sum)}`);
+    if(ok){for(const i of items){const p=S.products.find(x=>x.id===i.pid);if(p)await write(()=>DB.doc('products/'+p.id).update({stock:Math.max(0,(+p.stock||0)-i.qty)}))}
+      await ordSet(o,{status:'done',doneAt:new Date().toISOString()},`Заказ №${o.no} закрыт`);S.oform=null;render()}}));
+}
 function prodView(id){const p=S.products.find(x=>x.id===id);if(!p)return;let host=$('#pvHost');if(!host){host=document.createElement('div');host.id='pvHost';document.body.appendChild(host)}
   const st=+p.stock||0,sold=S.payments.filter(x=>payKind(x)==='shop').reduce((a,x)=>a+(x.items||[]).filter(i=>i.pid===p.id).reduce((b,i)=>b+(+i.qty||0),0),0);
   const rv=Array.isArray(p.reviews)?p.reviews:[],avg=rv.length?rv.reduce((a,r)=>a+(+r.stars||0),0)/rv.length:0,stars=n=>'★★★★★'.slice(0,Math.round(n))+'☆☆☆☆☆'.slice(0,5-Math.round(n));
@@ -1261,15 +1323,16 @@ function prodView(id){const p=S.products.find(x=>x.id===id);if(!p)return;let hos
     <h3>${esc(p.name)}</h3>
     <div class="rt">${rv.length?`<span class="stars">${stars(avg)}</span><b>${avg.toFixed(1)}</b> · ${rv.length} отз.`:'<span class="stars e">☆☆☆☆☆</span>Отзывов пока нет'}${sold?` · продано ${sold} ${esc(p.unit||'шт')}`:''}</div>
     <div class="big ${+p.price?'':'z'}">${+p.price?lira(p.price):'Цена не указана'}</div>
-    <div><span class="pill ${st<=0?'bad':lowStock(p)?'warn':'ok'}">${st<=0?'Нет в наличии':lowStock(p)?'Мало · '+st+' '+esc(p.unit||'шт'):'В наличии · '+st+' '+esc(p.unit||'шт')}</span></div>
+    <div><span class="pill ${avail(p).can?'ok':'bad'}">${avail(p).can?'В наличии':'Нет в наличии'}</span> <small class="note">на складе: ${st} ${esc(p.unit||'шт')}${st<=0&&avail(p).can?' · закупается под заказ':''}</small></div>
     <dl>${[['Артикул',p.sku],['Размеры',p.sizes],['Бренд',p.brand],['Категория',p.cat+(p.sub?' · '+p.sub:'')],['Единица',p.unit]].filter(r=>r[1]).map(([a,b])=>`<dt>${a}</dt><dd>${esc(b)}</dd>`).join('')}</dl>
     ${p.desc?`<div class="ds">${esc(p.desc)}</div>`:''}
-    <div class="ac"><button class="btn gold" type="button" data-pvs ${st>0?'':'disabled'}>Продать</button><button class="btn w-only" type="button" data-pve>Изменить</button></div></div></div></div>`;
+    <div class="ac">${st>0?'<button class="btn gold" type="button" data-pvs>Продать со склада</button>':''}<button class="btn ${st>0?'':'gold'}" type="button" data-pvo2 ${avail(p).can?'':'disabled'}>Оформить заказ</button><button class="btn w-only" type="button" data-pve>Изменить</button></div></div></div></div>`;
   const close=()=>{host.innerHTML='';document.removeEventListener('keydown',esc_)},esc_=e=>{if(e.key==='Escape')close()};document.addEventListener('keydown',esc_);
   host.querySelector('.pvb').addEventListener('click',e=>{if(e.target.classList.contains('pvb'))close()});host.querySelector('[data-pvx]').addEventListener('click',close);
   const z=host.querySelector('[data-pvz]');z.addEventListener('click',()=>z.classList.toggle('zm'));
   host.querySelector('[data-pve]').addEventListener('click',()=>{close();S.ov={type:'prod',id:p.id};renderOv()});
-  host.querySelector('[data-pvs]').addEventListener('click',()=>{close();S.cart={[p.id]:1};S.ov={type:'sale',kind:'shop'};renderOv()});
+  const ps=host.querySelector('[data-pvs]');if(ps)ps.addEventListener('click',()=>{close();S.cart={[p.id]:1};S.ov={type:'sale',kind:'shop'};renderOv()});
+  host.querySelector('[data-pvo2]').addEventListener('click',()=>{close();S.ordNew={items:[{pid:p.id,qty:1,size:''}]};S.tab='cash';S.cashMode='orders';render()});
   host.querySelector('[data-pvx]').focus()}
 function shopPart(mode){const P=psorted(S.products);const PV=S.pview||(()=>{try{return localStorage.getItem('mowgli.pview')}catch(e){return null}})()||'grid';
   return`${mode==='stock'?`<section class="card"><div class="head" style="align-items:center"><h2>Товары и остатки</h2><button class="btn gold sm w-only" type="button" data-pnew="1">+ Товар</button></div>
@@ -1448,6 +1511,7 @@ function bindMods(v){
     const ok=await write(()=>DB.collection('payments').doc().set({kind:'shop',items,mid:mid||null,name:m?m.name:'Гость',sum,date:today(),ts:new Date().toISOString(),method:$('#s_pm',v).value,what:'Магазин',src:'pit'}),'Продано на '+lira(sum)+': '+items.map(i=>i.name+' × '+i.qty).join(', '));
     if(ok){for(const i of items){const p=S.products.find(x=>x.id===i.pid);await write(()=>DB.doc('products/'+i.pid).update({stock:Math.max(0,(+p.stock||0)-i.qty)}))}S.cart={};render()}});
   v.querySelectorAll('[data-pvo]').forEach(b=>b.addEventListener('click',()=>prodView(b.dataset.pvo)));
+  if(S.cashMode==='orders')bindOrders(v);
   v.querySelectorAll('[data-pview]').forEach(b=>b.addEventListener('click',()=>{S.pview=b.dataset.pview;try{localStorage.setItem('mowgli.pview',S.pview)}catch(e){}render()}));
   v.querySelectorAll('[data-pcat]').forEach(b=>b.addEventListener('click',()=>{S.pcat=b.dataset.pcat;render()}));
   const pq=$('#pq',v);if(pq)pq.addEventListener('input',()=>{S.pq=pq.value;render();const j=$('#pq');if(j){j.focus();j.setSelectionRange(j.value.length,j.value.length)}});
@@ -1721,6 +1785,7 @@ render();
   db.collection('payments').onSnapshot(s=>{S.payments=s.docs.map(d=>({id:d.id,...d.data()}));S.ready.p=true;rr()},err);
   db.collection('leads').onSnapshot(s=>{S.leads=s.docs.map(d=>({id:d.id,...d.data()}));rr()},err);
   db.collection('products').onSnapshot(s=>{S.products=s.docs.map(d=>({id:d.id,...d.data()}));rr()},err);
+  db.collection('orders').onSnapshot(s=>{S.orders=s.docs.map(d=>({id:d.id,...d.data()}));rr()},()=>{});
   db.collection('events').onSnapshot(s=>{S.events=s.docs.map(d=>({id:d.id,...d.data()}));rr()},err);
   db.collection('audit').onSnapshot(s=>{const o={};s.docs.forEach(d=>o[d.id]=d.data());S.audit=o;if(S.tab==='rep')rr()},err);
   db.doc('club/settings').onSnapshot(s=>{S.settings=s.exists?s.data():null;rr()},err);
