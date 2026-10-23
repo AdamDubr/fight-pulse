@@ -1413,16 +1413,22 @@ function bindPick(root){root.querySelectorAll('[data-pk]').forEach(box=>{const h
     L.querySelectorAll('[data-pki]').forEach(b=>b.addEventListener('mousedown',e=>{e.preventDefault();choose(list[+b.dataset.pki])}));
     const nb=L.querySelector('[data-pknew]');if(nb)nb.addEventListener('mousedown',e=>{e.preventDefault();newForm(t)})};
   const newForm=t=>{const subs=[...new Set(S.products.map(x=>x.sub).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'ru'));
-    L.innerHTML=`<div class="pkn"><b class="full">Новый товар</b><label class="f full" style="margin:0">Название<input type="text" data-nn value="${esc(t)}"></label>
+    let nph='';L.innerHTML=`<div class="pkn"><b class="full">Новый товар</b>
+     <div class="full" style="display:flex;gap:.7rem;align-items:center"><span data-nphv style="width:5rem;height:5rem;flex:none;border-radius:.55rem;border:1px dashed var(--line);background:#fff center/contain no-repeat;display:flex;align-items:center;justify-content:center;color:#999;font-size:.7rem;text-align:center">нет фото</span>
+      <span style="display:flex;flex-direction:column;gap:.35rem"><label class="btn sm" style="cursor:pointer">📷 Добавить фото<input type="file" data-nph accept="image/*" capture="environment" hidden></label><small class="note">с телефона можно сразу сфотографировать</small></span></div>
+     <label class="f full" style="margin:0">Название<input type="text" data-nn value="${esc(t)}"></label>
      <label class="f" style="margin:0">Категория<select data-nc>${PCATS.map(c=>`<option ${c==='Экипировка'?'selected':''}>${c}</option>`).join('')}</select></label>
      <label class="f" style="margin:0">Подгруппа<input type="text" data-ns list="pkn_sl"><datalist id="pkn_sl">${subs.map(x=>`<option value="${esc(x)}">`).join('')}</datalist></label>
      <label class="f" style="margin:0">Единица<input type="text" data-nu value="шт"></label><label class="f" style="margin:0">Цена продажи, ₺<input type="number" min="0" data-np></label>
-     <div class="acts full" style="margin:0"><button class="btn gold sm" type="button" data-nsave>Сохранить и выбрать</button><button class="btn sm" type="button" data-nback>Назад</button></div><small class="note full">Фото, описание и гарантию можно добавить потом: Склад → «Изменить».</small></div>`;
+     <div class="acts full" style="margin:0"><button class="btn gold sm" type="button" data-nsave>Сохранить и выбрать</button><button class="btn sm" type="button" data-nback>Назад</button></div><small class="note full">Описание, гарантию и размеры можно добавить потом: Склад → «Изменить».</small></div>`;
     L.hidden=false;const g=k=>L.querySelector(k);g('[data-nn]').focus();
+    const pf=g('[data-nph]'),pv=g('[data-nphv]');pf.addEventListener('change',async()=>{const file=pf.files[0];if(!file)return;if(!ASSETS){toast('Загрузка доступна администратору клуба');return}if(file.size>20*1024*1024){toast('Файл больше 20 МБ');pf.value='';return}
+      pv.textContent='загрузка…';pv.style.backgroundImage=`url('${URL.createObjectURL(file)}')`;
+      try{const r=await ASSETS.upload(file,file.type?undefined:{type:'image/jpeg'});nph=r.id;pv.textContent=''}catch(e){nph='';pv.style.backgroundImage='';pv.textContent='нет фото';toast('Не удалось загрузить фото')}pf.value=''});
     g('[data-nback]').addEventListener('click',()=>{on=0;draw()});
     g('[data-nsave]').addEventListener('click',async()=>{const name=g('[data-nn]').value.trim();if(!name){toast('Укажите название');return}
       if(S.products.some(p=>p.name.toLowerCase()===name.toLowerCase())){toast('Такой товар уже есть');return}
-      const ref=DB.collection('products').doc(),d={name,cat:g('[data-nc]').value,sub:g('[data-ns]').value.trim(),unit:g('[data-nu]').value.trim()||'шт',price:Math.max(0,+g('[data-np]').value||0),cost:0,stock:0,minStock:2,always:true};
+      const ref=DB.collection('products').doc(),d={name,cat:g('[data-nc]').value,sub:g('[data-ns]').value.trim(),unit:g('[data-nu]').value.trim()||'шт',price:Math.max(0,+g('[data-np]').value||0),cost:0,stock:0,minStock:2,always:true,photo:nph};
       if(await write(()=>ref.set(d),'Товар добавлен: '+name))choose({id:ref.id,...d})})};
   q.addEventListener('focus',()=>{on=0;draw()});q.addEventListener('input',()=>{hid.value='';on=0;draw()});
   q.addEventListener('keydown',e=>{if(L.hidden)return;if(e.key==='ArrowDown'){on=Math.min(list.length-1,on+1);draw();e.preventDefault()}else if(e.key==='ArrowUp'){on=Math.max(0,on-1);draw();e.preventDefault()}else if(e.key==='Enter'&&list[on]&&!L.querySelector('.pkn')){e.preventDefault();choose(list[on])}else if(e.key==='Escape')L.hidden=true});
