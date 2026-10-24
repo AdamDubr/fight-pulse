@@ -315,7 +315,7 @@ async function view(env, email, uiLang) {
       for (const x of v.results || []) { try { const d = JSON.parse(x.data); if (Array.isArray(d.ids) && d.ids.includes(f.mid)) { total++; if (String(d.date || '').startsWith(ym)) month++ } } catch (e) { } }
       const tl = await getDoc(env, 'club', 'tariffs'), TN = { grp12: 'Групповые · 12 занятий', kids12: 'Дети MMA · 12 занятий', ind10m: 'Индивидуальные MMA/BJJ · 10 сеансов', ind10b: 'Индивидуальные Бокс/Кикбоксинг · 10 сеансов', ind8: 'Индивидуальные · 8 сеансов', free: 'Безлимит · все дисциплины', staff: 'Безлимит' };
       const tName = k => { const t = tl && Array.isArray(tl.list) ? tl.list.find(z => z.key === k) : null; return t ? t.name : (TN[k] || k || null) };
-      out.member = { name: m.first && m.last ? m.first + ' ' + m.last : m.name, plan: tName(m.plan), subs: Array.isArray(m.subs) ? m.subs.map(u => ({ plan: tName(u.plan), disc: u.disc || null, end: u.end || null, left: u.left ?? null })) : [], start: m.start || null, end: m.end || null, left: m.left ?? null, frozen: !!m.frozen, disc: m.disc || null, visits: { total, month } };
+      out.member = { name: m.first && m.last ? m.first + ' ' + m.last : m.name, plan: tName(m.plan), subs: Array.isArray(m.subs) ? m.subs.map(u => ({ plan: tName(u.plan), disc: u.disc || null, end: u.end || null, left: u.left ?? null })) : [], start: m.start || null, end: m.end || null, left: m.left ?? null, frozen: !!m.frozen, disc: m.disc || null, cls: [m.cls, ...(Array.isArray(m.subs) ? m.subs.map(u => u.cls) : [])].filter(Boolean), visits: { total, month } };
     }
   }
   const tl = lead && lead.status === 'booked' ? lead : (!f.mid ? await leadByEmail(env, email) : null);
